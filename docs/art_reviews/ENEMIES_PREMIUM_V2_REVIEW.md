@@ -1,5 +1,12 @@
 # Regular Enemies Premium-v2 — Final Category Review
 
+> **Status (2026-09-16): batch record, not a description of the current tree.** The measurements, hash
+> gates and accepted-run references below belong to the render batch this document accepted. After the
+> integrity recovery the shipped runtime tier, manifest and PNG payload are the reviewed baseline; the
+> current values live in `android/assets/generated/asset_manifest.json` and `docs/asset_hashes.json`, and
+> the per-sheet history is in `docs/art_reviews/MASTER_TIER_PROVENANCE.md`.
+
+
 - **Decision:** ACCEPTED
 - **Review date:** 2026-09-13
 - **Scope:** Rootling, Stonekin, Gloom Wolf, and Fungal Brute

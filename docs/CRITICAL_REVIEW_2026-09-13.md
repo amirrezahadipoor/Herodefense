@@ -1,5 +1,26 @@
 # Hero Defense — Critical Review (2026-09-13, main @ post-VFX)
 
+> **Status added 2026-09-16: historical snapshot, superseded.** This review was written on 2026-09-13 for
+> the then-current `main` (post-Phase 16.5). Its grades and counts describe that commit, not today's tree.
+> The independent audit that supersedes it is [`docs/audit/AUDIT_2026-09-16.md`](audit/AUDIT_2026-09-16.md)
+> (550/1000, granular criteria listed per category).
+>
+> Numbers in this file that have since been re-measured, with the current value and where it comes from:
+>
+> | Claim here (2026-09-13) | Measured 2026-09-16 | Produced by |
+> |---|---|---|
+> | "189 core tests" | 531 tests in 150 classes, 0 failures/errors/skipped | `:core:test` run recorded in `docs/ROADMAP_TO_1000.md` (Phase 83 entry) |
+> | "116 files ... largest file 863 lines" | 329 Java files under `core/src` and `android/src`; largest `HeroDefenseGame.java` 1,519 lines | `find` + `wc -l`; tracked as roadmap R2.2 |
+> | "13 MB assets ... 236 MB RGBA if all resident ... no measurement exists" | 14 MB payload on disk; decoded catalog **361,279,488 bytes (344.5 MiB)**, live combat set **76.8 MiB** against a 100 MiB budget | `android/assets/generated/asset_manifest.json`, gated by `RuntimeResidencyTest` |
+> | "reviewed contact sheets ... style guide enforced by tests" | the HD enlargement had been produced by resampling, not by rendering; it was reverted and the provenance measured per sheet | `docs/art_reviews/INTEGRITY_RECOVERY_2026-09-16.md`, `docs/art_reviews/MASTER_TIER_PROVENANCE.md` |
+>
+> Findings that are **still open** are mapped to roadmap items, not repeated here: no tutorial or stat
+> tooltips (R7.1/R7.2), Android Back unhandled (R7.4), optimiser imbalance and the flat mid-curve
+> (R4.1/R4.2), four boss identities across twenty encounters (R3.2), no meta-progression (R3.3), thin audio
+> (R6.1/R6.2), renderer coverage that only grepped source strings (R1.6), accessibility and localisation
+> (R7.5/R7.3). The "source-string only" test criticism is partly closed: the validator now reports its
+> measured gates separately from its config-presence checks.
+
 Scope: everything in the repository as shipped on `main` after Phase 16.5. Grades are deliberately
 strict (10 = polished commercial mobile title). Measurements were taken with the real game systems
 (`BalanceSimulator` plus a "passive player" harness), the committed assets, and the last accepted

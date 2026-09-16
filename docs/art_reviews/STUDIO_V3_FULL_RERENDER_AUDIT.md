@@ -1,5 +1,12 @@
 # Studio-v3 Full Re-render Audit (33.8)
 
+> **Status (2026-09-16): batch record, not a description of the current tree.** The measurements, hash
+> gates and accepted-run references below belong to the render batch this document accepted. After the
+> integrity recovery the shipped runtime tier, manifest and PNG payload are the reviewed baseline; the
+> current values live in `android/assets/generated/asset_manifest.json` and `docs/asset_hashes.json`, and
+> the per-sheet history is in `docs/art_reviews/MASTER_TIER_PROVENANCE.md`.
+
+
 **Date:** 2026-09-15
 **Engine:** `33.0-studio-v3-3x36-full` (Blender 4.2.23, EEVEE, weighted 2.4/1.2 outline + rim LayerWeight 0.22/0.58 Fresnel IOR1.45 + Glossy highlight 0.92)
 **Pipeline:** `pipelineVersion: 3`, `frameRate: 12`, `RENDER_SUPERSAMPLE 2` / `TOP_TIER_SUPERSAMPLE 3`, `OPAQUE 28` / `TOP 36` / `OVERLAY 12`

@@ -1,5 +1,11 @@
 # Asset Engine (Phase 28 — premium-v2)
 
+> **Status (2026-09-16).** The authoritative gate list is the one the validator prints when it runs: it
+> reports its *measured* gates separately from its *config-presence* checks, so a check that only greps the
+> pipeline source is never counted as a quality gate (roadmap R1.6). Numbers in this document are the
+> contract; the values that actually ship are in `android/assets/generated/asset_manifest.json`.
+
+
 How Hero Defense art is produced, reviewed, and promoted. Pipeline code lives
 in `tools/blender` (procedural scenes + EEVEE/Workbench rendering) and
 `tools/visual` (review sheets, promotion, validation). Every promoted PNG
@@ -163,7 +169,7 @@ Checks (automatable where Pillow is available, manifest-only otherwise):
 | `alphaMode == STRAIGHT_RGBA`, `bit_depth==8`, `color_type==6` | Texture contract | image header |
 | Frame & page geometry, `decodedBytes`, page size ≤2048 | Atlas integrity | manifest + header |
 | Icon 96×96 RGBA | Equipment icons | manifest + header |
-| `decodedCatalog ≤ 335 MB` | Memory budget | manifest |
+| `decodedCatalog` within `decodedCatalogBudgetBytes` (370 MB in the shipped manifest) | Memory budget | manifest, enforced by core `RuntimeResidencyTest` |
 | No undeclared/missing PNGs | Manifest completeness | filesystem |
 
 If Pillow is not installed the validator runs in manifest-only mode and prints `Pillow not available — skipped image-level checks`.
@@ -286,8 +292,8 @@ Use this checklist on every review sheet before promotion. A single **REJECT** b
 - [ ] Edge safety: no opaque pixel touches the 1px frame border (arena_backdrop exempt).
 - [ ] Pivot stability: `0.5, 0.12` for character/boss, `0.5, 0.06` for tree, `0.5, 0.5` otherwise, within tolerance.
 - [ ] Silhouette coverage not empty (<0.2%) nor full (>95%) for non-arena.
-- [ ] Page ≤2048px, `decodedCatalog` ≤335 MB, icons 96×96 RGBA straight.
-- [ ] `visualQuality == premium-v2` and `engineVersion == 28.6` (or newer) on every promoted entry.
+- [ ] Page ≤2048px, `decodedCatalog` within the manifest budget (370 MB in the shipped manifest), icons 96×96 RGBA straight.
+- [ ] `visualQuality` and `engineVersion` equal what the shipped manifest declares and the validator accepts (`studio-v3`, `78.0-integrity-recovery-runtime-tier` at the time of writing).
 - [ ] Review sheet hash-bound: markdown contains `**Decision:** ACCEPTED` and the SHA256 of both manifest and audit, and all sheet PNGs are byte-identical to the audit record.
 
 ### 4.4 Production hygiene

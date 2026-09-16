@@ -109,6 +109,12 @@ At the 720×1280 reference viewport, the Hero must remain recognizable at approx
 
 Budgets count **triangles after modifiers** at render time.
 
+> **Budgets are targets, not delivered facts (2026-09-16).** The Phase 55 numbers below were raised for a
+> "950+/HD" line whose renders were withdrawn after the integrity audit: the shipped runtime tier is the
+> reviewed tier pinned by `tools/visual/validate_generated_assets.py`, and the per-asset triangle counts that
+> actually shipped are in `android/assets/generated/asset_manifest.json` (source complexity, not runtime
+> geometry). See `docs/art_reviews/MASTER_TIER_PROVENANCE.md`.
+
 | Asset | Target | Hard maximum |
 |---|---:|---:|
 | Hero body/hair/base clothing | 6,000 | 9,000 |  <!-- Phase 55: 3200->6000 for 950+ detail -->

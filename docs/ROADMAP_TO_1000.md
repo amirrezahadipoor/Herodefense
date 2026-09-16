@@ -36,7 +36,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **81** | Emulator brightness contract restored honestly | R1.7 | `[~]` |
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 · R8.2 | `[x]` |
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[x]` |
-| **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[~]` |
+| **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[x]` |
 | **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[ ]` |
 | **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[ ]` |
 | **87** | Gameplay: one real player decision inside a wave | R3.1 | `[ ]` |
@@ -118,10 +118,20 @@ re-run on a finished round (Phase 97).
   (NEAREST 2× and 3×), for hash-ledger drift, for the test-integrity scanner, and now for the residency
   budget (an over-budget set and a sheet that was quadrupled both throw). The review-coverage gate gets
   its control together with R1.11, when the gate exists.
-- [~] **R1.10 Documentation honesty sweep.** Withdrawn: `ASSET_SCORE_950.md`; correction banner:
+- [x] **R1.10 Documentation honesty sweep.** Withdrawn: `ASSET_SCORE_950.md`; correction banner:
   `RELEASE_v0.5.0-vibrant-950.md`; annotated: `ROADMAP.md` Phase 54–77 claims and the "Standing Rules
-  for HD". Remaining: a status header on the stale `CRITICAL_REVIEW_2026-09-13.md` and a final grep for
-  numbers that no artifact produces.
+  for HD". Closed with:
+  a status header on `CRITICAL_REVIEW_2026-09-13.md` that names the four numbers which changed and the
+  measurements that replaced them (531 tests / 150 classes, 329 Java files, 1,519-line god class, decoded
+  catalog 361,279,488 bytes, combat set 76.8 MiB) and maps every still-open finding to a roadmap item;
+  a "budgets are targets, not delivered facts" note in `VISUAL_STYLE_GUIDE.md`; the stale budget and
+  contract values in `ASSET_ENGINE.md` (`decodedCatalog ≤ 335 MB`, `visualQuality == premium-v2`,
+  `engineVersion == 28.6`, none of which the shipped manifest satisfies) replaced by references to the
+  manifest and the core test that enforces them; and a batch-record banner on 21 `docs/art_reviews/*`
+  documents so their accepted-run numbers are not read as today's values.
+  *Evidence:* a scan for count-like claims across `docs/**/*.md` leaves 8 documents, all of them either
+  bannered batch records or value tables that now defer to the manifest (command and result recorded in the
+  progress log below).
 - [x] **R1.11 Review coverage for the ten post-audit art ids.** The claim is now true and enforced.
   `docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md` states exactly what is verified for those ten ids
   (runtime contract, hash ledger, no resampling signature, reviewed tier) and what is *not* claimed (no
@@ -236,6 +246,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
 | 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | `71bab7d` |
 | 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | `651d56a` |
+| 2026-09-16 | 84 | R1.10 | CRITICAL_REVIEW status header with re-measured numbers, style-guide budget note, ASSET_ENGINE values pointed at the manifest, batch-record banners on 21 review docs; count-like claim scan: 8 documents left, all accounted for | *(this commit)* |
 | 2026-09-16 | 81 | R1.7 step 1 | emulator smoke test measures every captured frame and publishes `brightness-measurements.txt` in the CI artifact; assertions unchanged in this step | *(this commit)* |
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |

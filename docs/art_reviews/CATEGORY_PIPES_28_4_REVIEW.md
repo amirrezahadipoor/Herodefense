@@ -1,5 +1,12 @@
 # Category Pipes Review (Phase 28.4)
 
+> **Status (2026-09-16): batch record, not a description of the current tree.** The measurements, hash
+> gates and accepted-run references below belong to the render batch this document accepted. After the
+> integrity recovery the shipped runtime tier, manifest and PNG payload are the reviewed baseline; the
+> current values live in `android/assets/generated/asset_manifest.json` and `docs/asset_hashes.json`, and
+> the per-sheet history is in `docs/art_reviews/MASTER_TIER_PROVENANCE.md`.
+
+
 **Date:** 2026-09-15
 
 **Pipeline:** Blender 4.2.23 LTS, headless EEVEE, mid tier (2× / 24) for VFX and
