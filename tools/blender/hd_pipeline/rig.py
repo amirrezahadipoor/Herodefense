@@ -128,6 +128,30 @@ def author_standard_actions(
             "hit": _author_fungal_brute_hit,
             "death": _author_fungal_brute_death,
         },
+        "bark-stalker-lurker-v2": {
+            "idle": _author_bark_stalker_idle,
+            "attack": _author_bark_stalker_attack,
+            "hit": _author_bark_stalker_hit,
+            "death": _author_bark_stalker_death,
+        },
+        "sap-hound-runner-v2": {
+            "idle": _author_sap_hound_idle,
+            "attack": _author_sap_hound_attack,
+            "hit": _author_sap_hound_hit,
+            "death": _author_sap_hound_death,
+        },
+        "husk-warden-bulwark-v2": {
+            "idle": _author_husk_warden_idle,
+            "attack": _author_husk_warden_attack,
+            "hit": _author_husk_warden_hit,
+            "death": _author_husk_warden_death,
+        },
+        "bramble-thrall-lumber-v2": {
+            "idle": _author_bramble_thrall_idle,
+            "attack": _author_bramble_thrall_attack,
+            "hit": _author_bramble_thrall_hit,
+            "death": _author_bramble_thrall_death,
+        },
         "ancient-golem-ground-slam-v2": {
             "idle": _author_ancient_golem_idle,
             "attack": _author_ancient_golem_ground_slam,
@@ -672,6 +696,387 @@ def _author_fungal_brute_death(armature: bpy.types.Object, count: int) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Premium-v2 second-wave enemy profiles (roadmap R3.4: enemy types 4 -> 8) ---------
+# Four new roles, four new motion languages, all on the same locked 25-bone contract and
+# the same four clips: a creeping flanker, a bounding runner, a braced shield bearer,
+# and a lumbering thorn mass.
+
+
+def _author_bark_stalker_idle(armature: bpy.types.Object, count: int) -> None:
+    """Weight on the back foot, head scanning: the stalker never stands square."""
+    crouch = {
+        "pelvis": (0.03, 0.0, -0.06), "spine": (0.05, 0.0, -0.09), "chest": (0.04, 0.0, -0.05),
+        "head": (-0.10, 0.0, 0.16), "neck": (0.05, 0.0, 0.04),
+        "upper_arm.L": (0.10, -0.10, -0.24), "forearm.L": (-0.12, 0.0, -0.10),
+        "upper_arm.R": (0.06, 0.08, 0.18), "forearm.R": (-0.09, 0.0, 0.07),
+        "thigh.L": (-0.08, 0.0, 0.05), "thigh.R": (0.10, 0.0, -0.05),
+    }
+    scan = {
+        "pelvis": (0.01, 0.0, -0.03), "spine": (0.02, 0.0, -0.05), "chest": (0.02, 0.0, -0.02),
+        "head": (0.04, 0.22, -0.20), "neck": (0.02, 0.10, -0.06),
+        "upper_arm.L": (0.05, -0.05, -0.14), "forearm.L": (-0.06, 0.0, -0.05),
+        "upper_arm.R": (0.03, 0.04, 0.10), "forearm.R": (-0.05, 0.0, 0.04),
+        "thigh.L": (-0.04, 0.0, 0.03), "thigh.R": (0.06, 0.0, -0.03),
+    }
+    _key(armature, 1, crouch, {"root": (0.0, 0.02, -0.03)})
+    _key(armature, 1 + count // 3, scan, {"root": (0.0, 0.01, -0.015)})
+    _key(armature, 1 + (2 * count) // 3, crouch, {"root": (0.0, 0.02, -0.03)})
+    _key(armature, count, crouch, {"root": (0.0, 0.02, -0.03)})
+
+
+def _author_bark_stalker_attack(armature: bpy.types.Object, count: int) -> None:
+    """Coil, then both hooked claws cross the target's ribs."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "forearm.L": (0.0, 0.0, 0.0),
+        "upper_arm.R": (0.0, 0.0, 0.0), "forearm.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 2, {
+        "pelvis": (0.10, 0.0, -0.16), "spine": (0.14, 0.0, -0.30), "chest": (0.10, 0.0, -0.34),
+        "head": (-0.18, 0.0, 0.22),
+        "upper_arm.L": (-0.34, -0.40, -0.72), "forearm.L": (-0.55, 0.0, -0.35),
+        "upper_arm.R": (-0.22, 0.36, 0.66), "forearm.R": (-0.48, 0.0, 0.30),
+        "thigh.L": (-0.16, 0.0, 0.10), "thigh.R": (0.14, 0.0, -0.08),
+    }, {"root": (-0.05, 0.05, -0.05)})
+    _key(armature, 4, {
+        "pelvis": (-0.12, 0.0, 0.28), "spine": (-0.18, 0.0, 0.52), "chest": (-0.14, 0.0, 0.58),
+        "head": (0.10, 0.0, -0.26),
+        "upper_arm.L": (0.58, 0.30, 0.88), "forearm.L": (0.40, 0.0, 0.30),
+        "upper_arm.R": (0.66, -0.34, -0.94), "forearm.R": (0.44, 0.0, -0.34),
+        "thigh.L": (0.12, 0.0, -0.08), "thigh.R": (-0.12, 0.0, 0.08),
+    }, {"root": (0.07, -0.10, 0.02)})
+    _key(armature, 6, {
+        "pelvis": (-0.05, 0.0, 0.12), "chest": (-0.06, 0.0, 0.24), "head": (0.04, 0.0, -0.11),
+        "upper_arm.L": (0.26, 0.12, 0.40), "forearm.L": (0.18, 0.0, 0.13),
+        "upper_arm.R": (0.30, -0.14, -0.44), "forearm.R": (0.20, 0.0, -0.15),
+    }, {"root": (0.03, -0.04, 0.008)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_bark_stalker_hit(armature: bpy.types.Object, count: int) -> None:
+    """A light frame takes the blow loudly and steps back to re-hide."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "upper_arm.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 2, {
+        "pelvis": (-0.18, 0.0, 0.16), "spine": (-0.34, 0.0, 0.26), "chest": (-0.52, 0.0, 0.30),
+        "head": (0.44, -0.12, -0.24),
+        "upper_arm.L": (0.72, 0.0, -0.52), "upper_arm.R": (0.64, 0.0, 0.48),
+    }, {"root": (0.14, 0.06, -0.04)})
+    _key(armature, 4, {
+        "pelvis": (0.08, 0.0, -0.06), "chest": (0.20, 0.0, -0.09), "head": (-0.16, 0.0, 0.08),
+        "upper_arm.L": (-0.18, 0.0, 0.11), "upper_arm.R": (-0.15, 0.0, -0.10),
+    }, {"root": (-0.03, 0.02, 0.0)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_bark_stalker_death(armature: bpy.types.Object, count: int) -> None:
+    """Folds at the knees and slides forward onto its face."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "upper_arm.R": (0.0, 0.0, 0.0),
+        "thigh.L": (0.0, 0.0, 0.0), "thigh.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, max(2, count // 4), {
+        "pelvis": (0.16, 0.0, -0.12), "chest": (0.34, 0.0, -0.18), "head": (-0.30, 0.0, 0.14),
+        "upper_arm.L": (0.30, 0.0, -0.24), "upper_arm.R": (0.26, 0.0, 0.22),
+        "thigh.L": (-0.34, 0.0, 0.10), "thigh.R": (-0.30, 0.0, -0.10),
+    }, {"root": (0.0, 0.06, -0.16)})
+    _key(armature, max(3, count // 2), {
+        "pelvis": (0.52, 0.0, -0.06), "chest": (0.78, 0.0, -0.10), "head": (0.55, 0.0, 0.10),
+        "upper_arm.L": (0.86, 0.0, -0.30), "upper_arm.R": (0.80, 0.0, 0.28),
+        "thigh.L": (-0.70, 0.0, 0.14), "thigh.R": (-0.66, 0.0, -0.14),
+    }, {"root": (0.0, 0.20, -0.40)})
+    _key(armature, count, {
+        "pelvis": (0.92, 0.0, 0.0), "chest": (1.02, 0.0, 0.0), "head": (0.30, 0.0, 0.0),
+        "upper_arm.L": (1.05, 0.0, -0.20), "upper_arm.R": (1.02, 0.0, 0.20),
+        "thigh.L": (-0.92, 0.0, 0.10), "thigh.R": (-0.90, 0.0, -0.10),
+    }, {"root": (0.0, 0.42, -0.74)})
+
+
+def _author_sap_hound_idle(armature: bpy.types.Object, count: int) -> None:
+    """Four-legged pant: the chest lifts and drops while the sacs rock."""
+    low = {
+        "spine": (-0.03, 0.0, 0.0), "chest": (0.04, 0.0, 0.0), "neck": (0.05, 0.0, 0.0),
+        "head": (-0.05, 0.0, 0.0),
+        "upper_arm.L": (0.02, 0.0, -0.03), "upper_arm.R": (0.02, 0.0, 0.03),
+        "thigh.L": (-0.02, 0.0, 0.02), "thigh.R": (-0.02, 0.0, -0.02),
+    }
+    high = {
+        "spine": (-0.07, 0.0, 0.0), "chest": (-0.09, 0.0, 0.0), "neck": (-0.06, 0.0, 0.0),
+        "head": (0.08, 0.0, 0.0),
+        "upper_arm.L": (-0.04, 0.0, -0.05), "upper_arm.R": (-0.04, 0.0, 0.05),
+        "thigh.L": (0.03, 0.0, 0.02), "thigh.R": (0.03, 0.0, -0.02),
+    }
+    _key(armature, 1, low, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 1 + count // 2, high, {"root": (0.0, -0.02, 0.02)})
+    _key(armature, count, low, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_sap_hound_attack(armature: bpy.types.Object, count: int) -> None:
+    """A short bound, then a snapping bite with the whole body behind it."""
+    neutral = {
+        "spine": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "neck": (0.0, 0.0, 0.0),
+        "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "upper_arm.R": (0.0, 0.0, 0.0),
+        "thigh.L": (0.0, 0.0, 0.0), "thigh.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 2, {
+        "spine": (0.12, 0.0, -0.06), "chest": (0.16, 0.0, -0.08), "neck": (0.14, 0.0, -0.04),
+        "head": (-0.20, 0.0, 0.06),
+        "upper_arm.L": (-0.26, 0.0, -0.10), "upper_arm.R": (-0.26, 0.0, 0.10),
+        "thigh.L": (-0.30, 0.0, 0.04), "thigh.R": (-0.30, 0.0, -0.04),
+    }, {"root": (0.0, 0.08, -0.08)})
+    _key(armature, 4, {
+        "spine": (-0.10, 0.0, 0.14), "chest": (-0.14, 0.0, 0.20), "neck": (-0.18, 0.0, 0.16),
+        "head": (0.26, 0.0, -0.10),
+        "upper_arm.L": (0.34, 0.0, 0.16), "upper_arm.R": (0.34, 0.0, -0.16),
+        "thigh.L": (0.30, 0.0, -0.06), "thigh.R": (0.30, 0.0, 0.06),
+    }, {"root": (0.0, -0.30, 0.10)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_sap_hound_hit(armature: bpy.types.Object, count: int) -> None:
+    """The bound breaks: hips drop, forelegs splay, sacs jolt."""
+    neutral = {
+        "spine": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "upper_arm.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 2, {
+        "spine": (0.30, 0.0, -0.12), "chest": (0.40, 0.0, -0.16), "neck": (0.24, 0.0, -0.08),
+        "head": (-0.34, 0.0, 0.10),
+        "upper_arm.L": (0.46, 0.0, -0.22), "upper_arm.R": (0.42, 0.0, 0.20),
+        "thigh.L": (0.30, 0.0, 0.08), "thigh.R": (0.28, 0.0, -0.08),
+    }, {"root": (0.0, 0.14, -0.06)})
+    _key(armature, 4, {
+        "spine": (-0.08, 0.0, 0.04), "chest": (-0.10, 0.0, 0.06), "head": (0.10, 0.0, -0.04),
+        "upper_arm.L": (-0.12, 0.0, 0.06), "upper_arm.R": (-0.10, 0.0, -0.06),
+    }, {"root": (0.0, -0.03, 0.01)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_sap_hound_death(armature: bpy.types.Object, count: int) -> None:
+    """Legs give out, the hound rolls onto its flank, the tail stills."""
+    neutral = {
+        "spine": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "upper_arm.R": (0.0, 0.0, 0.0),
+        "thigh.L": (0.0, 0.0, 0.0), "thigh.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, max(2, count // 4), {
+        "spine": (0.34, 0.24, -0.10), "chest": (0.40, 0.30, -0.14), "head": (-0.26, 0.0, 0.12),
+        "upper_arm.L": (0.44, 0.0, -0.26), "upper_arm.R": (0.36, 0.0, 0.22),
+        "thigh.L": (-0.58, 0.0, 0.12), "thigh.R": (-0.52, 0.0, -0.12),
+    }, {"root": (0.05, 0.10, -0.16)})
+    _key(armature, max(3, count // 2), {
+        "spine": (0.24, 0.72, -0.06), "chest": (0.22, 0.86, -0.08), "head": (0.30, 0.0, 0.10),
+        "upper_arm.L": (0.36, 0.20, -0.34), "upper_arm.R": (0.30, -0.18, 0.30),
+        "thigh.L": (-0.80, 0.0, 0.16), "thigh.R": (-0.76, 0.0, -0.16),
+    }, {"root": (0.16, 0.16, -0.42)})
+    _key(armature, count, {
+        "spine": (0.10, 1.20, 0.0), "chest": (0.08, 1.36, 0.0), "head": (0.20, 0.0, 0.0),
+        "upper_arm.L": (0.24, 0.34, -0.40), "upper_arm.R": (0.22, -0.32, 0.36),
+        "thigh.L": (-0.92, 0.0, 0.12), "thigh.R": (-0.90, 0.0, -0.12),
+    }, {"root": (0.30, 0.20, -0.72)})
+
+
+def _author_husk_warden_idle(armature: bpy.types.Object, count: int) -> None:
+    """Behind the shield: a two-beat brace, weight forward on the planted foot."""
+    brace = {
+        "pelvis": (0.02, 0.0, -0.03), "spine": (0.04, 0.0, -0.05), "chest": (0.03, 0.0, -0.04),
+        "head": (-0.03, 0.0, 0.02),
+        "upper_arm.L": (-0.20, 0.0, -0.10), "forearm.L": (-0.34, 0.0, -0.14),
+        "upper_arm.R": (0.05, 0.0, 0.06), "forearm.R": (0.08, 0.0, 0.04),
+        "thigh.L": (0.05, 0.0, 0.03), "thigh.R": (-0.05, 0.0, -0.03),
+    }
+    settle = {
+        "pelvis": (0.0, 0.0, -0.01), "spine": (0.02, 0.0, -0.02), "chest": (0.01, 0.0, -0.01),
+        "head": (0.0, 0.10, -0.02),
+        "upper_arm.L": (-0.14, 0.0, -0.07), "forearm.L": (-0.26, 0.0, -0.10),
+        "upper_arm.R": (0.03, 0.0, 0.04), "forearm.R": (0.06, 0.0, 0.03),
+        "thigh.L": (0.03, 0.0, 0.02), "thigh.R": (-0.03, 0.0, -0.02),
+    }
+    _key(armature, 1, brace, {"root": (0.0, -0.02, -0.02)})
+    _key(armature, 1 + count // 2, settle, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, count, brace, {"root": (0.0, -0.02, -0.02)})
+
+
+def _author_husk_warden_attack(armature: bpy.types.Object, count: int) -> None:
+    """A short shield bash: the slab leads, the hips follow a beat later."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (-0.18, 0.0, -0.08), "forearm.L": (-0.30, 0.0, -0.12),
+        "upper_arm.R": (0.0, 0.0, 0.0), "forearm.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 3, {
+        "pelvis": (0.06, 0.0, -0.14), "spine": (0.08, 0.0, -0.20), "chest": (0.06, 0.0, -0.18),
+        "head": (-0.06, 0.0, 0.10),
+        "upper_arm.L": (-0.52, 0.0, -0.42), "forearm.L": (-0.62, 0.0, -0.30),
+        "upper_arm.R": (-0.12, 0.0, 0.16), "forearm.R": (-0.20, 0.0, 0.10),
+        "thigh.L": (-0.14, 0.0, 0.06), "thigh.R": (0.12, 0.0, -0.06),
+    }, {"root": (0.0, 0.06, -0.03)})
+    _key(armature, 5, {
+        "pelvis": (-0.04, 0.0, 0.22), "spine": (-0.06, 0.0, 0.34), "chest": (-0.04, 0.0, 0.30),
+        "head": (0.04, 0.0, -0.14),
+        "upper_arm.L": (0.46, -0.22, 0.34), "forearm.L": (0.34, 0.0, 0.16),
+        "upper_arm.R": (0.16, 0.10, -0.12), "forearm.R": (0.12, 0.0, -0.08),
+        "thigh.L": (0.10, 0.0, -0.04), "thigh.R": (-0.10, 0.0, 0.04),
+    }, {"root": (-0.02, -0.14, 0.01)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_husk_warden_hit(armature: bpy.types.Object, count: int) -> None:
+    """Armour absorbs it: the warden rocks back a hand's width and plants again."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (-0.18, 0.0, -0.08), "forearm.L": (-0.30, 0.0, -0.12),
+        "upper_arm.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 2, {
+        "pelvis": (-0.10, 0.0, 0.08), "spine": (-0.20, 0.0, 0.14), "chest": (-0.26, 0.0, 0.16),
+        "head": (0.20, 0.0, -0.12),
+        "upper_arm.L": (-0.30, 0.0, -0.22), "forearm.L": (-0.44, 0.0, -0.22),
+        "upper_arm.R": (0.24, 0.0, -0.18),
+    }, {"root": (0.0, 0.14, -0.02)})
+    _key(armature, 5, {
+        "pelvis": (0.04, 0.0, -0.03), "chest": (0.08, 0.0, -0.04), "head": (-0.06, 0.0, 0.03),
+        "upper_arm.L": (-0.14, 0.0, -0.05), "forearm.L": (-0.26, 0.0, -0.09),
+        "upper_arm.R": (-0.06, 0.0, 0.04),
+    }, {"root": (0.0, -0.03, 0.0)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_husk_warden_death(armature: bpy.types.Object, count: int) -> None:
+    """The shield lands first, then the body follows it down behind cover."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (-0.18, 0.0, -0.08), "forearm.L": (-0.30, 0.0, -0.12),
+        "upper_arm.R": (0.0, 0.0, 0.0), "thigh.L": (0.0, 0.0, 0.0), "thigh.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, max(2, count // 4), {
+        "pelvis": (0.10, 0.0, -0.06), "spine": (0.18, 0.0, -0.10), "chest": (0.22, 0.0, -0.12),
+        "head": (-0.16, 0.0, 0.08),
+        "upper_arm.L": (-0.60, 0.0, -0.30), "forearm.L": (-0.70, 0.0, -0.26),
+        "upper_arm.R": (0.30, 0.0, 0.20),
+        "thigh.L": (-0.40, 0.0, 0.10), "thigh.R": (-0.34, 0.0, -0.10),
+    }, {"root": (-0.04, 0.06, -0.22)})
+    _key(armature, max(3, count // 2), {
+        "pelvis": (0.22, 0.18, -0.04), "spine": (0.34, 0.26, -0.08), "chest": (0.40, 0.30, -0.10),
+        "head": (0.18, 0.0, 0.06),
+        "upper_arm.L": (-0.80, 0.0, -0.36), "forearm.L": (-0.84, 0.0, -0.30),
+        "upper_arm.R": (0.46, 0.0, 0.30),
+        "thigh.L": (-0.66, 0.0, 0.14), "thigh.R": (-0.60, 0.0, -0.14),
+    }, {"root": (-0.10, 0.14, -0.50)})
+    _key(armature, count, {
+        "pelvis": (0.16, 0.44, 0.0), "spine": (0.28, 0.56, 0.0), "chest": (0.32, 0.62, 0.0),
+        "head": (0.10, 0.0, 0.0),
+        "upper_arm.L": (-0.92, 0.0, -0.40), "forearm.L": (-0.90, 0.0, -0.32),
+        "upper_arm.R": (0.54, 0.0, 0.34),
+        "thigh.L": (-0.88, 0.0, 0.12), "thigh.R": (-0.84, 0.0, -0.12),
+    }, {"root": (-0.16, 0.22, -0.80)})
+
+
+def _author_bramble_thrall_idle(armature: bpy.types.Object, count: int) -> None:
+    """A slow mass-sway: the thrall is always a half-beat behind the beat."""
+    lean_left = {
+        "pelvis": (0.03, 0.05, -0.02), "spine": (0.05, 0.08, -0.03), "chest": (0.06, 0.10, -0.03),
+        "head": (-0.05, -0.06, 0.02),
+        "upper_arm.L": (0.10, 0.0, -0.08), "upper_arm.R": (-0.06, 0.0, 0.06),
+        "thigh.L": (0.04, 0.0, 0.02), "thigh.R": (-0.03, 0.0, -0.02),
+    }
+    lean_right = {
+        "pelvis": (0.03, -0.05, -0.02), "spine": (0.05, -0.08, -0.03), "chest": (0.06, -0.10, -0.03),
+        "head": (-0.05, 0.06, 0.02),
+        "upper_arm.L": (-0.06, 0.0, -0.06), "upper_arm.R": (0.10, 0.0, 0.08),
+        "thigh.L": (-0.03, 0.0, 0.02), "thigh.R": (0.04, 0.0, -0.02),
+    }
+    _key(armature, 1, lean_left, {"root": (0.02, 0.0, 0.0)})
+    _key(armature, 1 + count // 2, lean_right, {"root": (-0.02, 0.0, -0.02)})
+    _key(armature, count, lean_left, {"root": (0.02, 0.0, 0.0)})
+
+
+def _author_bramble_thrall_attack(armature: bpy.types.Object, count: int) -> None:
+    """Two fists come up together and come down like a falling trunk."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "forearm.L": (0.0, 0.0, 0.0),
+        "upper_arm.R": (0.0, 0.0, 0.0), "forearm.R": (0.0, 0.0, 0.0),
+        "thigh.L": (0.0, 0.0, 0.0), "thigh.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 4, {
+        "pelvis": (-0.10, 0.0, 0.10), "spine": (-0.16, 0.0, 0.18), "chest": (-0.12, 0.0, 0.20),
+        "head": (0.10, 0.0, -0.10),
+        "upper_arm.L": (-0.72, -0.24, -0.46), "forearm.L": (-0.58, 0.0, -0.24),
+        "upper_arm.R": (-0.70, 0.22, 0.44), "forearm.R": (-0.56, 0.0, 0.22),
+        "thigh.L": (-0.10, 0.0, 0.06), "thigh.R": (0.08, 0.0, -0.06),
+    }, {"root": (0.0, 0.10, 0.06)})
+    _key(armature, 7, {
+        "pelvis": (0.16, 0.0, -0.22), "spine": (0.24, 0.0, -0.36), "chest": (0.18, 0.0, -0.40),
+        "head": (-0.14, 0.0, 0.20),
+        "upper_arm.L": (0.64, 0.30, 0.66), "forearm.L": (0.46, 0.0, 0.26),
+        "upper_arm.R": (0.62, -0.28, -0.64), "forearm.R": (0.44, 0.0, -0.24),
+        "thigh.L": (0.14, 0.0, -0.08), "thigh.R": (-0.12, 0.0, 0.08),
+    }, {"root": (0.0, -0.14, -0.10)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_bramble_thrall_hit(armature: bpy.types.Object, count: int) -> None:
+    """Arrows barely register: a single-shoulder shrug and a step that never stops."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "upper_arm.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, 2, {
+        "pelvis": (-0.05, 0.08, 0.04), "spine": (-0.10, 0.12, 0.06), "chest": (-0.14, 0.16, 0.08),
+        "head": (0.12, -0.10, -0.06),
+        "upper_arm.L": (0.26, 0.0, -0.22), "upper_arm.R": (0.16, 0.0, 0.14),
+    }, {"root": (0.03, 0.03, 0.0)})
+    _key(armature, 5, {
+        "pelvis": (0.02, -0.03, -0.02), "chest": (0.05, -0.05, -0.03), "head": (-0.04, 0.04, 0.02),
+        "upper_arm.L": (-0.08, 0.0, 0.06), "upper_arm.R": (-0.05, 0.0, -0.04),
+    }, {"root": (-0.01, 0.0, 0.0)})
+    _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
+
+
+def _author_bramble_thrall_death(armature: bpy.types.Object, count: int) -> None:
+    """Timber: the mass tips forward slowly, then all at once."""
+    neutral = {
+        "pelvis": (0.0, 0.0, 0.0), "chest": (0.0, 0.0, 0.0), "head": (0.0, 0.0, 0.0),
+        "upper_arm.L": (0.0, 0.0, 0.0), "upper_arm.R": (0.0, 0.0, 0.0),
+        "thigh.L": (0.0, 0.0, 0.0), "thigh.R": (0.0, 0.0, 0.0),
+    }
+    _key(armature, 1, neutral, {"root": (0.0, 0.0, 0.0)})
+    _key(armature, max(2, count // 3), {
+        "pelvis": (0.14, 0.0, -0.04), "spine": (0.22, 0.0, -0.06), "chest": (0.26, 0.0, -0.06),
+        "head": (-0.18, 0.0, 0.04),
+        "upper_arm.L": (0.24, 0.0, -0.14), "upper_arm.R": (0.22, 0.0, 0.12),
+        "thigh.L": (-0.16, 0.0, 0.06), "thigh.R": (-0.14, 0.0, -0.06),
+    }, {"root": (0.0, 0.12, -0.10)})
+    _key(armature, max(3, (2 * count) // 3), {
+        "pelvis": (0.42, 0.0, -0.02), "spine": (0.60, 0.0, -0.04), "chest": (0.66, 0.0, -0.04),
+        "head": (0.26, 0.0, 0.02),
+        "upper_arm.L": (0.54, 0.0, -0.18), "upper_arm.R": (0.52, 0.0, 0.16),
+        "thigh.L": (-0.52, 0.0, 0.10), "thigh.R": (-0.50, 0.0, -0.10),
+    }, {"root": (0.0, 0.34, -0.46)})
+    _key(armature, count, {
+        "pelvis": (0.84, 0.0, 0.0), "spine": (1.06, 0.0, 0.0), "chest": (1.12, 0.0, 0.0),
+        "head": (0.40, 0.0, 0.0),
+        "upper_arm.L": (0.92, 0.0, -0.22), "upper_arm.R": (0.90, 0.0, 0.20),
+        "thigh.L": (-0.96, 0.0, 0.08), "thigh.R": (-0.94, 0.0, -0.08),
+    }, {"root": (0.0, 0.62, -0.88)})
+
+
 # Premium-v2 boss motion profiles
 # ---------------------------------------------------------------------------
 # Bosses preserve the locked 25-bone runtime contract, but each profile is built

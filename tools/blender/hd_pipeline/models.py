@@ -791,6 +791,308 @@ def build_fungal_brute() -> BuiltModel:
         },
     )
 
+def build_bark_stalker() -> BuiltModel:
+    """Premium moss climber: a wiry long-limbed flanker in a bark cloak with amber eyes."""
+    mats = {
+        "bark": MATERIALS.get("bark_stalker_bark", "#5C4030"),
+        "bark_light": MATERIALS.get("bark_stalker_bark_light", "#8A6242"),
+        "bark_dark": MATERIALS.get("bark_stalker_bark_dark", "#2C2119"),
+        "moss": MATERIALS.get("bark_stalker_moss", "#5E8C46"),
+        "moss_deep": MATERIALS.get("bark_stalker_moss_deep", "#3A5C30"),
+        "amber": MATERIALS.get("bark_stalker_amber", "#E8A33C"),
+    }
+    armature = create_standard_armature("bark_stalker", 0.96)
+    objects: list[bpy.types.Object] = []
+
+    def attach(obj: bpy.types.Object, bone: str) -> None:
+        _bone_part(obj, armature, bone, objects)
+
+    hips = add_ico("bark_stalker_lean_hips", (0.0, 0.02, 0.86), (0.29, 0.21, 0.22), mats["bark_dark"])
+    attach(hips, "pelvis")
+    spine = add_cone("bark_stalker_taut_spine", (0.0, 0.0, 1.18), 0.24, 0.19, 0.62, mats["bark"], 8)
+    attach(spine, "spine")
+    chest = add_cube("bark_stalker_narrow_chest", (0.0, -0.06, 1.36), (0.36, 0.26, 0.31), mats["bark"], 0.05)
+    chest.rotation_euler[0] = 0.06
+    attach(chest, "chest")
+    cloak = add_leaf("bark_stalker_moss_cloak", (0.0, 0.13, 1.33), (0.44, 0.19, 0.64), mats["moss"], (0.20, 0.0, 0.0))
+    attach(cloak, "chest")
+    hood = add_leaf("bark_stalker_hood", (0.0, 0.03, 1.72), (0.36, 0.22, 0.30), mats["moss_deep"], (-0.35, 0.0, 0.0))
+    attach(hood, "head")
+    skull = add_ico("bark_stalker_sloped_head", (0.0, -0.13, 1.63), (0.25, 0.24, 0.23), mats["bark"])
+    attach(skull, "head")
+    jaw = add_cube("bark_stalker_hooked_jaw", (0.0, -0.35, 1.52), (0.19, 0.11, 0.09), mats["bark_dark"], 0.03)
+    attach(jaw, "head")
+    for side, letter in ((-1, "L"), (1, "R")):
+        eye = add_ico(f"bark_stalker_amber_eye_{letter}", (0.085 * side, -0.31, 1.68), (0.042, 0.028, 0.032), mats["amber"])
+        attach(eye, "head")
+        spike = add_cone(f"bark_stalker_crown_spike_{letter}", (0.13 * side, 0.0, 1.86), 0.055, 0.012, 0.34, mats["bark_light"], 6, (0.0, 0.30 * side, 0.0))
+        attach(spike, "head")
+        plate = add_cube(f"bark_stalker_shoulder_bark_{letter}", (0.30 * side, -0.02, 1.46), (0.20, 0.19, 0.11), mats["bark_light"], 0.03)
+        plate.rotation_euler[1] = 0.24 * side
+        attach(plate, f"upper_arm.{letter}")
+        moss_tuft = add_leaf(f"bark_stalker_shoulder_moss_{letter}", (0.28 * side, 0.07, 1.52), (0.15, 0.07, 0.10), mats["moss"], (0.0, 0.0, 0.40 * -side))
+        attach(moss_tuft, f"upper_arm.{letter}")
+
+    _humanoid_limbs(armature, objects, mats["bark"], mats["bark_dark"], mats["bark_light"], 0.98)
+    for side, letter in ((-1, "L"), (1, "R")):
+        forearm_plate = add_cube(f"bark_stalker_forearm_plate_{letter}", (0.30 * side, -0.03, 0.94), (0.10, 0.09, 0.20), mats["moss_deep"], 0.025)
+        attach(forearm_plate, f"forearm.{letter}")
+        claw = add_cone(f"bark_stalker_hook_claw_{letter}", (0.31 * side, -0.16, 0.66), 0.035, 0.0, 0.20, mats["amber"], 6, (math.pi / 2, 0.0, 0.0))
+        attach(claw, f"hand.{letter}")
+        shin_guard = add_leaf(f"bark_stalker_shin_moss_{letter}", (0.17 * side, -0.11, 0.34), (0.10, 0.06, 0.17), mats["moss"], (0.0, 0.0, -0.12 * side))
+        attach(shin_guard, f"shin.{letter}")
+    spine_buds = ((-0.10, 1.54, 0.10), (0.09, 1.55, 0.085))
+    for index, (x, z, size) in enumerate(spine_buds):
+        bud = add_cone(f"bark_stalker_spine_bud_{index}", (x, 0.19, z), size, size * 0.25, 0.22, mats["bark_light"], 5, (0.55, 0.0, 0.0))
+        attach(bud, "chest")
+    sash = add_torus("bark_stalker_waist_sash", (0.0, 0.0, 0.96), 0.26, 0.045, mats["moss_deep"])
+    attach(sash, "pelvis")
+    return BuiltModel(
+        armature,
+        objects,
+        {
+            "visualQuality": "studio-v3",
+            "modelRevision": "bark-stalker-moss-climber-v2",
+            "rigProfile": "premium-humanoid-v2",
+            "animationProfile": "bark-stalker-lurker-v2",
+            "silhouette": "narrow shoulders, very long arms, moss hood, crown spikes, and a cloak that flares behind",
+            "materialStory": "cool bark greys, two-step moss greens, and a single warm amber used only on eyes and claws",
+        },
+    )
+
+
+def build_sap_hound() -> BuiltModel:
+    """Premium resin runner: a lean four-legged hound with glowing sap sacs along its back."""
+    mats = {
+        "hide": MATERIALS.get("sap_hound_hide", "#6A5A3C"),
+        "hide_light": MATERIALS.get("sap_hound_hide_light", "#9A8452"),
+        "hide_dark": MATERIALS.get("sap_hound_hide_dark", "#332C1C"),
+        "sap": MATERIALS.get("sap_hound_sap", "#E4C155"),
+        "sap_deep": MATERIALS.get("sap_hound_sap_deep", "#B07C2A"),
+        "claw": MATERIALS.get("sap_hound_claw", "#E6DCC2"),
+    }
+    armature = create_standard_armature("sap_hound", 0.82)
+    objects: list[bpy.types.Object] = []
+
+    def attach(obj: bpy.types.Object, bone: str) -> None:
+        _bone_part(obj, armature, bone, objects)
+
+    haunches = add_ico("sap_hound_haunches", (0.0, 0.20, 0.94), (0.50, 0.38, 0.38), mats["hide_dark"])
+    attach(haunches, "pelvis")
+    back = add_ico("sap_hound_arched_back", (0.0, -0.02, 1.08), (0.52, 0.36, 0.40), mats["hide"])
+    back.rotation_euler[0] = -0.11
+    attach(back, "spine")
+    shoulders = add_ico("sap_hound_shoulders", (0.0, -0.20, 1.20), (0.42, 0.30, 0.34), mats["hide_light"])
+    attach(shoulders, "chest")
+    neck = add_cone("sap_hound_short_neck", (0.0, -0.18, 1.38), 0.26, 0.19, 0.32, mats["hide"], 8)
+    attach(neck, "neck")
+    head = add_ico("sap_hound_flat_head", (0.0, -0.26, 1.50), (0.30, 0.26, 0.22), mats["hide"])
+    head.rotation_euler[0] = -0.12
+    attach(head, "head")
+    muzzle = add_cone("sap_hound_snub_muzzle", (0.0, -0.50, 1.42), 0.18, 0.11, 0.30, mats["hide_dark"], 7, (math.pi / 2, 0.0, 0.0))
+    attach(muzzle, "head")
+    for side, letter in ((-1, "L"), (1, "R")):
+        eye = add_leaf(f"sap_hound_eye_{letter}", (0.10 * side, -0.44, 1.56), (0.065, 0.024, 0.035), mats["sap"], (0.0, 0.0, 0.10 * side))
+        attach(eye, "head")
+        ear = add_cone(f"sap_hound_ear_{letter}", (0.19 * side, -0.14, 1.71), 0.12, 0.012, 0.34, mats["hide_dark"], 6, (0.0, 0.26 * side, 0.0))
+        attach(ear, "head")
+        fang = add_cone(f"sap_hound_fang_{letter}", (0.055 * side, -0.60, 1.35), 0.028, 0.0, 0.12, mats["claw"], 6)
+        attach(fang, "head")
+
+        front_upper = add_cylinder_between(f"sap_hound_front_upper_{letter}", (0.30 * side, -0.11, 1.14), (0.33 * side, -0.13, 0.72), 0.098, mats["hide"])
+        attach(front_upper, f"upper_arm.{letter}")
+        front_lower = add_cylinder_between(f"sap_hound_front_lower_{letter}", (0.33 * side, -0.13, 0.72), (0.32 * side, -0.16, 0.28), 0.078, mats["hide_dark"])
+        attach(front_lower, f"forearm.{letter}")
+        front_paw = add_cube(f"sap_hound_front_paw_{letter}", (0.32 * side, -0.27, 0.15), (0.21, 0.28, 0.12), mats["hide_dark"], 0.04)
+        attach(front_paw, f"hand.{letter}")
+        rear_upper = add_cylinder_between(f"sap_hound_rear_upper_{letter}", (0.25 * side, 0.14, 0.88), (0.28 * side, 0.12, 0.48), 0.125, mats["hide"])
+        attach(rear_upper, f"thigh.{letter}")
+        rear_lower = add_cylinder_between(f"sap_hound_rear_lower_{letter}", (0.28 * side, 0.12, 0.48), (0.26 * side, -0.01, 0.19), 0.092, mats["hide_dark"])
+        attach(rear_lower, f"shin.{letter}")
+        rear_paw = add_cube(f"sap_hound_rear_paw_{letter}", (0.26 * side, -0.14, 0.11), (0.23, 0.32, 0.13), mats["hide_dark"], 0.04)
+        attach(rear_paw, f"foot.{letter}")
+        claw = add_cone(f"sap_hound_claw_{letter}", (0.32 * side, -0.44, 0.13), 0.028, 0.0, 0.14, mats["claw"], 6, (math.pi / 2, 0.0, 0.0))
+        attach(claw, f"hand.{letter}")
+
+    for index, (x, z, radius) in enumerate(((-0.07, 1.22, 0.13), (0.06, 1.20, 0.11), (-0.02, 1.05, 0.10))):
+        sac = add_ico(f"sap_hound_sap_sac_{index}", (x, 0.16, z), (radius, radius * 0.72, radius * 0.80), mats["sap"])
+        attach(sac, "chest" if index < 2 else "spine")
+        band = add_torus(f"sap_hound_sac_band_{index}", (x, 0.16, z), radius * 0.82, 0.022, mats["sap_deep"], (math.pi / 2, 0.0, 0.0))
+        attach(band, "chest" if index < 2 else "spine")
+    tail = add_cone("sap_hound_swept_tail", (0.0, 0.46, 1.04), 0.085, 0.02, 0.62, mats["hide"], 6, (-1.05, 0.0, 0.0))
+    attach(tail, "pelvis")
+    tail_tip = add_ico("sap_hound_tail_drip", (0.0, 0.74, 1.30), (0.06, 0.06, 0.09), mats["sap"])
+    attach(tail_tip, "pelvis")
+    return BuiltModel(
+        armature,
+        objects,
+        {
+            "visualQuality": "studio-v3",
+            "modelRevision": "sap-hound-resin-runner-v2",
+            "rigProfile": "premium-quadruped-mapped-v2",
+            "animationProfile": "sap-hound-runner-v2",
+            "silhouette": "low arched back, splayed paws, three glowing sacs, and a swept tail that trails sap",
+            "materialStory": "dry ochre hide, near-black joints, and amber sap that is the only bright note",
+        },
+    )
+
+
+def build_husk_warden() -> BuiltModel:
+    """Premium shield bearer: a stout humanoid behind a cracked slab shield and a slit visor."""
+    mats = {
+        "plate": MATERIALS.get("husk_warden_plate", "#4A5A5C"),
+        "plate_light": MATERIALS.get("husk_warden_plate_light", "#748A8B"),
+        "cloth": MATERIALS.get("husk_warden_cloth", "#7A4B39"),
+        "cloth_deep": MATERIALS.get("husk_warden_cloth_deep", "#4A2C22"),
+        "rivet": MATERIALS.get("husk_warden_rivet", "#C9A24A"),
+        "visor": MATERIALS.get("husk_warden_visor", "#E0705A"),
+    }
+    armature = create_standard_armature("husk_warden", 1.04)
+    objects: list[bpy.types.Object] = []
+
+    def attach(obj: bpy.types.Object, bone: str) -> None:
+        _bone_part(obj, armature, bone, objects)
+
+    hips = add_cube("husk_warden_set_hips", (0.0, 0.02, 0.82), (0.42, 0.30, 0.28), mats["plate"], 0.06)
+    attach(hips, "pelvis")
+    torso = add_cone("husk_warden_barrel_torso", (0.0, -0.01, 1.16), 0.42, 0.34, 0.66, mats["plate"], 9)
+    attach(torso, "spine")
+    tabard = add_cube("husk_warden_tabard", (0.0, -0.28, 1.02), (0.30, 0.07, 0.40), mats["cloth"], 0.03)
+    attach(tabard, "pelvis")
+    collar = add_torus("husk_warden_collar", (0.0, -0.01, 1.46), 0.29, 0.055, mats["plate_light"])
+    attach(collar, "chest")
+    helmet = add_ico("husk_warden_dome_helmet", (0.0, -0.02, 1.72), (0.31, 0.29, 0.30), mats["plate_light"])
+    attach(helmet, "head")
+    brow = add_cube("husk_warden_helmet_brow", (0.0, -0.24, 1.80), (0.30, 0.09, 0.10), mats["plate"], 0.025)
+    attach(brow, "head")
+    visor = add_cube("husk_warden_visor_slit", (0.0, -0.28, 1.68), (0.20, 0.045, 0.035), mats["visor"], 0.008)
+    attach(visor, "head")
+    plume = add_leaf("husk_warden_plume", (0.0, 0.16, 1.92), (0.075, 0.10, 0.28), mats["cloth"], (0.32, 0.0, 0.0))
+    attach(plume, "head")
+
+    _humanoid_limbs(armature, objects, mats["plate"], mats["cloth_deep"], mats["plate_light"], 1.10)
+    for side, letter in ((-1, "L"), (1, "R")):
+        pauldron = add_ico(f"husk_warden_pauldron_{letter}", (0.40 * side, -0.02, 1.44), (0.24, 0.22, 0.20), mats["plate"])
+        attach(pauldron, f"upper_arm.{letter}")
+        rivet = add_ico(f"husk_warden_pauldron_rivet_{letter}", (0.40 * side, -0.22, 1.46), (0.055, 0.035, 0.055), mats["rivet"])
+        attach(rivet, f"upper_arm.{letter}")
+        vambrace = add_cube(f"husk_warden_vambrace_{letter}", (0.32 * side, -0.03, 0.92), (0.13, 0.13, 0.22), mats["plate_light"], 0.03)
+        attach(vambrace, f"forearm.{letter}")
+        knee = add_cube(f"husk_warden_knee_cop_{letter}", (0.19 * side, -0.14, 0.40), (0.19, 0.14, 0.15), mats["plate_light"], 0.03)
+        attach(knee, f"shin.{letter}")
+        boot = add_cube(f"husk_warden_iron_boot_{letter}", (0.19 * side, -0.20, 0.10), (0.24, 0.34, 0.19), mats["plate"], 0.04)
+        attach(boot, f"foot.{letter}")
+
+    shield = add_cube("husk_warden_slab_shield", (-0.52, -0.30, 1.06), (0.10, 0.44, 0.66), mats["plate"], 0.045)
+    shield.rotation_euler[0] = -0.06
+    attach(shield, "forearm.L")
+    shield_boss = add_ico("husk_warden_shield_boss", (-0.63, -0.30, 1.06), (0.09, 0.15, 0.15), mats["rivet"])
+    attach(shield_boss, "forearm.L")
+    for index, (y, z) in enumerate(((-0.42, 1.42), (-0.42, 0.70), (-0.16, 1.40), (-0.16, 0.72))):
+        crack = add_cube(f"husk_warden_shield_rivet_{index}", (-0.57, y, z), (0.035, 0.045, 0.045), mats["rivet"], 0.01)
+        attach(crack, "forearm.L")
+    band = add_cube("husk_warden_shield_band", (-0.53, -0.30, 1.06), (0.055, 0.40, 0.09), mats["cloth_deep"], 0.02)
+    attach(band, "forearm.L")
+    return BuiltModel(
+        armature,
+        objects,
+        {
+            "visualQuality": "studio-v3",
+            "modelRevision": "husk-warden-shield-bearer-v2",
+            "rigProfile": "premium-heavy-humanoid-v2",
+            "animationProfile": "husk-warden-bulwark-v2",
+            "silhouette": "short and wide, a full-height slab shield on the left, dome helmet, and a rust plume",
+            "materialStory": "cool iron plates, one rust-red cloth note, brass rivets, and an ember visor slit",
+        },
+    )
+
+
+def build_bramble_thrall() -> BuiltModel:
+    """Premium thorn lumberer: a hulking tangle of brambles that walks through arrows."""
+    mats = {
+        "vine": MATERIALS.get("bramble_thrall_vine", "#4E4A2C"),
+        "vine_light": MATERIALS.get("bramble_thrall_vine_light", "#7C7440"),
+        "vine_dark": MATERIALS.get("bramble_thrall_vine_dark", "#2A2818"),
+        "thorn": MATERIALS.get("bramble_thrall_thorn", "#D8CDA6"),
+        "bloom": MATERIALS.get("bramble_thrall_bloom", "#C1553F"),
+        "sap": MATERIALS.get("bramble_thrall_sap", "#8FBF4A"),
+    }
+    armature = create_standard_armature("bramble_thrall", 1.16)
+    objects: list[bpy.types.Object] = []
+
+    def attach(obj: bpy.types.Object, bone: str) -> None:
+        _bone_part(obj, armature, bone, objects)
+
+    root_pelvis = add_ico("bramble_thrall_root_hips", (0.0, 0.03, 0.62), (0.52, 0.36, 0.30), mats["vine_dark"])
+    attach(root_pelvis, "pelvis")
+    mass = add_ico("bramble_thrall_matted_torso", (0.0, -0.01, 1.10), (0.62, 0.44, 0.52), mats["vine"])
+    attach(mass, "spine")
+    chest = add_ico("bramble_thrall_chest_tangle", (0.0, -0.10, 1.34), (0.50, 0.34, 0.30), mats["vine_light"])
+    attach(chest, "chest")
+    knot = add_torus("bramble_thrall_heart_knot", (0.0, -0.38, 1.31), 0.17, 0.05, mats["sap"], (math.pi / 2, 0.0, 0.0))
+    attach(knot, "chest")
+    neck = add_cone("bramble_thrall_short_neck", (0.0, -0.02, 1.58), 0.22, 0.17, 0.24, mats["vine_dark"], 8)
+    attach(neck, "neck")
+    head = add_ico("bramble_thrall_knot_head", (0.0, -0.05, 1.72), (0.28, 0.25, 0.24), mats["vine"])
+    attach(head, "head")
+    for side, letter in ((-1, "L"), (1, "R")):
+        eye = add_ico(f"bramble_thrall_sap_eye_{letter}", (0.095 * side, -0.24, 1.77), (0.045, 0.03, 0.035), mats["sap"])
+        attach(eye, "head")
+        horn = add_cone(f"bramble_thrall_horn_{letter}", (0.20 * side, 0.02, 1.86), 0.075, 0.012, 0.44, mats["thorn"], 6, (0.0, 0.38 * side, 0.0))
+        attach(horn, "head")
+        cheek_thorn = add_cone(f"bramble_thrall_cheek_thorn_{letter}", (0.22 * side, -0.16, 1.66), 0.045, 0.008, 0.26, mats["thorn"], 5, (0.0, 0.85 * side, -0.25))
+        attach(cheek_thorn, "head")
+        bloom = add_leaf(f"bramble_thrall_shoulder_bloom_{letter}", (0.34 * side, -0.16, 1.50), (0.13, 0.06, 0.10), mats["bloom"], (0.0, 0.0, -0.30 * side))
+        attach(bloom, f"chest")
+
+    _humanoid_limbs(armature, objects, mats["vine"], mats["vine_dark"], mats["vine_light"], 1.24)
+    for side, letter in ((-1, "L"), (1, "R")):
+        bough = add_cone(f"bramble_thrall_shoulder_bough_{letter}", (0.42 * side, -0.02, 1.44), 0.22, 0.12, 0.34, mats["vine_light"], 8, (0.0, 0.30 * side, 0.0))
+        attach(bough, f"upper_arm.{letter}")
+        for index, (dz, angle) in enumerate(((0.16, 0.30), (-0.04, -0.20), (-0.24, 0.10))):
+            spike = add_cone(
+                f"bramble_thrall_arm_thorn_{letter}_{index}",
+                (0.50 * side, 0.04, 1.34 + dz),
+                0.045, 0.008, 0.30, mats["thorn"], 5, (0.0, angle * side, 0.45 * side),
+            )
+            attach(spike, f"upper_arm.{letter}")
+        fist = add_ico(f"bramble_thrall_thorn_fist_{letter}", (0.62 * side, -0.04, 0.86), (0.19, 0.17, 0.20), mats["vine_dark"])
+        attach(fist, f"hand.{letter}")
+        for index, angle in enumerate((0.5, -0.1, -0.7)):
+            knuckle = add_cone(
+                f"bramble_thrall_knuckle_thorn_{letter}_{index}",
+                (0.68 * side, -0.18, 0.80 + index * 0.09),
+                0.035, 0.006, 0.20, mats["thorn"], 5, (math.pi / 2 + angle * 0.4, 0.0, 0.0),
+            )
+            attach(knuckle, f"hand.{letter}")
+        knee = add_cone(f"bramble_thrall_knee_thorn_{letter}", (0.24 * side, -0.20, 0.40), 0.055, 0.01, 0.26, mats["thorn"], 5, (math.pi / 2, 0.0, 0.0))
+        attach(knee, f"shin.{letter}")
+        foot_root = add_cube(f"bramble_thrall_root_foot_{letter}", (0.24 * side, -0.24, 0.09), (0.28, 0.42, 0.18), mats["vine_dark"], 0.05)
+        attach(foot_root, f"foot.{letter}")
+        for index, (x_off, y_off) in enumerate(((-0.10, -0.46), (0.10, -0.44))):
+            root_claw = add_cone(
+                f"bramble_thrall_root_claw_{letter}_{index}",
+                (0.24 * side + x_off, y_off, 0.08), 0.045, 0.008, 0.24, mats["thorn"], 5,
+                (math.pi / 2 - 0.25, 0.0, 0.0),
+            )
+            attach(root_claw, f"foot.{letter}")
+    for index, (x, z, size) in enumerate(((-0.30, 1.24, 0.13), (0.28, 1.02, 0.11), (0.0, 1.48, 0.10), (-0.16, 0.82, 0.095))):
+        burr = add_ico(f"bramble_thrall_burr_{index}", (x, 0.34, z), (size, size * 0.55, size * 0.8), mats["vine_light"])
+        attach(burr, "chest" if z > 1.1 else "spine")
+    return BuiltModel(
+        armature,
+        objects,
+        {
+            "visualQuality": "studio-v3",
+            "modelRevision": "bramble-thrall-thorn-lumberer-v2",
+            "rigProfile": "premium-heavy-humanoid-v2",
+            "animationProfile": "bramble-thrall-lumber-v2",
+            "silhouette": "no visible neck, boulder shoulders, thorn-studded arms, root feet, and burrs across the back",
+            "materialStory": "olive-brown vine masses, bone-white thorns, two rust blooms, and sap-green eyes and heart knot",
+        },
+    )
+
+
 def _boss_rock(
     parts: list[bpy.types.Object],
     name: str,

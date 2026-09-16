@@ -147,6 +147,14 @@ REGULAR_CHARACTERS = (
     RenderAsset("stonekin", "enemy", "stonekin"),
     RenderAsset("gloom_wolf", "enemy", "gloom_wolf"),
     RenderAsset("fungal_brute", "enemy", "fungal_brute"),
+    # R3.4: the roster doubles to eight. The four additions are authored so the *mean*
+    # health and damage per type stay exactly where they were (117 health and 28 damage
+    # across four types, and 234 / 56 across eight), because the wave spawner cycles
+    # types uniformly: the wave gets more variety, not more weight.
+    RenderAsset("bark_stalker", "enemy", "bark_stalker"),
+    RenderAsset("sap_hound", "enemy", "sap_hound"),
+    RenderAsset("husk_warden", "enemy", "husk_warden"),
+    RenderAsset("bramble_thrall", "enemy", "bramble_thrall"),
 )
 
 BOSSES = (

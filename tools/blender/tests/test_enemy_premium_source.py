@@ -18,6 +18,12 @@ EXPECTED = {
     "stonekin": ("stonekin-rune-bulwark-v2", "premium-heavy-humanoid-v2", "stonekin-juggernaut-v2"),
     "gloom_wolf": ("gloom-wolf-shadow-stalker-v2", "premium-quadruped-mapped-v2", "gloom-wolf-pouncer-v2"),
     "fungal_brute": ("fungal-brute-spore-bruiser-v2", "premium-heavy-humanoid-v2", "fungal-brute-brawler-v2"),
+    # R3.4: the roster doubles. Each addition names its own model revision, reuses the rig
+    # family its body plan belongs to, and authors its own four-clip motion language.
+    "bark_stalker": ("bark-stalker-moss-climber-v2", "premium-humanoid-v2", "bark-stalker-lurker-v2"),
+    "sap_hound": ("sap-hound-resin-runner-v2", "premium-quadruped-mapped-v2", "sap-hound-runner-v2"),
+    "husk_warden": ("husk-warden-shield-bearer-v2", "premium-heavy-humanoid-v2", "husk-warden-bulwark-v2"),
+    "bramble_thrall": ("bramble-thrall-thorn-lumberer-v2", "premium-heavy-humanoid-v2", "bramble-thrall-lumber-v2"),
 }
 
 
