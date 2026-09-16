@@ -502,6 +502,24 @@ sentence has to name the two scores and the commit they were measured on.
   caveat worth writing down: the worst of those seeds (39.9%) sits one seed away from the trial gate's own 40% ceiling,
   so the omen trial is the tightest thing in the band today; widening that headroom is exactly what the balance program
   (R4.1-R4.5) is scheduled to do.
+  **Shipped: the item pool written down, and its guard.** `ItemDropSystem` now picks through `chooseFor` over a
+  `tierPool` that cannot be empty: a tier with no pieces of its own borrows the nearest non-empty one instead of
+  indexing an empty list, which is what the old one-liner would have done the day someone emptied a tier while editing
+  content. The pool's shape is now asserted instead of assumed, and writing it down was the useful part — 46 pieces
+  (14 common / 12 uncommon / 9 rare / 5 legendary / 6 mythic), every slot carrying seven or more pieces and its own
+  mythic, and the whole legendary tier being five pieces: one per slot except the first ring, which stops at rare, so
+  a legendary ring can only ever land in the second ring slot. Four thousand rare-floor kills in a test draw 30+
+  distinct pieces out of the 46, and the pick spends exactly one combat float, so drops sit where they always sat in
+  the random stream.
+  **Measured and deliberately not shipped: the ownership-aware pick.** The obvious way to widen a pool is to stop
+  handing back what the hero already owns, and to prefer a piece that would fill a slot nothing occupies yet. It was
+  written and tested — prefer unowned-in-an-empty-slot, else unowned, else anything — and it works as a pool feature.
+  It also moves the trajectory of every run that drops equipment, and that was enough to push two gates past ceilings
+  that sit at 40%: the ascension gate's LIFESTEAL tier-0 scenario to a 40.24% spike and the trial gate's
+  BOSS_BOUNTY + FAMISHED_EARTH pair to 43.33% at wave 196. Those ceilings belong to the balance program, not to this
+  item, so the pick stays uniform; the recipe and both numbers are recorded here so the next attempt starts from the
+  measurement instead of repeating it. That fragility is itself the finding: several scenarios now sit within a
+  fraction of a percent of their ceiling, which is what R4.1-R4.5 exists to fix.
   **Remaining in this item:** enemy types 4 → 8+ (needs the Blender art pipeline — this sandbox has no root and cannot
   install the X libraries Blender 4.2 asks for, so that slice runs where the pipeline runs) and item-pool diversity.
 - [x] **R3.5 Session shape — a second run length, measured with the simulator.**
@@ -777,6 +795,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 89 | R3.5 | a second run length: `GameMode.STANDARD` (200) / `BRIEF` (30) with `GameState.runLengthWaves()`, a brief-vigil row in the re-tabled six-row main menu, the game-over overlay showing this run's length, and `BalanceSimulator.runBrief`; measured: the brief run's first 30 waves are bit-identical to the long run's first 30 on the same seed, spike 0.1229 vs the 0.40 ceiling, its own bounded clear-time rule recorded as the one deliberate difference; 5 new simulation cases | `b9027b7` |
 
 | 2026-09-16 | 89 | R3.4a | wave omens as the thirteenth drafted trial: `model/WaveModifier` (SWARM / IRON_HIDE / BLOODRUSH / QUICKSTEP, +25% coins on the wave), `gameplay/WaveOmens` policy (never on a boss or elite wave), a HUD line, and `TrialEffects.omensEnabled` read by the spawner, the factory, kill rewards and the HUD; the untrialled run is unchanged by construction, so the counterfactual is the same seed without the trial | `af92ff1` |
+
+| 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `_PENDING_` |
 
 ## Definition of done
 

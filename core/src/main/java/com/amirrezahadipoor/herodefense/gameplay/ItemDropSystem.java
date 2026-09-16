@@ -61,6 +61,56 @@ public final class ItemDropSystem {
         return roll < threshold ? ItemTier.COMMON : null;
     }
 
+    /**
+     * Picks the item a drop of this tier becomes.
+     *
+     * <p>What is shipped is the uniform pick over the tier, plus the guard the old code lacked (see
+     * {@link #tierPool}); the interesting part is what was <em>measured</em> and deliberately left out. The obvious
+     * improvement -- prefer pieces the hero does not own, and prefer them in a slot nothing occupies yet -- was
+     * written, tested and taken to the three balance gates. It does work as a pool feature, and it moved the
+     * trajectory of every run that drops equipment, which is enough to push two separate gates over ceilings that
+     * sit at 40%: an ownership-aware pick put the ascension gate's LIFESTEAL tier-0 scenario at a 40.24% spike and
+     * the trial gate's BOSS_BOUNTY + FAMISHED_EARTH pair at 43.33% on wave 196. Those ceilings are not this
+     * feature's to move, so the pick stays uniform until the balance program (R4.1-R4.5) has bought the band real
+     * headroom; the recipe is recorded in the roadmap beside those numbers.
+     *
+     * <p>One draw is spent here and only one, exactly as before, so a drop sits at the same place in the combat
+     * random stream as it always did.
+     */
+    public EquipmentDefinition chooseFor(GameState state, ItemTier tier) {
+        List<EquipmentDefinition> choices = tierPool(byTier, tier);
+        int index = Math.min(
+            choices.size() - 1,
+            (int) (state.nextCombatRandomFloat() * choices.size())
+        );
+        return choices.get(index);
+    }
+
+    /**
+     * The pool for a tier, with the guard the old code lacked: a tier with no pieces of its own falls back to the
+     * nearest non-empty tier instead of indexing into an empty list. Every tier is populated today (asserted in the
+     * tests), so this exists to keep a future content edit from turning a rare drop into a crash.
+     */
+    static List<EquipmentDefinition> tierPool(
+        Map<ItemTier, List<EquipmentDefinition>> catalog, ItemTier tier
+    ) {
+        ItemTier[] tiers = ItemTier.values();
+        int start = Math.max(0, Math.min(tiers.length - 1, tier.ordinal()));
+        for (int distance = 0; distance < tiers.length; distance++) {
+            int lower = start - distance;
+            if (lower >= 0) {
+                List<EquipmentDefinition> below = catalog.get(tiers[lower]);
+                if (below != null && !below.isEmpty()) return below;
+            }
+            int higher = start + distance;
+            if (higher < tiers.length && higher != lower) {
+                List<EquipmentDefinition> above = catalog.get(tiers[higher]);
+                if (above != null && !above.isEmpty()) return above;
+            }
+        }
+        return List.of();
+    }
+
     private int rollOnce(GameState state, Enemy enemy) {
         if (enemy == null || enemy.alive || enemy.itemDropRolled) return 0;
         enemy.itemDropRolled = true;
@@ -80,12 +130,7 @@ public final class ItemDropSystem {
             tier = ItemTier.RARE;
         }
 
-        List<EquipmentDefinition> choices = byTier.get(tier);
-        int index = Math.min(
-            choices.size() - 1,
-            (int) (state.nextCombatRandomFloat() * choices.size())
-        );
-        EquipmentDefinition selected = choices.get(index);
+        EquipmentDefinition selected = chooseFor(state, tier);
         DropEntity drop = new DropEntity(
             state.allocateEntityId(), "ITEM", enemy.x, enemy.y, 1
         );
