@@ -992,7 +992,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 91 | R4.2 | the boss telegraph asserted as a contract: five promises over four identities x forty encounters x tiers 0/3/6/10 x both vigils, 6 cases in 0.06 s, with the roster table and the per-strike damage published | `67bdd26` |
 | 2026-09-17 | 91 | R4.3 | the drop economy's table generated from the code and drift-gated against `docs/BALANCE.md`, plus three measured pity rules recorded with the ceilings each one broke | `06b2676` |
 | 2026-09-17 | 91 | ratchet | `BalanceSimulator` stood at 715 lines against its 661 freeze after R4.1's policy switch; `WaveSample` and `BalanceReport` moved to their own files in the same package (a published shape with its own reason to exist), leaving the simulator at 660 and every balance gate green | `PENDING` |
-| 2026-09-17 | 91 | balance | the second half was split into two spans and the second half's elite contact multiplier softened to 1.2, so the step into the second half rises from x1.047 to x1.158 and the late spikes land on a curve that paid for them; full core suite green | `PENDING` |
+| 2026-09-17 | 91 | balance | the second half was split into two spans and the second half's elite contact multiplier softened to 1.2, so the step into the second half rises from x1.047 to x1.158 and the late spikes land on a curve that paid for them; full core suite green | `50bde24` |
 
 ## Definition of done
 
