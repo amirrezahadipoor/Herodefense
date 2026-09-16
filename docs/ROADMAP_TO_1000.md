@@ -675,7 +675,7 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 86 | R2.6 | test-cost measurement (3 suites = 311 of 322 s of test time, 157 classes / 579 tests) plus two speed changes that keep every gate: two parallel test JVMs (`-PserialTests` to opt out) took the full suite from 7 m 29 s to 3 m 45 s, and `-PfastTests` gives a 21-second local loop that skips only the three sweeping suites, which CI still runs on every push | `705a3a3` |
 
-| 2026-09-16 | 86 | R2.2 slice 8 | renderer ownership (27 renderers + the batch) extracted into `render/RenderStack`, with the teardown kept statement for statement; `HeroDefenseGame` 927 → 797 lines (47 percent smaller than the audited 1,519-line god class), fields 94 → 68; first slice verified on the new fast loop (573 tests in 26 s) | `_PENDING_` |
+| 2026-09-16 | 86 | R2.2 slice 8 | renderer ownership (27 renderers + the batch) extracted into `render/RenderStack`, with the teardown kept statement for statement; `HeroDefenseGame` 927 → 797 lines (47 percent smaller than the audited 1,519-line god class), fields 94 → 68; first slice verified on the new fast loop (573 tests in 26 s) | `8af0ed1` |
 
 ## Definition of done
 
