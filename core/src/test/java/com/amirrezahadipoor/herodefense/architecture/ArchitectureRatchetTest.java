@@ -34,11 +34,11 @@ class ArchitectureRatchetTest {
 
     /** Measured on 2026-09-16; the ratchet fails if one of these grows or if a new one appears. */
     private static final Map<String, ArchitectureRatchet.Frozen> FROZEN = Map.of(
-        // R2.2 slice 5 moved the combat frame out: 76 lines left the class and one field (the combat handle)
-        // joined it. The class is 980 lines — 35 % smaller than the 1,519-line god class the audit measured —
-        // and keeps shrinking toward the 400-line ceiling.
+        // R2.2 slice 6 moved the run session out (start, restart at tier, ascend, continue), collapsing three
+        // copies of the same fifteen-line reset into one. The class is 954 lines — 37 % smaller than the
+        // 1,519-line god class the audit measured — and keeps shrinking toward the 400-line ceiling.
         "com/amirrezahadipoor/herodefense/HeroDefenseGame.java",
-        new ArchitectureRatchet.Frozen(980, 94),
+        new ArchitectureRatchet.Frozen(954, 95),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.

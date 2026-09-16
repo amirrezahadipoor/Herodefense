@@ -35,6 +35,7 @@ import com.amirrezahadipoor.herodefense.gameplay.ItemDropSystem;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardResult;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardSystem;
 import com.amirrezahadipoor.herodefense.gameplay.CombatSystem;
+import com.amirrezahadipoor.herodefense.gameplay.SessionController;
 import com.amirrezahadipoor.herodefense.gameplay.WaveDirector;
 import com.amirrezahadipoor.herodefense.gameplay.WaveCompletion;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
@@ -149,6 +150,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private WaveLifecycleSystem waveLifecycleSystem;
     private WaveDirector waveDirector;
     private CombatSystem combatSystem;
+    private SessionController sessionController;
     private HeroAnimationController heroAnimationController;
     private HeroAutoAttackSystem heroAutoAttackSystem;
     private GameOverOverlayRenderer gameOverOverlayRenderer;
@@ -288,7 +290,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         audioManager = new GameAudioManager(settings);
         Optional<GameState> loadedRun = saves.load();
         gameState = loadedRun.orElseGet(() -> GameState.newRun(System.currentTimeMillis()));
-        continueAvailable = loadedRun.isPresent() && canContinue(gameState);
+        continueAvailable = loadedRun.isPresent() && SessionController.canContinue(gameState);
         new StarterLoadoutSystem().provisionOnce(gameState);
         camera = new OrthographicCamera();
         // Width is pinned to 720; tall panels reveal more arena instead of black bars.
@@ -328,6 +330,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         touchFeedbackRenderer = new TouchFeedbackRenderer();
         uiFrameRenderer = new UiFrameRenderer();
         uiIconRenderer = new UiIconRenderer();
+        sessionController = new SessionController(
+            new SessionHost(), saves, flow, new StarterLoadoutSystem(), rootNetworkSystem, trialDraftSystem,
+            hitStopSystem, particleSystem, floatingCoinTextSystem, floatingDamageTextSystem,
+            waveLifecycleSystem, presentationSystem, openingCinematic, audioManager
+        );
         combatSystem = new CombatSystem(
             heroAutoAttackSystem, bossSpecialAttackSystem, enemyMeleeAttackSystem, autoPotionSystem,
             itemDropSystem, potionDropSystem, killRewardSystem, eliteAffixSystem, dropPickupSystem,
@@ -613,7 +620,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private void saveNow() {
         if (saves != null && gameState != null) {
             saves.save(gameState);
-            continueAvailable = canContinue(gameState);
+            continueAvailable = SessionController.canContinue(gameState);
         }
     }
 
@@ -674,88 +681,19 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     private void startNewRun() {
-        saves.clear();
-        gameState = GameState.newRun(System.currentTimeMillis());
-        new StarterLoadoutSystem().provisionOnce(gameState);
-        if (rootNetworkSystem != null) rootNetworkSystem.applyPermanentBonuses(gameState);
-        simulationSeconds = 0f;
-        gameOverPresentationSeconds = 0f;
-        hitStopSystem.clear();
-        particleSystem.clear();
-        floatingCoinTextSystem.clear();
-        floatingDamageTextSystem.clear();
-        trialDraftSystem.prepareOffer(gameState);
-        flow.transitionTo(GameScreenState.TRIAL_DRAFT);
-        saveNow();
+        sessionController.startNewRun();
     }
 
     private void startNewRunSameTier() {
-        if (gameState == null) {
-            startNewRun();
-            return;
-        }
-        long seed = System.currentTimeMillis();
-        gameState.resetForNewRun(seed);
-        new StarterLoadoutSystem().provisionOnce(gameState);
-        if (rootNetworkSystem != null) rootNetworkSystem.applyPermanentBonuses(gameState);
-        simulationSeconds = 0f;
-        gameOverPresentationSeconds = 0f;
-        hitStopSystem.clear();
-        particleSystem.clear();
-        floatingCoinTextSystem.clear();
-        floatingDamageTextSystem.clear();
-        trialDraftSystem.prepareOffer(gameState);
-        flow.transitionTo(GameScreenState.TRIAL_DRAFT);
-        saveNow();
+        sessionController.startNewRunSameTier();
     }
 
     private void ascendRun() {
-        if (gameState == null) {
-            startNewRun();
-            return;
-        }
-        gameState.ascendAndAwardHeartwood();
-        long seed = System.currentTimeMillis();
-        gameState.resetForNewRun(seed);
-        new StarterLoadoutSystem().provisionOnce(gameState);
-        if (rootNetworkSystem != null) rootNetworkSystem.applyPermanentBonuses(gameState);
-        simulationSeconds = 0f;
-        gameOverPresentationSeconds = 0f;
-        hitStopSystem.clear();
-        particleSystem.clear();
-        floatingCoinTextSystem.clear();
-        floatingDamageTextSystem.clear();
-        trialDraftSystem.prepareOffer(gameState);
-        flow.transitionTo(GameScreenState.TRIAL_DRAFT);
-        saveNow();
+        sessionController.ascendRun();
     }
 
     private void continueRun() {
-        if (!continueAvailable || !canContinue(gameState)) return;
-        flow.transitionTo(GameScreenState.PLAYING);
-        if (gameState.draftPending()) {
-            // A save closed mid-draft replays the draft from its persisted offer and picks.
-            flow.transitionTo(GameScreenState.TRIAL_DRAFT);
-        } else if (gameState.awaitingBossReward) {
-            flow.transitionTo(GameScreenState.CARD_CHOICE);
-        } else if (gameState.ceremonyPending) {
-            // A save closed mid-ceremony replays it from the start; it is deterministic.
-            beginPlantingCeremony();
-        } else if (gameState.unspentTalentPoints > 0) {
-            flow.transitionTo(GameScreenState.LEVEL_UP);
-        } else if (!gameState.waveActive && ArenaQueries.untouchedFirstWave(gameState)) {
-            // Killed during the opening: replay it so every new run still starts with the prologue.
-            flow.transitionTo(GameScreenState.CINEMATIC);
-            openingCinematic.begin(openingTierFor(gameState));
-        } else if (!gameState.waveActive) {
-            int bossesBefore = ArenaQueries.livingBossCount(gameState);
-            waveLifecycleSystem.startCurrentWave(gameState);
-            if (ArenaQueries.livingBossCount(gameState) > bossesBefore) {
-                audioManager.play(AudioCue.BOSS_ENTRANCE);
-                presentationSystem.presentBossEntrance(gameState);
-            }
-            showWaveReflection();
-        }
+        sessionController.continueRun();
     }
 
     /** Snapshots the run's opening tier, then plays that tier's lines. */
@@ -766,7 +704,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     /** Tier whose opening lines a save replays: the snapshot, else the live tier. */
     static int openingTierFor(GameState state) {
-        return state.openingTier >= 0 ? state.openingTier : state.ascensionTier;
+        return SessionController.openingTierFor(state);
     }
 
     /**
@@ -870,9 +808,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
     }
 
-    private static boolean canContinue(GameState state) {
-        return state != null && state.hero != null && state.hero.alive && !state.runComplete;
-    }
 
     private void updatePlaying(float deltaSeconds) {
         float simulationDelta = deltaSeconds * gameState.simulationSpeed;
@@ -895,6 +830,45 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     /** Adapter for the frame composer; one line per member, like the touch host. */
+    /** What the session controller needs: the run state, its clock, saving and two screen hand-offs. */
+    private final class SessionHost implements SessionController.Host {
+        @Override
+        public GameState gameState() {
+            return gameState;
+        }
+
+        @Override
+        public void setGameState(GameState state) {
+            gameState = state;
+        }
+
+        @Override
+        public void resetRunClock() {
+            simulationSeconds = 0f;
+            gameOverPresentationSeconds = 0f;
+        }
+
+        @Override
+        public void saveNow() {
+            HeroDefenseGame.this.saveNow();
+        }
+
+        @Override
+        public boolean continueAvailable() {
+            return continueAvailable;
+        }
+
+        @Override
+        public void showWaveReflection() {
+            HeroDefenseGame.this.showWaveReflection();
+        }
+
+        @Override
+        public void beginPlantingCeremony() {
+            HeroDefenseGame.this.beginPlantingCeremony();
+        }
+    }
+
     /** What the wave director needs from the game: its state, screens, saving and the two ceremonies. */
     private final class DirectorHost implements WaveDirector.Host {
         @Override
