@@ -677,6 +677,8 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 86 | R2.2 slice 8 | renderer ownership (27 renderers + the batch) extracted into `render/RenderStack`, with the teardown kept statement for statement; `HeroDefenseGame` 927 → 797 lines (47 percent smaller than the audited 1,519-line god class), fields 94 → 68; first slice verified on the new fast loop (573 tests in 26 s) | `8af0ed1` |
 
+| 2026-09-16 | 86 | tests | full suite on the shipped tree at slice 8: 157 classes / 579 tests / 0 failures in 4 m 07 s (two forks, was 7 m 29 s serial) | `c2b6933` |
+
 ## Definition of done
 
 Two gates, both measured with the granular method of the 2026-09-16 audit and both reproducible from the
