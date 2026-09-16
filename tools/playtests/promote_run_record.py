@@ -65,17 +65,23 @@ def result_of(record: dict) -> str:
     return "abandoned"
 
 
-def session_id(record: dict, played_on: str) -> str:
-    return (
-        f"session-{played_on}-{record.get('source', 'unknown')}-"
-        f"{record.get('runSeed')}-w{record.get('wavesCleared')}"
-    )
+def session_id(record: dict, played_on: str, label: str | None = None) -> str:
+    """The session's id: date, source, an optional label, seed and waves.
+
+    The label exists because a seed and a wave count are not unique on their own -- the same seed played to the same
+    wave under two different simulator policies is two different sessions, and the ledger refuses a duplicate id.
+    """
+    parts = ["session", played_on, record.get("source", "unknown")]
+    if label:
+        parts.append(label)
+    parts.append(f"{record.get('runSeed')}-w{record.get('wavesCleared')}")
+    return "-".join(parts)
 
 
 def build_session(record: dict, args) -> dict:
     kind = args.kind or ("automated" if record.get("source") == "simulator" else "human")
     session = {
-        "id": session_id(record, args.date),
+        "id": session_id(record, args.date, args.label),
         "date": args.date,
         "kind": kind,
         "player": args.player,
@@ -100,7 +106,9 @@ def main() -> int:
     parser.add_argument("--duration", required=True, type=float, help="minutes the session lasted")
     parser.add_argument("--notes", action="append", default=[], help="one line of notes; repeatable")
     parser.add_argument("--kind", choices=("human", "automated"), help="default: inferred from the record source")
-    parser.add_argument("--date", default=dt.date.today().isoformat(), help="the day the session was played")
+    parser.add_argument("--date", default=dt.date.today().isoformat(), help="the day the session was played; the tester's day, not this machine's UTC day -- pass it explicitly when they differ")
+    parser.add_argument("--label", help="a short lowercase token for the session id, when seed and wave count alone "
+                                        "would collide with a session already in the ledger (e.g. the policy)")
     parser.add_argument("--ledger", type=pathlib.Path, default=LEDGER)
     parser.add_argument("--records", type=pathlib.Path, default=RECORDS)
     parser.add_argument("--dry-run", action="store_true", help="print the session that would be appended")
