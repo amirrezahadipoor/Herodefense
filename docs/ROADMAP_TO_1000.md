@@ -776,7 +776,7 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 89 | R3.5 | a second run length: `GameMode.STANDARD` (200) / `BRIEF` (30) with `GameState.runLengthWaves()`, a brief-vigil row in the re-tabled six-row main menu, the game-over overlay showing this run's length, and `BalanceSimulator.runBrief`; measured: the brief run's first 30 waves are bit-identical to the long run's first 30 on the same seed, spike 0.1229 vs the 0.40 ceiling, its own bounded clear-time rule recorded as the one deliberate difference; 5 new simulation cases | `b9027b7` |
 
-| 2026-09-16 | 89 | R3.4a | wave omens as the thirteenth drafted trial: `model/WaveModifier` (SWARM / IRON_HIDE / BLOODRUSH / QUICKSTEP, +25% coins on the wave), `gameplay/WaveOmens` policy (never on a boss or elite wave), a HUD line, and `TrialEffects.omensEnabled` read by the spawner, the factory, kill rewards and the HUD; the untrialled run is unchanged by construction, so the counterfactual is the same seed without the trial | `_PENDING_` |
+| 2026-09-16 | 89 | R3.4a | wave omens as the thirteenth drafted trial: `model/WaveModifier` (SWARM / IRON_HIDE / BLOODRUSH / QUICKSTEP, +25% coins on the wave), `gameplay/WaveOmens` policy (never on a boss or elite wave), a HUD line, and `TrialEffects.omensEnabled` read by the spawner, the factory, kill rewards and the HUD; the untrialled run is unchanged by construction, so the counterfactual is the same seed without the trial | `af92ff1` |
 
 ## Definition of done
 
