@@ -48,7 +48,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[x]` |
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[x]` |
 | **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[~]` |
-| **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[ ]` |
+| **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[~]` |
 | **87** | Gameplay: one real player decision inside a wave | R3.1 | `[ ]` |
 | **88** | Boss identity variety across the 20 encounters | R3.2 | `[ ]` |
 | **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[ ]` |
@@ -250,9 +250,19 @@ sentence has to name the two scores and the commit they were measured on.
   paths that cannot be checked statically.
   *Evidence:* `internal asset references: 5 literal paths checked, 15 computed path(s) not checkable
   statically`; `theDeadPostProcessRendererIsGone` asserts the stub stays gone.
-- [ ] **R2.2 Break up `HeroDefenseGame`** into `WaveDirector`, `CombatSystem`, `ArenaRendererFacade`,
+- [~] **R2.2 Break up `HeroDefenseGame`** into `WaveDirector`, `CombatSystem`, `ArenaRendererFacade`,
   `HudFlow`, `SessionController` with a ~400-line ceiling per class, validated by the full suite plus a
   before/after emulator smoke run.
+  *Slice 1 (done):* `presentation/RunPresentationSystem` now owns the seven presentation methods that grew
+  every time an effect was added — defeat bursts, boss entrance, elite fragments, wave reflection lines,
+  collection sparkles and pending pickups — behind a two-method `BeatSink` (`showBeat`, `save`) so the game
+  class stays the only writer of the story line. `HeroDefenseGame` went from **1,519 to 1,447 lines** and the
+  ratchet freeze was lowered to the measured size in the same commit, so the exception cannot be used as
+  headroom. The layered-event test was strengthened rather than moved: it now scans the game class *and* the
+  presentation system and requires each layered effect to be bound **exactly once** (twice for tree
+  destruction, which has a world-tree and a grove-tree binding).
+  *Remaining:* `WaveDirector`, `CombatSystem`, `ArenaRendererFacade`, `HudFlow`, `SessionController`,
+  the 400-line ceiling, and the before/after emulator smoke comparison.
 - [ ] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
@@ -492,6 +502,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | CI | run [`35078435013`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35078435013) at `0ccc92c`: both workflows green (covers phases 81 step 1, 83, 84, 85a, 85b) | `0ccc92c` |
 | 2026-09-16 | — | CI | run [`35079208076`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35079208076) at `772fb45`: both workflows green with the per-screenshot brightness contract active; 28/28 captures referenced, drift ≤ 0.07 luma except the animated collapse frame (7.14), which is why that entry carries a ±12 band | `772fb45` |
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
+| 2026-09-16 | 86 | R2.2 slice 1 | `RunPresentationSystem` extracted from the god class; `HeroDefenseGame` 1,519 → 1,447 lines; ratchet freeze lowered to 1,447 / 91; layered-event test strengthened to scan both files and require exactly one binding per effect | *(this commit)* |
 | 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | *(this commit)* |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |
 

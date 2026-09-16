@@ -38,6 +38,7 @@ import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
 import com.amirrezahadipoor.herodefense.gameplay.UltimateResult;
 import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
+import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
 import com.amirrezahadipoor.herodefense.input.GdxHapticFeedback;
 import com.amirrezahadipoor.herodefense.input.HapticFeedback;
@@ -167,6 +168,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     /** Current mid-run story beat (title card, reflection), or null when none is showing. */
     private String storyBeatLine;
     private float storyBeatSeconds;
+    private RunPresentationSystem presentationSystem;
     private InventoryTouchController inventoryTouchController;
     private InventoryOverlayRenderer inventoryOverlayRenderer;
     private ItemDropSystem itemDropSystem;
@@ -252,6 +254,16 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         pauseTouchController = new PauseTouchController();
         potionDropSystem = new PotionDropSystem();
         screenShakeSystem = new ScreenShakeSystem();
+        presentationSystem = new RunPresentationSystem(particleSystem, screenShakeSystem, codexSystem,
+            new RunPresentationSystem.BeatSink() {
+                @Override public void showBeat(String line) {
+                    showStoryBeat(line);
+                }
+
+                @Override public void save() {
+                    saveNow();
+                }
+            });
         settingsTouchController = new SettingsTouchController();
         simulationSpeedTouchController = new SimulationSpeedTouchController();
         statShopSystem = new StatShopSystem();
@@ -963,9 +975,9 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             waveLifecycleSystem.startCurrentWave(gameState);
             if (livingBossCount(gameState) > bossesBefore) {
                 audioManager.play(AudioCue.BOSS_ENTRANCE);
-                presentBossEntrance(gameState);
+                presentationSystem.presentBossEntrance(gameState);
             }
-            presentWaveReflection();
+            showWaveReflection();
         }
     }
 
@@ -986,78 +998,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             && state.aliveEnemies.isEmpty() && state.aliveBosses.isEmpty();
     }
 
-    private void emitDefeatParticles(GameState state) {
-        for (Enemy enemy : state.aliveEnemies) emitDefeatParticles(enemy, false);
-        for (Boss boss : state.aliveBosses) emitDefeatParticles(boss, true);
-    }
-
-    private void emitDefeatParticles(Enemy enemy, boolean boss) {
-        if (enemy == null || enemy.alive || enemy.defeatParticlesEmitted) return;
-        enemy.defeatParticlesEmitted = true;
-        if (boss) {
-            particleSystem.emitBossDeath(enemy.x, enemy.y + 40f);
-        } else {
-            // Per-type death burst for readability
-            try {
-                particleSystem.emitDeath(enemy.x, enemy.y + 30f, enemy.enemyType);
-            } catch (Exception ignored) {
-                particleSystem.emitDeath(enemy.x, enemy.y + 30f);
-            }
-        }
-        particleSystem.emitCoins(enemy.x, enemy.y + 50f);
-    }
-
-    private void presentBossEntrance(GameState state) {
-        for (Boss boss : state.aliveBosses) {
-            if (boss == null || !boss.alive || boss.entrancePresented) continue;
-            boss.entrancePresented = true;
-            particleSystem.emitBossEntrance(boss.x, boss.y + 10f);
-        }
-        screenShakeSystem.triggerBossEntrance();
-        String titleCard = BossTitleCards.claimFirstUnencountered(state, state.aliveBosses);
-        if (titleCard != null) {
-            storyBeatLine = titleCard;
-            storyBeatSeconds = 0f;
-            saveNow();
-        }
-    }
-
-    /** Claims Elite kills for counts, codex, secret 28, and their §4 fragment overlay. */
-    private void presentEliteFragments(GameState state) {
-        boolean claimed = false;
-        for (Enemy enemy : state.aliveEnemies) {
-            if (enemy == null || enemy.alive || enemy.eliteAffix == null || enemy.eliteKillClaimed) {
-                continue;
-            }
-            enemy.eliteKillClaimed = true;
-            claimed = true;
-            int count = 1;
-            if (state.eliteKillCounts != null) {
-                count = state.eliteKillCounts.getOrDefault(enemy.eliteAffix, 0) + 1;
-                state.eliteKillCounts.put(enemy.eliteAffix, count);
-            }
-            codexSystem.unlockForEliteKill(state, enemy.eliteAffix);
-            String fragment = EliteFragments.fragmentFor(enemy.eliteAffix, count);
-            if (fragment != null) {
-                storyBeatLine = fragment;
-                storyBeatSeconds = 0f;
-            }
-        }
-        if (claimed) saveNow();
-    }
-
-    /** Shows the reflection line for a freshly started wave, unless a beat already shows. */
-    private void presentWaveReflection() {
-        if (storyBeatLine != null || !gameState.waveActive) {
-            return;
-        }
-        String reflection = ReflectionLines.lineForWave(gameState.waveNumber);
-        if (reflection != null) {
-            storyBeatLine = reflection;
-            storyBeatSeconds = 0f;
-        }
-    }
-
     /** Fires the Ultimate and plays its blast, beam fan, shake, and sound. */
     private void fireUltimate() {
         UltimateResult result = new HeroUltimateSystem().fire(gameState);
@@ -1074,33 +1014,21 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         audioManager.play(AudioCue.CRITICAL);
     }
 
-    /** Sparkles where a homing drop lands on the Inventory control, before the drop is removed. */
-    private void emitCollectionSparkles(GameState state, float deltaSeconds) {
-        for (DropEntity drop : state.drops) {
-            if (drop == null || !drop.active
-                || drop.collectionStage != DropCollectionStage.HOMING) {
-                continue;
-            }
-            if (drop.homingElapsedSeconds + deltaSeconds >= DropPickupSystem.HOMING_DURATION_SECONDS
-                && ("ITEM".equals(drop.dropType) || "POTION".equals(drop.dropType))) {
-                particleSystem.emitCollectionSparkle(
-                    CombatEntityRenderer.DROP_TARGET_X, CombatEntityRenderer.DROP_TARGET_Y + 30f
-                );
-            }
+    /** Shows the reflection line for a freshly started wave, unless a beat already shows. */
+    private void showWaveReflection() {
+        if (storyBeatLine != null) {
+            return;
+        }
+        String reflection = presentationSystem.waveReflection(gameState);
+        if (reflection != null) {
+            showStoryBeat(reflection);
         }
     }
 
-    private void emitPendingPickupParticles(GameState state, float deltaSeconds) {
-        for (DropEntity drop : state.drops) {
-            if (drop == null || !drop.active || drop.collectionEffectEmitted) continue;
-            boolean enteringHoming = drop.collectionStage == DropCollectionStage.HOMING
-                || drop.pickupDelaySeconds <= deltaSeconds;
-            if (enteringHoming
-                && ("ITEM".equals(drop.dropType) || "POTION".equals(drop.dropType))) {
-                drop.collectionEffectEmitted = true;
-                particleSystem.emitItemPickup(drop.x, drop.y + 25f);
-            }
-        }
+    /** Single writer for the story line the HUD draws, so the beat timer cannot be forgotten. */
+    private void showStoryBeat(String line) {
+        storyBeatLine = line;
+        storyBeatSeconds = 0f;
     }
 
     private static float totalEnemyHealth(GameState state) {
@@ -1171,7 +1099,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             flow.transitionTo(GameScreenState.PLAYING);
             if (livingBossCount(gameState) > bossesBefore) {
                 audioManager.play(AudioCue.BOSS_ENTRANCE);
-                presentBossEntrance(gameState);
+                presentationSystem.presentBossEntrance(gameState);
             }
             saveNow();
         }
@@ -1236,7 +1164,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             particleSystem.emitHit(gameState.hero.x, gameState.hero.y + 45f, false);
             audioManager.play(gameState.hero.alive ? AudioCue.HIT : AudioCue.DEATH);
         }
-        emitDefeatParticles(gameState);
+        presentationSystem.emitDefeatParticles(gameState);
         if (!gameOver && gameState.hero.alive) {
             com.amirrezahadipoor.herodefense.potions.PotionTier used = autoPotionSystem.update(gameState);
             if (used != null) {
@@ -1254,7 +1182,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             }
         }
         eliteAffixSystem.update(gameState, simulationDelta);
-        presentEliteFragments(gameState);
+        presentationSystem.presentEliteFragments(gameState);
         codexSystem.unlockForWaveReached(gameState);
         codexSystem.unlockSecretsForProgress(gameState);
         if (killRewards.coins() > 0) {
@@ -1265,8 +1193,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             );
         }
         if (killRewards.levelsGained() > 0) audioManager.play(AudioCue.LEVEL_UP);
-        emitPendingPickupParticles(gameState, simulationDelta);
-        emitCollectionSparkles(gameState, simulationDelta);
+        presentationSystem.emitPendingPickupParticles(gameState, simulationDelta);
+        presentationSystem.emitCollectionSparkles(gameState, simulationDelta);
         int collectedDrops = dropPickupSystem.update(gameState, simulationDelta, settings);
         if (collectedDrops > 0) codexSystem.unlockSecretsForEquipment(gameState);
         if (dropPickupSystem.lastAutoSoldItems() > 0) {
@@ -1297,9 +1225,9 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             WaveCompletion waveCompletion = waveLifecycleSystem.updateAfterCombat(gameState);
             if (livingBossCount(gameState) > bossesBeforeWaveAdvance) {
                 audioManager.play(AudioCue.BOSS_ENTRANCE);
-                presentBossEntrance(gameState);
+                presentationSystem.presentBossEntrance(gameState);
             }
-            presentWaveReflection();
+            showWaveReflection();
             if (waveCompletion != WaveCompletion.NO_CHANGE) {
                 if (gameState.waveNumber > gameState.peakWaveReached) {
                     gameState.peakWaveReached = gameState.waveNumber;

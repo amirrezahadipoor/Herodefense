@@ -153,20 +153,38 @@ final class PremiumVfxRestraintTest {
 
     @Test
     void gameBindsEveryLayeredEventExactlyOnce() throws IOException {
+        // The layered effects are wired by the game loop and by the presentation system that was extracted
+        // from it (roadmap R2.2). Both files are scanned together and each binding must appear exactly once,
+        // so moving a call cannot silently duplicate an effect or drop it.
         String game = Files.readString(Path.of(
             "src/main/java/com/amirrezahadipoor/herodefense/HeroDefenseGame.java"
+        )) + "\n" + Files.readString(Path.of(
+            "src/main/java/com/amirrezahadipoor/herodefense/presentation/RunPresentationSystem.java"
         ));
-        for (String call : new String[] {
-            "emitBossEntrance(", "emitBossDeath(", "emitTreeDestruction(",
-            "emitCollectionSparkle(", "drawAmbient(", "triggerBossEntrance()", "triggerTreeFall()"
-        }) {
-            assertTrue(game.contains(call), call);
-        }
+        // Every layered event is bound exactly once, except the tree destruction, which is bound twice on
+        // purpose: once for the world tree and once for each grove tree (HeroDefenseGame lines 1212/1214).
+        assertEquals(1, occurrences(game, "emitBossEntrance("), "emitBossEntrance(");
+        assertEquals(1, occurrences(game, "emitBossDeath("), "emitBossDeath(");
+        assertEquals(2, occurrences(game, "emitTreeDestruction("), "emitTreeDestruction(");
+        assertEquals(1, occurrences(game, "emitCollectionSparkle("), "emitCollectionSparkle(");
+        assertEquals(1, occurrences(game, "drawAmbient("), "drawAmbient(");
+        assertEquals(1, occurrences(game, "triggerBossEntrance()"), "triggerBossEntrance()");
+        assertEquals(1, occurrences(game, "triggerTreeFall()"), "triggerTreeFall()");
         assertTrue(game.contains("boss.entrancePresented"));
         String combat = Files.readString(Path.of(
             "src/main/java/com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java"
         ));
         assertTrue(combat.contains("PROJECTILE_TRAIL_STEPS"));
+    }
+
+    private static int occurrences(String text, String needle) {
+        int total = 0;
+        int index = text.indexOf(needle);
+        while (index >= 0) {
+            total++;
+            index = text.indexOf(needle, index + needle.length());
+        }
+        return total;
     }
 
     private static long count(ParticleSystem particles, ParticleType type) {
