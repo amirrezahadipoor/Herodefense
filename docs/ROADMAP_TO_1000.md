@@ -629,7 +629,7 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 86 | R2.2 slice 6 | run session (fresh run, restart at the same tier, ascension, and continue-on-the-right-screen) extracted into `gameplay/SessionController`; the three duplicated fifteen-line resets collapsed into one `prepareFreshRun()`; `HeroDefenseGame` 980 → 954 lines (37 percent smaller than the audited 1,519-line god class), fields 94 → 95, ratchet freeze lowered in the same commit | `eab4fcc` |
 
-| 2026-09-16 | 86 | R2.2 slice 7 | the prologue and the grove-planting ceremonies extracted into `gameplay/CinematicFlow` (tier snapshot, planted tree, water drops, wave hand-off and the boss entrance at it); `HeroDefenseGame` 954 → 927 lines (39 percent smaller than the audited 1,519-line god class), fields 95 → 94, ratchet freeze lowered in the same commit | `_PENDING_` |
+| 2026-09-16 | 86 | R2.2 slice 7 | the prologue and the grove-planting ceremonies extracted into `gameplay/CinematicFlow` (tier snapshot, planted tree, water drops, wave hand-off and the boss entrance at it); `HeroDefenseGame` 954 → 927 lines (39 percent smaller than the audited 1,519-line god class), fields 95 → 94, ratchet freeze lowered in the same commit | `7d1b7da` |
 
 ## Definition of done
 
