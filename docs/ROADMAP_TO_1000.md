@@ -289,13 +289,21 @@ sentence has to name the two scores and the commit they were measured on.
   is one new field (92 → 93), recorded in the ratchet freeze instead of hidden. The layered-event guard was
   extended rather than relaxed: it now scans four files (game, `RunPresentationSystem`, `ScreenStateComposer`,
   `WaveDirector`) and still requires each layered effect exactly once.
-  *Remaining:* `CombatSystem`, `ArenaRendererFacade`, `HudFlow`, `SessionController`, the 400-line ceiling, and
-  the before/after emulator smoke comparison.
+  *Slice 5 (done):* the combat frame moved into `gameplay/CombatSystem` — the hero's arrows with every effect they
+  cause (damage text, hit sparks, chain arcs, stun sparks, muzzle flash, the critical hit-stop, the kill shake),
+  the hero taking melee back with its hit feedback, the auto-potion rule, and the payout a kill owes: item and
+  potion drops, kill rewards with the coin text and the level-up jingle, the elite affix tick, the codex unlocks
+  and the pickup sweep with auto-sell. It is handed its sixteen collaborators at construction instead of pulling
+  them from the game, it takes `settings` per call because auto-sell rules can change mid-run, and it returns one
+  record, `CombatSystem.Frame(gameOver, leveledUp)`, which is exactly what the wave director needs. The class is
+  76 lines shorter (1,056 → **980 lines**, 35 % below the 1,519-line god class the audit measured) with one field
+  for the handle (93 → 94), recorded in the ratchet freeze in the same commit.
+  *Remaining:* `SessionController`, the 400-line ceiling, and the before/after emulator smoke comparison.
 - [ ] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
-  size** — `HeroDefenseGame` (1,056 lines / 93 fields after roadmap phase 86 slice 4),
+  size** — `HeroDefenseGame` (980 lines / 94 fields after roadmap phase 86 slice 5),
   `CombatEntityRenderer` (681 / 13 after roadmap phase 87 and 88),
   `BalanceSimulator` (639 / 23), `model/GameState` (592 / 80). The freeze may only shrink: the ratchet fails
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
@@ -601,6 +609,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | `317728c` |
 
 | 2026-09-16 | 86 | R2.2 slice 4 | wave director (death and the tree falling, level-up pause, wave advance with the boss-entrance beat and reflection line, reward-card offer, planting ceremony, completed run) extracted into `gameplay/WaveDirector` behind a five-method `Host`; `HeroDefenseGame` 1,067 → 1,056 lines, fields 92 → 93 for the director handle and the ratchet records both; layered-event guard now scans four files | `b9b089a` |
+
+| 2026-09-16 | 86 | R2.2 slice 5 | combat frame (arrows and all their effects, melee feedback, auto-potion, item and potion drops, kill rewards, elite affixes, codex unlocks, pickups with auto-sell) extracted into `gameplay/CombatSystem` with sixteen collaborators injected and one `Frame(gameOver, leveledUp)` result; `HeroDefenseGame` 1,056 → 980 lines (35 {'hash': '_PENDING_'}maller than the audited 1,519-line god class), fields 93 → 94, ratchet freeze lowered in the same commit | `_PENDING_` |
 
 ## Definition of done
 

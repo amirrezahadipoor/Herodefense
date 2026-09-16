@@ -34,6 +34,7 @@ import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.gameplay.ItemDropSystem;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardResult;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardSystem;
+import com.amirrezahadipoor.herodefense.gameplay.CombatSystem;
 import com.amirrezahadipoor.herodefense.gameplay.WaveDirector;
 import com.amirrezahadipoor.herodefense.gameplay.WaveCompletion;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
@@ -147,6 +148,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private EnemyMovementSystem enemyMovementSystem;
     private WaveLifecycleSystem waveLifecycleSystem;
     private WaveDirector waveDirector;
+    private CombatSystem combatSystem;
     private HeroAnimationController heroAnimationController;
     private HeroAutoAttackSystem heroAutoAttackSystem;
     private GameOverOverlayRenderer gameOverOverlayRenderer;
@@ -326,6 +328,12 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         touchFeedbackRenderer = new TouchFeedbackRenderer();
         uiFrameRenderer = new UiFrameRenderer();
         uiIconRenderer = new UiIconRenderer();
+        combatSystem = new CombatSystem(
+            heroAutoAttackSystem, bossSpecialAttackSystem, enemyMeleeAttackSystem, autoPotionSystem,
+            itemDropSystem, potionDropSystem, killRewardSystem, eliteAffixSystem, dropPickupSystem,
+            presentationSystem, codexSystem, particleSystem, floatingCoinTextSystem,
+            floatingDamageTextSystem, hitStopSystem, screenShakeSystem, audioManager
+        );
         waveDirector = new WaveDirector(
             new DirectorHost(), waveLifecycleSystem, audioManager, particleSystem,
             screenShakeSystem, presentationSystem, codexSystem
@@ -877,92 +885,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         heroAnimationController.update(gameState.hero, simulationDelta);
         enemyMovementSystem.update(gameState, simulationDelta);
         FocusFireSystem.tick(gameState, simulationDelta);
-        int livingBeforeAttack = gameState.livingEnemyCount();
-        int bossesBeforeAttack = ArenaQueries.livingBossCount(gameState);
-        float enemyHealthBeforeAttack = ArenaQueries.totalEnemyHealth(gameState);
-        HeroAttackUpdateResult attackEvents = heroAutoAttackSystem.update(gameState, simulationDelta);
-        floatingDamageTextSystem.emitAll(attackEvents.events());
-        // Every arrow in a Multi Shot volley bursts where it lands (events carry y + 40 for text).
-        for (CombatEvent event : attackEvents.events()) {
-            switch (event.kind()) {
-                case HIT -> particleSystem.emitHit(event.x(), event.y() - 40f, false);
-                case CRITICAL_HIT -> particleSystem.emitHit(event.x(), event.y() - 40f, true);
-                case CHAIN_ARC -> particleSystem.emitChainArc(
-                    event.fromX(), event.fromY(), event.x(), event.y());
-                case STUN -> particleSystem.emitStunSparks(event.x(), event.y() - 30f, event.amount());
-                default -> { }
-            }
-        }
-        if (attackEvents.criticalHits() > 0) {
-            hitStopSystem.triggerCriticalHit();
-            screenShakeSystem.triggerCriticalHit();
-            audioManager.play(AudioCue.CRITICAL);
-        }
-        if (attackEvents.chainArcs() > 0) audioManager.play(AudioCue.CHAIN_LIGHTNING);
-        if (attackEvents.stuns() > 0) audioManager.play(AudioCue.STUN);
-        if (attackEvents.shots() > 1) {
-            audioManager.play(AudioCue.MULTI_SHOT);
-            particleSystem.emitMuzzleFlash(gameState.hero.x, gameState.hero.y + 45f, attackEvents.shots());
-        }
-        if (ArenaQueries.totalEnemyHealth(gameState) < enemyHealthBeforeAttack - 0.001f) {
-            audioManager.play(AudioCue.HIT);
-        }
-        if (gameState.livingEnemyCount() < livingBeforeAttack) {
-            audioManager.play(AudioCue.DEATH);
-            audioManager.play(AudioCue.KILL);
-        }
-        if (ArenaQueries.livingBossCount(gameState) < bossesBeforeAttack) {
-            screenShakeSystem.triggerBossKill();
-        }
-        float heroHealthBeforeAttack = gameState.hero.health;
-        bossSpecialAttackSystem.update(gameState, simulationDelta);
-        boolean gameOver = enemyMeleeAttackSystem.update(gameState, simulationDelta);
-        if (gameState.hero.health < heroHealthBeforeAttack - 0.001f) {
-            screenShakeSystem.triggerHeroHit();
-            particleSystem.emitHit(gameState.hero.x, gameState.hero.y + 45f, false);
-            audioManager.play(gameState.hero.alive ? AudioCue.HIT : AudioCue.DEATH);
-        }
-        presentationSystem.emitDefeatParticles(gameState);
-        if (!gameOver && gameState.hero.alive) {
-            com.amirrezahadipoor.herodefense.potions.PotionTier used = autoPotionSystem.update(gameState);
-            if (used != null) {
-                gameState.potionsUsedThisRun++;
-                gameState.noPotionRun = false;
-            }
-        }
-        int itemDrops = itemDropSystem.processDefeatedEnemies(gameState);
-        if (itemDrops > 0) audioManager.play(AudioCue.ITEM_DROP);
-        potionDropSystem.processDefeatedEnemies(gameState);
-        KillRewardResult killRewards = killRewardSystem.processDefeatedEnemies(gameState);
-        for (Boss boss : gameState.aliveBosses) {
-            if (boss != null && !boss.alive && boss.killRewardsGranted) {
-                codexSystem.unlockForBossKill(gameState, boss.bossType);
-            }
-        }
-        eliteAffixSystem.update(gameState, simulationDelta);
-        presentationSystem.presentEliteFragments(gameState);
-        codexSystem.unlockForWaveReached(gameState);
-        codexSystem.unlockSecretsForProgress(gameState);
-        if (killRewards.coins() > 0) {
-            floatingCoinTextSystem.emit(
-                gameState.hero.x,
-                gameState.hero.y + 145f,
-                killRewards.coins()
-            );
-        }
-        if (killRewards.levelsGained() > 0) audioManager.play(AudioCue.LEVEL_UP);
-        presentationSystem.emitPendingPickupParticles(gameState, simulationDelta);
-        presentationSystem.emitCollectionSparkles(gameState, simulationDelta);
-        int collectedDrops = dropPickupSystem.update(gameState, simulationDelta, settings);
-        if (collectedDrops > 0) codexSystem.unlockSecretsForEquipment(gameState);
-        if (dropPickupSystem.lastAutoSoldItems() > 0) {
-            floatingDamageTextSystem.emitCoins(
-                dropPickupSystem.lastAutoSoldCoins(),
-                gameState.hero.x, gameState.hero.y + 96f
-            );
-            audioManager.play(AudioCue.ITEM_DROP);
-        }
-        waveDirector.afterCombat(gameOver, killRewards.levelsGained() > 0);
+        CombatSystem.Frame frame = combatSystem.update(gameState, simulationDelta, settings);
+        waveDirector.afterCombat(frame.gameOver(), frame.leveledUp());
         simulationSeconds += simulationDelta;
     }
 
