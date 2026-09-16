@@ -11,6 +11,7 @@ RUNTIME = ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense/render/UiF
 REWARD_RENDERER = ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense/render/RewardCardOverlayRenderer.java"
 REWARD_ID = ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense/rewards/RewardCardId.java"
 GAME = ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense/HeroDefenseGame.java"
+ROUTER = ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense/input/ScreenTouchRouter.java"
 STYLE = ROOT / "docs/VISUAL_STYLE_GUIDE.md"
 
 
@@ -23,6 +24,7 @@ class UiPremiumSourceTest(unittest.TestCase):
         cls.reward_renderer = REWARD_RENDERER.read_text(encoding="utf-8")
         cls.reward_id = REWARD_ID.read_text(encoding="utf-8")
         cls.game = GAME.read_text(encoding="utf-8")
+        cls.router = ROUTER.read_text(encoding="utf-8")
         cls.style = STYLE.read_text(encoding="utf-8")
         cls.tree = ast.parse(cls.environment)
 
@@ -100,9 +102,12 @@ class UiPremiumSourceTest(unittest.TestCase):
             self.assertIn(state, self.runtime)
         for method in ("press(", "movePress(", "release(", "resolve(", "NinePatch"):
             self.assertIn(method, self.runtime)
-        self.assertIn("uiFrameRenderer.press(worldX, worldY)", self.game)
-        self.assertIn("uiFrameRenderer.movePress(worldX, worldY)", self.game)
-        self.assertIn("uiFrameRenderer.release()", self.game)
+        # Roadmap R2.2: the touch lifecycle moved into ScreenTouchRouter, which calls it through the game's
+        # Host port; the game class keeps only the wiring, so the assertions follow the code.
+        self.assertIn("new ScreenTouchRouter(new TouchHost())", self.game)
+        self.assertIn("uiFrameRenderer().press(worldX, worldY)", self.router)
+        self.assertIn("uiFrameRenderer().movePress(worldX, worldY)", self.router)
+        self.assertIn("uiFrameRenderer().release()", self.router)
 
     def test_locked_style_names_each_skin_family_and_state(self) -> None:
         for phrase in (
