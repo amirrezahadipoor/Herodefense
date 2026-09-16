@@ -37,7 +37,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 · R8.2 | `[x]` |
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[x]` |
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[x]` |
-| **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[ ]` |
+| **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[~]` |
 | **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[ ]` |
 | **87** | Gameplay: one real player decision inside a wave | R3.1 | `[ ]` |
 | **88** | Boss identity variety across the 20 encounters | R3.2 | `[ ]` |
@@ -147,8 +147,15 @@ re-run on a finished round (Phase 97).
 
 ## R2 — Architecture and code quality  `+45`
 
-- [ ] **R2.1 Remove or finish `PostProcessRenderer`.** Delete the class and its dangling shader
-  references, or implement it with real shaders plus a measured frame-time proof.
+- [x] **R2.1 Remove or finish `PostProcessRenderer`.** Deleted: it was a 26-line stub whose `begin`/`end`
+  were empty and which loaded `shaders/post-process.vert`/`.frag`, two files that have never existed in
+  `android/assets`. The deletion is guarded by a packaging test instead of a comment:
+  `InternalAssetReferences` extracts every literal `Gdx.files.internal("...")` from `core/src/main/java`
+  and `android/src/main/java` (comments and javadoc stripped first) and `InternalAssetReferenceTest` fails
+  when a literal has no file under `android/assets`, with a negative control and a count of the computed
+  paths that cannot be checked statically.
+  *Evidence:* `internal asset references: 5 literal paths checked, 15 computed path(s) not checkable
+  statically`; `theDeadPostProcessRendererIsGone` asserts the stub stays gone.
 - [ ] **R2.2 Break up `HeroDefenseGame`** into `WaveDirector`, `CombatSystem`, `ArenaRendererFacade`,
   `HudFlow`, `SessionController` with a ~400-line ceiling per class, validated by the full suite plus a
   before/after emulator smoke run.
@@ -246,6 +253,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
 | 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | `71bab7d` |
 | 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | `651d56a` |
+| 2026-09-16 | 85a | R2.1 | dead `PostProcessRenderer` deleted; new packaging test fails on any `Gdx.files.internal` literal without a shipped file (5 literals checked, 15 computed paths reported) | `16bac49` |
 | 2026-09-16 | 84 | R1.10 | CRITICAL_REVIEW status header with re-measured numbers, style-guide budget note, ASSET_ENGINE values pointed at the manifest, batch-record banners on 21 review docs; count-like claim scan: 8 documents left, all accounted for | *(this commit)* |
 | 2026-09-16 | 81 | R1.7 step 1 | emulator smoke test measures every captured frame and publishes `brightness-measurements.txt` in the CI artifact; assertions unchanged in this step | *(this commit)* |
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
