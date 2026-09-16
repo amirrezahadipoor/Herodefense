@@ -57,11 +57,39 @@ tasks.register("balanceGate", Test) {
     if (Runtime.runtime.availableProcessors() >= 2 && !project.hasProperty("serialTests")) {
         maxParallelForks = 2
     }
+    // The document is an input: BalanceDocumentTest fails when docs/BALANCE.md disagrees with the code, and without
+    // this line an incremental local run would call the task up to date after an edit to the file -- a gate that
+    // silently skips the thing it guards. CI is a fresh checkout, so it always ran there; this is for the desk.
+    inputs.file(rootProject.file("docs/BALANCE.md")).withPropertyName("balanceDocument").optional()
 }
 
 // `check` is the complete gate: the unit loop plus the sweeps. A push is judged by CI running both.
 tasks.named("check") {
     dependsOn tasks.named("balanceGate")
+}
+
+// --- Generated balance document (roadmap R4.4) -------------------------------------------------------------
+// Everything between a pair of `balance:generated` markers in docs/BALANCE.md is built from the shipped constants
+// and the simulator, and BalanceDocumentTest refuses to let the file disagree with the code. This task is for the
+// other direction: change a number on purpose, run it, and the document catches up.
+tasks.register("regenerateBalanceDoc", JavaExec) {
+    description = "Rewrites the generated blocks of docs/BALANCE.md from the code (roadmap R4.4)."
+    group = "documentation"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "com.amirrezahadipoor.herodefense.balance.BalanceDocument"
+    // The generator writes the file and says nothing (production code here does not print); the task reports what
+    // changed by comparing the document before and after the run, and BalanceDocumentTest is what fails if a
+    // contributor forgets to run it.
+    def documentFile = rootProject.file("docs/BALANCE.md")
+    def before = providers.provider { documentFile.exists() ? documentFile.text : "" }
+    def snapshot = before.get()
+    doLast {
+        if (documentFile.text == snapshot) {
+            println "docs/BALANCE.md: every generated block already matches the code"
+        } else {
+            println "docs/BALANCE.md: regenerated from the code"
+        }
+    }
 }
 
 // --- Static analysis (roadmap R2.5) -----------------------------------------------------------------------

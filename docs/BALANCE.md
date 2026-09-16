@@ -7,8 +7,22 @@ These coefficients are centralized in renderer-independent Java so the Phase 14 
 For wave `w` clamped to 1–200 (Phase 18.4 extended the run; waves 1–100 keep the Phase 17 curve unchanged):
 
 - The required starting candidate was `20 × 1.045^w`; Phase 14 simulation tuned it to `1.035`, and the Phase 17 lifesteal-and-skills rebalance raised it to the shipped `20 × 1.037^w` (Wave 100 enemies carry 21% more HP than before).
-- Shipped HP checkpoints: Wave 1 `20.74`, Wave 25 `49.60`, Wave 50 `123.02`, Wave 75 `305.10`, and Wave 100 `756.67`.
-- Baseline damage: `0.27 × 1.003^(w−1)`, reaching `0.3632` at Wave 100 before archetype scaling (Phase 17 raised growth from `1.002`).
+- Baseline damage growth is `0.27 × 1.003^(w−1)` (Phase 17 raised it from `1.002`), before archetype scaling and before the middle segment's hotter `1.006`.
+- The shipped curve itself, wave by wave, is generated below from `DifficultyCurve` rather than copied: the numbers this section used to publish were two curve revisions out of date by the time anyone checked.
+
+<!-- balance:generated growth-checkpoints -->
+| Wave | Baseline HP | Baseline damage |
+|---:|---:|---:|
+| 1 | 20.74 | 0.2700 |
+| 25 | 49.79 | 0.2910 |
+| 50 | 135.97 | 0.3379 |
+| 75 | 371.28 | 0.3924 |
+| 100 | 938.72 | 0.4293 |
+| 125 | 1783.28 | 0.5305 |
+| 150 | 3387.69 | 0.6555 |
+| 175 | 5291.74 | 0.7708 |
+| 200 | 8265.95 | 0.9063 |
+<!-- balance:end growth-checkpoints -->
 - **Second half (waves 101–200, after the planting ceremony):** the half climbs in **two spans** (Phase 91, R4.6). Waves 101–150 — the entry — continue from their Wave 100 values at `HP × 1.026^(w−100)` and `damage × 1.0085^(w−100)`; waves 151–200 — the final quarter — climb at `1.018` and `1.0065`. Measured HP checkpoints on the shipped curve: Wave 100 `938.67`, Wave 125 `1783.34`, Wave 150 `3387.71`, Wave 175 `5291.71`, Wave 200 `8266.02`; baseline damage reaches `0.9063` at Wave 200. Phase 18.4 shipped `1.021 / 1.006` against a simulator that ignored the Anvil; once the simulated player reforges equipped Rare/Legendary items (Phase 19.3) the second half fell to 1–3% pressure per wave, so the curve was tightened one notch. `1.024/1.008`, `1.024/1.010`, `1.025/1.010` and `1.0235/1.008` were rejected because their worst single wave exceeded the 35% ceiling (36–43%) or clears passed 80 s. A single `1.023/1.008` rate covering the whole half is what Phase 91 replaced: see the R4.6 section below for why the half is split and what the split cost.
 - A regular hit is capped at 28% of the max HP of a reference Hero who invests one of every five earned points in Health.
 - Archetype HP multipliers, relative to the 20-HP Rootling: Rootling `1.00`, Stonekin `1.70`, Gloom Wolf `0.85`, Fungal Brute `2.30`.
@@ -49,15 +63,24 @@ Only Rare and Legendary catalog items can be reforged, up to `+5`. Each step add
 
 The simulator's spending policy models a thrifty player: talent points go to the lowest base stat, coins always buy the cheapest affordable stat or skill level, spare drops are sold, and the Anvil is used on an equipped item whenever its next step is no dearer than the cheapest shop purchase (`BalanceSimulator.forgeEquippedItems`). `BalanceSimulator.lastLedger()` exposes the resulting coin flow. Baseline seed over 200 waves:
 
-| Flow | Coins | Notes |
-|---|---:|---|
-| Kill income | `80 216` | regular kills scale `×(1 + 0.025·wave)`, bosses `50 + 20·n` |
-| Item sales | `19 587` | ≈20% of all income; auto-sell is equivalent for the economy |
-| Stat shop | `53 725` | 132 levels across five stats |
-| Skill shop | `28 560` | 39 skill levels |
-| Anvil | `16 845` | 27 steps; every equipped Rare/Legendary reaches +4/+5 by the end |
+<!-- balance:generated economy-audit -->
+| Flow | Coins | Count |
+|---|---:|---:|
+| Kill income | 91177 | |
+| Item sales | 24579 | |
+| Stat shop | 58990 | 135 levels |
+| Skill shop | 39580 | 44 levels |
+| Anvil | 15980 | 28 steps |
 
-Across the nine gate seeds the split is stable (stats 53–56%, skills 28–30%, Anvil 15–17% of spend). Item sales matter: without them the run would lose ~two stat levels per 10 waves, which is why sell prices stay at `12 / 30 / 75 / 180` and forged items sell for more.
+Across the 9 gate seeds the split is stable: stats 51-57%, skills 28-35%, Anvil 13-15% of spend.
+<!-- balance:end economy-audit -->
+
+Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
+second largest source of income and auto-sell is equivalent for the economy; the Anvil's end state is every
+equipped Rare or Legendary at +4/+5. The table and the stability line under it are read from
+`BalanceSimulator.lastLedger()`, so they are the simulator's own books rather than a transcript. Item sales
+matter: without them a run would lose roughly two stat levels per ten waves, which is why sell prices stay at
+`12 / 30 / 75 / 180` and forged items sell for more.
 
 ## The second half's two spans (Phase 91, R4.6)
 
@@ -67,18 +90,45 @@ Both rejections had the same cause, and it is the reason the half is now split i
 
 Shipped shape, all measured on the five fixed seeds of `WavePressureCurveTest` and the five of `TrialSimulationTest`:
 
-| Quantity | Before (single rate) | Shipped (R4.6) |
-|---|---:|---:|
-| Quarter means | `0.0576 / 0.0986 / 0.1032 / 0.1229` | `0.0576 / 0.0986 / 0.1142 / 0.1298` |
-| Quarter steps | `×1.712 / ×1.047 / ×1.191` | `×1.712 / ×1.158 / ×1.136` |
-| Sweep average range | `0.081–0.107` | `0.075–0.119` |
-| Elite contact multiplier, second half | `×1.5` | `×1.2` |
-| Worst trial-pair median spike | `0.381` | `0.382` (ceiling `0.40`) |
-| Worst reward-card spike (AGILITY forced at boss 1) | `0.262` | `0.390` (ceiling `0.40`) |
+For the record, the state the split replaced, measured the same way: quarter means `0.0576 / 0.0986 / 0.1032 /
+0.1229`, steps `×1.712 / ×1.047 / ×1.191`, sweep average range `0.081–0.107`, elite multiplier `×1.5` in both halves,
+worst trial-pair median spike `0.381`, reward-card spike `0.262`. Everything below is generated on the shipped curve,
+so the comparison cannot rot:
 
-The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. Two honest caveats: one sweep seed (`0x4845524F444547`) spends 4.9% of its 5% quarter-dip allowance, and the reward-card matrix has 2.5% of headroom left against its ceiling, so a later change that adds pressure to the *first* hundred waves has almost nothing to spend.
+<!-- balance:generated second-half -->
+| Quantity | Measured now | Where it comes from |
+|---|---:|---|
+| Quarter means (fixed sweep) | `0.0576 / 0.0986 / 0.1142 / 0.1298` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.712 / x1.158 / x1.136` | the same sweep |
+| Sweep average range | `0.0748 - 0.1193` | the same sweep, inside the 0.05-0.15 band |
+| Deepest single-seed quarter dip | `4.97%` against the `5.00%` allowance | the same sweep |
+| Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
+| Riskiest trial pairs, median spike | `0.3729 / 0.3816 / 0.3515` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+
+The three pairs are the ones this gate has caught above 0.38, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `BOSS_BOUNTY + BLOOD_PRICE`, `MISERS_PACT + BLOOD_PRICE` (the other eleven pairs of the matrix run in the gate, not here).
+| Reward-card spike, AGILITY forced at boss 1 | `0.38992` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
+<!-- balance:end second-half -->
+
+The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. Two honest caveats, both of them visible in the generated table above rather than buried: the deepest single-seed quarter dip spends most of the five percent the gate allows, and the reward-card matrix keeps very little headroom against its ceiling — so a later change that adds pressure to the *first* hundred waves has almost nothing to spend.
 
 **It is not enough for the blocked bad-luck rule.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 returned `0.01–0.03`, leaving the shipped worst pair at `0.382`. The rule stays deferred; see the economy section above.
+
+## The ascension ladder in growth rates (Phase 91)
+
+Each tier multiplies every growth rate by its own bump, which is why the ladder's charge is invisible early and
+heavy late: a bump of `0.0004` per tier is a fifth of a percent of a wave in the opening and a multiple of it by
+wave 200. The ladder is an open roadmap item (R4.7) precisely because of that shape — it pays the hero a flat
+bonus at run start and charges them a compounding one, and the measurement of a player who ignores every system
+says the reward wins.
+
+<!-- balance:generated ascension-bumps -->
+| Tier | Health growth per wave | Damage growth per wave | Second-half entry | Final quarter |
+|---:|---:|---:|---:|---:|
+| 0 | 1.0370 | 1.00300 | 1.0260 | 1.0180 |
+| 3 | 1.0382 | 1.00375 | 1.0272 | 1.0192 |
+| 6 | 1.0395 | 1.00450 | 1.0285 | 1.0204 |
+| 10 | 1.0411 | 1.00551 | 1.0301 | 1.0221 |
+<!-- balance:end ascension-bumps -->
 
 ## How the balance gate runs (Phase 91, roadmap R4.5)
 
@@ -479,11 +529,12 @@ Three details the sweep had to get right, all of them measured rather than assum
 
 ## The drop economy (Phase 91, roadmap R4.3)
 
-Two tables, both generated: the rates below are computed by `DropEconomyTableTest` from the same constants the game
-rolls, and the document is only allowed to contain what the test computed — a number here that no longer matches
-`ItemDropSystem`, `EquipmentCatalog` or `EquipmentDefinition` fails the build instead of being copied and forgotten.
+Two tables, both generated: the rates below are computed from the same constants the game rolls, and the document
+is only allowed to contain what the generator computed — a number that no longer matches `ItemDropSystem`,
+`EquipmentCatalog` or `EquipmentDefinition` fails `BalanceDocumentTest` instead of being copied and forgotten
+(roadmap R4.4: the block markers, not the prose around them, are what the build checks).
 
-<!-- generated by DropEconomyTableTest: edit the code, not this table -->
+<!-- balance:generated drop-economy -->
 | tier | rate per kill | share of the item budget | pool | sell price | coins per kill |
 |---|---|---|---|---|---|
 | `COMMON` | 6.0000% | 60.29% | 14 | 12 | 0.7200 |
@@ -492,6 +543,7 @@ rolls, and the document is only allowed to contain what the test computed — a 
 | `LEGENDARY` | 0.1500% | 1.51% | 5 | 180 | 0.2700 |
 | `MYTHIC` | 0.0015% | 0.02% | 6 | 400 | 0.0060 |
 | **total** | 9.9515% | 100% | 46 | | **2.4960** |
+<!-- balance:end drop-economy -->
 
 Read as an economy: a kill is worth about a tenth of an item and about two and a half coins, a wave is worth roughly
 that much times its enemy count, and twenty kills are worth two items. Luck multiplies every band, so the same roll
