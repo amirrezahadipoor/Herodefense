@@ -59,6 +59,10 @@ final class DifficultyCurveTest {
             DifficultyCurve.SECOND_HALF_HEALTH_GROWTH, DifficultyCurve.secondHalfHealthGrowthForTier(0), 0.0f);
         assertEquals(
             DifficultyCurve.SECOND_HALF_DAMAGE_GROWTH, DifficultyCurve.secondHalfDamageGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.FINAL_QUARTER_HEALTH_GROWTH, DifficultyCurve.finalQuarterHealthGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.FINAL_QUARTER_DAMAGE_GROWTH, DifficultyCurve.finalQuarterDamageGrowthForTier(0), 0.0f);
     }
 
     @Test
@@ -87,7 +91,7 @@ final class DifficultyCurveTest {
     }
 
     @Test
-    void secondHalfKeepsTheSameRelativeBump() {
+    void bothSecondHalfSpansKeepTheSameRelativeBump() {
         for (int tier : new int[] {1, 3, 6, 10}) {
             assertEquals(
                 DifficultyCurve.healthGrowthForTier(tier) / DifficultyCurve.healthGrowthForTier(0),
@@ -99,6 +103,18 @@ final class DifficultyCurveTest {
                 DifficultyCurve.damageGrowthForTier(tier) / DifficultyCurve.damageGrowthForTier(0),
                 DifficultyCurve.secondHalfDamageGrowthForTier(tier)
                     / DifficultyCurve.secondHalfDamageGrowthForTier(0),
+                0.000001f
+            );
+            assertEquals(
+                DifficultyCurve.healthGrowthForTier(tier) / DifficultyCurve.healthGrowthForTier(0),
+                DifficultyCurve.finalQuarterHealthGrowthForTier(tier)
+                    / DifficultyCurve.finalQuarterHealthGrowthForTier(0),
+                0.000001f
+            );
+            assertEquals(
+                DifficultyCurve.damageGrowthForTier(tier) / DifficultyCurve.damageGrowthForTier(0),
+                DifficultyCurve.finalQuarterDamageGrowthForTier(tier)
+                    / DifficultyCurve.finalQuarterDamageGrowthForTier(0),
                 0.000001f
             );
         }

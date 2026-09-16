@@ -11,8 +11,20 @@ public final class DifficultyCurve {
     public static final float BASE_ENEMY_DAMAGE = 0.27f;
     public static final float ENEMY_TYPE_REFERENCE_DAMAGE = 5f;
     public static final float ENEMY_DAMAGE_GROWTH = 1.003f;
-    public static final float SECOND_HALF_HEALTH_GROWTH = 1.023f;
-    public static final float SECOND_HALF_DAMAGE_GROWTH = 1.008f;
+    // The second half climbs in two spans (roadmap R4.6). Waves 101-150 -- the entry -- climb at
+    // SECOND_HALF_*_GROWTH, hotter than the 1.023/1.008 the whole half used to run at, because the
+    // step into the second half was the shallowest in the curve (x1.047 against the x1.71 before it).
+    // Waves 151-200 -- the final quarter -- climb at FINAL_QUARTER_*_GROWTH, cooler than the old
+    // tail, which is where the run's heaviest single waves sat. Together the two spans end the run
+    // 9% lighter in health and 5% lighter in damage than the old single rate did, while the measured
+    // quarter step rises to x1.165. Waves 1-100 read neither span, so the first half -- and every
+    // brief-vigil and tier-0 gate -- stays bit-identical to the shipped curve.
+    public static final float SECOND_HALF_HEALTH_GROWTH = 1.026f;
+    public static final float SECOND_HALF_DAMAGE_GROWTH = 1.0085f;
+    /** Last wave of the second half's hotter entry span; the final quarter owns the rest of the run. */
+    public static final int SECOND_HALF_ENTRY_LAST_WAVE = 150;
+    public static final float FINAL_QUARTER_HEALTH_GROWTH = 1.018f;
+    public static final float FINAL_QUARTER_DAMAGE_GROWTH = 1.0065f;
     // Middle-third segment (Phase 25.3b): waves 25-80 grow slightly hotter than the
     // base first-half rate so pressure rises end to end instead of plateauing.
     // Tuned against the 5-15% / 35% / 120 s gate (see docs/BALANCE.md).
@@ -44,6 +56,19 @@ public final class DifficultyCurve {
         return ENEMY_DAMAGE_GROWTH * (1f + ASCENSION_DAMAGE_BUMP_PER_TIER * Math.max(0, tier));
     }
 
+    public static float finalQuarterHealthGrowthForTier(int tier) {
+        return FINAL_QUARTER_HEALTH_GROWTH * (1f + ASCENSION_HEALTH_BUMP_PER_TIER * Math.max(0, tier));
+    }
+
+    public static float finalQuarterDamageGrowthForTier(int tier) {
+        return FINAL_QUARTER_DAMAGE_GROWTH * (1f + ASCENSION_DAMAGE_BUMP_PER_TIER * Math.max(0, tier));
+    }
+
+    /** Waves the second half spends at its entry rate before the final quarter's cooler climb. */
+    public static int secondHalfEntryWaves() {
+        return SECOND_HALF_ENTRY_LAST_WAVE - GameState.PLANTING_WAVE;
+    }
+
     public static float secondHalfHealthGrowthForTier(int tier) {
         return SECOND_HALF_HEALTH_GROWTH * (1f + ASCENSION_HEALTH_BUMP_PER_TIER * Math.max(0, tier));
     }
@@ -72,10 +97,13 @@ public final class DifficultyCurve {
         int middle = Math.min(
             Math.max(0, firstHalf - early), MIDDLE_SEGMENT_LAST_WAVE - MIDDLE_SEGMENT_FIRST_WAVE + 1);
         int late = Math.max(0, firstHalf - early - middle);
+        int entry = Math.min(secondHalf, secondHalfEntryWaves());
+        int finalQuarter = Math.max(0, secondHalf - entry);
         return BASE_ENEMY_HEALTH
             * (float) Math.pow(healthGrowthForTier(ascensionTier), early + late)
             * (float) Math.pow(middleHealthGrowthForTier(ascensionTier), middle)
-            * (float) Math.pow(secondHalfHealthGrowthForTier(ascensionTier), secondHalf);
+            * (float) Math.pow(secondHalfHealthGrowthForTier(ascensionTier), entry)
+            * (float) Math.pow(finalQuarterHealthGrowthForTier(ascensionTier), finalQuarter);
     }
 
     public float regularHealth(EnemyType type, int waveNumber) {
@@ -100,10 +128,13 @@ public final class DifficultyCurve {
         int middle = Math.min(
             Math.max(0, firstHalf - early), MIDDLE_SEGMENT_LAST_WAVE - MIDDLE_SEGMENT_FIRST_WAVE + 1);
         int late = Math.max(0, firstHalf - early - middle);
+        int entry = Math.min(secondHalf, secondHalfEntryWaves());
+        int finalQuarter = Math.max(0, secondHalf - entry);
         return BASE_ENEMY_DAMAGE
             * (float) Math.pow(damageGrowthForTier(ascensionTier), early + late)
             * (float) Math.pow(middleDamageGrowthForTier(ascensionTier), middle)
-            * (float) Math.pow(secondHalfDamageGrowthForTier(ascensionTier), secondHalf);
+            * (float) Math.pow(secondHalfDamageGrowthForTier(ascensionTier), entry)
+            * (float) Math.pow(finalQuarterDamageGrowthForTier(ascensionTier), finalQuarter);
     }
 
     public float uncappedRegularDamage(EnemyType type, int waveNumber) {

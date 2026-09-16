@@ -9,7 +9,7 @@ For wave `w` clamped to 1–200 (Phase 18.4 extended the run; waves 1–100 keep
 - The required starting candidate was `20 × 1.045^w`; Phase 14 simulation tuned it to `1.035`, and the Phase 17 lifesteal-and-skills rebalance raised it to the shipped `20 × 1.037^w` (Wave 100 enemies carry 21% more HP than before).
 - Shipped HP checkpoints: Wave 1 `20.74`, Wave 25 `49.60`, Wave 50 `123.02`, Wave 75 `305.10`, and Wave 100 `756.67`.
 - Baseline damage: `0.27 × 1.003^(w−1)`, reaching `0.3632` at Wave 100 before archetype scaling (Phase 17 raised growth from `1.002`).
-- **Second half (waves 101–200, after the planting ceremony):** both curves continue from their Wave 100 values with their own growth, `HP × 1.023^(w−100)` and `damage × 1.008^(w−100)`. HP checkpoints: Wave 125 `1335.97`, Wave 150 `2358.78`, Wave 175 `4164.65`, Wave 200 `7353.08`; baseline damage reaches `0.8058` at Wave 200. Phase 18.4 shipped `1.021 / 1.006` against a simulator that ignored the Anvil; once the simulated player reforges equipped Rare/Legendary items (Phase 19.3) the second half fell to 1–3% pressure per wave, so the curve was tightened one notch. `1.024/1.008`, `1.024/1.010`, `1.025/1.010` and `1.0235/1.008` were rejected because their worst single wave exceeded the 35% ceiling (36–43%) or clears passed 80 s.
+- **Second half (waves 101–200, after the planting ceremony):** the half climbs in **two spans** (Phase 91, R4.6). Waves 101–150 — the entry — continue from their Wave 100 values at `HP × 1.026^(w−100)` and `damage × 1.0085^(w−100)`; waves 151–200 — the final quarter — climb at `1.018` and `1.0065`. Measured HP checkpoints on the shipped curve: Wave 100 `938.67`, Wave 125 `1783.34`, Wave 150 `3387.71`, Wave 175 `5291.71`, Wave 200 `8266.02`; baseline damage reaches `0.9063` at Wave 200. Phase 18.4 shipped `1.021 / 1.006` against a simulator that ignored the Anvil; once the simulated player reforges equipped Rare/Legendary items (Phase 19.3) the second half fell to 1–3% pressure per wave, so the curve was tightened one notch. `1.024/1.008`, `1.024/1.010`, `1.025/1.010` and `1.0235/1.008` were rejected because their worst single wave exceeded the 35% ceiling (36–43%) or clears passed 80 s. A single `1.023/1.008` rate covering the whole half is what Phase 91 replaced: see the R4.6 section below for why the half is split and what the split cost.
 - A regular hit is capped at 28% of the max HP of a reference Hero who invests one of every five earned points in Health.
 - Archetype HP multipliers, relative to the 20-HP Rootling: Rootling `1.00`, Stonekin `1.70`, Gloom Wolf `0.85`, Fungal Brute `2.30`.
 - Archetype damage multipliers, relative to the authored 5-damage Rootling: Rootling `1.00`, Stonekin `1.40`, Gloom Wolf `1.20`, Fungal Brute `2.00`.
@@ -58,6 +58,27 @@ The simulator's spending policy models a thrifty player: talent points go to the
 | Anvil | `16 845` | 27 steps; every equipped Rare/Legendary reaches +4/+5 by the end |
 
 Across the nine gate seeds the split is stable (stats 53–56%, skills 28–30%, Anvil 15–17% of spend). Item sales matter: without them the run would lose ~two stat levels per 10 waves, which is why sell prices stay at `12 / 30 / 75 / 180` and forged items sell for more.
+
+## The second half's two spans (Phase 91, R4.6)
+
+`WavePressureCurveTest` measures the shape of the run in four fifty-wave quarters and found the shallowest step in the curve where the second half begins: waves 101–150 were only **4.7%** heavier than waves 51–100, against **71%** for the step before them, because the whole half ran at the curve's coolest rate (`1.023 / 1.008`) against the base `1.037` and the middle `1.041`. Two repairs from wave 121 (`1.025/1.0085` and `1.024/1.008`) were measured and rejected on the ceilings — trial pairs 0.41–0.47 and tier-10 STRENGTH median 0.677 against their 0.40 and 0.60.
+
+Both rejections had the same cause, and it is the reason the half is now split instead of simply raised. **The second half's heat is the run's spike carrier.** Every spike the gates catch late in a run sits on an **elite wave** (the elite schedule is every seventh wave at tier 0: 126, 133, 154, 182 and 196 are all elite waves), and an elite's contact damage carried a flat `×1.5` on top of a damage baseline that had already climbed for a hundred more waves. Measured over the five trial seeds, a softer elite multiplier of `1.2` in the second half buys **0.01–0.03** of spike headroom on the worst pairs and moves average pressure by **less than 0.001**, because an elite's damage does not change how long its wave takes. That purchase is what pays for the hotter entry.
+
+Shipped shape, all measured on the five fixed seeds of `WavePressureCurveTest` and the five of `TrialSimulationTest`:
+
+| Quantity | Before (single rate) | Shipped (R4.6) |
+|---|---:|---:|
+| Quarter means | `0.0576 / 0.0986 / 0.1032 / 0.1229` | `0.0576 / 0.0986 / 0.1142 / 0.1298` |
+| Quarter steps | `×1.712 / ×1.047 / ×1.191` | `×1.712 / ×1.158 / ×1.136` |
+| Sweep average range | `0.081–0.107` | `0.075–0.119` |
+| Elite contact multiplier, second half | `×1.5` | `×1.2` |
+| Worst trial-pair median spike | `0.381` | `0.382` (ceiling `0.40`) |
+| Worst reward-card spike (AGILITY forced at boss 1) | `0.262` | `0.390` (ceiling `0.40`) |
+
+The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. Two honest caveats: one sweep seed (`0x4845524F444547`) spends 4.9% of its 5% quarter-dip allowance, and the reward-card matrix has 2.5% of headroom left against its ceiling, so a later change that adds pressure to the *first* hundred waves has almost nothing to spend.
+
+**It is not enough for the blocked bad-luck rule.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 returned `0.01–0.03`, leaving the shipped worst pair at `0.382`. The rule stays deferred; see the economy section above.
 
 ## Critical hits
 

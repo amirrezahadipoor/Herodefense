@@ -22,6 +22,16 @@ public final class EnemyWaveSpawner {
     /** Elites carry roughly triple health and half-again damage. */
     public static final float ELITE_HEALTH_MULT = 3f;
     public static final float ELITE_DAMAGE_MULT = 1.5f;
+    /**
+     * The second half carries a softer elite contact multiplier (roadmap R4.6). Every spike the balance
+     * gates have caught late in a run sits on an elite wave -- 126, 133, 154, 182, 196 are all elite waves
+     * on the shipped spawn schedule -- and the flat 1.5 was multiplying a damage baseline that already
+     * climbed for a hundred more waves. Measured over the five trial seeds: 1.2 buys 0.01-0.03 of spike
+     * headroom on the worst pairs and moves the average pressure by less than 0.001, because an elite's
+     * damage does not change how long its wave takes. The first half keeps the shipped 1.5, so every brief
+     * vigil and every tier-0 gate stays bit-identical.
+     */
+    public static final float ELITE_SECOND_HALF_DAMAGE_MULT = 1.2f;
     private static final long ELITE_SALT = 0xE11E7AFF1E57A1E5L;
     /** Tree-line box where Silent Rootling watchers stand and never leave. */
     static final float TREE_LINE_MIN_X = 90f;
@@ -153,9 +163,11 @@ public final class EnemyWaveSpawner {
                 elite.affixTimerSeconds = EliteAffixSystem.ROOTWARD_SHIELD_PERIOD
                     - EliteAffixSystem.ROOTWARD_FIRST_SHIELD_DELAY;
             }
+            float eliteDamage = waveNumber > GameState.PLANTING_WAVE
+                ? ELITE_SECOND_HALF_DAMAGE_MULT : ELITE_DAMAGE_MULT;
             elite.health *= ELITE_HEALTH_MULT;
             elite.maxHealth *= ELITE_HEALTH_MULT;
-            elite.damage *= ELITE_DAMAGE_MULT;
+            elite.damage *= eliteDamage;
         }
     }
 
