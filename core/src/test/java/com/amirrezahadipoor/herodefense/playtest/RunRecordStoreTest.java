@@ -139,7 +139,7 @@ final class RunRecordStoreTest {
         measurements.put("note", "quoted \"value\"\nwith a second line\tand a tab");
         measurements.put("unicode", "ویژگی");
 
-        String json = RunRecord.of(RunRecord.SOURCE_SIMULATOR, "headless", "BRIEF", 12L, 30, true, false,
+        String json = RunRecord.of(RunRecord.SOURCE_SIMULATOR, "headless", "BRIEF", 12L, 30, 0, true, false,
             measurements, 1L).toJson();
 
         JsonValue parsed = new JsonReader().parse(json);

@@ -117,13 +117,14 @@ public final class RunRecord {
         String mode,
         long runSeed,
         int wavesCleared,
+        int ascensionTier,
         boolean runCompleted,
         boolean heroDied,
         Map<String, String> measurements,
         long recordedAtMillis
     ) {
         return new RunRecord(
-            source, platform, 0, mode, 0, runSeed, wavesCleared, runCompleted, heroDied, "",
+            source, platform, 0, mode, Math.max(0, ascensionTier), runSeed, wavesCleared, runCompleted, heroDied, "",
             measurements, recordedAtMillis
         );
     }

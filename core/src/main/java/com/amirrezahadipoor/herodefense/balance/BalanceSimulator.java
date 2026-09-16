@@ -49,8 +49,25 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
-/** Runs the real combat/economy systems without libGDX rendering or Android dependencies. */
+/**
+ * Runs the real combat/economy systems without libGDX rendering or Android dependencies.
+ *
+ * <p>Two players can drive it (roadmap R4.1). {@link Policy#OPTIMISER} is the one every other gate in this
+ * repository measures: it scores the boss reward cards, keeps both shop tabs moving with the cheapest purchase it
+ * can afford, funds a skill evolution and reforges gear. {@link Policy#NAIVE} is the player the difficulty band
+ * also has to hold for — takes the first reward card offered, never visits the shop, spreads talent points evenly
+ * down the list, and does not reforge. It still equips a better item and sells what it replaces, because that is
+ * what the game's own tutorial asks of anyone. The two policies differ *only* in those choices; the combat,
+ * spawner, economy and curve code they run through is the same.
+ */
 public final class BalanceSimulator {
+
+    /** Who is playing. */
+    public enum Policy {
+        OPTIMISER,
+        NAIVE
+    }
+
     public static final float STEP_SECONDS = 1f / 30f;
     public static final float MAX_SECONDS_PER_WAVE = 300f;
 
@@ -81,6 +98,7 @@ public final class BalanceSimulator {
     /** Coin ledger of the last run, for economy audits (income and spend by sink). */
     private final Ledger ledger = new Ledger();
     private final BossRewardCardSystem rewardCards = new BossRewardCardSystem();
+    private Policy policy = Policy.OPTIMISER;
     private final StatShopSystem shop = new StatShopSystem();
     private final SkillShopSystem skillShop = new SkillShopSystem();
     private final WaveLifecycleSystem waves = new WaveLifecycleSystem(
@@ -153,6 +171,30 @@ public final class BalanceSimulator {
      */
     public BalanceReport runBrief(long seed) {
         return run(seed, null, 0, 0, List.of(), GameMode.BRIEF);
+    }
+
+    /**
+     * A run played by the chosen {@link Policy}, at a chosen ascension tier and in a chosen mode (roadmap R4.1).
+     * The policy is restored when the run ends, so one simulator instance cannot leak it into the next run.
+     */
+    public BalanceReport runWithPolicy(long seed, Policy who, int ascensionTier, GameMode mode) {
+        this.policy = who == null ? Policy.OPTIMISER : who;
+        try {
+            return run(seed, null, 0, Math.max(0, ascensionTier), List.of(),
+                mode == null ? GameMode.STANDARD : mode);
+        } finally {
+            this.policy = Policy.OPTIMISER;
+        }
+    }
+
+    /** A standard run played by the non-optimiser (roadmap R4.1). */
+    public BalanceReport runWithPolicy(long seed, Policy who) {
+        return runWithPolicy(seed, who, 0, GameMode.STANDARD);
+    }
+
+    /** The brief vigil played by the non-optimiser (roadmap R4.1). */
+    public BalanceReport runBriefWithPolicy(long seed, Policy who) {
+        return runWithPolicy(seed, who, 0, GameMode.BRIEF);
     }
 
     private BalanceReport run(
@@ -289,6 +331,15 @@ public final class BalanceSimulator {
     }
 
     private void allocateTalentPoints(GameState state) {
+        if (policy == Policy.NAIVE) {
+            // Spread evenly down the list in order: no reading of the numbers, no synergy hunting.
+            int next = 0;
+            while (state.unspentTalentPoints > 0) {
+                progression.allocateTalentPoint(state, BALANCED_STATS[next % BALANCED_STATS.length]);
+                next++;
+            }
+            return;
+        }
         while (state.unspentTalentPoints > 0) {
             HeroStat selected = BALANCED_STATS[0];
             int fewest = basePoints(state, selected);
@@ -309,6 +360,9 @@ public final class BalanceSimulator {
      * both tabs of the shop moving instead of hoarding.
      */
     private void buyBalancedShopUpgrades(GameState state) {
+        if (policy == Policy.NAIVE) {
+            return;
+        }
         buyFocusedEvolution(state);
         // Endless shop: bound the greedy loop per visit rather than by a level cap.
         int budget = 64;
@@ -431,7 +485,9 @@ public final class BalanceSimulator {
             int price = spare.sellPrice;
             if (equipment.sell(state, spare)) ledger.sellIncome += price;
         }
-        forgeEquippedItems(state);
+        if (policy == Policy.OPTIMISER) {
+            forgeEquippedItems(state);
+        }
     }
 
     /**
@@ -510,7 +566,9 @@ public final class BalanceSimulator {
         int forcedBossNumber
     ) {
         int selectedIndex;
-        if (forcedCard != null && state.pendingRewardBossNumber == forcedBossNumber) {
+        if (policy == Policy.NAIVE && forcedCard == null) {
+            selectedIndex = 0;
+        } else if (forcedCard != null && state.pendingRewardBossNumber == forcedBossNumber) {
             selectedIndex = state.pendingRewardCards.indexOf(forcedCard.name());
             if (selectedIndex < 0) {
                 selectedIndex = 0;

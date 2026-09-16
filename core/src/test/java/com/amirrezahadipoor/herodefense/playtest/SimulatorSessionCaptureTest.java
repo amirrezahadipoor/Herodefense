@@ -69,6 +69,7 @@ final class SimulatorSessionCaptureTest {
             GameMode.BRIEF.name(),
             SEED,
             report.waves().size(),
+            0,
             report.reachedFinalWave(),
             !report.reachedFinalWave(),
             measurements,
@@ -129,7 +130,7 @@ final class SimulatorSessionCaptureTest {
         }
 
         RunRecord record = RunRecord.of(
-            RunRecord.SOURCE_SIMULATOR, "headless", GameMode.STANDARD.name(), SEED, report.waves().size(),
+            RunRecord.SOURCE_SIMULATOR, "headless", GameMode.STANDARD.name(), SEED, report.waves().size(), 0,
             report.reachedFinalWave(), !report.reachedFinalWave(), measurements, System.currentTimeMillis());
 
         FileHandle directory = new FileHandle(OUTPUT.toFile());
@@ -143,5 +144,38 @@ final class SimulatorSessionCaptureTest {
         assertTrue(Float.parseFloat(parsed.get("measurements").getString("quarter4Waves"))
             > Float.parseFloat(parsed.get("measurements").getString("quarter1Waves")),
             "the fourth quarter has to be heavier than the first, or the curve is not rising");
+    }
+
+    /**
+     * The non-optimiser at the top of the ladder, recorded as its own session. It exists because the measurement
+     * surprised everyone who read it first: a player who ignores every system does *better* in the brief vigil at
+     * tier 10 than at tier 0, which is the opposite of what an ascension ladder is for. The record carries the
+     * numbers so the finding that came out of it can point at a session rather than at a memory.
+     */
+    @Test
+    void theNonOptimiserAtTierTenIsRecorded() {
+        BalanceSimulator.BalanceReport report = new BalanceSimulator()
+            .runWithPolicy(SEED, BalanceSimulator.Policy.NAIVE, 10, GameMode.BRIEF);
+
+        Map<String, String> measurements = new LinkedHashMap<>();
+        measurements.put("averageDamageFraction", Float.toString(report.averageDamageFraction()));
+        measurements.put("policy", BalanceSimulator.Policy.NAIVE.name());
+        measurements.put("tier", "10");
+        measurements.put("waves", Integer.toString(report.waves().size()));
+        measurements.put("survived", Boolean.toString(report.reachedFinalWave()));
+
+        RunRecord record = RunRecord.of(
+            RunRecord.SOURCE_SIMULATOR, "headless", GameMode.BRIEF.name(), SEED, report.waves().size(), 10,
+            report.reachedFinalWave(), !report.reachedFinalWave(), measurements, System.currentTimeMillis());
+
+        FileHandle directory = new FileHandle(OUTPUT.toFile());
+        directory.mkdirs();
+        FileHandle file = directory.child("simulator-naive-tier10-" + SEED + ".json");
+        file.writeString(record.toJson(), false, "UTF-8");
+
+        JsonValue parsed = new JsonReader().parse(file.readString("UTF-8"));
+        assertEquals("NAIVE", parsed.get("measurements").getString("policy"));
+        assertEquals(10, parsed.getInt("ascensionTier"),
+            "a record of a tier run says which tier, or the ledger cannot tell the two apart");
     }
 }

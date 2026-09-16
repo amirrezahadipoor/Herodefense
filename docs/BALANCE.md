@@ -360,3 +360,45 @@ rather than spend it.
 
 Both candidates were run through their gates and reverted; nothing about them is in the shipped
 build except this table.
+
+## The non-optimiser band (Phase 91, roadmap R4.1, second half)
+
+Every other gate in this repository measures one player: the optimiser policy of `BalanceSimulator` — it scores the
+boss reward cards, keeps both shop tabs moving with the cheapest purchase it can afford, funds a skill evolution and
+reforges its gear. Nobody plays that way on the first evening, so the item asked for the other measurement and a
+*published band*, and `NonOptimiserBandTest` is both. The non-optimiser takes the first reward card it is offered,
+never opens the shop, spreads its talent points evenly down the list and never reforges; it still equips a better
+item and sells what it replaces, because the game's own opening asks that of anyone. Both policies run the same
+combat, spawner, economy and curve code — the policy changes only those choices.
+
+Measured in the brief vigil (30 waves, the mode's own ending, twelve seeds):
+
+| tier | brief vigil wins | mean pressure | mean reach in the long vigil |
+|---|---|---|---|
+| 0 | **12/12** | 0.0918 | 69.7 waves |
+| 3 | 12/12 | 0.0199 | 85.6 waves |
+| 6 | 12/12 | 0.0089 | 94.3 waves |
+| 10 | 12/12 | **0.0019** | **102.3 waves** |
+
+The optimiser, on the same twelve seeds at tier 0, finishes every brief run at a mean pressure of 0.051 and every
+two-hundred-wave run as well.
+
+What the band says, and what it found:
+
+* **The brief vigil is a floor, not a range.** A player who ignores every system still has to be able to finish the
+  opening of the game; a tutorial that punishes you for not knowing the systems yet is a tutorial that loses
+  players. The gate demands a **90% win rate** there and measures 100%.
+* **The long vigil is the range.** The same player has to be caught by the curve somewhere — a run that cannot be
+  lost is not a run — and has to get far enough to see the game. The gate demands an average reach between **55 and
+  90 waves** and measures 69.7, with the run ending badly on all twelve seeds and the optimiser untouched at 200.
+* **The ladder is inverted for this player, and that is now an item (R4.7).** Ascension is supposed to make the game
+  harder; for a player who does not optimise it does the opposite at every step. Mean pressure in the brief vigil
+  falls from 0.0918 at tier 0 to 0.0019 at tier 10 — a hundredfold — and the long-run reach *rises* from 69.7 to
+  102.3 waves. The reason is that the tier's hero-side bonuses (the heartwood and root-network power a real player
+  earns between runs, which the simulator grants at run start) are flat and large, while the per-tier enemy growth
+  is a 0.0004 health and 0.00025 damage bump per tier compounding over the wave count. At tier 10 the hero starts
+  with +10 strength, +20 health, +500 coins, +5 talent points and a wider Focus pool, and the enemies have grown
+  ~4% in health and ~2.5% in damage: the ladder hands out the reward and charges almost nothing for it. The fix has
+  to be found without spending the spike headroom the trial and tier ceilings need (see R4.6), which is why R4.7 is
+  an item with numbers rather than a paragraph of intent.
+
