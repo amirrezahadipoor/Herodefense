@@ -42,6 +42,29 @@ public final class EnemyWaveSpawner {
         );
     }
 
+    /**
+     * How many roster entries a wave draws from (R3.4).
+     *
+     * <p>The roster doubles from four to eight, and the four additions enter the cycle at
+     * {@link #DEEP_ROSTER_FIRST_WAVE} rather than at wave one. Reason: the accepted balance evidence (the
+     * two-hundred-wave sweep and the thirty-wave brief sweep) was measured against waves whose first ten were
+     * spawned from the four field creatures, and the deep roster's faster rotation pulls heavy archetypes into
+     * the opening. Staggering the entry keeps the opening bit-identical to that evidence and makes the new
+     * creatures a depth beat instead of a difficulty rewrite. `EnemyWaveSpawnerTest` asserts both halves.
+     */
+    static int rosterFor(int waveNumber) {
+        return waveNumber >= DEEP_ROSTER_FIRST_WAVE ? EnemyType.values().length : FIELD_ROSTER;
+    }
+
+    /** The first wave whose spawns may draw from the doubled roster. */
+    public static final int DEEP_ROSTER_FIRST_WAVE = 11;
+
+    /** The four field creatures, and the head of {@link EnemyType#values()}. */
+    static final int FIELD_ROSTER = 4;
+
+    /** Coprime with the eight-role roster, so one block still holds every archetype exactly once. */
+    static final int DEEP_ROSTER_STRIDE = 3;
+
     /** Elite cadence tightens one wave every three tiers, floored at every 4th wave. */
     public static int eliteWaveInterval(int ascensionTier) {
         return Math.max(4, 7 - Math.max(0, ascensionTier) / 3);
@@ -87,7 +110,11 @@ public final class EnemyWaveSpawner {
                 }
                 default -> throw new IllegalStateException("Unhandled spawn lane: " + lane);
             }
-            EnemyType type = types[Math.floorMod(waveNumber - 1 + index, types.length)];
+            int roster = rosterFor(waveNumber);
+            // Deep waves interleave the roster instead of listing it: a coprime stride still visits every type
+            // exactly once per roster-length block, but it stops a heavy archetype from arriving as a run.
+            int stride = roster > FIELD_ROSTER ? DEEP_ROSTER_STRIDE : 1;
+            EnemyType type = types[Math.floorMod(waveNumber - 1 + index * stride, roster)];
             Enemy enemy = factory.createForWave(
                 state, type, x, y, lane.id(), waveNumber
             );

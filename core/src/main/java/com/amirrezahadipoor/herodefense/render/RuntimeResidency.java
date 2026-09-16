@@ -20,9 +20,16 @@ import java.util.List;
  */
 public final class RuntimeResidency {
 
-    /** Regular enemies that can share a wave. */
-    public static final List<String> REGULAR_ENEMIES =
-        List.of("fungal_brute", "gloom_wolf", "rootling", "stonekin");
+    /**
+     * Regular enemies that can share a wave: the whole roster, because the spawner cycles every type and a wave can
+     * therefore contain all of them. Measured for the eight-role roster (R3.4): 95.9 MiB of the 100 MiB budget, so
+     * the roster has roughly one more 5.6 MiB sheet of headroom; a ninth role would need smaller enemy frames or a
+     * shared page rather than a quiet budget bump.
+     */
+    public static final List<String> REGULAR_ENEMIES = List.of(
+        "bark_stalker", "bramble_thrall", "fungal_brute", "gloom_wolf",
+        "husk_warden", "rootling", "sap_hound", "stonekin"
+    );
 
     /** One boss is alive at a time; the worst single sheet is counted. */
     public static final List<String> BOSSES =

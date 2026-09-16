@@ -64,8 +64,24 @@ jobs:
           --batch "${{ inputs.batch }}"
           --output /tmp/hero-defense-rendered
 
+      # A master render is not the shipped tier. Blender now renders premium characters onto 384 px frames at
+      # 3x/32 while the reviewed runtime tier is 192 px at 2x/28, exactly half and on the same grid, so the batch
+      # that ships is the *published* tier. This step is exactly the LOD the promotion tools consume; the
+      # publisher refuses geometry it cannot halve or a master grid that disagrees with the reviewed one, so a
+      # batch that cannot become the reviewed tier fails here rather than at promotion time. (Batches whose class
+      # has no published tier definition yet -- bosses, the world tree -- are refused by the same tool.)
+      - name: Publish the reviewed runtime tier of the rendered batch
+        run: >-
+          python3 tools/visual/publish_runtime_tier.py
+          /tmp/hero-defense-rendered
+          /tmp/hero-defense-runtime
+          --reviewed-manifest android/assets/generated/asset_manifest.json
+
+      # Validated against the tier that ships, not against the master render: the R3.4 batch failed this step
+      # for a real reason (masters are 3x/32, the reviewed tier is 2x/28) and the fix was to validate the thing
+      # that is actually promoted. The ledger gate recognises a candidate batch and skips its exact-hash half.
       - name: Validate frame, pivot, alpha, page, and decoded-memory contracts
-        run: python3 tools/visual/validate_generated_assets.py /tmp/hero-defense-rendered
+        run: python3 tools/visual/validate_generated_assets.py /tmp/hero-defense-runtime
 
       # The budget applies to the reviewable payload: sheets, atlases, per-asset metadata, manifest. The
       # working frames under _frames/ are intermediates (every frame they contain is in the packed sheet at
@@ -87,6 +103,7 @@ jobs:
           name: hero-defense-${{ inputs.batch }}-sprites
           path: |
             /tmp/hero-defense-rendered/
+            /tmp/hero-defense-runtime/
             !/tmp/hero-defense-rendered/_frames/
           if-no-files-found: error
           retention-days: 14

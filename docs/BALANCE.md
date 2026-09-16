@@ -277,4 +277,40 @@ comes from build precision (pressure, spikes, close calls), not padded wave coun
 Phase 32 Living Grove adds grove plantings at waves 50/100/150 (short 4.45 s at 50/150, full 7.2 s at 100) reusing the sapling atlas; simulator ceremonies are instant, so the 3-seed median stays **7970 s (2.21 h)** and the tier deltas above re-verified green on 2026-09-15 (t0 7970 s, t1 8005 +0.4%, t2 7231 −9.3%, t10 7884 −1.1%, all within ±10.3% and ±20% gate). Extra grove HP is post-death siege only and does not move the DPS-to-HP pressure curve, so second-half checkpoints and growth constants are unchanged.
 
 
+### Phase 89 result (enemy roster 4 -> 8, ascension gate held)
+
+R3.4 doubles the regular roster to eight roles. The spawner cycles types uniformly, so the
+additions are authored with the per-type means held exactly (health 117, damage 28,
+experience 69, coins 19, speed 242, reach 172, interval 5.10 over eight roles as over
+four); waves 1-10 stay on the four field creatures and only deep waves draw from all
+eight, interleaved with a coprime stride. The change is deliberately variance, not weight.
+
+The ascension gate is what proved it. With the first draft of the additions the
+forced-card sweep failed one cell of 160: a forced Dodge build at tier 6 on seed
+`20342418142676295` averaged **15.907%** of the hero's health per wave against the 15%
+ceiling (its four sister seeds: 6.90-10.55%). A probe across eight cards x four tiers x
+five seeds, plus a per-wave breakdown of the offending cell, located the cause in wave
+duration rather than in the card: late waves took 100-146 s to close instead of 50-70 s,
+so each wave spawned on top of the last one and the seed that fell behind never recovered
+(30+ waves above 35% damage in its final sixty). A build with the least offence outlived
+its own waves; the tier curve was stretching waves rather than hardening them.
+
+Three repairs were measured and two were rejected on evidence:
+
+* **Roster walk-in floor** — speed five points from the fastest walker to the slowest
+  (Bark Stalker 74 -> 69, Bramble Thrall 28 -> 33), total untouched. Fixes the Dodge cell
+  (worst tier-6 seed 10.559%), but adds tier-0 pressure that the tier-0 gates reject:
+  `TrialSimulationTest` median spike 0.4083 against the 0.40 ceiling on BOSS_BOUNTY +
+  FAMISHED_EARTH, and `BalanceSimulatorTest` caught a bare-run spike of 36.4% against 35%.
+  Rejected: the roster is authored to leave tier 0 alone.
+* **Ascension health only** — per-tier health bump 0.0005 -> 0.0004. Fixes the Dodge cell,
+  but the tier-10 naked average fell to 4.938% against the 5% floor: tier 10 already has no
+  room to cool, exactly as Phase 26.1a recorded. Rejected on its own.
+* **Ascension schedule, both bumps** (the shipped repair) — health bump 0.0005 -> 0.0004
+  and damage bump 0.0002 -> 0.00025: late waves close again, and the pressure lands as hit
+  weight instead of wave length. Every ascension constant multiplies by `max(0, tier)`, so
+  tier 0 is bit-identical and every tier-0 gate in the repository is untouched. Green:
+  `AscensionGateTest` 4/4 (naked matrix, forced cards, trial pairs, session drift) and
+  `DifficultyCurveTest` 11/11, with no band, ceiling or floor moved.
+
 Run `./scripts/balance-check.sh` immediately after every coefficient change and as a mandatory precondition to any manual playtest. The script forces a fresh run rather than accepting Gradle's prior task output. `BalanceSimulatorTest` also remains part of the complete `:core:test` suite executed by the core GitHub Actions workflow on every push and pull request.

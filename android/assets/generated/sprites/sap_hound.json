@@ -1,8 +1,8 @@
 {
   "alphaMode": "STRAIGHT_RGBA",
-  "animationProfile": "fungal-brute-brawler-v2",
-  "armature": "fungal_brute_armature",
-  "atlas": "sprites/fungal_brute.atlas",
+  "animationProfile": "sap-hound-runner-v2",
+  "armature": "sap_hound_armature",
+  "atlas": "sprites/sap_hound.atlas",
   "boneAnimated": true,
   "bones": [
     "armor_socket",
@@ -31,7 +31,7 @@
     "upper_arm.R",
     "weapon_socket"
   ],
-  "builder": "fungal_brute",
+  "builder": "sap_hound",
   "categoryReview": {
     "category": "regular-enemies",
     "document": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
@@ -276,7 +276,7 @@
   "frameClass": "character",
   "frameRate": 12,
   "frameSize": 192,
-  "key": "fungal_brute",
+  "key": "sap_hound",
   "masterRender": {
     "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
     "frameSize": 384,
@@ -286,10 +286,10 @@
     "sheetHeight": 1536,
     "sheetWidth": 3840
   },
-  "materialCount": 8,
-  "materialStory": "earthy olive stem, wine-red cap, dark root masses, warm gills, and sparse golden spores",
-  "meshParts": 54,
-  "modelRevision": "fungal-brute-spore-bruiser-v2",
+  "materialCount": 7,
+  "materialStory": "dry ochre hide, near-black joints, and amber sap that is the only bright note",
+  "meshParts": 35,
+  "modelRevision": "sap-hound-resin-runner-v2",
   "pivot": {
     "units": "normalized-bottom-left",
     "x": 0.5,
@@ -299,19 +299,19 @@
   "renderSupersample": 2,
   "reviewDocument": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
   "rigBoneCount": 25,
-  "rigProfile": "premium-heavy-humanoid-v2",
-  "sheet": "sprites/fungal_brute.png",
+  "rigProfile": "premium-quadruped-mapped-v2",
+  "sheet": "sprites/sap_hound.png",
   "sheetHeight": 768,
   "sheetWidth": 1920,
   "sheets": [
     {
       "decodedBytes": 5898240,
-      "file": "sprites/fungal_brute.png",
+      "file": "sprites/sap_hound.png",
       "height": 768,
       "width": 1920
     }
   ],
-  "silhouette": "oversized layered cap, barrel stalk body, knotted arms, root feet, and asymmetric shoulder buds",
-  "triangles": 1984,
+  "silhouette": "low arched back, splayed paws, three glowing sacs, and a swept tail that trails sap",
+  "triangles": 1132,
   "visualQuality": "studio-v3"
 }

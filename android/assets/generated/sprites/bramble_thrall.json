@@ -1,8 +1,8 @@
 {
   "alphaMode": "STRAIGHT_RGBA",
-  "animationProfile": "fungal-brute-brawler-v2",
-  "armature": "fungal_brute_armature",
-  "atlas": "sprites/fungal_brute.atlas",
+  "animationProfile": "bramble-thrall-lumber-v2",
+  "armature": "bramble_thrall_armature",
+  "atlas": "sprites/bramble_thrall.atlas",
   "boneAnimated": true,
   "bones": [
     "armor_socket",
@@ -31,7 +31,7 @@
     "upper_arm.R",
     "weapon_socket"
   ],
-  "builder": "fungal_brute",
+  "builder": "bramble_thrall",
   "categoryReview": {
     "category": "regular-enemies",
     "document": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
@@ -276,7 +276,7 @@
   "frameClass": "character",
   "frameRate": 12,
   "frameSize": 192,
-  "key": "fungal_brute",
+  "key": "bramble_thrall",
   "masterRender": {
     "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
     "frameSize": 384,
@@ -286,10 +286,10 @@
     "sheetHeight": 1536,
     "sheetWidth": 3840
   },
-  "materialCount": 8,
-  "materialStory": "earthy olive stem, wine-red cap, dark root masses, warm gills, and sparse golden spores",
-  "meshParts": 54,
-  "modelRevision": "fungal-brute-spore-bruiser-v2",
+  "materialCount": 7,
+  "materialStory": "olive-brown vine masses, bone-white thorns, two rust blooms, and sap-green eyes and heart knot",
+  "meshParts": 55,
+  "modelRevision": "bramble-thrall-thorn-lumberer-v2",
   "pivot": {
     "units": "normalized-bottom-left",
     "x": 0.5,
@@ -300,18 +300,18 @@
   "reviewDocument": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
   "rigBoneCount": 25,
   "rigProfile": "premium-heavy-humanoid-v2",
-  "sheet": "sprites/fungal_brute.png",
+  "sheet": "sprites/bramble_thrall.png",
   "sheetHeight": 768,
   "sheetWidth": 1920,
   "sheets": [
     {
       "decodedBytes": 5898240,
-      "file": "sprites/fungal_brute.png",
+      "file": "sprites/bramble_thrall.png",
       "height": 768,
       "width": 1920
     }
   ],
-  "silhouette": "oversized layered cap, barrel stalk body, knotted arms, root feet, and asymmetric shoulder buds",
-  "triangles": 1984,
+  "silhouette": "no visible neck, boulder shoulders, thorn-studded arms, root feet, and burrs across the back",
+  "triangles": 1352,
   "visualQuality": "studio-v3"
 }

@@ -81,6 +81,12 @@ The former single-cone mushroom is now a layered spore bruiser with a wide cap a
 | `fungal_brute_readability.png` | `fbdb54cfb60799b182d5591f6f29470c1a983463c69c1add2f20e93a6932d9da` |
 | `fungal_brute_full_motion.png` | `d65cff661f1f7b884ad2844d6a54ab1f43c6c08e043441d42f525ca77acf17dc` |
 
+The table above pins the nine sheets of the accepted four-role batch, as they were accepted. The R3.4 addendum
+below doubles the roster and therefore the evidence: one lineup plus eight full-motion and eight readability sheets
+(seventeen). Those are hashed in `regular_enemies_premium_v2/regular_enemies_audit.json`, which is what the
+promotion tools and `PremiumEnemyAssetContractTest` verify; the four originals are re-hashed there too, so this
+table stays a record of the earlier acceptance rather than a second source of truth.
+
 ## Candidate iteration record
 
 - Run `34726917928` failed before rendering because an invalid contact-shadow call was caught; no payload was considered.
@@ -100,9 +106,9 @@ The category meets the premium-v2 bar for model construction, real rig attachmen
 
 - **Decision:** ACCEPTED
 - **Scope:** Bark Stalker, Sap Hound, Husk Warden, Bramble Thrall — four additions, first renders
-- **Render run / artifact:** `RUN_ID` / `ARTIFACT_ID` (`hero-defense-enemies-sprites`), batch `enemies`
+- **Render run / artifact:** `35137859000` / `10463764236` (`hero-defense-enemies-sprites`, 8,353,222 bytes), batch `enemies`
 - **Audit:** `docs/art_reviews/regular_enemies_premium_v2/regular_enemies_audit.json`
-  (`candidateManifestSha256` `CANDIDATE_MANIFEST_SHA`)
+  (`candidateManifestSha256` `fd69133a2dab53042fdf41d0e16ebfc387e5c4a7d07448e39366b452ac39abc5`, the published runtime tier)
 - **Review evidence:** 17 sheets — one shared-scale lineup of all eight, eight native-size full-motion
   sheets, eight silhouette/material/readability sheets
 
@@ -149,6 +155,29 @@ of 2x/28 for characters) and where its pixels came from (the 384 px master and i
 four existing keys the tool also refuses to publish unless the halved master grid equals the reviewed grid,
 which is what keeps a new render from silently re-laying-out art that was already accepted.
 
+One detail of that LOD is worth recording because it is a judgement call, not arithmetic: LANCZOS spreads a
+sub-visible alpha halo (3 % opacity and below) one or two pixels past the silhouette. Invisible in play, but it
+walked `fungal_brute/attack[4]` from a 7 px master margin down to 1 px at runtime and tripped the frame-border
+floor for no visible reason. The publisher therefore clears alpha below 8/255 on the composed sheet and reports
+how much fringe it cleared per asset; the anti-aliased edge of the silhouette itself (4 % and up) is untouched.
+The alternative — relaxing the border floor to match a resampling artefact — was rejected: the floor exists so
+that a frame can never sample its neighbour in the atlas, and the shipped tier already holds it with room.
+
+### Frame-border verification of the accepted batch
+
+The batch before this one was rejected over two frames, both of which put opaque pixels on a cell border:
+`bramble_thrall/attack[6]` and `sap_hound/attack[3]`. The pose trim in `c8df10f` moved the authored extremes, and
+the accepted render measures the result on the pixels that ship (the audit records per-asset and per-clip minima):
+
+| Frame | Master margin before | Master margin accepted | Shipped tier margin |
+| --- | --- | --- | --- |
+| `bramble_thrall/attack[6]` | 0 px | 6 px | 2 px bottom |
+| `sap_hound/attack[3]` | 0 px | 7 px | 3 px bottom |
+| `fungal_brute/attack[4]` | 7 px (1 px shipped) | 7 px | 3 px top |
+
+The whole batch now clears the floor: the audit's global minimum margins are `{left 10, right 5, top 3, bottom 2}`,
+and the validator's edge-safety gate passes on the published tier.
+
 ### The honest limitation of this addendum
 
 The four additions have **no predecessor render**. The original premium-v2 review compared an accepted
@@ -165,10 +194,29 @@ future review: it applies only where the baseline manifest has no entry for the 
   regular enemies are counted (each enemy sheet is 5,898,240 decoded bytes). That leaves about one more
   enemy-sized sheet of headroom; a ninth role needs smaller frames or a shared page rather than a quiet
   budget bump. Asserted by `RuntimeResidencyTest`.
+- **One definition of that set:** `PremiumAssetContractTest` used to approximate the combat peak with a
+  superset — every enemy, world-tree, environment and UI sheet resident at once — which crossed the 100 MiB
+  budget the moment the roster doubled (118.1 MiB) while the live set stayed at 95.9 MiB. The test now measures
+  `RuntimeResidency.combatBytes`, the same arithmetic `RuntimeResidencyTest` gates, and keeps both the budget
+  and a floor that the enemy sheets are all counted, so the two tests cannot drift apart and the roster cannot
+  buy headroom by shrinking its own list. The catalog budget still has to hold every PNG that ships.
 - **Catalog:** the enemies add 23,592,960 decoded bytes, taking the catalog from 361,279,488 to 384,872,448,
   so `decodedCatalogBudgetBytes` moves from 370,000,000 to 390,000,000 in this commit — a documented budget
   change for a documented content change, with the arithmetic in `asset_manifest.json`.
 - **Per-batch budget:** the audit's own decoded budget doubles with the batch, from 32 MiB to 48 MiB.
+
+### Candidate iteration record (R3.4)
+
+- Run `35122680494` failed before rendering: `Unknown character builder: bark_stalker` — the four builders were
+  authored, but the pipeline's `BUILDERS` registry was not updated, so no payload existed to judge.
+- Run `35124663395` rendered and was rejected by the asset-ledger gate (a candidate that ships PNGs the committed
+  ledger does not list), and its artifact was lost because the upload step only ran on success.
+- Run `35136188951` rendered with the trimmed poses. It was cancelled rather than judged once a second defect was
+  found by auditing the tier: the bark stalker's idle keyed its crouch twice in a row, so three of its six frames
+  rendered identically (four unique, floor five). A cancelled run is not evidence; it is recorded here so the
+  numbers are complete.
+- The accepted run is named above. Each rejection was a real defect in source, art or tooling — none of them a
+  gate that was talked out of the way.
 
 **Final addendum decision: accepted for runtime promotion.**
 <!-- END R3.4 ADDENDUM -->

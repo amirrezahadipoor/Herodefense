@@ -25,9 +25,16 @@ public final class DifficultyCurve {
     public static final float MAX_REASONABLE_HEALTH_FRACTION_PER_HIT = 0.28f;
 
     // Ascension schedule (Phase 25.3): relative per-tier bumps on every growth constant,
-    // tuned against the simulator at tiers 0/3/6/10 (search in docs/BALANCE.md).
-    public static final float ASCENSION_HEALTH_BUMP_PER_TIER = 0.0005f;
-    public static final float ASCENSION_DAMAGE_BUMP_PER_TIER = 0.0002f;
+    // tuned against the simulator at tiers 0/3/6/10 (search in docs/BALANCE.md). Phase 89
+    // re-derived the pair against the eight-role roster: the deeper roster let a tier-6 forced
+    // Dodge build -- the build with the least offence -- outlive its waves, and the per-tier
+    // health bump was stretching every late wave instead of hardening it (15.907% average
+    // against a 15% ceiling). Health comes down 0.0005 -> 0.0004 so late waves close, and
+    // damage rises 0.0002 -> 0.00025 so the pressure lands as hit weight instead of as wave
+    // length. Both constants multiply by max(0, tier), so tier 0 -- and every tier-0 gate in
+    // this repo -- stays bit-identical.
+    public static final float ASCENSION_HEALTH_BUMP_PER_TIER = 0.0004f;
+    public static final float ASCENSION_DAMAGE_BUMP_PER_TIER = 0.00025f;
 
     public static float healthGrowthForTier(int tier) {
         return ENEMY_HEALTH_GROWTH * (1f + ASCENSION_HEALTH_BUMP_PER_TIER * Math.max(0, tier));

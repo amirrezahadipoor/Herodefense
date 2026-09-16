@@ -277,6 +277,15 @@
   "frameRate": 12,
   "frameSize": 192,
   "key": "gloom_wolf",
+  "masterRender": {
+    "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+    "frameSize": 384,
+    "lod": "lanczos-half onto the reviewed runtime grid",
+    "renderSamples": 32,
+    "renderSupersample": 3,
+    "sheetHeight": 1536,
+    "sheetWidth": 3840
+  },
   "materialCount": 7,
   "materialStory": "near-black violet masses, one readable mid-violet plane, moon-cyan eyes, and tiny ivory fangs",
   "meshParts": 42,

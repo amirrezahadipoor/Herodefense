@@ -1,8 +1,8 @@
 {
   "alphaMode": "STRAIGHT_RGBA",
-  "animationProfile": "fungal-brute-brawler-v2",
-  "armature": "fungal_brute_armature",
-  "atlas": "sprites/fungal_brute.atlas",
+  "animationProfile": "bark-stalker-lurker-v2",
+  "armature": "bark_stalker_armature",
+  "atlas": "sprites/bark_stalker.atlas",
   "boneAnimated": true,
   "bones": [
     "armor_socket",
@@ -31,7 +31,7 @@
     "upper_arm.R",
     "weapon_socket"
   ],
-  "builder": "fungal_brute",
+  "builder": "bark_stalker",
   "categoryReview": {
     "category": "regular-enemies",
     "document": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
@@ -276,7 +276,7 @@
   "frameClass": "character",
   "frameRate": 12,
   "frameSize": 192,
-  "key": "fungal_brute",
+  "key": "bark_stalker",
   "masterRender": {
     "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
     "frameSize": 384,
@@ -286,10 +286,10 @@
     "sheetHeight": 1536,
     "sheetWidth": 3840
   },
-  "materialCount": 8,
-  "materialStory": "earthy olive stem, wine-red cap, dark root masses, warm gills, and sparse golden spores",
-  "meshParts": 54,
-  "modelRevision": "fungal-brute-spore-bruiser-v2",
+  "materialCount": 7,
+  "materialStory": "cool bark greys, two-step moss greens, and a single warm amber used only on eyes and claws",
+  "meshParts": 37,
+  "modelRevision": "bark-stalker-moss-climber-v2",
   "pivot": {
     "units": "normalized-bottom-left",
     "x": 0.5,
@@ -299,19 +299,19 @@
   "renderSupersample": 2,
   "reviewDocument": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
   "rigBoneCount": 25,
-  "rigProfile": "premium-heavy-humanoid-v2",
-  "sheet": "sprites/fungal_brute.png",
+  "rigProfile": "premium-humanoid-v2",
+  "sheet": "sprites/bark_stalker.png",
   "sheetHeight": 768,
   "sheetWidth": 1920,
   "sheets": [
     {
       "decodedBytes": 5898240,
-      "file": "sprites/fungal_brute.png",
+      "file": "sprites/bark_stalker.png",
       "height": 768,
       "width": 1920
     }
   ],
-  "silhouette": "oversized layered cap, barrel stalk body, knotted arms, root feet, and asymmetric shoulder buds",
-  "triangles": 1984,
+  "silhouette": "narrow shoulders, very long arms, moss hood, crown spikes, and a cloak that flares behind",
+  "triangles": 1124,
   "visualQuality": "studio-v3"
 }

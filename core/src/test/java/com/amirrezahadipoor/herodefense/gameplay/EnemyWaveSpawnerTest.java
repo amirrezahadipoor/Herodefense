@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -187,6 +188,39 @@ final class EnemyWaveSpawnerTest {
         }
         float rate = (float) silent / rootlings;
         assertTrue(rate > 0.005f && rate < 0.04f, "silent rate " + rate + " over " + rootlings);
+    }
+
+    @Test
+    void theDoubledRosterStaysOutOfTheOpeningAndNeverClumps() {
+        // R3.4 doubled the roster, and the accepted balance evidence was measured on openings spawned from the
+        // four field creatures. The stagger is what keeps that evidence valid, so it is asserted here rather
+        // than left to the simulators: waves 1-10 draw from exactly four roles, deeper waves from all eight.
+        for (int wave = 1; wave <= 10; wave++) {
+            assertEquals(4, EnemyWaveSpawner.rosterFor(wave), "wave " + wave + " must stay on the field roster");
+        }
+        assertEquals(8, EnemyWaveSpawner.rosterFor(11));
+        assertEquals(8, EnemyWaveSpawner.rosterFor(GameState.FINAL_WAVE));
+        // Coverage: every role still appears on every wave band, and no wave is a run of one archetype -- the
+        // deep blocks interleave the roster instead of listing it.
+        for (int wave = 11; wave <= 40; wave++) {
+            GameState state = GameState.newRun(9L + wave);
+            state.aliveEnemies.clear();
+            int count = Math.max(4, spawner.regularCountForWave(wave));
+            spawner.spawnRegularEnemies(state, wave, count);
+            java.util.Set<EnemyType> seen = new java.util.HashSet<>();
+            EnemyType previous = null;
+            for (int index = 0; index < count; index++) {
+                EnemyType type = state.aliveEnemies.get(index).type();
+                seen.add(type);
+                // Interleaved, not listed: two neighbours never share an archetype, so a deep wave cannot open
+                // with a run of heavy bodies the way a plain eight-long cycle could.
+                if (previous != null) {
+                    assertNotEquals(type, previous, "wave " + wave + " opened with a clump of " + type);
+                }
+                previous = type;
+            }
+            assertTrue(seen.size() >= Math.min(4, count), "wave " + wave + " only used " + seen);
+        }
     }
 
     @Test

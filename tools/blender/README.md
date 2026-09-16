@@ -71,7 +71,7 @@ python3 tools/visual/promote_equipment_batch.py \
   /tmp/hero-defense-equipment-candidate android/assets/generated
 ```
 
-For all four regular enemies, dispatch or locally render the exact `enemies` batch into a
+For all eight regular enemies, dispatch or locally render the exact `enemies` batch into a
 disposable directory. The batch review audits every pixel of all 112 runtime frames, the
 25-bone rig, distinct motion profiles, material/mesh budgets, alpha margins, and the exact
 candidate payload. Inspect the eight per-enemy sheets plus the shared lineup before writing

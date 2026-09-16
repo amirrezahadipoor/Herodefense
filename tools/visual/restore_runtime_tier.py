@@ -317,7 +317,7 @@ def main() -> None:
     # as computed by core's RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2).
     manifest["decodedCombatResidencyBudgetBytes"] = 100 * 1024 * 1024
     manifest["decodedCombatResidencyNote"] = (
-        "Combat residency = hero + four regular enemies + one boss + six equipped sheets + arena art, "
+        "Combat residency = hero + every regular enemy that can share a wave (eight since R3.4) + one boss + six equipped sheets + arena art, "
         "computed by RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2). Target <=100 MiB."
     )
     manifest["decodedBytes"] = decoded_total

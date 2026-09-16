@@ -474,7 +474,7 @@ sentence has to name the two scores and the commit they were measured on.
   *Recorded cost:* the ratchet freeze for `HeroDefenseGame` moved 760 → 771 lines (the save point evaluates and
   announces; the presentation itself lives in the feature) and `model/GameState` 592 → 600 lines / 80 → 81 fields
   (the ledger field). Both are noted in the ratchet test with the reason, not hidden.
-- [ ] **R3.4 Content breadth.** Enemy types 4 → 8+, item-pool diversity, wave modifiers.
+- [x] **R3.4 Content breadth.** Enemy types 4 → 8, item-pool diversity, wave modifiers.
   **Shipped: wave omens, as the thirteenth drafted trial.** Two hundred waves differ by their count and their place
   on the curve, but nothing ever surprised a player twice: wave 43 and wave 143 were the same wave with bigger
   numbers. A regular wave can now carry an **omen** (`model/WaveModifier`): `SWARM` (a quarter more of them),
@@ -520,8 +520,53 @@ sentence has to name the two scores and the commit they were measured on.
   item, so the pick stays uniform; the recipe and both numbers are recorded here so the next attempt starts from the
   measurement instead of repeating it. That fragility is itself the finding: several scenarios now sit within a
   fraction of a percent of their ceiling, which is what R4.1-R4.5 exists to fix.
-  **Remaining in this item:** enemy types 4 → 8+ (needs the Blender art pipeline — this sandbox has no root and cannot
-  install the X libraries Blender 4.2 asks for, so that slice runs where the pipeline runs) and item-pool diversity.
+  **Shipped: the roster doubles, four enemies at a time.** The roster is eight. Four additions — Bark Stalker (wiry
+  flanker, 26 hp), Sap Hound (fastest role, 22 hp), Husk Warden (shielded mid-weight, 30 hp) and Bramble Thrall
+  (slow thorn mass, 39 hp) — each with its own model revision, silhouette, material story and four-clip motion
+  language, authored in `models.py` and `rig.py` and rendered where the pipeline can run: the GitHub Actions render
+  workflow has root and installs Blender's X libraries, this sandbox does not. The batch is rendered as
+  **384 px masters at 3x/32** and published onto the reviewed runtime tier (**192 px frames, 2x/28**) by
+  `tools/visual/publish_runtime_tier.py`, the same `compose_runtime_sheet` LANCZOS LOD that recovered the shipped
+  tier in Phase 78; each manifest entry keeps the master render next to the shipped claim as `masterRender`, so the
+  tier says both what ships and where its pixels came from.
+  *The gameplay half is one enum, and it deliberately does not move a balance band.* The spawner cycles types
+  uniformly, so the roster's mean per-type numbers are the wave's weight: the four additions are authored so that
+  health 117, damage 28, experience 69, coins 19, speed 242, reach 172 and interval 5.10 all hold over eight roles
+  exactly as they held over four. What changes is variance — a wave now mixes a 17-health wolf with a 46-health brute
+  across eight roles — which is the point of the item. And the additions do not enter the cycle at wave one: the
+  spawner keeps the first ten waves on the four field creatures and only then draws from all eight, because every
+  accepted balance measurement was taken on those openings; deep waves interleave the roster with a coprime stride so
+  no wave opens with a run of heavy bodies. `EnemyFactoryTest` asserts the means, `EnemyWaveSpawnerTest` the stagger.
+  *One gate went red on the roster change, and the repair is a re-derived tier schedule rather than a wider band.*
+  With all eight roles in the deep mix, the ascension gate's forced-card sweep failed exactly one cell of 160: a forced
+  Dodge build at tier 6 on seed `20342418142676295` averaged 15.907% of the hero's health per wave against the 15%
+  ceiling, where its four sister seeds sat at 6.9-10.6%. A probe (eight cards x four tiers x five seeds, plus a
+  per-wave breakdown of that cell) showed the card was not the cause — the build with the least offence outlived its
+  own waves: late waves took 100-146 s to close, each spawn landed on top of the last one, and the seed that fell
+  behind never recovered (30+ waves above 35% damage in its last sixty). Three repairs were measured; two were
+  rejected on evidence. Raising the roster's walk-in floor (the slowest role's speed) does fix the Dodge cell, but it
+  adds pressure everywhere, and the tier-0 gates caught it immediately — `BOSS_BOUNTY + FAMISHED_EARTH` spiked to
+  0.4083 against its 0.40 ceiling and the bare run spiked 36.4% against its 35% one. Rebalancing the ascension schedule
+  does not touch tier 0 at all, because every ascension constant multiplies by `max(0, tier)`: the schedule now trades
+  wave length for hit weight, with the per-tier health bump down from 0.0005 to 0.0004 (late waves close again, which
+  is exactly what a low-offence build needs) and the per-tier damage bump up from 0.0002 to 0.00025 to keep the
+  pressure where it was. The gate's four scenarios are green with no band, ceiling or floor moved, and every tier-0
+  measurement in the repository is bit-identical to before the change. The probe that found the cause lived in
+  `core/src/test` for the search only.
+  *Two real defects the gates caught, and the fixes are in the art.* The first batch put opaque pixels on a cell
+  border in `bramble_thrall/attack[6]` and `sap_hound/attack[3]` (authored extremes, trimmed in the source, verified
+  on the shipped tier at 2-3 px margins); the second had a flat idle — the stalker keyed its crouch twice, so three
+  of six frames rendered identically against a floor of five unique (the pose now settles into a coil before it
+  loops, and a source-level guard makes a repeated consecutive key a test failure). Neither gate was relaxed; both
+  found art that needed to change.
+  *Evidence, not summaries:* the accepted run is `35137859000` / artifact `10463764236`, the audit
+  `docs/art_reviews/regular_enemies_premium_v2/regular_enemies_audit.json` hashes all 17 review sheets, 224 frames,
+  every candidate sheet/atlas/metadata and the baseline state, and `docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md`
+  carries the addendum with the per-frame border measurements. Measured cost: the combat set is 95.9 MiB of the
+  100 MiB budget and the catalog 384,872,448 bytes of a 390,000,000 budget — both raised deliberately and in the same
+  commit as the content, with `RuntimeResidencyTest`, `PremiumAssetContractTest` and the asset validator agreeing on
+  one definition of the live set.
+  **Shipped: item-pool diversity.** See the pool paragraph above.
 - [x] **R3.5 Session shape — a second run length, measured with the simulator.**
   The game had exactly one session shape: two hundred waves, and a player who has forty minutes may not start one.
   A run now carries a **mode** (`model/GameMode`): `STANDARD` (The Long Vigil, 200 waves) and `BRIEF` (A Brief
@@ -590,10 +635,13 @@ sentence has to name the two scores and the commit they were measured on.
 
 - [ ] **R8.1 Texture compression** (ETC2/ASTC + fallback) and mipmaps with a measured comparison.
 - [~] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
-  manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (370 MB) and the
+  manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (390 MB) and the
   live combat set against `decodedCombatResidencyBudgetBytes`, now a deliberate **100 MiB**
-  (was 150 MB). Measured: catalog 361,279,488 bytes, combat set **76.8 MiB** — inside budget, and the
-  test fails if that changes. Remaining: compression (R8.1) to bring the catalog itself down.
+  (was 150 MB). Measured after the R3.4 roster doubled: catalog 384,872,448 bytes of the 390 MB budget and the
+  live combat set **95.9 MiB** of 100 MiB — inside budget, and the test fails if that changes. `PremiumAssetContractTest`
+  now measures the same set through the same arithmetic instead of its own wider superset, so the two cannot drift
+  apart. Remaining: compression (R8.1) to bring the catalog itself down — with one enemy-sized sheet of headroom
+  left, a ninth enemy needs smaller frames or a shared page rather than a quiet budget bump.
 - [ ] **R8.3 Residency at wave 50** measured with `adb shell dumpsys meminfo` during a scripted run,
   logged in the repository, with streaming/release of atlases.
 - [ ] **R8.4 Startup and APK budget** measured in CI against a committed threshold.
@@ -795,6 +843,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 89 | R3.5 | a second run length: `GameMode.STANDARD` (200) / `BRIEF` (30) with `GameState.runLengthWaves()`, a brief-vigil row in the re-tabled six-row main menu, the game-over overlay showing this run's length, and `BalanceSimulator.runBrief`; measured: the brief run's first 30 waves are bit-identical to the long run's first 30 on the same seed, spike 0.1229 vs the 0.40 ceiling, its own bounded clear-time rule recorded as the one deliberate difference; 5 new simulation cases | `b9027b7` |
 
 | 2026-09-16 | 89 | R3.4a | wave omens as the thirteenth drafted trial: `model/WaveModifier` (SWARM / IRON_HIDE / BLOODRUSH / QUICKSTEP, +25% coins on the wave), `gameplay/WaveOmens` policy (never on a boss or elite wave), a HUD line, and `TrialEffects.omensEnabled` read by the spawner, the factory, kill rewards and the HUD; the untrialled run is unchanged by construction, so the counterfactual is the same seed without the trial | `af92ff1` |
+
+| 2026-09-16 | 89 | R3.4c | enemy roster 4 → 8: four authored enemies (Bark Stalker, Sap Hound, Husk Warden, Bramble Thrall) with per-type means held exactly (health 117 / damage 28 / exp 69 / coins 19 / speed 242 / reach 172 / interval 5.10 over eight roles), a staggered spawner that keeps waves 1-10 on the field roster and interleaves deep waves, 384 px masters rendered in CI and published onto the reviewed 192 px tier with `masterRender` provenance, two art defects found and fixed by the gates (frame-border extremes, a flat idle), 17 review sheets + audit hashes, catalog budget 370 → 390 MB, combat set 95.9 MiB of 100 MiB, and the ascension gate's one red cell (forced Dodge, tier 6, seed 20342418142676295 at 15.907% vs a 15% ceiling) repaired by re-deriving the per-tier health/damage bumps (0.0005/0.0002 → 0.0004/0.00025), a change tier 0 cannot see | `b186c42` · `0e32e8a` · this commit |
 
 | 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `5b78835` |
 

@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.HexFormat;
@@ -325,8 +324,6 @@ final class PremiumAssetContractTest {
         Map<Path, ImageInfo> imageInfo = new HashMap<>();
         Set<Path> referencedPngs = new HashSet<>();
         Map<String, List<Path>> sheetPathsByFamily = new HashMap<>();
-        List<List<Path>> bossSheets = new ArrayList<>();
-        List<List<Path>> equipmentSheets = new ArrayList<>();
 
         for (JsonValue asset = manifest.get("assets").child; asset != null; asset = asset.next) {
             String key = asset.getString("key");
@@ -358,8 +355,6 @@ final class PremiumAssetContractTest {
             }
             sheetPathsByFamily.computeIfAbsent(family, ignored -> new ArrayList<>())
                 .addAll(assetSheets);
-            if ("boss".equals(family)) bossSheets.add(assetSheets);
-            if ("equipment".equals(family)) equipmentSheets.add(assetSheets);
 
             if (asset.has("icon")) {
                 Path icon = resolveInsideGenerated(asset.getString("icon"));
@@ -394,23 +389,19 @@ final class PremiumAssetContractTest {
         assertTrue(decodedCatalogBytes <= catalogBudget,
             "decoded catalog " + decodedCatalogBytes + " exceeds " + catalogBudget);
 
-        Set<Path> peakResidency = new HashSet<>();
-        addFamily(peakResidency, sheetPathsByFamily, "hero");
-        addFamily(peakResidency, sheetPathsByFamily, "enemy");
-        addFamily(peakResidency, sheetPathsByFamily, "world_tree");
-        addFamily(peakResidency, sheetPathsByFamily, "environment");
-        addFamily(peakResidency, sheetPathsByFamily, "ui");
-        largestAsset(bossSheets, imageInfo).forEach(peakResidency::add);
-        equipmentSheets.stream()
-            .sorted(Comparator.comparingLong((List<Path> paths) -> decodedBytes(paths, imageInfo)).reversed())
-            .limit(6)
-            .forEach(peakResidency::addAll);
-        committedPngs.stream()
-            .filter(path -> GENERATED.relativize(path).startsWith("icons"))
-            .forEach(peakResidency::add);
-        long peakBytes = decodedBytes(new ArrayList<>(peakResidency), imageInfo);
+        // The live combat set is defined once, in RuntimeResidency (roadmap R8.2): hero, every regular enemy that
+        // can share a wave, the heaviest boss, six equipped sheets and the arena art. This test used to approximate
+        // it with a superset -- every enemy, world-tree, environment and UI sheet at once -- which was conservative
+        // enough to hide nothing until R3.4 doubled the roster, at which point the superset crossed a 100 MiB budget
+        // that the live set meets with headroom (95.9 MiB, asserted by RuntimeResidencyTest). The superset is not
+        // information that got dropped: the catalog budget below still has to hold every PNG that ships, and the
+        // enemy floor asserted here is what stops a smaller roster from buying quiet headroom.
+        long peakBytes = RuntimeResidency.combatBytes(manifest);
         assertTrue(peakBytes <= residencyBudget,
             "conservative combat residency " + peakBytes + " exceeds " + residencyBudget);
+        long enemySheets = decodedBytes(sheetPathsByFamily.getOrDefault("enemy", List.of()), imageInfo);
+        assertTrue(peakBytes >= enemySheets,
+            "the combat set must count every regular enemy sheet that can share a wave");
     }
 
     /** The document that is supposed to cover a given equipment art id. */
@@ -584,20 +575,6 @@ final class PremiumAssetContractTest {
             result.add(value.asString());
         }
         return result;
-    }
-
-    private static void addFamily(
-        Set<Path> target, Map<String, List<Path>> pathsByFamily, String family
-    ) {
-        target.addAll(pathsByFamily.getOrDefault(family, List.of()));
-    }
-
-    private static List<Path> largestAsset(
-        List<List<Path>> assets, Map<Path, ImageInfo> images
-    ) {
-        return assets.stream()
-            .max(Comparator.comparingLong(paths -> decodedBytes(paths, images)))
-            .orElseGet(List::of);
     }
 
     private record ImageInfo(int width, int height) {

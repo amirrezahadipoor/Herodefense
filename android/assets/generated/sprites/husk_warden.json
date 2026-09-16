@@ -1,8 +1,8 @@
 {
   "alphaMode": "STRAIGHT_RGBA",
-  "animationProfile": "fungal-brute-brawler-v2",
-  "armature": "fungal_brute_armature",
-  "atlas": "sprites/fungal_brute.atlas",
+  "animationProfile": "husk-warden-bulwark-v2",
+  "armature": "husk_warden_armature",
+  "atlas": "sprites/husk_warden.atlas",
   "boneAnimated": true,
   "bones": [
     "armor_socket",
@@ -31,7 +31,7 @@
     "upper_arm.R",
     "weapon_socket"
   ],
-  "builder": "fungal_brute",
+  "builder": "husk_warden",
   "categoryReview": {
     "category": "regular-enemies",
     "document": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
@@ -276,7 +276,7 @@
   "frameClass": "character",
   "frameRate": 12,
   "frameSize": 192,
-  "key": "fungal_brute",
+  "key": "husk_warden",
   "masterRender": {
     "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
     "frameSize": 384,
@@ -286,10 +286,10 @@
     "sheetHeight": 1536,
     "sheetWidth": 3840
   },
-  "materialCount": 8,
-  "materialStory": "earthy olive stem, wine-red cap, dark root masses, warm gills, and sparse golden spores",
-  "meshParts": 54,
-  "modelRevision": "fungal-brute-spore-bruiser-v2",
+  "materialCount": 7,
+  "materialStory": "cool iron plates, one rust-red cloth note, brass rivets, and an ember visor slit",
+  "meshParts": 38,
+  "modelRevision": "husk-warden-shield-bearer-v2",
   "pivot": {
     "units": "normalized-bottom-left",
     "x": 0.5,
@@ -300,18 +300,18 @@
   "reviewDocument": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
   "rigBoneCount": 25,
   "rigProfile": "premium-heavy-humanoid-v2",
-  "sheet": "sprites/fungal_brute.png",
+  "sheet": "sprites/husk_warden.png",
   "sheetHeight": 768,
   "sheetWidth": 1920,
   "sheets": [
     {
       "decodedBytes": 5898240,
-      "file": "sprites/fungal_brute.png",
+      "file": "sprites/husk_warden.png",
       "height": 768,
       "width": 1920
     }
   ],
-  "silhouette": "oversized layered cap, barrel stalk body, knotted arms, root feet, and asymmetric shoulder buds",
-  "triangles": 1984,
+  "silhouette": "short and wide, a full-height slab shield on the left, dome helmet, and a rust plume",
+  "triangles": 1416,
   "visualQuality": "studio-v3"
 }

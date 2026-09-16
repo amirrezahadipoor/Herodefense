@@ -277,6 +277,15 @@
   "frameRate": 12,
   "frameSize": 192,
   "key": "stonekin",
+  "masterRender": {
+    "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+    "frameSize": 384,
+    "lod": "lanczos-half onto the reviewed runtime grid",
+    "renderSamples": 32,
+    "renderSupersample": 3,
+    "sheetHeight": 1536,
+    "sheetWidth": 3840
+  },
   "materialCount": 7,
   "materialStory": "charcoal basalt and cool slate with moss accents and one restrained cyan rune core",
   "meshParts": 48,

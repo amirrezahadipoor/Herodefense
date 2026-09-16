@@ -20,7 +20,7 @@ final class RuntimeSceneAssetTest {
         for (EnemyType type : EnemyType.values()) {
             Enemy enemy = new Enemy(1L, type.name(), 0f, 0f);
             assertEquals(type.assetKey(), CombatEntityRenderer.assetKey(enemy, false));
-            assertTrue(CombatEntityRenderer.regularDrawSize(type) > 0f);
+            assertTrue(EnemyDrawScale.of(type) > 0f);
             assertCompleteCombatAtlas(type.assetKey());
         }
         for (BossType type : BossType.values()) {

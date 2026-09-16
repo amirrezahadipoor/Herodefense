@@ -22,7 +22,6 @@ import com.amirrezahadipoor.herodefense.model.BossType;
 import com.amirrezahadipoor.herodefense.model.DropCollectionStage;
 import com.amirrezahadipoor.herodefense.model.DropEntity;
 import com.amirrezahadipoor.herodefense.model.Enemy;
-import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.EquipmentSlot;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Item;
@@ -162,7 +161,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         if (clips == null) clips = load(key);
         Array<TextureAtlas.AtlasRegion> frames = selectedFrames(clips, enemy);
         int frameIndex = frameIndex(enemy, frames.size, runTimeSeconds);
-        float size = boss ? 240f : regularDrawSize(enemy.type());
+        float size = boss ? 240f : EnemyDrawScale.of(enemy.type());
         if (!boss && enemy.eliteAffix != null) size *= ELITE_DRAW_SCALE;
         float feetRatio = boss ? BOSS_FEET_RATIO : REGULAR_FEET_RATIO;
         float x = enemy.x - size * 0.5f;
@@ -367,7 +366,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     /** Frame box of an enemy, shared with the focus mark renderer so both agree on the sprite bounds. */
     private float[] focusMarkBox(Enemy enemy) {
         boolean boss = enemy instanceof Boss;
-        float size = boss ? 240f : regularDrawSize(enemy.type());
+        float size = boss ? 240f : EnemyDrawScale.of(enemy.type());
         if (!boss && enemy.eliteAffix != null) size *= ELITE_DRAW_SCALE;
         float feet = boss ? BOSS_FEET_RATIO : REGULAR_FEET_RATIO;
         return new float[] {enemy.x - size * 0.5f, enemy.y - size * feet, size};
@@ -538,15 +537,6 @@ public final class CombatEntityRenderer implements AutoCloseable {
             return typedBoss.bossDefinition().assetKey();
         }
         return enemy.type().assetKey();
-    }
-
-    static float regularDrawSize(EnemyType type) {
-        return switch (type) {
-            case ROOTLING -> 148f;
-            case STONEKIN -> 166f;
-            case GLOOM_WOLF -> 158f;
-            case FUNGAL_BRUTE -> 178f;
-        };
     }
 
     private static boolean attacking(Enemy enemy) {

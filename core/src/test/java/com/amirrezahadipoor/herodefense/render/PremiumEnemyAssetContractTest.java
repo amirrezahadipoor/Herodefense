@@ -36,19 +36,31 @@ final class PremiumEnemyAssetContractTest {
         "rootling", "rootling-thorn-scout-v2",
         "stonekin", "stonekin-rune-bulwark-v2",
         "gloom_wolf", "gloom-wolf-shadow-stalker-v2",
-        "fungal_brute", "fungal-brute-spore-bruiser-v2"
+        "fungal_brute", "fungal-brute-spore-bruiser-v2",
+        "bark_stalker", "bark-stalker-moss-climber-v2",
+        "sap_hound", "sap-hound-resin-runner-v2",
+        "husk_warden", "husk-warden-shield-bearer-v2",
+        "bramble_thrall", "bramble-thrall-thorn-lumberer-v2"
     );
     private static final Map<String, String> RIG_PROFILES = Map.of(
         "rootling", "premium-humanoid-v2",
         "stonekin", "premium-heavy-humanoid-v2",
         "gloom_wolf", "premium-quadruped-mapped-v2",
-        "fungal_brute", "premium-heavy-humanoid-v2"
+        "fungal_brute", "premium-heavy-humanoid-v2",
+        "bark_stalker", "premium-humanoid-v2",
+        "sap_hound", "premium-quadruped-mapped-v2",
+        "husk_warden", "premium-heavy-humanoid-v2",
+        "bramble_thrall", "premium-heavy-humanoid-v2"
     );
     private static final Map<String, String> ANIMATION_PROFILES = Map.of(
         "rootling", "rootling-skirmisher-v2",
         "stonekin", "stonekin-juggernaut-v2",
         "gloom_wolf", "gloom-wolf-pouncer-v2",
-        "fungal_brute", "fungal-brute-brawler-v2"
+        "fungal_brute", "fungal-brute-brawler-v2",
+        "bark_stalker", "bark-stalker-lurker-v2",
+        "sap_hound", "sap-hound-runner-v2",
+        "husk_warden", "husk-warden-bulwark-v2",
+        "bramble_thrall", "bramble-thrall-lumber-v2"
     );
     private static final Map<String, Integer> FRAME_COUNTS = Map.of(
         "idle", 6, "attack", 8, "hit", 4, "death", 10
@@ -161,16 +173,18 @@ final class PremiumEnemyAssetContractTest {
         assertEquals("regular-enemies-premium-v2", audit.getString("batch"));
         assertEquals(64, audit.getString("baselineManifestSha256").length());
         assertEquals(64, audit.getString("candidateManifestSha256").length());
-        assertEquals(4, audit.get("expectedKeys").size);
-        assertEquals(4, audit.get("assets").size);
+        assertEquals(8, audit.get("expectedKeys").size, "R3.4 doubled the regular-enemy roster");
+        assertEquals(8, audit.get("assets").size);
         assertEquals(FRAME_COUNTS.size(), audit.get("frameContract").size);
 
         JsonValue summary = audit.get("summary");
-        assertEquals(4, summary.getInt("assetCount"));
-        assertEquals(112, summary.getInt("frameCount"));
-        assertEquals(4, summary.getInt("singlePageAtlasCount"));
-        assertEquals(23_592_960L, summary.getLong("decodedBytes"));
-        assertEquals(33_554_432L, summary.getLong("decodedBudgetBytes"));
+        assertEquals(8, summary.getInt("assetCount"));
+        assertEquals(224, summary.getInt("frameCount"));
+        assertEquals(8, summary.getInt("singlePageAtlasCount"));
+        assertEquals(47_185_920L, summary.getLong("decodedBytes"),
+            "8 sheets x 1920 x 768 x 4 bytes");
+        assertEquals(50_331_648L, summary.getLong("decodedBudgetBytes"),
+            "48 MiB: the doubled batch's own budget, unchanged by R3.4");
         assertTrue(summary.getInt("minimumTriangles") >= 900);
         assertTrue(summary.getInt("maximumTriangles") <= 4_000);
         assertTrue(summary.getInt("minimumMeshParts") >= 32);
@@ -178,8 +192,10 @@ final class PremiumEnemyAssetContractTest {
         assertMargins("enemy batch", summary.get("minimumAlphaMargins"));
 
         JsonValue sheets = audit.get("reviewSheets");
-        assertEquals(9, audit.getInt("reviewSheetCount"));
-        assertEquals(9, sheets.size);
+        // One lineup plus a full-motion and a readability sheet per enemy: nine for the four-role batch, seventeen
+        // for the doubled roster (R3.4). Every one of them is hashed into the audit and re-checked here.
+        assertEquals(17, audit.getInt("reviewSheetCount"));
+        assertEquals(17, sheets.size);
         for (JsonValue record = sheets.child; record != null; record = record.next) {
             Path path = REVIEW_DIRECTORY.resolve(record.name).normalize();
             assertTrue(path.startsWith(REVIEW_DIRECTORY));
