@@ -34,7 +34,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **79** | Test-integrity meta-test: weakening a test fails the build | R1.5 | `[x]` |
 | **80** | Gates that measure output, not script text | R1.6 | `[x]` |
 | **81** | Emulator brightness contract restored honestly | R1.7 | `[ ]` |
-| **82** | Negative control for every gate (fixtures that must fail) | R1.9 | `[~]` |
+| **82** | Negative control for every gate (fixtures that must fail) | R1.9 · R8.2 | `[x]` |
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[ ]` |
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[~]` |
 | **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[ ]` |
@@ -110,9 +110,10 @@ re-run on a finished round (Phase 97).
   pipeline so `AndroidTouchSmokeTest` returns to `MIN_MEAN_LUMA = 34` with `vfx-*` screenshots included,
   or the threshold is replaced by a per-screenshot reference fingerprint.
 - [x] **R1.8 Audit published inside the repository.** `docs/audit/AUDIT_2026-09-16.md` + README pointer.
-- [~] **R1.9 Negative control for every gate.** Resampling gate (2×, 3×), ledger drift and the
-  meta-test scanner have fixtures that must fail; the memory budget and review-coverage gates still
-  need theirs.
+- [x] **R1.9 Negative control for every gate.** Fixtures that must fail exist for the resampling gate
+  (NEAREST 2× and 3×), for hash-ledger drift, for the test-integrity scanner, and now for the residency
+  budget (an over-budget set and a sheet that was quadrupled both throw). The review-coverage gate gets
+  its control together with R1.11, when the gate exists.
 - [~] **R1.10 Documentation honesty sweep.** Withdrawn: `ASSET_SCORE_950.md`; correction banner:
   `RELEASE_v0.5.0-vibrant-950.md`; annotated: `ROADMAP.md` Phase 54–77 claims and the "Standing Rules
   for HD". Remaining: a status header on the stale `CRITICAL_REVIEW_2026-09-13.md` and a final grep for
@@ -187,8 +188,11 @@ re-run on a finished round (Phase 97).
 ## R8 — Performance, memory and size  `+40`
 
 - [ ] **R8.1 Texture compression** (ETC2/ASTC + fallback) and mipmaps with a measured comparison.
-- [ ] **R8.2 A memory budget enforced by a test**: 1,277 MiB before recovery, **344.5 MiB now**, target
-  ≤ 100 MiB for the combat set (hero + four regular enemies + environment).
+- [~] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
+  manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (370 MB) and the
+  live combat set against `decodedCombatResidencyBudgetBytes`, now a deliberate **100 MiB**
+  (was 150 MB). Measured: catalog 361,279,488 bytes, combat set **76.8 MiB** — inside budget, and the
+  test fails if that changes. Remaining: compression (R8.1) to bring the catalog itself down.
 - [ ] **R8.3 Residency at wave 50** measured with `adb shell dumpsys meminfo` during a scripted run,
   logged in the repository, with streaming/release of atlases.
 - [ ] **R8.4 Startup and APK budget** measured in CI against a committed threshold.
@@ -217,7 +221,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 78 | CI failure | first push turned `Test core logic` red (numpy not installed); fixtures rewritten with Pillow only | `b855e97` |
 | 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
 | 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | `71bab7d` |
-| 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | *(this commit)* |
+| 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | `651d56a` |
+| 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |
 
 ## Definition of done
 

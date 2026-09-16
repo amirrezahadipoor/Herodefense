@@ -296,6 +296,13 @@ def main() -> None:
         for asset in manifest["assets"]
         for sheet in asset["sheets"]
     )
+    # Combat residency budget: hero + four regular enemies + one boss + six equipped sheets + the arena,
+    # as computed by core's RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2).
+    manifest["decodedCombatResidencyBudgetBytes"] = 100 * 1024 * 1024
+    manifest["decodedCombatResidencyNote"] = (
+        "Combat residency = hero + four regular enemies + one boss + six equipped sheets + arena art, "
+        "computed by RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2). Target <=100 MiB."
+    )
     manifest["decodedBytes"] = decoded_total
     manifest["maxAtlasPageSize"] = max(2048, max_page)
     if decoded_total > manifest["decodedCatalogBudgetBytes"]:
