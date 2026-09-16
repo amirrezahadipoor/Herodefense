@@ -8,8 +8,15 @@ import com.amirrezahadipoor.herodefense.balance.WaveSample;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.rewards.RewardCardId;
 import java.util.List;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Tagged {@code balance}: this suite sweeps whole runs, so it is the {@code :core:balanceGate} task's work and not
+ * part of the fast unit loop (roadmap R4.5). The gate is what CI runs on every push; the tag only decides which
+ * task pays for it, never whether it runs.
+ */
+@Tag("balance")
 final class RewardCardSimulationTest {
     private static final long SEED = 0x4341524453494DL;
     /**

@@ -9,6 +9,7 @@ import com.amirrezahadipoor.herodefense.trials.TrialId;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -17,6 +18,12 @@ import org.junit.jupiter.api.Test;
  * chaotic, so a single seed can knife-edge (a death at 1 HP, a 0.4%-over spike) while the
  * pair is healthy. Systematic breakage moves all three seeds and still fails medians.
  */
+/**
+ * Tagged {@code balance}: this suite sweeps whole runs, so it is the {@code :core:balanceGate} task's work and not
+ * part of the fast unit loop (roadmap R4.5). The gate is what CI runs on every push; the tag only decides which
+ * task pays for it, never whether it runs.
+ */
+@Tag("balance")
 final class TrialSimulationTest {
     private static final long SEED = 0x747269616C7331L;
     /**

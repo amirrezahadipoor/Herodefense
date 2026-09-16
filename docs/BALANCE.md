@@ -80,6 +80,25 @@ The step into the second half more than doubled, the wave-200 enemy is 9% lighte
 
 **It is not enough for the blocked bad-luck rule.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 returned `0.01–0.03`, leaving the shipped worst pair at `0.382`. The rule stays deferred; see the economy section above.
 
+## How the balance gate runs (Phase 91, roadmap R4.5)
+
+The gates in this document are not prose: `:core:balanceGate` runs them, and CI runs that task as its own job on
+every push, with its own timeout and its own report. The suites that sweep whole runs carry a `balance` tag —
+`TrialSimulationTest`, `RewardCardSimulationTest`, `AscensionGateTest`, `NonOptimiserBandTest` — and are excluded
+from `:core:test`, which is the seconds-long unit loop; `:core:check` depends on both, so the aggregate gate a
+contributor runs locally is still the complete one. Measured on 2026-09-17: unit loop **31 s**, balance gate
+**4 m 47 s**, no suite running twice.
+
+The sweeps are fixed, because a gate that picks fresh seeds every push measures noise instead of the change:
+
+| Gate | Seeds |
+|---|---|
+| `WavePressureCurveTest`, `BalanceSimulatorTest`, `EliteDamageAccountingTest` | `0x4845524F444546` + 0, 1, 2 then `0x747269616C7331` then `0x4341524453494D` |
+| `TrialSimulationTest` | `0x747269616C7331` + 0…4, judged on the median run of the five |
+| `RewardCardSimulationTest` | `0x4341524453494D`, every card forced at every boss 1…39 |
+| `AscensionGateTest` | 8 cards × tiers {0, 3, 6, 10} × 5 seeds |
+| `NonOptimiserBandTest` | 12 seeds: the two sweeps above plus `0x4E414956453031`…`37` |
+
 ## Critical hits
 
 - Every Hero projectile has a deterministic `5%` critical chance and deals `1.75×` damage on success; Critical Mastery raises both (see Skill shop).

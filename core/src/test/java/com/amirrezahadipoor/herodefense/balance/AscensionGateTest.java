@@ -9,6 +9,7 @@ import com.amirrezahadipoor.herodefense.rewards.RewardCardId;
 import com.amirrezahadipoor.herodefense.trials.TrialId;
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -22,6 +23,12 @@ import org.junit.jupiter.api.Test;
  * (every card at boss 20), and a trial-pair spot (power, damage, and horde
  * pairs) at tiers 0/3/6/10.
  */
+/**
+ * Tagged {@code balance}: this suite sweeps whole runs, so it is the {@code :core:balanceGate} task's work and not
+ * part of the fast unit loop (roadmap R4.5). The gate is what CI runs on every push; the tag only decides which
+ * task pays for it, never whether it runs.
+ */
+@Tag("balance")
 final class AscensionGateTest {
     private static final long BASELINE_SEED = 0x4845524F444546L;
     private static final long TRIAL_SEED = 0x747269616C7331L;

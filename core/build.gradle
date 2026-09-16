@@ -23,7 +23,13 @@ dependencies {
 }
 
 test {
-    useJUnitPlatform()
+    // Roadmap R4.5: the suites that sweep whole runs are tagged `balance` and belong to :core:balanceGate, which CI
+    // runs as its own job. The tag decides which task pays for a suite, never whether it runs: `check` depends on
+    // both tasks, and the balance job is the one that judges a push. Keeping them out of this task is what makes
+    // the unit loop seconds instead of minutes, and no suite runs twice.
+    useJUnitPlatform {
+        excludeTags "balance"
+    }
     maxHeapSize = "640m"
 
     // Two test JVMs when the machine has the cores. Every test class builds its own state and seeds its own
@@ -33,19 +39,29 @@ test {
         maxParallelForks = 2
     }
 
-    // Local fast loop (roadmap R2.6): `./gradlew :core:test -PfastTests` leaves out the three suites that sweep
-    // whole runs. Measured on 2026-09-16: TrialSimulationTest 109 s, RewardCardSimulationTest 106 s,
-    // AscensionGateTest 96 s -- 311 of the suite's 322 seconds of test time, spent by six cases. The other 154
-    // classes cost about ten seconds together, so a slice can be verified in seconds instead of minutes. CI
-    // never passes the flag, so the suite that judges a push is still the complete one, and the sweeps still run
-    // locally at every phase boundary. The flag removes duplicated work; it does not lower a ceiling.
-    if (project.hasProperty("fastTests")) {
-        filter {
-            excludeTestsMatching "*RewardCardSimulationTest"
-            excludeTestsMatching "*TrialSimulationTest"
-            excludeTestsMatching "*AscensionGateTest"
-        }
+}
+
+// --- The balance gate (roadmap R4.5) ----------------------------------------------------------------------
+// The same suites the `balance` tag marks, run as their own task so CI can give them their own job, timeout and
+// report: a curve that leaves the band fails a job called "balance", not one line inside a 650-test run. The
+// fixed seeds every gate sweeps are named in docs/BALANCE.md.
+tasks.register("balanceGate", Test) {
+    description = "Runs the balance gates (curve, ascension, trials, reward cards, non-optimiser band) on their fixed seeds."
+    group = "verification"
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags "balance"
     }
+    maxHeapSize = "640m"
+    if (Runtime.runtime.availableProcessors() >= 2 && !project.hasProperty("serialTests")) {
+        maxParallelForks = 2
+    }
+}
+
+// `check` is the complete gate: the unit loop plus the sweeps. A push is judged by CI running both.
+tasks.named("check") {
+    dependsOn tasks.named("balanceGate")
 }
 
 // --- Static analysis (roadmap R2.5) -----------------------------------------------------------------------

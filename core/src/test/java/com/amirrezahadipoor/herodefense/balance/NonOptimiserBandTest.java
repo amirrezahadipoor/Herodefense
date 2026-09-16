@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -29,6 +30,12 @@ import org.junit.jupiter.api.Test;
  * lose some runs — a band, not a wall and not a walkover — and the non-optimiser must do measurably worse than the
  * optimiser on the same seeds, or this policy is not a weaker player and the band means nothing.
  */
+/**
+ * Tagged {@code balance}: this suite sweeps whole runs, so it is the {@code :core:balanceGate} task's work and not
+ * part of the fast unit loop (roadmap R4.5). The gate is what CI runs on every push; the tag only decides which
+ * task pays for it, never whether it runs.
+ */
+@Tag("balance")
 final class NonOptimiserBandTest {
 
     /** A dozen seeds, none of them special: the first two are the fixed sweep's, the rest are the next ten. */

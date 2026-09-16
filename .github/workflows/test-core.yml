@@ -51,7 +51,7 @@ jobs:
           python3 tools/playtests/validate_playtest_ledger.py
           python3 -m unittest discover -s tools/playtests/tests -t .
 
-      - name: Run unit tests and the 100-wave balance gate
+      - name: Run the unit-test loop (the balance sweeps are the balance-gate job below)
         run: ./scripts/gradle.sh :core:test --stacktrace
 
       - name: Static analysis (roadmap R2.5 -- PMD + SpotBugs, findings triaged not silenced)
@@ -74,5 +74,41 @@ jobs:
         with:
           name: core-test-report
           path: core/build/reports/tests/test/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # Roadmap R4.5: the balance gates sweep whole runs, so they are their own job with their own timeout and report.
+  # A curve that leaves its band, a trial pair that spikes, or a tier that stops charging for itself fails a job
+  # called "balance gate" instead of one line inside the unit run. The same suites run once -- they are tagged
+  # `balance` and excluded from the unit loop -- so nothing here duplicates work.
+  balance-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GRADLE_USER_HOME: /tmp/herodefense-gradle
+      HERO_PROJECT_CACHE_DIR: /tmp/herodefense-project-cache
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Balance gate on the fixed seeds (curve, ascension, trials, reward cards, non-optimiser band)
+        run: ./scripts/gradle.sh :core:balanceGate --stacktrace
+
+      - name: Upload balance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-balance-report
+          path: core/build/reports/tests/balanceGate/
           if-no-files-found: ignore
           retention-days: 14

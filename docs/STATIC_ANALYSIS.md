@@ -14,8 +14,8 @@ off because it was noisy.
 | `core/config/spotbugs/exclude.xml` | SpotBugs 4.8.6 (plugin 6.0.26, effort MAX, confidence LOW) over bytecode of main and test | `./gradlew :core:spotbugsMain :core:spotbugsTest` |
 | `ciStaticAnalysis` | all four of the above in one task; fails the build on any finding that is not excluded | `./gradlew :core:ciStaticAnalysis` |
 
-The analysers are **not** wired into `test`: the fast loop (`-PfastTests`) and the full suite keep their pace, and
-CI runs `ciStaticAnalysis` as its own step next to the tests. Both analysers read the code that ships *and* the
+The analysers are **not** wired into `test`: the unit loop (`:core:test`) and the balance gate
+(`:core:balanceGate`, roadmap R4.5) keep their pace, and CI runs `ciStaticAnalysis` as its own step next to both. Both analysers read the code that ships *and* the
 tests, because a broken test is as expensive as a broken system.
 
 ## First pass: what was found
