@@ -338,6 +338,23 @@ sentence has to name the two scores and the commit they were measured on.
   so the exception list is self-cleaning. Negative controls cover a rendering import in `model`, an
   700-line class, a 45-field class, and a frozen offender that grows.
 - [ ] **R2.5 Static analysis in CI** (ErrorProne or SpotBugs + PMD), findings triaged not silenced.
+- [x] **R2.6 A test budget: the suite's cost is measured, and the local loop is not a second CI.**
+  *Measured 2026-09-16 (157 classes, 579 tests, `./gradlew :core:test`):* three suites spend **311 of the
+  suite's 322 seconds of test time** — `TrialSimulationTest` 109 s, `RewardCardSimulationTest` 106 s,
+  `AscensionGateTest` 96 s — six cases between them. The other 154 classes cost about ten seconds
+  together. Two changes follow from that number, neither of which lowers a ceiling:
+  *Parallel forks.* `core/build.gradle` now runs two test JVMs when the machine has the cores (opt out with
+  `-PserialTests`). The classes are independent and every gate seeds itself, so this is scheduling only:
+  the full suite went from **7 m 29 s to 3 m 45 s** with the same 579 tests and the same numbers.
+  *A local fast loop.* `./gradlew :core:test -PfastTests` leaves out those three sweeping suites and runs
+  the rest in **21 seconds**. CI never passes the flag, so the suite that judges a push is still the
+  complete one, and the sweeps still run locally at every phase boundary — the flag removes the duplication
+  of running the same two-minute sweep locally *and* on the runner for every one-line change.
+  *What was checked before assuming anything:* the unit layer has no filler to trim — 529 `@Test` methods
+  were compared by normalised body, **zero** are duplicates of another case, and only five are one-liners
+  (each asserting a real edge: a null text, an empty selection, a zero-velocity rotation, an empty arena
+  tap, the application adapter type). The cost is in six cases that sweep whole runs, not in careless
+  cases. **Rule from here on: gates are never trimmed for speed; duplicated work is.**
 
 ## R3 — Gameplay depth  `+45`
 
@@ -645,6 +662,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 86 | R2.2 slice 7 | the prologue and the grove-planting ceremonies extracted into `gameplay/CinematicFlow` (tier snapshot, planted tree, water drops, wave hand-off and the boss entrance at it); `HeroDefenseGame` 954 → 927 lines (39 percent smaller than the audited 1,519-line god class), fields 95 → 94, ratchet freeze lowered in the same commit | `7d1b7da` |
 
 | 2026-09-16 | 86 | R2.2/R2.3 | `WaveDirectorTest` (5 cases) and `SessionControllerTest` (7 cases) make the two extracted flows testable without libGDX: `audio/AudioPlayback` and `save/RunSaveRepository` now sit between the gameplay systems and the libGDX-backed classes that open resources in their constructors | `44285d4` |
+
+| 2026-09-16 | 86 | R2.6 | test-cost measurement (3 suites = 311 of 322 s of test time, 157 classes / 579 tests) plus two speed changes that keep every gate: two parallel test JVMs (`-PserialTests` to opt out) took the full suite from 7 m 29 s to 3 m 45 s, and `-PfastTests` gives a 21-second local loop that skips only the three sweeping suites, which CI still runs on every push | `_PENDING_` |
 
 ## Definition of done
 

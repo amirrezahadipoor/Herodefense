@@ -21,4 +21,26 @@ dependencies {
 
 test {
     useJUnitPlatform()
+    maxHeapSize = "640m"
+
+    // Two test JVMs when the machine has the cores. Every test class builds its own state and seeds its own
+    // simulation, so running two classes at once changes nothing except the wall clock; the property is there
+    // for machines that prefer to stay serial.
+    if (Runtime.runtime.availableProcessors() >= 2 && !project.hasProperty("serialTests")) {
+        maxParallelForks = 2
+    }
+
+    // Local fast loop (roadmap R2.6): `./gradlew :core:test -PfastTests` leaves out the three suites that sweep
+    // whole runs. Measured on 2026-09-16: TrialSimulationTest 109 s, RewardCardSimulationTest 106 s,
+    // AscensionGateTest 96 s -- 311 of the suite's 322 seconds of test time, spent by six cases. The other 154
+    // classes cost about ten seconds together, so a slice can be verified in seconds instead of minutes. CI
+    // never passes the flag, so the suite that judges a push is still the complete one, and the sweeps still run
+    // locally at every phase boundary. The flag removes duplicated work; it does not lower a ceiling.
+    if (project.hasProperty("fastTests")) {
+        filter {
+            excludeTestsMatching "*RewardCardSimulationTest"
+            excludeTestsMatching "*TrialSimulationTest"
+            excludeTestsMatching "*AscensionGateTest"
+        }
+    }
 }
