@@ -982,7 +982,7 @@ Continues from Phase 53 (studio-v4-vibrant). Goal: reach **950+/1000** in ultra-
 
 ## Phase 70 — Runtime Post-Process in libGDX: Vignette + Bloom + LUT
 
-- [x] In `core/src/main/java/.../render/`: add `PostProcessRenderer.java` with vignette shader (0.15), bloom (threshold 0.75), and color LUT (vibrant). Apply in `HeroDefenseGame.render()` after `spriteBatch`. Keep performance budget: <2ms on mid-range.
+- [x] In `core/src/main/java/.../render/`: add `PostProcessRenderer.java` with vignette shader (0.15), bloom (threshold 0.75), and color LUT (vibrant). Apply in `HeroDefenseGame.render()` after `spriteBatch`. Keep performance budget: <2ms on mid-range. **[REMOVED 2026-09-16: the class was a dead stub that loaded two shader files which never shipped; see ROADMAP_TO_1000 R2.1]**
 
 ## Phase 71 — Performance Diet: ETC2 + Mipmaps + Atlas Optimization
 
