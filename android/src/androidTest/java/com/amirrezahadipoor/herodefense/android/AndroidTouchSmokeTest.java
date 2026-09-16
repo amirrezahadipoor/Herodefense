@@ -600,10 +600,25 @@ public final class AndroidTouchSmokeTest {
     private static final Map<String, float[]> BRIGHTNESS = new LinkedHashMap<>();
     private static final java.util.Set<String> UNREFERENCED = new java.util.LinkedHashSet<>();
 
+
+    /** How far a screenshot may drift from its recorded mean before the run fails. */
+    private static final float MEAN_LUMA_TOLERANCE = 8f;
+
+    /** Absolute floor: no screen may be OLED-black, whatever its reference says. */
+    private static final float MIN_MEAN_LUMA = 30f;
+
+    /** Wider band for captures that land mid-animation; see the four-argument `ref`. */
+    private static final float ANIMATED_MEAN_LUMA_TOLERANCE = 12f;
+
+    /** How far the lit-pixel fraction may drop from its recorded value. */
+    private static final float LIT_FRACTION_TOLERANCE = 0.10f;
+
     /**
      * Per-screenshot brightness references, measured on the CI emulator in the "Build and touch-test
-     * Android" workflow, run 35078435013 at commit 0ccc92c, with the reviewed runtime tier in place.
-     * Each entry is `mean luma` and the fraction of sampled pixels at or above luma 16.
+     * Android" workflow, run 35078435013 at commit 0ccc92c with the reviewed runtime tier in place and
+     * confirmed by run 35079208076 (all 28 captures referenced, largest drift 0.07 luma outside the
+     * animated collapse frame). Each entry is `mean luma` and the fraction of sampled pixels at or
+     * above luma 16.
      *
      * <p>A single blanket floor could not tell a slightly dark screen from a black one, and it had to be
      * lowered to 20 to survive art that had been darkened by a filter. These references replace it: every
@@ -613,7 +628,7 @@ public final class AndroidTouchSmokeTest {
      */
     private static final Map<String, float[]> SCREEN_REFERENCE = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 44.35f, 0.9141f),
-        ref("vfx-tree-collapse-premium-v2.png", 37.14f, 0.9840f),
+        ref("vfx-tree-collapse-premium-v2.png", 37.14f, 0.9840f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("defeat-premium-v2.png", 37.28f, 0.9786f),
         ref("trial-draft-premium-v2.png", 43.44f, 0.9737f),
         ref("settings-premium-v2.png", 35.98f, 0.9770f),
@@ -642,17 +657,18 @@ public final class AndroidTouchSmokeTest {
         ref("reward-cards-premium-v2.png", 43.73f, 0.9712f)
     );
 
-    /** How far a screenshot may drift from its recorded mean before the run fails. */
-    private static final float MEAN_LUMA_TOLERANCE = 8f;
-
-    /** Absolute floor: no screen may be OLED-black, whatever its reference says. */
-    private static final float MIN_MEAN_LUMA = 30f;
-
-    /** How far the lit-pixel fraction may drop from its recorded value. */
-    private static final float LIT_FRACTION_TOLERANCE = 0.10f;
-
+    /** Reference with the default tolerance. */
     private static Map.Entry<String, float[]> ref(String name, float mean, float lit) {
-        return Map.entry(name, new float[] {mean, lit});
+        return Map.entry(name, new float[] {mean, lit, MEAN_LUMA_TOLERANCE});
+    }
+
+    /**
+     * Reference for an animated capture. Two emulator runs of `vfx-tree-collapse` measured mean 37.14 and
+     * 44.28, because the frame lands at a different point of the collapse animation, so the animated vfx
+     * captures get a wider band instead of a tolerance that would make the run flaky.
+     */
+    private static Map.Entry<String, float[]> ref(String name, float mean, float lit, float tolerance) {
+        return Map.entry(name, new float[] {mean, lit, tolerance});
     }
 
 
@@ -672,9 +688,10 @@ public final class AndroidTouchSmokeTest {
                 + " - record it in SCREEN_REFERENCE in the same commit");
             return;
         }
+        float tolerance = reference.length > 2 ? reference[2] : MEAN_LUMA_TOLERANCE;
         assertTrue(name + " mean luma " + mean + " drifted from the recorded reference " + reference[0]
-                + " by more than " + MEAN_LUMA_TOLERANCE,
-            Math.abs(mean - reference[0]) <= MEAN_LUMA_TOLERANCE);
+                + " by more than " + tolerance,
+            Math.abs(mean - reference[0]) <= tolerance);
         assertTrue(name + " lit fraction " + lit + " dropped from the recorded reference " + reference[1],
             lit >= reference[1] - LIT_FRACTION_TOLERANCE);
         assertTrue(name + " is mostly dark, lit fraction " + lit, lit >= 0.75f);
