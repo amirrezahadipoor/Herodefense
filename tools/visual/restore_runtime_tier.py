@@ -33,6 +33,7 @@ from pathlib import Path
 from PIL import Image
 
 REPOSITORY = Path(__file__).resolve().parents[2]
+POST_BATCH_CONTRACT_DOCUMENT = "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md"
 GENERATED_RELATIVE = "android/assets/generated"
 REPORT_RELATIVE = "docs/art_reviews/INTEGRITY_RECOVERY_2026-09-16.md"
 HASH_LEDGER_RELATIVE = "docs/asset_hashes.json"
@@ -280,6 +281,22 @@ def main() -> None:
                 asset["visualSlot"] = "ring1"
             elif slot == "RING_2":
                 asset["visualSlot"] = "ring2"
+
+    # The ten equipment ids that arrived after the premium-v2 batch were claiming the batch review as
+    # their accepted document, which that review does not cover. Point them at their own contract record
+    # so the manifest claims what is actually true (roadmap R1.11).
+    post_batch_ids = {
+        "bark_first_root", "crown_hollow_eye", "emberless_core", "golemsbane_warbow",
+        "sunfall_last_arrow", "thornwood_bow", "verdant_oath", "verdant_recurve",
+        "windrunner_last_steps", "yew_shortbow",
+    }
+    for asset in manifest["assets"]:
+        if asset.get("itemId") in post_batch_ids and asset["key"].startswith("equipment_"):
+            asset["categoryReview"]["document"] = POST_BATCH_CONTRACT_DOCUMENT
+            asset["categoryReview"]["note"] = (
+                "Post-batch art: covered by the runtime contract and the hash ledger, not by the "
+                "premium-v2 render acceptance review (see the document)"
+            )
 
     decoded_total = sum(
         sheet["width"] * sheet["height"] * 4

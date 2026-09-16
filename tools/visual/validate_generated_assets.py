@@ -110,6 +110,36 @@ def _reviewed_tier(frame_class: str, key: str) -> tuple[int, int]:
     return REVIEWED_TIER_FOR_CONFIGURED.get(configured, configured)
 
 
+def _check_review_label_binding(root: Path) -> None:
+    """Every asset's revision label must appear in the review document that claims to cover it.
+
+    Same rule as core's `ReviewLabelBinding`, so the asset pipeline fails in CI even when the Java tests
+    are not the ones being run (roadmap R1.11).
+    """
+    manifest = json.loads((root / "asset_manifest.json").read_text())
+    repository = Path(__file__).resolve().parents[2]
+    documents: dict[str, str | None] = {}
+    for asset in manifest["assets"]:
+        key = asset["key"]
+        revision = asset.get("modelRevision")
+        review = asset.get("categoryReview") or {}
+        document = review.get("document")
+        if not document:
+            raise ValueError(f"{key}: no review document for modelRevision={revision}")
+        if review.get("status") != "accepted":
+            raise ValueError(f"{key}: review {document} status is {review.get('status')}")
+        if document not in documents:
+            path = repository / document
+            documents[document] = path.read_text() if path.is_file() else None
+        text = documents[document]
+        if text is None:
+            raise ValueError(f"{key}: missing review document {document}")
+        if "`" + str(revision) + "`" not in text:
+            raise ValueError(f"{key}: revision {revision} is not listed in {document}")
+        if "<!-- BEGIN GENERATED: texture revision labels -->" not in text:
+            raise ValueError(f"{key}: {document} has no generated revision-label block")
+
+
 def _check_pivot_stability(asset: dict) -> None:
     key = asset["key"]
     pivot = asset["pivot"]
@@ -374,6 +404,8 @@ def main() -> None:
     # global grade/silhouette alpha sanity
     _check_asset_ledger(root)
     _measured("asset hash ledger")
+    _check_review_label_binding(root)
+    _measured("review label binding")
     _check_grade_alpha()
     _measured("grade alpha round-trip")
     # Config-presence checks: they read the pipeline source and therefore say nothing about the

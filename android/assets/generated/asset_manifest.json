@@ -1832,7 +1832,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -3371,7 +3372,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -4910,7 +4912,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -5835,7 +5838,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -11980,7 +11984,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -12290,7 +12295,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -13215,7 +13221,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -13525,7 +13532,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -13836,7 +13844,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {
@@ -14761,7 +14770,8 @@
    ],
    "categoryReview": {
     "category": "equipment",
-    "document": "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md",
+    "document": "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md",
+    "note": "Post-batch art: covered by the runtime contract and the hash ledger, not by the premium-v2 render acceptance review (see the document)",
     "status": "accepted"
    },
    "clips": {

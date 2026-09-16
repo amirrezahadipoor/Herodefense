@@ -32,6 +32,8 @@ final class PremiumAssetContractTest {
     private static final Path MANIFEST = GENERATED.resolve("asset_manifest.json");
     private static final String PILOT_REVIEW = "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md";
     private static final String HERO_REVIEW = "docs/art_reviews/HERO_PREMIUM_V2_REVIEW.md";
+    private static final String POST_BATCH_CONTRACT =
+        "docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md";
     private static final String EQUIPMENT_REVIEW =
         "docs/art_reviews/EQUIPMENT_PREMIUM_V2_REVIEW.md";
     private static final Path EQUIPMENT_REVIEW_DIRECTORY =
@@ -230,14 +232,17 @@ final class PremiumAssetContractTest {
             JsonValue categoryReview = asset.get("categoryReview");
             assertEquals("equipment", categoryReview.getString("category"), key);
             assertEquals("accepted", categoryReview.getString("status"), key);
-            assertEquals(EQUIPMENT_REVIEW, categoryReview.getString("document"), key);
+            assertEquals(expectedEquipmentReview(id), categoryReview.getString("document"), key);
             // The asset must name the review document that accepted it: the premium-v2 batch keeps it
             // at the top level, the three bows that received their own art batch keep it inside
             // categoryReview. Either way the named document must exist and be the equipment review.
             String reviewDocument = asset.has("reviewDocument")
                 ? asset.getString("reviewDocument")
                 : categoryReview.getString("document");
-            assertEquals(EQUIPMENT_REVIEW, reviewDocument, key);
+            // The premium-v2 batch points at the batch review; the ten ids that arrived afterwards point
+            // at their own contract record. Claiming the batch review for those ten was unsupported
+            // (roadmap R1.11), so the expectation is exact per id rather than one document for all.
+            assertEquals(expectedEquipmentReview(id), reviewDocument, key);
             assertTrue(Files.isRegularFile(REPOSITORY.resolve(reviewDocument)),
                 key + " missing review document " + reviewDocument);
             if (EXPECTED_PREMIUM_PILOT.contains(key)) {
@@ -406,6 +411,11 @@ final class PremiumAssetContractTest {
         long peakBytes = decodedBytes(new ArrayList<>(peakResidency), imageInfo);
         assertTrue(peakBytes <= residencyBudget,
             "conservative combat residency " + peakBytes + " exceeds " + residencyBudget);
+    }
+
+    /** The document that is supposed to cover a given equipment art id. */
+    private static String expectedEquipmentReview(String id) {
+        return POST_AUDIT_ART_IDS.contains(id) ? POST_BATCH_CONTRACT : EQUIPMENT_REVIEW;
     }
 
     private static Map<String, JsonValue> assetsByKey(JsonValue manifest) {

@@ -35,7 +35,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **80** | Gates that measure output, not script text | R1.6 | `[x]` |
 | **81** | Emulator brightness contract restored honestly | R1.7 | `[ ]` |
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 · R8.2 | `[x]` |
-| **83** | Review coverage for the ten post-audit art ids | R1.11 | `[ ]` |
+| **83** | Review coverage for the ten post-audit art ids | R1.11 | `[x]` |
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[~]` |
 | **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[ ]` |
 | **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[ ]` |
@@ -118,8 +118,18 @@ re-run on a finished round (Phase 97).
   `RELEASE_v0.5.0-vibrant-950.md`; annotated: `ROADMAP.md` Phase 54–77 claims and the "Standing Rules
   for HD". Remaining: a status header on the stale `CRITICAL_REVIEW_2026-09-13.md` and a final grep for
   numbers that no artifact produces.
-- [ ] **R1.11 Review coverage for the ten post-audit art ids.** Extend the equipment review with the same
-  acceptance evidence as the rest of the batch, or stop claiming coverage in the manifest.
+- [x] **R1.11 Review coverage for the ten post-audit art ids.** The claim is now true and enforced.
+  `docs/art_reviews/POST_BATCH_EQUIPMENT_CONTRACT.md` states exactly what is verified for those ten ids
+  (runtime contract, hash ledger, no resampling signature, reviewed tier) and what is *not* claimed (no
+  rendered acceptance pass) instead of pointing at the premium-v2 review that never saw them;
+  `restore_runtime_tier.py` writes the same pointers, so a regeneration cannot drift back.
+  Revision labels are bound to documents: `tools/visual/write_review_labels.py` generates a label block in
+  every review document from the manifest, `ReviewLabelBinding` + `ReviewLabelBindingTest` in core and the
+  validator gate *review label binding* fail if a label is not listed in the document that claims to cover
+  it, and the equipment contract test now expects a different document for the premium batch than for the
+  post-batch ids instead of one document for all 46.
+  *Evidence:* validator `Measured gates: 8 (... review label binding ...)`; full suite 150 classes /
+  531 tests / 0 failures; `write_review_labels.py --check` current in 10 documents.
 
 ## R2 — Architecture and code quality  `+45`
 
@@ -222,6 +232,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
 | 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | `71bab7d` |
 | 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | `651d56a` |
+| 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |
 
 ## Definition of done
