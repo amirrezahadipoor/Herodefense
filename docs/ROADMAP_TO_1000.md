@@ -277,13 +277,26 @@ sentence has to name the two scores and the commit they were measured on.
   frame the emulator captures is built by the same code. `HeroDefenseGame` went from **1,201 to 1,072 lines**
   (29 % smaller than the 1,519-line god class the audit measured) and the ratchet freeze dropped to
   1,072 / 92. The guard test now also fails if any per-state draw call returns to the game class.
-  *Remaining:* `WaveDirector`, `CombatSystem`, `ArenaRendererFacade`, `HudFlow`, `SessionController`,
-  the 400-line ceiling, and the before/after emulator smoke comparison.
+  *Slice 4 (done):* the wave lifecycle that ended `updatePlaying` (98 lines: hero death with the tree-fall burst
+  and the epilogue choice, the level-up pause, the wave advance with its boss-entrance beat and reflection line,
+  the reward-card offer, the planting ceremony and the completed run) moved into `gameplay/WaveDirector`. The
+  director reaches the game only through a five-method `Host` (`gameState`, `transitionTo`, `saveNow`,
+  `showWaveReflection`, `beginPlantingCeremony`), so screen transitions and saving stay in one place and the
+  per-frame call site is a single line: `waveDirector.afterCombat(gameOver, killRewards.levelsGained() > 0)`.
+  The move is statement-for-statement identical to the removed block — the two `waveCompletion != NO_CHANGE`
+  guards collapsed into one early `return`, and `simulationSeconds += simulationDelta;` stayed in the game
+  class because it is not wave flow. `HeroDefenseGame` went from **1,067 to 1,056 lines**; the director handle
+  is one new field (92 → 93), recorded in the ratchet freeze instead of hidden. The layered-event guard was
+  extended rather than relaxed: it now scans four files (game, `RunPresentationSystem`, `ScreenStateComposer`,
+  `WaveDirector`) and still requires each layered effect exactly once.
+  *Remaining:* `CombatSystem`, `ArenaRendererFacade`, `HudFlow`, `SessionController`, the 400-line ceiling, and
+  the before/after emulator smoke comparison.
 - [ ] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
-  size** — `HeroDefenseGame` (1,072 lines / 92 fields after roadmap phase 86), `CombatEntityRenderer` (667 / 11),
+  size** — `HeroDefenseGame` (1,056 lines / 93 fields after roadmap phase 86 slice 4),
+  `CombatEntityRenderer` (681 / 13 after roadmap phase 87 and 88),
   `BalanceSimulator` (639 / 23), `model/GameState` (592 / 80). The freeze may only shrink: the ratchet fails
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
   so the exception list is self-cleaning. Negative controls cover a rendering import in `model`, an
@@ -582,10 +595,12 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | `442687b` |
 | 2026-09-16 | 88 | R3.2 | eight encounter scripts over forty encounters (tell size 0.85×–1.35×, one or two half hits per warning, an enrage that shrinks the tell) with a deterministic encounter table; four wider drafts were measured and dropped because they moved the sweep's worst-wave cells by 15–45 %, so physics and warning timing are pinned by test and the pinned roster reproduces the phase-87 cells bit for bit; 16 new or extended test cases, and the two spike matrices now sample five seeds instead of three with every ceiling unchanged | `4af8101` |
 | 2026-09-16 | 87 | R3.1 | tap-to-focus: the player can now point the bow at any enemy for 6 s (×1.2 damage), release it with a tap on empty ground, and see the window fade out; 11 new test cases; the wave is no longer a spectator sport | `499da95` |
-| 2026-09-16 | 86 | R2.2 slice 3 | per-state frame build extracted into `ScreenStateComposer` (arena, actors, effects, HUD, all overlays) behind a 51-getter port; `HeroDefenseGame` 1,201 → 1,072 lines; ratchet freeze lowered; guard test extended to the draw calls | *(this commit)* |
+| 2026-09-16 | 86 | R2.2 slice 3 | per-state frame build extracted into `ScreenStateComposer` (arena, actors, effects, HUD, all overlays) behind a 51-getter port; `HeroDefenseGame` 1,201 → 1,072 lines; ratchet freeze lowered; guard test extended to the draw calls | `177aabe` |
 | 2026-09-16 | — | CI honesty | `937e8b2` turned `Test core logic` red: the pipeline's Python UI source test still looked for the touch lifecycle inside the game class that slice 2 had just emptied. Fixed in `c8c2b27`, which reads the router instead, so the check follows the code rather than a file location | `c8c2b27` |
 | 2026-09-16 | 86 | R2.2 slice 2 | per-screen touch chain extracted verbatim into `ScreenTouchRouter` behind a `Host` port; `HeroDefenseGame` 1,447 → 1,201 lines; ratchet freeze lowered; new guard test fails if a touch layout returns to the game class; prior progress-log rows back-filled with their real commit hashes | `937e8b2` |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | `317728c` |
+
+| 2026-09-16 | 86 | R2.2 slice 4 | wave director (death and the tree falling, level-up pause, wave advance with the boss-entrance beat and reflection line, reward-card offer, planting ceremony, completed run) extracted into `gameplay/WaveDirector` behind a five-method `Host`; `HeroDefenseGame` 1,067 → 1,056 lines, fields 92 → 93 for the director handle and the ratchet records both; layered-event guard now scans four files | `_PENDING_` |
 
 ## Definition of done
 

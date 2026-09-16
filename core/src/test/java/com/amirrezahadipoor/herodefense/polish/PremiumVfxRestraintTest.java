@@ -153,8 +153,8 @@ final class PremiumVfxRestraintTest {
 
     @Test
     void gameBindsEveryLayeredEventExactlyOnce() throws IOException {
-        // The layered effects are wired by the game loop and by the two presentation classes extracted from
-        // it (roadmap R2.2). All three files are scanned together and each binding must appear exactly once,
+        // The layered effects are wired by the game loop and by the three classes extracted from it
+        // (roadmap R2.2). All four files are scanned together and each binding must appear exactly once,
         // so moving a call cannot silently duplicate an effect or drop it.
         String game = Files.readString(Path.of(
             "src/main/java/com/amirrezahadipoor/herodefense/HeroDefenseGame.java"
@@ -162,6 +162,8 @@ final class PremiumVfxRestraintTest {
             "src/main/java/com/amirrezahadipoor/herodefense/presentation/RunPresentationSystem.java"
         )) + "\n" + Files.readString(Path.of(
             "src/main/java/com/amirrezahadipoor/herodefense/presentation/ScreenStateComposer.java"
+        )) + "\n" + Files.readString(Path.of(
+            "src/main/java/com/amirrezahadipoor/herodefense/gameplay/WaveDirector.java"
         ));
         // Every layered event is bound exactly once, except the tree destruction, which is bound twice on
         // purpose: once for the world tree and once for each grove tree.

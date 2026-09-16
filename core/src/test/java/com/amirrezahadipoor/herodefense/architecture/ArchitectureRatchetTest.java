@@ -34,8 +34,10 @@ class ArchitectureRatchetTest {
 
     /** Measured on 2026-09-16; the ratchet fails if one of these grows or if a new one appears. */
     private static final Map<String, ArchitectureRatchet.Frozen> FROZEN = Map.of(
+        // R2.2 slice 4 moved the wave director out: 11 lines left the class and one field (the director
+        // handle) joined it. The class is 1,056 lines and keeps shrinking toward the 400-line ceiling.
         "com/amirrezahadipoor/herodefense/HeroDefenseGame.java",
-        new ArchitectureRatchet.Frozen(1067, 92),
+        new ArchitectureRatchet.Frozen(1056, 93),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.

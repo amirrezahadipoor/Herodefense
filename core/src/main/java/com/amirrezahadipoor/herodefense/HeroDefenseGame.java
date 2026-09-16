@@ -34,6 +34,7 @@ import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.gameplay.ItemDropSystem;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardResult;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardSystem;
+import com.amirrezahadipoor.herodefense.gameplay.WaveDirector;
 import com.amirrezahadipoor.herodefense.gameplay.WaveCompletion;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
@@ -145,6 +146,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private EnemyMeleeAttackSystem enemyMeleeAttackSystem;
     private EnemyMovementSystem enemyMovementSystem;
     private WaveLifecycleSystem waveLifecycleSystem;
+    private WaveDirector waveDirector;
     private HeroAnimationController heroAnimationController;
     private HeroAutoAttackSystem heroAutoAttackSystem;
     private GameOverOverlayRenderer gameOverOverlayRenderer;
@@ -324,6 +326,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         touchFeedbackRenderer = new TouchFeedbackRenderer();
         uiFrameRenderer = new UiFrameRenderer();
         uiIconRenderer = new UiIconRenderer();
+        waveDirector = new WaveDirector(
+            new DirectorHost(), waveLifecycleSystem, audioManager, particleSystem,
+            screenShakeSystem, presentationSystem, codexSystem
+        );
         installTouchInput();
         readyForTouch = true;
     }
@@ -956,52 +962,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             );
             audioManager.play(AudioCue.ITEM_DROP);
         }
-        if (gameOver) {
-            gameState.heroDiedThisRun = true;
-            if (gameState.waveNumber > gameState.peakWaveReached) {
-                gameState.peakWaveReached = gameState.waveNumber;
-            }
-            particleSystem.emitTreeDestruction(WorldLayout.WORLD_TREE_X, WorldLayout.WORLD_TREE_Y);
-            for (int i = 0; i < gameState.plantedTreesCount; i++) {
-                particleSystem.emitTreeDestruction(WorldLayout.groveTreeX(i), WorldLayout.groveTreeY(i));
-            }
-            screenShakeSystem.triggerTreeFall();
-            gameState.epilogueId = Epilogue.select(gameState).name();
-            flow.transitionTo(GameScreenState.GAME_OVER);
-            saveNow();
-        } else if (killRewards.levelsGained() > 0 && gameState.hero.alive) {
-            flow.transitionTo(GameScreenState.LEVEL_UP);
-            saveNow();
-        } else {
-            int bossesBeforeWaveAdvance = ArenaQueries.livingBossCount(gameState);
-            WaveCompletion waveCompletion = waveLifecycleSystem.updateAfterCombat(gameState);
-            if (ArenaQueries.livingBossCount(gameState) > bossesBeforeWaveAdvance) {
-                audioManager.play(AudioCue.BOSS_ENTRANCE);
-                presentationSystem.presentBossEntrance(gameState);
-            }
-            showWaveReflection();
-            if (waveCompletion != WaveCompletion.NO_CHANGE) {
-                if (gameState.waveNumber > gameState.peakWaveReached) {
-                    gameState.peakWaveReached = gameState.waveNumber;
-                }
-            }
-            if (waveCompletion == WaveCompletion.BOSS_REWARD) {
-                flow.transitionTo(GameScreenState.CARD_CHOICE);
-            } else if (waveCompletion == WaveCompletion.PLANTING_CEREMONY) {
-                beginPlantingCeremony();
-            } else if (waveCompletion == WaveCompletion.RUN_COMPLETED) {
-                gameState.runComplete = true;
-                codexSystem.unlockSecretsForEquipment(gameState);
-                if (gameState.waveNumber > gameState.peakWaveReached) {
-                    gameState.peakWaveReached = gameState.waveNumber;
-                }
-                gameState.epilogueId = Epilogue.select(gameState).name();
-                flow.transitionTo(GameScreenState.GAME_OVER);
-            }
-            if (waveCompletion != WaveCompletion.NO_CHANGE) {
-                saveNow();
-            }
-        }
+        waveDirector.afterCombat(gameOver, killRewards.levelsGained() > 0);
         simulationSeconds += simulationDelta;
     }
 
@@ -1010,6 +971,34 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     /** Adapter for the frame composer; one line per member, like the touch host. */
+    /** What the wave director needs from the game: its state, screens, saving and the two ceremonies. */
+    private final class DirectorHost implements WaveDirector.Host {
+        @Override
+        public GameState gameState() {
+            return gameState;
+        }
+
+        @Override
+        public void transitionTo(GameScreenState screen) {
+            flow.transitionTo(screen);
+        }
+
+        @Override
+        public void saveNow() {
+            HeroDefenseGame.this.saveNow();
+        }
+
+        @Override
+        public void showWaveReflection() {
+            HeroDefenseGame.this.showWaveReflection();
+        }
+
+        @Override
+        public void beginPlantingCeremony() {
+            HeroDefenseGame.this.beginPlantingCeremony();
+        }
+    }
+
     private final class ComposerHost implements ScreenStateComposer.Host {
         @Override public float ambientSeconds() { return ambientSeconds; }
         @Override public ArenaEnvironmentRenderer arenaEnvironmentRenderer() { return arenaEnvironmentRenderer; }
