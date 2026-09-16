@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 import com.amirrezahadipoor.herodefense.balance.BalanceSimulator;
 import com.amirrezahadipoor.herodefense.model.GameMode;
+import com.amirrezahadipoor.herodefense.model.GameState;
 
 import java.nio.file.Path;
 import java.util.LinkedHashMap;
@@ -76,7 +77,7 @@ final class SimulatorSessionCaptureTest {
 
         FileHandle directory = new FileHandle(OUTPUT.toFile());
         directory.mkdirs();
-        FileHandle file = directory.child("simulator-" + SEED + ".json");
+        FileHandle file = directory.child("simulator-brief-" + SEED + ".json");
         file.writeString(record.toJson(), false, "UTF-8");
 
         JsonValue parsed = new JsonReader().parse(file.readString("UTF-8"));
@@ -88,5 +89,59 @@ final class SimulatorSessionCaptureTest {
             parsed.get("measurements").getString("waves"),
             "the record has to describe the run that was just simulated");
         assertTrue(file.file().length() > 200, "and it has to be a file a tool can read: " + file.path());
+    }
+
+    /**
+     * The long vigil, recorded as its own session. The brief capture proves the build can be played to an ending;
+     * this one carries the numbers the curve work needs — the pressure of each fifty-wave quarter, which is how the
+     * shallow step at waves 101-150 was found and how a later change is judged.
+     */
+    @Test
+    void theLongVigilIsCapturedWithItsQuarterPressures() {
+        BalanceSimulator.BalanceReport report = new BalanceSimulator().run(SEED);
+        assertEquals(GameState.FINAL_WAVE, report.waves().size(), "the long vigil is still two hundred waves");
+        assertTrue(report.reachedFinalWave(), "and this seed still finishes it");
+
+        float peak = 0f;
+        float firstTwenty = 0f;
+        float lastTwenty = 0f;
+        for (int index = 0; index < report.waves().size(); index++) {
+            peak = Math.max(peak, report.waves().get(index).damageFraction());
+        }
+        for (int index = 0; index < 20; index++) {
+            firstTwenty += report.waves().get(index).damageFraction();
+            lastTwenty += report.waves().get(report.waves().size() - 20 + index).damageFraction();
+        }
+
+        Map<String, String> measurements = new LinkedHashMap<>();
+        measurements.put("averageDamageFraction", Float.toString(report.averageDamageFraction()));
+        measurements.put("peakDamageFraction", Float.toString(peak));
+        measurements.put("firstTwentyWaves", Float.toString(firstTwenty / 20f));
+        measurements.put("lastTwentyWaves", Float.toString(lastTwenty / 20f));
+        for (int quarter = 0; quarter < 4; quarter++) {
+            float total = 0f;
+            int count = 0;
+            for (int wave = quarter * 50; wave < (quarter + 1) * 50; wave++) {
+                total += report.waves().get(wave).damageFraction();
+                count++;
+            }
+            measurements.put("quarter" + (quarter + 1) + "Waves", Float.toString(total / count));
+        }
+
+        RunRecord record = RunRecord.of(
+            RunRecord.SOURCE_SIMULATOR, "headless", GameMode.STANDARD.name(), SEED, report.waves().size(),
+            report.reachedFinalWave(), !report.reachedFinalWave(), measurements, System.currentTimeMillis());
+
+        FileHandle directory = new FileHandle(OUTPUT.toFile());
+        directory.mkdirs();
+        FileHandle file = directory.child("simulator-standard-" + SEED + ".json");
+        file.writeString(record.toJson(), false, "UTF-8");
+
+        JsonValue parsed = new JsonReader().parse(file.readString("UTF-8"));
+        assertEquals(GameMode.STANDARD.name(), parsed.getString("mode"));
+        assertEquals(GameState.FINAL_WAVE, parsed.getInt("wavesCleared"));
+        assertTrue(Float.parseFloat(parsed.get("measurements").getString("quarter4Waves"))
+            > Float.parseFloat(parsed.get("measurements").getString("quarter1Waves")),
+            "the fourth quarter has to be heavier than the first, or the curve is not rising");
     }
 }

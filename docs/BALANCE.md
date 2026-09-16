@@ -314,3 +314,49 @@ Three repairs were measured and two were rejected on evidence:
   `DifficultyCurveTest` 11/11, with no band, ceiling or floor moved.
 
 Run `./scripts/balance-check.sh` immediately after every coefficient change and as a mandatory precondition to any manual playtest. The script forces a fresh run rather than accepting Gradle's prior task output. `BalanceSimulatorTest` also remains part of the complete `:core:test` suite executed by the core GitHub Actions workflow on every push and pull request.
+
+## Late-run pressure: the curve after wave 40 (Phase 91, roadmap R4.1)
+
+Measured by `WavePressureCurveTest`, which runs the fixed five-seed sweep
+(`0x4845524F444546`, `+1`, `+2`, `0x747269616C7331`, `0x4341524453494D`) through the whole
+two-hundred-wave run. Pressure is the share of the hero's health a wave took — the same
+measurement every other gate in this repository uses. The windows are fifty-wave quarters,
+because a forty-wave window straddles the curve's segment boundaries and then measures the
+window instead of the curve.
+
+Mean pressure per quarter, shipped curve (each seed's own quarters are in the gate's failure
+message when it fails; these are the sweep means):
+
+| Quarter | waves | mean pressure | step |
+|---|---|---|---|
+| Q1 | 1-50 | 0.0576 | — |
+| Q2 | 51-100 | 0.0986 | x1.71 |
+| Q3 | 101-150 | 0.1032 | **x1.047** |
+| Q4 | 151-200 | 0.1229 | x1.19 |
+
+The run rises after wave 40 and ends at roughly twice the pressure it opened with (last twenty
+waves 0.132-0.159 against the first twenty at 0.022-0.041 on the five seeds). Per seed, no
+quarter is more than 1.4% lighter than the one before it (Q3 dips by 1.2-1.4% on three of the
+five seeds). Run average 0.081-0.107, peak wave 0.22-0.30, inside the 0.05-0.15 and 0.40 bands.
+
+**The shallow step is real and is now an item.** Waves 101-150 are only 4.7% heavier than waves
+51-100, against 71% for the step before them, because the second half is the coolest stretch of
+the curve: `SECOND_HALF_HEALTH_GROWTH` 1.023 and `SECOND_HALF_DAMAGE_GROWTH` 1.008 against the
+base 1.037/1.003 and the middle 1.041/1.006. That is roadmap item **R4.6**, and it is open
+because both repairs that were measured spent headroom the shipped ceilings do not have:
+
+| candidate | change | measured effect | why it was rejected |
+|---|---|---|---|
+| late segment A | from wave 121, health 1.025, damage 1.0085 | Q-mean steps x1.711 / x1.092 / x1.491, run average 0.0960 -> 0.1061 | `BalanceSimulatorTest` bare-run spike 0.3540 against the 0.35 ceiling; trial pairs 0.4002-0.5241 against 0.40; tier-10 STRENGTH median 0.6765 against 0.60 |
+| late segment B | from wave 121, health 1.024, damage 1.008 | Q3 0.1032 -> 0.1088 (step x1.104), Q4 0.1558, bare-run spikes inside the ceiling | trial pairs 0.4071-0.4732 against 0.40 (`BLOOD_PRICE + HOLLOW_CALLING` at tier 0 median 0.4071) |
+
+B is the informative rejection: raising only the late health rate — no damage change at all —
+still broke trial-pair ceilings, and one of its failures landed at wave 119, before the changed
+segment, i.e. the simulation's random stream diverged rather than the ceiling being approached
+from one direction. The trial ceilings sit at their margins in the shipped build (a passing pair
+can be within one percent of 0.40), so R4.6 has to buy its headroom somewhere — a slower late
+damage rate, a wider trial ceiling with the reason written down, or an economy-side change —
+rather than spend it.
+
+Both candidates were run through their gates and reverted; nothing about them is in the shipped
+build except this table.
