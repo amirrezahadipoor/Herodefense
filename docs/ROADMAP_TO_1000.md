@@ -305,12 +305,20 @@ sentence has to name the two scores and the commit they were measured on.
   how a god class drifts: change the reset once and two paths keep the old behaviour. They now share one
   `prepareFreshRun()`, in the same order as before. `HeroDefenseGame` 980 → **954 lines** (37 % below the 1,519
   the audit measured), fields 94 → 95, ratchet freeze lowered in the same commit.
+  *Slice 7 (done):* the two ceremonies moved into `gameplay/CinematicFlow` — the prologue that opens a run
+  (which snapshots the opening tier so a save replays the right lines) and the grove planting every fifty waves
+  (which tree is being planted, the water the can drops, and the wave hand-off, including the boss that walks in
+  at that moment). The layer ticks that run in every state stay in the game; the flow owns only what a ceremony
+  decides. Before this the state machine, the water-drop accumulator and the hand-off were inline in `render`
+  and `updateCinematic`, three hundred lines apart from the ceremony objects that drove them. `HeroDefenseGame`
+  954 → **927 lines** (39 % below the 1,519 the audit measured), fields 95 → 94, ratchet freeze lowered in the
+  same commit.
   *Remaining:* the 400-line ceiling and the before/after emulator smoke comparison.
 - [ ] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
-  size** — `HeroDefenseGame` (954 lines / 95 fields after roadmap phase 86 slice 6),
+  size** — `HeroDefenseGame` (927 lines / 94 fields after roadmap phase 86 slice 7),
   `CombatEntityRenderer` (681 / 13 after roadmap phase 87 and 88),
   `BalanceSimulator` (639 / 23), `model/GameState` (592 / 80). The freeze may only shrink: the ratchet fails
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
@@ -620,6 +628,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 86 | R2.2 slice 5 | combat frame (arrows and all their effects, melee feedback, auto-potion, item and potion drops, kill rewards, elite affixes, codex unlocks, pickups with auto-sell) extracted into `gameplay/CombatSystem` with sixteen collaborators injected and one `Frame(gameOver, leveledUp)` result; `HeroDefenseGame` 1,056 → 980 lines (35 percent smaller than the audited 1,519-line god class), fields 93 → 94, ratchet freeze lowered in the same commit | `e9d1840` |
 
 | 2026-09-16 | 86 | R2.2 slice 6 | run session (fresh run, restart at the same tier, ascension, and continue-on-the-right-screen) extracted into `gameplay/SessionController`; the three duplicated fifteen-line resets collapsed into one `prepareFreshRun()`; `HeroDefenseGame` 980 → 954 lines (37 percent smaller than the audited 1,519-line god class), fields 94 → 95, ratchet freeze lowered in the same commit | `eab4fcc` |
+
+| 2026-09-16 | 86 | R2.2 slice 7 | the prologue and the grove-planting ceremonies extracted into `gameplay/CinematicFlow` (tier snapshot, planted tree, water drops, wave hand-off and the boss entrance at it); `HeroDefenseGame` 954 → 927 lines (39 percent smaller than the audited 1,519-line god class), fields 95 → 94, ratchet freeze lowered in the same commit | `_PENDING_` |
 
 ## Definition of done
 

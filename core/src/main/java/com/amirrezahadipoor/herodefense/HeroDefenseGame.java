@@ -34,6 +34,7 @@ import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.gameplay.ItemDropSystem;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardResult;
 import com.amirrezahadipoor.herodefense.gameplay.KillRewardSystem;
+import com.amirrezahadipoor.herodefense.gameplay.CinematicFlow;
 import com.amirrezahadipoor.herodefense.gameplay.CombatSystem;
 import com.amirrezahadipoor.herodefense.gameplay.SessionController;
 import com.amirrezahadipoor.herodefense.gameplay.WaveDirector;
@@ -151,6 +152,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private WaveDirector waveDirector;
     private CombatSystem combatSystem;
     private SessionController sessionController;
+    private CinematicFlow cinematicFlow;
     private HeroAnimationController heroAnimationController;
     private HeroAutoAttackSystem heroAutoAttackSystem;
     private GameOverOverlayRenderer gameOverOverlayRenderer;
@@ -164,8 +166,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private GameScreenState lastFrameState = GameScreenState.MENU;
     private long pauseStartNanos;
     private OpeningCinematicRenderer openingCinematicRenderer;
-    private static final float WATER_DROP_INTERVAL_SECONDS = 0.07f;
-    private float waterDropAccumulator;
     private HapticFeedback hapticFeedback;
     private HitStopSystem hitStopSystem;
     private ScreenStateComposer screenStateComposer;
@@ -330,6 +330,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         touchFeedbackRenderer = new TouchFeedbackRenderer();
         uiFrameRenderer = new UiFrameRenderer();
         uiIconRenderer = new UiIconRenderer();
+        cinematicFlow = new CinematicFlow(
+            new CinematicHost(), flow, openingCinematic, plantingCeremony, waveLifecycleSystem, particleSystem,
+            heroAnimationController, presentationSystem, audioManager
+        );
         sessionController = new SessionController(
             new SessionHost(), saves, flow, new StarterLoadoutSystem(), rootNetworkSystem, trialDraftSystem,
             hitStopSystem, particleSystem, floatingCoinTextSystem, floatingDamageTextSystem,
@@ -698,8 +702,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     /** Snapshots the run's opening tier, then plays that tier's lines. */
     private void beginOpening() {
-        gameState.openingTier = gameState.ascensionTier;
-        openingCinematic.begin(gameState.openingTier);
+        cinematicFlow.beginOpening();
     }
 
     /** Tier whose opening lines a save replays: the snapshot, else the live tier. */
@@ -754,60 +757,17 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     private void beginPlantingCeremony() {
-        flow.transitionTo(GameScreenState.CINEMATIC);
-        hitStopSystem.clear();
-        int groveIndex = Math.max(0, Math.min(2, gameState.plantedTreesCount));
-        if (gameState.ceremonyPending) {
-            int pendingWave = gameState.waveNumber - 1;
-            if (pendingWave == 50) groveIndex = 0;
-            else if (pendingWave == 100) groveIndex = 1;
-            else if (pendingWave == 150) groveIndex = 2;
-        }
-        boolean shortCeremony = groveIndex == 0 || groveIndex == 2;
-        plantingCeremony.begin(shortCeremony, groveIndex);
-        gameState.anchorHeroAtArenaCenter();
+        cinematicFlow.beginPlantingCeremony();
     }
 
-    /** Presentation-only ceremony tick; the wave-101 hand-off happens once it completes. */
+    /** Presentation-only ceremony tick; the wave-101 hand-off happens once the flow completes it. */
     private void updateCinematic(float deltaSeconds) {
         screenShakeSystem.update(deltaSeconds);
         particleSystem.update(deltaSeconds);
         floatingCoinTextSystem.update(deltaSeconds);
         floatingDamageTextSystem.update(deltaSeconds);
-        if (openingCinematic.isActive()) {
-            gameState.anchorHeroAtArenaCenter();
-            heroAnimationController.update(gameState.hero, deltaSeconds);
-            if (openingCinematic.update(deltaSeconds)) {
-                waveLifecycleSystem.startCurrentWave(gameState);
-                flow.transitionTo(GameScreenState.PLAYING);
-                saveNow();
-            }
-            return;
-        }
-        boolean finished = plantingCeremony.update(deltaSeconds);
-        if (plantingCeremony.pouring()) {
-            waterDropAccumulator += deltaSeconds;
-            while (waterDropAccumulator >= WATER_DROP_INTERVAL_SECONDS) {
-                waterDropAccumulator -= WATER_DROP_INTERVAL_SECONDS;
-                particleSystem.emitWaterDrops(
-                    plantingCeremony.heroX() + 52f, plantingCeremony.heroY() + 58f
-                );
-            }
-        } else {
-            waterDropAccumulator = 0f;
-        }
-        if (finished) {
-            int bossesBefore = ArenaQueries.livingBossCount(gameState);
-            waveLifecycleSystem.completePlantingCeremony(gameState);
-            flow.transitionTo(GameScreenState.PLAYING);
-            if (ArenaQueries.livingBossCount(gameState) > bossesBefore) {
-                audioManager.play(AudioCue.BOSS_ENTRANCE);
-                presentationSystem.presentBossEntrance(gameState);
-            }
-            saveNow();
-        }
+        cinematicFlow.update(deltaSeconds);
     }
-
 
     private void updatePlaying(float deltaSeconds) {
         float simulationDelta = deltaSeconds * gameState.simulationSpeed;
@@ -830,6 +790,19 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     /** Adapter for the frame composer; one line per member, like the touch host. */
+    /** What the ceremony flow needs from the game: the run state and a save point at the hand-off. */
+    private final class CinematicHost implements CinematicFlow.Host {
+        @Override
+        public GameState gameState() {
+            return gameState;
+        }
+
+        @Override
+        public void saveNow() {
+            HeroDefenseGame.this.saveNow();
+        }
+    }
+
     /** What the session controller needs: the run state, its clock, saving and two screen hand-offs. */
     private final class SessionHost implements SessionController.Host {
         @Override
