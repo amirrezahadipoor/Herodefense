@@ -722,7 +722,7 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 86 | R2.2 slice 9 | the frame extracted into `presentation/FrameDriver` (frame order, pause record, the two timed story lines, ambient clock, game-over timer) plus two ports that make it testable (`audio/AudioFrame`, injected `NanoClock`); `HeroDefenseGame` 797 → 760 lines (half of the audited 1,519), fields 68 → 61; `FrameDriverTest` 6 cases | `c055436` |
 
-| 2026-09-16 | 89 | R3.3 | twelve persistent trophies with a counter, a target and a progress reading; announced at the save point (haptic + chime + one HUD line that yields to a story line); Codex gained a LORE/TROPHIES tab strip with its own shelf and details panel; `TrophyLedger` survives `resetForNewRun` and `TrophyBook.migrate` back-fills a pre-trophy save from the progress it already had; 20 new test cases | `_PENDING_` |
+| 2026-09-16 | 89 | R3.3 | twelve persistent trophies with a counter, a target and a progress reading; announced at the save point (haptic + chime + one HUD line that yields to a story line); Codex gained a LORE/TROPHIES tab strip with its own shelf and details panel; `TrophyLedger` survives `resetForNewRun` and `TrophyBook.migrate` back-fills a pre-trophy save from the progress it already had; 20 new test cases | `7323587` |
 
 ## Definition of done
 
