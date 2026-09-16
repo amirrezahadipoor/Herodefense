@@ -33,7 +33,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **78** | Integrity recovery: reviewed runtime tier restored, contract tests un-gutted, hash ledger + resampling/ledger gates | R1.1 · R1.2 · R1.3 · R1.4 · R1.8 | `[x]` |
 | **79** | Test-integrity meta-test: weakening a test fails the build | R1.5 | `[x]` |
 | **80** | Gates that measure output, not script text | R1.6 | `[x]` |
-| **81** | Emulator brightness contract restored honestly | R1.7 | `[~]` |
+| **81** | Emulator brightness contract restored honestly | R1.7 | `[x]` |
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 · R8.2 | `[x]` |
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[x]` |
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[x]` |
@@ -71,7 +71,7 @@ re-run on a finished round (Phase 97).
 
 ---
 
-## R1 — Truth, tests and verification integrity  `+95`
+## R1 — Truth, tests and verification integrity  `+95` — complete
 
 - [x] **R1.1 Restore the reviewed runtime tier and gate resampling.** Every sheet Phase 76 enlarged with
   NEAREST is back to the reviewed runtime tier; the validator refuses sheets whose transitions sit on a
@@ -106,13 +106,17 @@ re-run on a finished round (Phase 97).
   `config.py` (which Phase 54-55 raised to 3/32 and 4/48) and the art that was actually rendered is now
   printed: *config asks for more than the art was rendered at*. Tests in
   `tools/visual/tests/test_art_gates.py::ReviewedTierPinningTest` keep the mapping explicit.
-- [~] **R1.7 Emulator brightness contract.** Chosen route: a per-screenshot reference (the second option in
-  this item), because re-applying the vibrant grade belongs to the render pipeline (R5) and cannot be
-  verified from this machine. Step 1 is measurement only: the smoke test now measures every captured frame
-  (mean, min, max, lit fraction) including the `vfx-*` frames and writes
-  `brightness-measurements.txt` into the instrumentation output directory that CI uploads, so the reference
-  table will be a recorded measurement instead of a chosen number. Step 2 replaces the blanket floor with
-  that table plus a contrast/black-frame check.
+- [x] **R1.7 Emulator brightness contract.** The blanket floor is gone, replaced by per-screenshot
+  references measured on the CI emulator: `AndroidTouchSmokeTest` compares every capture — **including the
+  `vfx-*` frames that used to be skipped** — against the mean luma and lit-pixel fraction recorded in
+  `SCREEN_REFERENCE`, with ±8 luma tolerance, a lit-fraction tolerance of 0.10, and an absolute floor of 30
+  so no screen can be OLED-black. The old threshold of 20 could not tell a dark screen from a black one and
+  let the vfx frames pass unmeasured.
+  *Evidence:* run [`35078435013`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35078435013)
+  (commit `0ccc92c`, both workflows green) uploaded `brightness-measurements.txt` with all 28 captures:
+  minimum mean luma **34.17** (`opening-line-three`), maximum **48.30** (`vfx-combat-0`), minimum lit
+  fraction **0.9141** (`tree-siege`). Those 28 values are the table; a new capture is reported as
+  UNREFERENCED until its measurement is added in the same commit.
 - [x] **R1.8 Audit published inside the repository.** `docs/audit/AUDIT_2026-09-16.md` + README pointer.
 - [x] **R1.9 Negative control for every gate.** Fixtures that must fail exist for the resampling gate
   (NEAREST 2× and 3×), for hash-ledger drift, for the test-integrity scanner, and now for the residency
@@ -261,7 +265,9 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 85b | R2.4 | architecture ratchet enforced: layer imports, 600-line and 40-field ceilings, four frozen offenders that may only shrink, with negative controls | *(this commit)* |
 | 2026-09-16 | 85a | R2.1 | dead `PostProcessRenderer` deleted; new packaging test fails on any `Gdx.files.internal` literal without a shipped file (5 literals checked, 15 computed paths reported) | `16bac49` |
 | 2026-09-16 | 84 | R1.10 | CRITICAL_REVIEW status header with re-measured numbers, style-guide budget note, ASSET_ENGINE values pointed at the manifest, batch-record banners on 21 review docs; count-like claim scan: 8 documents left, all accounted for | *(this commit)* |
-| 2026-09-16 | 81 | R1.7 step 1 | emulator smoke test measures every captured frame and publishes `brightness-measurements.txt` in the CI artifact; assertions unchanged in this step | *(this commit)* |
+| 2026-09-16 | 81 | R1.7 step 1 | emulator smoke test measures every captured frame and publishes `brightness-measurements.txt` in the CI artifact; assertions unchanged in this step | `9089e1b` |
+| 2026-09-16 | 81 | R1.7 step 2 | per-screenshot brightness references enforced (28 captures, vfx included), ±8 luma, lit fraction −0.10, absolute floor 30; measured min 34.17 / max 48.30 | *(this commit)* |
+| 2026-09-16 | — | CI | run [`35078435013`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35078435013) at `0ccc92c`: both workflows green (covers phases 81 step 1, 83, 84, 85a, 85b) | `0ccc92c` |
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |
 

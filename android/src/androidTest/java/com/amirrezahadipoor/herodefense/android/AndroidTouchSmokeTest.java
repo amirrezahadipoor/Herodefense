@@ -597,10 +597,88 @@ public final class AndroidTouchSmokeTest {
         throw new AssertionError("Timed out waiting for " + label);
     }
 
-    /** Mean luma of the captured frame must clear the premium-v3 floor; no more OLED-black UI. */
     private static final Map<String, float[]> BRIGHTNESS = new LinkedHashMap<>();
+    private static final java.util.Set<String> UNREFERENCED = new java.util.LinkedHashSet<>();
 
-    private static final float MIN_MEAN_LUMA = 20f; // integrity-exempt: roadmap R1.7 restores 34 once the vibrant grade is rendered instead of filtered onto sprites
+    /**
+     * Per-screenshot brightness references, measured on the CI emulator in the "Build and touch-test
+     * Android" workflow, run 35078435013 at commit 0ccc92c, with the reviewed runtime tier in place.
+     * Each entry is `mean luma` and the fraction of sampled pixels at or above luma 16.
+     *
+     * <p>A single blanket floor could not tell a slightly dark screen from a black one, and it had to be
+     * lowered to 20 to survive art that had been darkened by a filter. These references replace it: every
+     * screenshot is compared with what it actually looked like, so both a dark frame and a washed-out frame
+     * fail. A new capture must be added here with a measured reference in the same commit; until then it is
+     * reported as UNREFERENCED in the CI log and only held to the absolute floor.
+     */
+    private static final Map<String, float[]> SCREEN_REFERENCE = Map.ofEntries(
+        ref("tree-siege-premium-v2.png", 44.35f, 0.9141f),
+        ref("vfx-tree-collapse-premium-v2.png", 37.14f, 0.9840f),
+        ref("defeat-premium-v2.png", 37.28f, 0.9786f),
+        ref("trial-draft-premium-v2.png", 43.44f, 0.9737f),
+        ref("settings-premium-v2.png", 35.98f, 0.9770f),
+        ref("level-up-premium-v2.png", 41.93f, 0.9741f),
+        ref("inventory-details-premium-v2.png", 44.93f, 0.9644f),
+        ref("inventory-sell-feedback-premium-v2.png", 43.94f, 0.9624f),
+        ref("vfx-boss-entrance-premium-v2.png", 47.47f, 0.9410f),
+        ref("vfx-combat-0-premium-v2.png", 48.30f, 0.9350f),
+        ref("vfx-combat-1-premium-v2.png", 48.28f, 0.9346f),
+        ref("vfx-combat-2-premium-v2.png", 46.85f, 0.9380f),
+        ref("vfx-combat-3-premium-v2.png", 46.71f, 0.9378f),
+        ref("vfx-combat-4-premium-v2.png", 46.82f, 0.9380f),
+        ref("vfx-combat-5-premium-v2.png", 46.55f, 0.9371f),
+        ref("shop-affordability-premium-v2.png", 39.49f, 0.9564f),
+        ref("shop-purchase-feedback-premium-v2.png", 37.52f, 0.9538f),
+        ref("shop-skills-tab-premium-v2.png", 36.88f, 0.9510f),
+        ref("ceremony-plant-premium-v2.png", 47.95f, 0.9392f),
+        ref("ceremony-water-premium-v2.png", 48.01f, 0.9355f),
+        ref("second-tree-standing-premium-v2.png", 47.98f, 0.9218f),
+        ref("victory-premium-v2.png", 45.70f, 0.9808f),
+        ref("main-menu-premium-v2.png", 41.01f, 0.9602f),
+        ref("opening-line-one-premium-v2.png", 34.45f, 0.9658f),
+        ref("opening-line-three-premium-v2.png", 34.17f, 0.9716f),
+        ref("live-hud-premium-v2.png", 46.81f, 0.9340f),
+        ref("pause-premium-v2.png", 43.18f, 0.9541f),
+        ref("reward-cards-premium-v2.png", 43.73f, 0.9712f)
+    );
+
+    /** How far a screenshot may drift from its recorded mean before the run fails. */
+    private static final float MEAN_LUMA_TOLERANCE = 8f;
+
+    /** Absolute floor: no screen may be OLED-black, whatever its reference says. */
+    private static final float MIN_MEAN_LUMA = 30f;
+
+    /** How far the lit-pixel fraction may drop from its recorded value. */
+    private static final float LIT_FRACTION_TOLERANCE = 0.10f;
+
+    private static Map.Entry<String, float[]> ref(String name, float mean, float lit) {
+        return Map.entry(name, new float[] {mean, lit});
+    }
+
+
+    /**
+     * The brightness contract for one frame: the absolute floor, then the recorded reference band and the
+     * lit-fraction check for every screenshot that has a reference.
+     */
+    private static void assertBrightnessContract(String name, float[] brightness) {
+        float mean = brightness[0];
+        float lit = brightness[3];
+        assertTrue(name + " mean luma " + mean + " below the floor of " + MIN_MEAN_LUMA,
+            mean >= MIN_MEAN_LUMA);
+        float[] reference = SCREEN_REFERENCE.get(name);
+        if (reference == null) {
+            UNREFERENCED.add(name);
+            System.out.println("UNREFERENCED SCREENSHOT " + name + " mean=" + mean + " lit=" + lit
+                + " - record it in SCREEN_REFERENCE in the same commit");
+            return;
+        }
+        assertTrue(name + " mean luma " + mean + " drifted from the recorded reference " + reference[0]
+                + " by more than " + MEAN_LUMA_TOLERANCE,
+            Math.abs(mean - reference[0]) <= MEAN_LUMA_TOLERANCE);
+        assertTrue(name + " lit fraction " + lit + " dropped from the recorded reference " + reference[1],
+            lit >= reference[1] - LIT_FRACTION_TOLERANCE);
+        assertTrue(name + " is mostly dark, lit fraction " + lit, lit >= 0.75f);
+    }
 
     /**
      * Every captured frame is measured, including the vfx ones, so the brightness contract can be
@@ -662,6 +740,9 @@ public final class AndroidTouchSmokeTest {
             throw new AssertionError("Could not write " + reportFile, exception);
         }
         assertTrue(reportFile.isFile());
+        if (!UNREFERENCED.isEmpty()) {
+            System.out.println("UNREFERENCED SCREENSHOTS: " + UNREFERENCED.size() + " " + UNREFERENCED);
+        }
     }
 
     private static void captureScreen(String name) {
@@ -671,10 +752,7 @@ public final class AndroidTouchSmokeTest {
         assertNotNull(screenshot);
         float[] brightness = measureBrightness(screenshot, name);
         BRIGHTNESS.put(name, brightness);
-        if (!name.startsWith("vfx-")) {
-            assertTrue(name + " mean luma " + brightness[0] + " below " + MIN_MEAN_LUMA,
-                brightness[0] >= MIN_MEAN_LUMA);
-        }
+        assertBrightnessContract(name, brightness);
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         File directory = new File(context.getExternalMediaDirs()[0], "additional_test_output");
         assertTrue(directory.isDirectory() || directory.mkdirs());
