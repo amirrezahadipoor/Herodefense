@@ -109,7 +109,7 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
 
         text.drawCentered(batch, "RUN SUMMARY", 360f, 762f, 0.82f, OverlayText.GOLD, reveal);
         drawRow(batch, icons, 0, "wave", "Wave reached",
-            state.waveNumber + " / " + GameState.FINAL_WAVE, reveal);
+            state.waveNumber + " / " + state.runLengthWaves(), reveal);
         drawRow(batch, icons, 1, "health", "Hero level", Integer.toString(state.heroLevel), reveal);
         drawRow(batch, icons, 2, "strength", "Enemies defeated",
             Integer.toString(state.totalKills), reveal);

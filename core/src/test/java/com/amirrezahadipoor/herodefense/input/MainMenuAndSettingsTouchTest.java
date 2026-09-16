@@ -9,31 +9,38 @@ import org.junit.jupiter.api.Test;
 
 final class MainMenuAndSettingsTouchTest {
     @Test
-    void mainMenuExposesAllThreeActionsAndDisablesMissingContinue() {
-        assertEquals(
-            MainMenuTouchLayout.Action.NEW_GAME,
-            MainMenuTouchLayout.actionAt(360f, 840f, false)
-        );
-        assertEquals(
-            MainMenuTouchLayout.Action.NONE,
-            MainMenuTouchLayout.actionAt(360f, 680f, false)
-        );
-        assertEquals(
-            MainMenuTouchLayout.Action.CONTINUE,
-            MainMenuTouchLayout.actionAt(360f, 680f, true)
-        );
-        assertEquals(
-            MainMenuTouchLayout.Action.ROOT_NETWORK,
-            MainMenuTouchLayout.actionAt(360f, 520f, false)
-        );
-        assertEquals(
-            MainMenuTouchLayout.Action.CODEX,
-            MainMenuTouchLayout.actionAt(360f, 360f, false)
-        );
-        assertEquals(
-            MainMenuTouchLayout.Action.SETTINGS,
-            MainMenuTouchLayout.actionAt(360f, 200f, false)
-        );
+    void everyMenuRowIsTappableAndTheBriefVigilHasItsOwnRow() {
+        float cx = MainMenuTouchLayout.BUTTON_X + 40f;
+        assertEquals(MainMenuTouchLayout.Action.NEW_GAME,
+            MainMenuTouchLayout.actionAt(cx, MainMenuTouchLayout.rowBottom(0) + 20f, false));
+        assertEquals(MainMenuTouchLayout.Action.BRIEF_RUN,
+            MainMenuTouchLayout.actionAt(cx, MainMenuTouchLayout.rowBottom(1) + 20f, false),
+            "the brief vigil is reachable without a save");
+        assertEquals(MainMenuTouchLayout.Action.NONE,
+            MainMenuTouchLayout.actionAt(cx, MainMenuTouchLayout.rowBottom(2) + 20f, false),
+            "continue stays disabled while there is no run to resume");
+        assertEquals(MainMenuTouchLayout.Action.CONTINUE,
+            MainMenuTouchLayout.actionAt(cx, MainMenuTouchLayout.rowBottom(2) + 20f, true));
+        assertEquals(MainMenuTouchLayout.Action.ROOT_NETWORK,
+            MainMenuTouchLayout.actionAt(cx, MainMenuTouchLayout.rowBottom(3) + 20f, false));
+        assertEquals(MainMenuTouchLayout.Action.CODEX,
+            MainMenuTouchLayout.actionAt(cx, MainMenuTouchLayout.rowBottom(4) + 20f, false));
+        assertEquals(MainMenuTouchLayout.Action.SETTINGS,
+            MainMenuTouchLayout.actionAt(cx, MainMenuTouchLayout.rowBottom(5) + 20f, false));
+    }
+
+    @Test
+    void theRowsNeverOverlapAndEveryOneIsBigEnoughForAFinger() {
+        assertEquals(MainMenuTouchLayout.BUTTON_HEIGHT, 96f);
+        for (int row = 0; row < 5; row++) {
+            float gap = MainMenuTouchLayout.rowBottom(row)
+                - (MainMenuTouchLayout.rowBottom(row + 1) + MainMenuTouchLayout.BUTTON_HEIGHT);
+            assertEquals(22f, gap, 1e-3f, "row " + row + " and " + (row + 1) + " must not overlap");
+        }
+        assertTrue(MainMenuTouchLayout.rowBottom(5) > 140f, "the last row clears the footer line");
+        assertTrue(MainMenuTouchLayout.rowBottom(0) + MainMenuTouchLayout.BUTTON_HEIGHT < 912f,
+            "and the first row clears the title panel");
+        assertTrue(MainMenuTouchLayout.BUTTON_HEIGHT >= 44f, "a tap target smaller than a finger is a bug");
     }
 
     @Test

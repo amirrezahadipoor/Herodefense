@@ -32,6 +32,9 @@ public final class GameState {
     public long combatRandomState;
     /** Independent xorshift stream for affix rolls, so loot identity never perturbs combat. */
     public long affixRandomState;
+    /** Which run the player started (roadmap R3.5); a brief run ends at 30 waves. */
+    public GameMode mode = GameMode.STANDARD;
+
     public int waveNumber = 1;
     public int coins;
     public int heroLevel = 1;
@@ -251,9 +254,17 @@ public final class GameState {
     }
 
     /** Repairs safe defaults after loading an older or partially written save. */
+    /** The wave this run ends on, which is the mode's own length. */
+    public int runLengthWaves() {
+        return mode == null ? FINAL_WAVE : mode.waves();
+    }
+
     public void validateAndRepair() {
         schemaVersion = CURRENT_SCHEMA_VERSION;
-        waveNumber = Math.max(1, Math.min(FINAL_WAVE, waveNumber));
+        if (mode == null) {
+            mode = GameMode.STANDARD;
+        }
+        waveNumber = Math.max(1, Math.min(runLengthWaves(), waveNumber));
         heroLevel = Math.max(1, Math.min(MAX_HERO_LEVEL, heroLevel));
         coins = Math.max(0, coins);
         heroExperience = Math.max(0, heroExperience);
@@ -473,7 +484,9 @@ public final class GameState {
         int keptAscensions = totalAscensionsCompleted;
 
         // Full reset to fresh run
+        GameMode keptMode = mode == null ? GameMode.STANDARD : mode;
         GameState fresh = newRun(newSeed);
+        fresh.mode = keptMode;
         fresh.ascensionTier = keptTier;
         fresh.heartwood = keptHeartwood;
         fresh.rootNodesPurchased = keptRoots;
@@ -489,6 +502,7 @@ public final class GameState {
         fresh.peakWaveReached = 1;
 
         // Copy fresh into this
+        this.mode = fresh.mode;
         this.runSeed = fresh.runSeed;
         this.combatRandomState = fresh.combatRandomState;
         this.affixRandomState = fresh.affixRandomState;

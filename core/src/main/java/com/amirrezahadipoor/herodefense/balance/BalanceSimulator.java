@@ -27,6 +27,7 @@ import com.amirrezahadipoor.herodefense.items.StarterLoadoutSystem;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.EquipmentSlot;
+import com.amirrezahadipoor.herodefense.model.GameMode;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.HeroStat;
 import com.amirrezahadipoor.herodefense.gameplay.ItemForgeSystem;
@@ -145,6 +146,15 @@ public final class BalanceSimulator {
         return run(seed, card, bossNumber, Math.max(0, ascensionTier), List.of());
     }
 
+    /**
+     * The brief vigil (roadmap R3.5): the same run with the mode's shorter ending. Everything else — spawner,
+     * economy, difficulty curve, boss scripting — is the code the long run already uses, which is why the two can be
+     * compared wave by wave.
+     */
+    public BalanceReport runBrief(long seed) {
+        return run(seed, null, 0, 0, List.of(), GameMode.BRIEF);
+    }
+
     private BalanceReport run(
         long seed,
         RewardCardId forcedCard,
@@ -152,7 +162,19 @@ public final class BalanceSimulator {
         int ascensionTier,
         List<String> trials
     ) {
+        return run(seed, forcedCard, forcedBossNumber, ascensionTier, trials, GameMode.STANDARD);
+    }
+
+    private BalanceReport run(
+        long seed,
+        RewardCardId forcedCard,
+        int forcedBossNumber,
+        int ascensionTier,
+        List<String> trials,
+        GameMode mode
+    ) {
         GameState state = GameState.newRun(seed);
+        state.mode = mode;
         state.activeTrials.clear();
         state.activeTrials.addAll(trials);
         state.ascensionTier = ascensionTier;

@@ -21,7 +21,10 @@ final class PremiumMainMenuHudContractTest {
     @Test
     void mainMenuKeepsLargeTouchBoundsAndMovesPressedContents() {
         assertTrue(MainMenuTouchLayout.BUTTON_WIDTH >= 480f);
-        assertTrue(MainMenuTouchLayout.BUTTON_HEIGHT >= 120f);
+        // Six rows since roadmap R3.5 (the brief vigil), so the rows are 96 px instead of 120 and the gap grew:
+        // the rule this test protects is a finger-sized target with real separation, not the old constant.
+        assertTrue(MainMenuTouchLayout.BUTTON_HEIGHT >= 88f);
+        assertTrue(MainMenuTouchLayout.BUTTON_STRIDE - MainMenuTouchLayout.BUTTON_HEIGHT >= 20f);
         assertEquals(-4f, MainMenuRenderer.pressedOffset(UiFrameRenderer.State.PRESSED));
         assertEquals(0f, MainMenuRenderer.pressedOffset(UiFrameRenderer.State.NORMAL));
         assertEquals(0f, MainMenuRenderer.pressedOffset(UiFrameRenderer.State.DISABLED));

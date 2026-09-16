@@ -39,20 +39,24 @@ class ArchitectureRatchetTest {
         // lines — half the 1,519-line god class the audit measured — and keeps shrinking toward the 400-line
         // ceiling.
         // R3.3 (trophies) added thirteen lines here: the save point now evaluates the trophy rules and hands
-        // the result to `progression/TrophyPresenter`, and loading a save runs the one-time migration. The
-        // presentation of a trophy deliberately lives in the feature, not in the game class.
+        // the result to `progression/TrophyPresenter`, and loading a save runs the one-time migration. R3.5
+        // (run lengths) added one more: the touch host forwards the brief-vigil tap. The presentation of a
+        // trophy deliberately lives in the feature, not in the game class.
         "com/amirrezahadipoor/herodefense/HeroDefenseGame.java",
-        new ArchitectureRatchet.Frozen(771, 62),
+        new ArchitectureRatchet.Frozen(772, 62),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.
         "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
         new ArchitectureRatchet.Frozen(681, 13),
+        // R3.5 added a mode-aware entry point (`runBrief`) and kept the old signature as a one-line delegate,
+        // so the standard sweeps are unchanged by construction.
         "com/amirrezahadipoor/herodefense/balance/BalanceSimulator.java",
-        new ArchitectureRatchet.Frozen(639, 23),
-        // R3.3 added the trophy ledger: one field that carries what a run may not reset.
+        new ArchitectureRatchet.Frozen(661, 23),
+        // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (one field
+        // plus `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one).
         "com/amirrezahadipoor/herodefense/model/GameState.java",
-        new ArchitectureRatchet.Frozen(600, 81)
+        new ArchitectureRatchet.Frozen(614, 82)
     );
 
     @Test

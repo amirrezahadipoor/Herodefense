@@ -475,7 +475,28 @@ sentence has to name the two scores and the commit they were measured on.
   announces; the presentation itself lives in the feature) and `model/GameState` 592 → 600 lines / 80 → 81 fields
   (the ledger field). Both are noted in the ratchet test with the reason, not hidden.
 - [ ] **R3.4 Content breadth.** Enemy types 4 → 8+, item-pool diversity, wave modifiers.
-- [ ] **R3.5 Session shape.** A shorter mode (e.g. 30 waves) or checkpoints, measured with the simulator.
+- [x] **R3.5 Session shape — a second run length, measured with the simulator.**
+  The game had exactly one session shape: two hundred waves, and a player who has forty minutes may not start one.
+  A run now carries a **mode** (`model/GameMode`): `STANDARD` (The Long Vigil, 200 waves) and `BRIEF` (A Brief
+  Vigil, 30 waves — the sixth boss is the last one). Nothing about how a wave plays changes: the same spawner, the
+  same economy, the same difficulty curve, the same boss scripting. Only the ending moves, which is exactly what
+  the measurement below proves.
+  *Reachable in the menu.* The main menu had five rows at 120 px; a sixth needed room, so the stack is now a table
+  (`MainMenuTouchLayout.rowBottom(row)`), six rows at 96 px with a 22 px gap, laid out from 812 down to 222 — the
+  drawn button and the tappable button read the same numbers, so they cannot drift apart, and a test asserts the
+  rows never overlap, every row clears the title panel and the footer line, and no target is smaller than a finger.
+  The game-over overlay also now shows this run's length rather than the constant 200.
+  *Measured with the simulator,* which is what the item asked for. `BalanceSimulator.runBrief(seed)` sets the mode
+  on the state before the run; the old signature is a one-line delegate to the standard mode, so every existing
+  sweep is unchanged **by construction** (and the full suite confirms it). On seed `0x4845524F444546` the brief
+  vigil runs 30 waves in 68 ms and the long vigil 200 waves in 1.65 s, and the first thirty waves of the short run
+  are **bit-identical** to the first thirty waves of the long one — same damage fraction, same clear time, wave by
+  wave. The short mode's own band, over three seeds: spike 0.1229 against the same 0.40 ceiling, average pressure
+  0.0468 against the same 0.035 floor, and its last ten waves press harder than its first ten.
+  *The one deliberate difference, recorded rather than hidden:* the long run's gate demands a minimum clear time of
+  24 s. A thirty-wave run legitimately opens with waves that resolve in 10 s, so the short mode gets its own bounded
+  version of that rule (no wave under 4 s, none over 120 s, and the slowest at least twice the fastest) instead of a
+  copy of a rule written for a two-hundred-wave curve.
 - [ ] **R3.6 Human playtest protocol** plus recorded sessions; findings become roadmap items.
 
 ## R4 — Balance and difficulty curve  `+42`
@@ -723,6 +744,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 86 | R2.2 slice 9 | the frame extracted into `presentation/FrameDriver` (frame order, pause record, the two timed story lines, ambient clock, game-over timer) plus two ports that make it testable (`audio/AudioFrame`, injected `NanoClock`); `HeroDefenseGame` 797 → 760 lines (half of the audited 1,519), fields 68 → 61; `FrameDriverTest` 6 cases | `c055436` |
 
 | 2026-09-16 | 89 | R3.3 | twelve persistent trophies with a counter, a target and a progress reading; announced at the save point (haptic + chime + one HUD line that yields to a story line); Codex gained a LORE/TROPHIES tab strip with its own shelf and details panel; `TrophyLedger` survives `resetForNewRun` and `TrophyBook.migrate` back-fills a pre-trophy save from the progress it already had; 20 new test cases | `7323587` |
+
+| 2026-09-16 | 89 | R3.5 | a second run length: `GameMode.STANDARD` (200) / `BRIEF` (30) with `GameState.runLengthWaves()`, a brief-vigil row in the re-tabled six-row main menu, the game-over overlay showing this run's length, and `BalanceSimulator.runBrief`; measured: the brief run's first 30 waves are bit-identical to the long run's first 30 on the same seed, spike 0.1229 vs the 0.40 ceiling, its own bounded clear-time rule recorded as the one deliberate difference; 5 new simulation cases | `_PENDING_` |
 
 ## Definition of done
 

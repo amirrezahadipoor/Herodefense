@@ -88,6 +88,25 @@ final class SessionControllerTest {
     }
 
     @Test
+    void theBriefVigilKeepsTierAndTrophiesAndChangesOnlyTheLength() {
+        GameState state = GameState.newRun(5L);
+        state.ascensionTier = 3;
+        state.heartwood = 250;
+        state.trophies.award(com.amirrezahadipoor.herodefense.progression.Trophy.FIRST_VIGIL);
+        host.state = state;
+
+        controller.startBriefRun();
+
+        assertEquals(com.amirrezahadipoor.herodefense.model.GameMode.BRIEF, host.state.mode);
+        assertEquals(com.amirrezahadipoor.herodefense.model.GameMode.BRIEF.waves(), host.state.runLengthWaves());
+        assertEquals(3, host.state.ascensionTier, "a short run is the same ladder");
+        assertEquals(250, host.state.heartwood);
+        assertTrue(host.state.trophies.isEarned(com.amirrezahadipoor.herodefense.progression.Trophy.FIRST_VIGIL),
+            "and the same trophy case");
+        assertEquals(GameScreenState.TRIAL_DRAFT, flow.state(), "the run still opens on the trial draft");
+    }
+
+    @Test
     void continuingWithoutAnOfferDoesNothing() {
         host.state = GameState.newRun(5L);
         host.continueAvailable = false;

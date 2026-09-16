@@ -11,15 +11,18 @@ public final class ContinuousWaveRun {
         }
         if (state.waveActive) recordWaveClear(state);
         clearTransientCombatEntities(state);
-        if (state.waveNumber >= GameState.FINAL_WAVE) {
-            state.waveNumber = GameState.FINAL_WAVE;
+        int runLength = state.runLengthWaves();
+        if (state.waveNumber >= runLength) {
+            state.waveNumber = runLength;
             state.runComplete = true;
             MythicEffects.grantAscensionMythic(state);
             return WaveCompletion.RUN_COMPLETED;
         }
         boolean ceremony = isPlantingWave(state.waveNumber, state);
         state.waveNumber++;
-        if (state.waveNumber == GameState.FINAL_WAVE) state.wave200ReachedCount++;
+        if (state.waveNumber == GameState.FINAL_WAVE && runLength == GameState.FINAL_WAVE) {
+            state.wave200ReachedCount++;
+        }
         if (ceremony) {
             state.ceremonyPending = true;
             return WaveCompletion.PLANTING_CEREMONY;

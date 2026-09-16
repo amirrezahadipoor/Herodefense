@@ -119,18 +119,19 @@ public final class MainMenuRenderer implements AutoCloseable {
             COIN_PANEL_X, COIN_PANEL_Y, COIN_PANEL_WIDTH, COIN_PANEL_HEIGHT,
             true, false
         );
-        drawButton(batch, frames, 780f, true);
-        drawButton(batch, frames, 620f, continueAvailable);
-        drawButton(batch, frames, 460f, true);
-        drawButton(batch, frames, 300f, true);
-        drawButton(batch, frames, 140f, true);
+        drawButton(batch, frames, MainMenuTouchLayout.rowBottom(0), true);
+        drawButton(batch, frames, MainMenuTouchLayout.rowBottom(1), true);
+        drawButton(batch, frames, MainMenuTouchLayout.rowBottom(2), continueAvailable);
+        drawButton(batch, frames, MainMenuTouchLayout.rowBottom(3), true);
+        drawButton(batch, frames, MainMenuTouchLayout.rowBottom(4), true);
+        drawButton(batch, frames, MainMenuTouchLayout.rowBottom(5), true);
 
         icons.draw(batch, "coin", 508f, 1201f, 46f);
         drawShadowedCentered(batch, coinTotalLabel(coins), 611f, 1232f, 1.05f, GOLD);
         drawShadowedCentered(batch, "THE WORLD TREE AWAITS", 360f, 1120f, 0.86f, GOLD);
         drawShadowedCentered(batch, "HERO DEFENSE", 360f, 1058f, 2.28f, GOLD);
         drawShadowedCentered(
-            batch, "Hold the last green sanctuary through 200 waves",
+            batch, "Hold the last green sanctuary through 200 waves, or thirty",
             360f, 988f, 0.92f, IVORY
         );
 
@@ -142,20 +143,25 @@ public final class MainMenuRenderer implements AutoCloseable {
             ? ("Tier " + ascensionTier + " | Peak " + peakWave + " | " + heartwood + " HW")
             : "Return to the active wave";
         drawMenuAction(
+            batch, icons, "general_power", "BRIEF VIGIL",
+            "A full run in thirty waves | same tier, same grove",
+            MainMenuTouchLayout.rowBottom(1), newGameState, true
+        );
+        drawMenuAction(
             batch, icons, "continue", "CONTINUE", continueSubtitle,
-            620f, continueState, continueAvailable
+            MainMenuTouchLayout.rowBottom(2), continueState, continueAvailable
         );
         drawMenuAction(
             batch, icons, "general_power", "ROOT NETWORK", heartwood + " Heartwood | Permanent growth",
-            460f, rootState, true
+            MainMenuTouchLayout.rowBottom(3), rootState, true
         );
         drawMenuAction(
             batch, icons, "inventory", "GROVE CODEX", "Thirty entries the Tree remembers",
-            300f, codexState, true
+            MainMenuTouchLayout.rowBottom(4), codexState, true
         );
         drawMenuAction(
             batch, icons, "settings", "SETTINGS", "Comfort, music, and effects",
-            140f, settingsState, true
+            MainMenuTouchLayout.rowBottom(5), settingsState, true
         );
         drawShadowedCentered(batch, "200 WAVES  |  ONE LAST TREE  |  ASCEND FOREVER  |  T" + ascensionTier, 360f, 80f, 0.74f, SUBTLE);
         batch.end();

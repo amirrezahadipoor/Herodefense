@@ -6,6 +6,7 @@ import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.items.StarterLoadoutSystem;
+import com.amirrezahadipoor.herodefense.model.GameMode;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.FloatingCoinTextSystem;
 import com.amirrezahadipoor.herodefense.polish.FloatingDamageTextSystem;
@@ -94,6 +95,24 @@ public final class SessionController {
     public void startNewRun() {
         saves.clear();
         host.setGameState(GameState.newRun(System.currentTimeMillis()));
+        prepareFreshRun();
+    }
+
+    /**
+     * The menu's short run (roadmap R3.5): the same tier and the same trophies, a run that ends at wave 30. The
+     * mode is set on the state before the reset, because {@code resetForNewRun} keeps the mode the player chose.
+     */
+    public void startBriefRun() {
+        GameState state = host.gameState();
+        if (state == null) {
+            host.setGameState(GameState.newRun(System.currentTimeMillis()));
+            host.gameState().mode = GameMode.BRIEF;
+            prepareFreshRun();
+            return;
+        }
+        state.mode = GameMode.BRIEF;
+        state.resetForNewRun(System.currentTimeMillis());
+        state.mode = GameMode.BRIEF;
         prepareFreshRun();
     }
 

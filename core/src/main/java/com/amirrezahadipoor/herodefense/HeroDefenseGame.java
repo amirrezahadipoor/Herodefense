@@ -490,6 +490,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void countHandledTouchUp() { handledTouchUpCount++; }
         @Override public void saveNow() { HeroDefenseGame.this.saveNow(); }
         @Override public void startNewRunSameTier() { HeroDefenseGame.this.startNewRunSameTier(); }
+        @Override public void startBriefRun() { sessionController.startBriefRun(); }
         @Override public void ascendRun() { HeroDefenseGame.this.ascendRun(); }
         @Override public void continueRun() { HeroDefenseGame.this.continueRun(); }
         @Override public void beginOpening() { HeroDefenseGame.this.beginOpening(); }

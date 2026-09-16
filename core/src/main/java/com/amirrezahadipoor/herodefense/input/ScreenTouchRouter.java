@@ -135,6 +135,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
 
         void startNewRunSameTier();
 
+        void startBriefRun();
+
         void ascendRun();
 
         void continueRun();
@@ -314,6 +316,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 );
                 if (action == MainMenuTouchLayout.Action.NEW_GAME) {
                     host.startNewRunSameTier();
+                } else if (action == MainMenuTouchLayout.Action.BRIEF_RUN) {
+                    host.startBriefRun();
                 } else if (action == MainMenuTouchLayout.Action.CONTINUE) {
                     host.continueRun();
                 } else if (action == MainMenuTouchLayout.Action.SETTINGS) {
