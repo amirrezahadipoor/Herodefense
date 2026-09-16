@@ -94,6 +94,86 @@ The category meets the premium-v2 bar for model construction, real rig attachmen
 
 **Final category decision: accepted for runtime promotion.**
 
+<!-- BEGIN R3.4 ADDENDUM -->
+
+## Addendum (2026-09-16, roadmap R3.4): the roster doubles to eight
+
+- **Decision:** ACCEPTED
+- **Scope:** Bark Stalker, Sap Hound, Husk Warden, Bramble Thrall — four additions, first renders
+- **Render run / artifact:** `RUN_ID` / `ARTIFACT_ID` (`hero-defense-enemies-sprites`), batch `enemies`
+- **Audit:** `docs/art_reviews/regular_enemies_premium_v2/regular_enemies_audit.json`
+  (`candidateManifestSha256` `CANDIDATE_MANIFEST_SHA`)
+- **Review evidence:** 17 sheets — one shared-scale lineup of all eight, eight native-size full-motion
+  sheets, eight silhouette/material/readability sheets
+
+### Why four more enemies
+
+`docs/ROADMAP_TO_1000.md` R3.4 asks the regular-enemy roster to double. The gameplay half is one enum: the
+wave spawner cycles types uniformly, so the roster's *mean* per-type numbers are the wave's weight. The four
+additions are authored at 26 / 22 / 30 / 39 health and 6 / 8 / 7 / 7 damage, which keeps every mean exactly
+where it was — 117 health and 28 damage over four types, 234 and 56 over eight, with experience and coins
+held the same way. The wave gets more variety, not more pressure. What it does get is variance: a wave now
+mixes a 17-health wolf with a 46-health brute across eight roles instead of four.
+
+### What each addition is, and what it reads as
+
+| Key | Role | Silhouette | Material story | Motion language |
+|---|---|---|---|---|
+| `bark_stalker` | wiry flanker (26 hp, 88 speed) | narrow shoulders, very long arms, moss hood, crown spikes, cloak flaring behind | cool bark greys, two-step moss greens, one warm amber used only on eyes and claws | creeping: weight on the back foot, head scanning, then a crossed-claw lunge |
+| `sap_hound` | fastest role (22 hp, 100 speed) | low arched back, splayed paws, three glowing sacs, swept tail trailing sap | dry ochre hide, near-black joints, amber sap as the only bright note | bounding: chest-driven pant, a short bound, then a snapping bite |
+| `husk_warden` | shielded mid-weight (30 hp, 46 reach) | short and wide, full-height slab shield on the left, dome helmet, rust plume | cool iron plates, one rust-red cloth note, brass rivets, ember visor slit | braced: a two-beat shield stance that never opens, then a shield bash |
+| `bramble_thrall` | slow thorn mass (39 hp, 44 speed) | no visible neck, boulder shoulders, thorn-studded arms, root feet, burrs across the back | olive-brown vine masses, bone-white thorns, two rust blooms, sap-green eyes and heart knot | lumbering: a half-beat-behind mass sway, two fists overhead, then a falling-trunk slam |
+
+### Provenance of the four additions
+
+Every promoted entry has to name the revision it came from, and the runtime guard
+(`PremiumEnemyAssetContractTest`) pins those names per key:
+
+| Key | `modelRevision` | Rig profile | Animation profile |
+|---|---|---|---|
+| `bark_stalker` | `bark-stalker-moss-climber-v2` | `premium-humanoid-v2` | `bark-stalker-lurker-v2` |
+| `sap_hound` | `sap-hound-resin-runner-v2` | `premium-quadruped-mapped-v2` | `sap-hound-runner-v2` |
+| `husk_warden` | `husk-warden-shield-bearer-v2` | `premium-heavy-humanoid-v2` | `husk-warden-bulwark-v2` |
+| `bramble_thrall` | `bramble-thrall-thorn-lumberer-v2` | `premium-heavy-humanoid-v2` | `bramble-thrall-lumber-v2` |
+
+### From render to shipped tier
+
+The Blender pipeline renders premium characters onto **384 px frames** (sheet 3840x1536, supersample 3,
+32 opaque samples) while the reviewed, shipped tier is **192 px frames** on a 1920x768 page — exactly half,
+same grid. The batch that produced this art therefore cannot be promoted as rendered: every frame is cropped
+from the master and resized with LANCZOS onto the reviewed runtime grid by
+`tools/visual/publish_runtime_tier.py`, the same algorithm (`compose_runtime_sheet`) that produced the
+shipped tier in Phase 78, now repeatable instead of a one-off. Each manifest entry keeps the master render
+next to the shipped claim as `masterRender`, so the shipped tier says both what it is (192 px, reviewed pin
+of 2x/28 for characters) and where its pixels came from (the 384 px master and its engine line). For the
+four existing keys the tool also refuses to publish unless the halved master grid equals the reviewed grid,
+which is what keeps a new render from silently re-laying-out art that was already accepted.
+
+### The honest limitation of this addendum
+
+The four additions have **no predecessor render**. The original premium-v2 review compared an accepted
+premium-v2 baseline against a studio-v3 candidate, which is what made its readability sheets meaningful. For
+a first render there is nothing to compare against, so the audit records `predecessor: "none"` for these four
+keys, their readability sheets show the new master against itself, and their `baselineSheetSha256` is equal
+to their `candidateSheetSha256` by construction. The tooling refuses a byte-identical comparison for a key
+that *has* a predecessor (see `create_enemy_batch_review.py`), so this carve-out cannot silently weaken a
+future review: it applies only where the baseline manifest has no entry for the key at all.
+
+### Runtime cost, measured
+
+- **Combat residency:** the live set is worth 95.9 MiB of the documented 100 MiB budget once all eight
+  regular enemies are counted (each enemy sheet is 5,898,240 decoded bytes). That leaves about one more
+  enemy-sized sheet of headroom; a ninth role needs smaller frames or a shared page rather than a quiet
+  budget bump. Asserted by `RuntimeResidencyTest`.
+- **Catalog:** the enemies add 23,592,960 decoded bytes, taking the catalog from 361,279,488 to 384,872,448,
+  so `decodedCatalogBudgetBytes` moves from 370,000,000 to 390,000,000 in this commit — a documented budget
+  change for a documented content change, with the arithmetic in `asset_manifest.json`.
+- **Per-batch budget:** the audit's own decoded budget doubles with the batch, from 32 MiB to 48 MiB.
+
+**Final addendum decision: accepted for runtime promotion.**
+<!-- END R3.4 ADDENDUM -->
+
+
 <!-- BEGIN GENERATED: texture revision labels -->
 ## Texture revision labels
 

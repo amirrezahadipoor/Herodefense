@@ -831,13 +831,17 @@ def _author_sap_hound_attack(armature: bpy.types.Object, count: int) -> None:
         "head": (-0.20, 0.0, 0.06),
         "upper_arm.L": (-0.26, 0.0, -0.10), "upper_arm.R": (-0.26, 0.0, 0.10),
         "thigh.L": (-0.30, 0.0, 0.04), "thigh.R": (-0.30, 0.0, -0.04),
-    }, {"root": (0.0, 0.08, -0.08)})
+    }, {"root": (0.0, 0.08, -0.05)})
+    # The bite used to reach 0.30 of leg extension with the body 0.10 low, and the rendered paws ended on the
+    # frame's bottom row: `validate_generated_assets.py` rejects any opaque pixel on a frame border, so the whole
+    # eight-enemy batch failed on this one pose. The reach is trimmed to keep a clear bottom margin; the lunge
+    # and the snap still read, and the root no longer dips.
     _key(armature, 4, {
-        "spine": (-0.10, 0.0, 0.14), "chest": (-0.14, 0.0, 0.20), "neck": (-0.18, 0.0, 0.16),
-        "head": (0.26, 0.0, -0.10),
-        "upper_arm.L": (0.34, 0.0, 0.16), "upper_arm.R": (0.34, 0.0, -0.16),
-        "thigh.L": (0.30, 0.0, -0.06), "thigh.R": (0.30, 0.0, 0.06),
-    }, {"root": (0.0, -0.30, 0.10)})
+        "spine": (-0.10, 0.0, 0.14), "chest": (-0.14, 0.0, 0.20), "neck": (-0.12, 0.0, 0.11),
+        "head": (0.17, 0.0, -0.07),
+        "upper_arm.L": (0.22, 0.0, 0.11), "upper_arm.R": (0.22, 0.0, -0.11),
+        "thigh.L": (0.17, 0.0, -0.04), "thigh.R": (0.17, 0.0, 0.04),
+    }, {"root": (0.0, -0.24, 0.02)})
     _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
 
 
@@ -1020,13 +1024,16 @@ def _author_bramble_thrall_attack(armature: bpy.types.Object, count: int) -> Non
         "upper_arm.R": (-0.70, 0.22, 0.44), "forearm.R": (-0.56, 0.0, 0.22),
         "thigh.L": (-0.10, 0.0, 0.06), "thigh.R": (0.08, 0.0, -0.06),
     }, {"root": (0.0, 0.10, 0.06)})
+    # Same lesson as the sap hound bite above: a 0.64 arm slam with a 0.10 root drop drove the fists onto the
+    # frame's bottom row and failed the batch's edge-safety gate. The slam lands shorter and the body no longer
+    # sinks, so the fists stop above the ground line the pivot promises.
     _key(armature, 7, {
         "pelvis": (0.16, 0.0, -0.22), "spine": (0.24, 0.0, -0.36), "chest": (0.18, 0.0, -0.40),
         "head": (-0.14, 0.0, 0.20),
-        "upper_arm.L": (0.64, 0.30, 0.66), "forearm.L": (0.46, 0.0, 0.26),
-        "upper_arm.R": (0.62, -0.28, -0.64), "forearm.R": (0.44, 0.0, -0.24),
-        "thigh.L": (0.14, 0.0, -0.08), "thigh.R": (-0.12, 0.0, 0.08),
-    }, {"root": (0.0, -0.14, -0.10)})
+        "upper_arm.L": (0.40, 0.20, 0.44), "forearm.L": (0.26, 0.0, 0.14),
+        "upper_arm.R": (0.38, -0.18, -0.42), "forearm.R": (0.24, 0.0, -0.12),
+        "thigh.L": (0.10, 0.0, -0.06), "thigh.R": (-0.08, 0.0, 0.06),
+    }, {"root": (0.0, -0.10, -0.02)})
     _key(armature, count, neutral, {"root": (0.0, 0.0, 0.0)})
 
 

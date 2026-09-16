@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import ast
 import sys
+import re
 import unittest
 from pathlib import Path
 
@@ -61,6 +62,28 @@ class EnemyPremiumSourceTest(unittest.TestCase):
             if asset.family != "enemy":
                 continue
             self.assertIn(f'"{asset.builder}": build_{asset.builder}', registry)
+
+    def test_new_enemy_clips_keep_the_ground_line(self) -> None:
+        """Proxy guard for the frame-border rule the validator enforces on rendered pixels.
+
+        The R3.4 batch was rejected once because two attack poses reached the frame's bottom row: a 0.10 root
+        drop under a 0.64 arm slam (bramble thrall) and a 0.30 leg extension on a 0.10-low body (sap hound).
+        Rendering cannot be checked from source, but the authored *extremes* can: every root drop in the four
+        new attack clips stays shallow, which is what keeps the lowest pixel off the cell border. The measured
+        gate stays `validate_generated_assets.py` edge safety; this stops the same mistake being re-authored.
+        """
+        source = (BLENDER_ROOT / "hd_pipeline" / "rig.py").read_text(encoding="utf-8")
+        drops: list[tuple[str, float]] = []
+        for function in ("_author_bark_stalker_attack", "_author_sap_hound_attack",
+                         "_author_husk_warden_attack", "_author_bramble_thrall_attack"):
+            body = source[source.index(f"def {function}(") :]
+            body = body[: body.index("\ndef ")]
+            for drop in re.findall(r'\{"root": \([-0-9.]+, [-0-9.]+, (-[0-9.]+)\)\}', body):
+                drops.append((function, float(drop)))
+        self.assertTrue(drops, "no root drops found: the guard is not looking at the clips any more")
+        for function, drop in drops:
+            self.assertGreaterEqual(drop, -0.06,
+                                    f"{function} drops the root {drop} below the authored safe depth")
 
     def test_every_enemy_profile_authors_all_four_clips(self) -> None:
         source = (BLENDER_ROOT / "hd_pipeline" / "rig.py").read_text(encoding="utf-8")

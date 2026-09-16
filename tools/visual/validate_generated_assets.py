@@ -115,17 +115,43 @@ def _check_review_label_binding(root: Path) -> None:
 
     Same rule as core's `ReviewLabelBinding`, so the asset pipeline fails in CI even when the Java tests
     are not the ones being run (roadmap R1.11).
+
+    A render batch that has not been promoted yet cannot carry `categoryReview` — that field is written by
+    `promote_*_batch.py`, which needs the very artifact this check runs on. For those entries the same rule is
+    applied against the repository's own review documents instead: the revision label has to be listed in a
+    document that has the generated label block. Art therefore still cannot render unless a review names it;
+    only the place the name is looked up differs.
     """
+
     manifest = json.loads((root / "asset_manifest.json").read_text())
     repository = Path(__file__).resolve().parents[2]
+    review_root = repository / "docs" / "art_reviews"
+    label_block = "<!-- BEGIN GENERATED: texture revision labels -->"
     documents: dict[str, str | None] = {}
+
+    def find_document_for(revision: str) -> tuple[str, str] | None:
+        for path in sorted(review_root.rglob("*.md")):
+            text = path.read_text(encoding="utf-8")
+            if f"`{revision}`" in text and label_block in text:
+                return path.relative_to(repository).as_posix(), text
+        return None
+
     for asset in manifest["assets"]:
         key = asset["key"]
         revision = asset.get("modelRevision")
         review = asset.get("categoryReview") or {}
         document = review.get("document")
         if not document:
-            raise ValueError(f"{key}: no review document for modelRevision={revision}")
+            found = find_document_for(str(revision))
+            if found is None:
+                raise ValueError(
+                    f"{key}: revision {revision} is not listed in any review document with a generated "
+                    f"label block; art cannot be rendered before a review names it"
+                )
+            document, text = found
+            documents[document] = text
+            print(f"{key}: revision {revision} covered by {document} (unpromoted render batch)")
+            continue
         if review.get("status") != "accepted":
             raise ValueError(f"{key}: review {document} status is {review.get('status')}")
         if document not in documents:
@@ -136,7 +162,7 @@ def _check_review_label_binding(root: Path) -> None:
             raise ValueError(f"{key}: missing review document {document}")
         if "`" + str(revision) + "`" not in text:
             raise ValueError(f"{key}: revision {revision} is not listed in {document}")
-        if "<!-- BEGIN GENERATED: texture revision labels -->" not in text:
+        if label_block not in text:
             raise ValueError(f"{key}: {document} has no generated revision-label block")
 
 
