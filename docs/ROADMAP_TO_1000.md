@@ -33,7 +33,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **78** | Integrity recovery: reviewed runtime tier restored, contract tests un-gutted, hash ledger + resampling/ledger gates | R1.1 · R1.2 · R1.3 · R1.4 · R1.8 | `[x]` |
 | **79** | Test-integrity meta-test: weakening a test fails the build | R1.5 | `[x]` |
 | **80** | Gates that measure output, not script text | R1.6 | `[x]` |
-| **81** | Emulator brightness contract restored honestly | R1.7 | `[ ]` |
+| **81** | Emulator brightness contract restored honestly | R1.7 | `[~]` |
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 · R8.2 | `[x]` |
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[x]` |
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[~]` |
@@ -106,9 +106,13 @@ re-run on a finished round (Phase 97).
   `config.py` (which Phase 54-55 raised to 3/32 and 4/48) and the art that was actually rendered is now
   printed: *config asks for more than the art was rendered at*. Tests in
   `tools/visual/tests/test_art_gates.py::ReviewedTierPinningTest` keep the mapping explicit.
-- [ ] **R1.7 Emulator brightness contract.** Either the vibrant grade is re-applied in the render
-  pipeline so `AndroidTouchSmokeTest` returns to `MIN_MEAN_LUMA = 34` with `vfx-*` screenshots included,
-  or the threshold is replaced by a per-screenshot reference fingerprint.
+- [~] **R1.7 Emulator brightness contract.** Chosen route: a per-screenshot reference (the second option in
+  this item), because re-applying the vibrant grade belongs to the render pipeline (R5) and cannot be
+  verified from this machine. Step 1 is measurement only: the smoke test now measures every captured frame
+  (mean, min, max, lit fraction) including the `vfx-*` frames and writes
+  `brightness-measurements.txt` into the instrumentation output directory that CI uploads, so the reference
+  table will be a recorded measurement instead of a chosen number. Step 2 replaces the blanket floor with
+  that table plus a contrast/black-frame check.
 - [x] **R1.8 Audit published inside the repository.** `docs/audit/AUDIT_2026-09-16.md` + README pointer.
 - [x] **R1.9 Negative control for every gate.** Fixtures that must fail exist for the resampling gate
   (NEAREST 2× and 3×), for hash-ledger drift, for the test-integrity scanner, and now for the residency
@@ -232,6 +236,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
 | 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | `71bab7d` |
 | 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | `651d56a` |
+| 2026-09-16 | 81 | R1.7 step 1 | emulator smoke test measures every captured frame and publishes `brightness-measurements.txt` in the CI artifact; assertions unchanged in this step | *(this commit)* |
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |
 

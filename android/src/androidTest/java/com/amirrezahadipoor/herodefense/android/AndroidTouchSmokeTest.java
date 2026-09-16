@@ -27,12 +27,15 @@ import com.amirrezahadipoor.herodefense.model.HeroStat;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
 import com.amirrezahadipoor.herodefense.save.GameStateCodec;
 
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
 
@@ -595,23 +598,70 @@ public final class AndroidTouchSmokeTest {
     }
 
     /** Mean luma of the captured frame must clear the premium-v3 floor; no more OLED-black UI. */
+    private static final Map<String, float[]> BRIGHTNESS = new LinkedHashMap<>();
+
     private static final float MIN_MEAN_LUMA = 20f; // integrity-exempt: roadmap R1.7 restores 34 once the vibrant grade is rendered instead of filtered onto sprites
 
-    private static void assertReadableBrightness(Bitmap screenshot, String name) {
+    /**
+     * Every captured frame is measured, including the vfx ones, so the brightness contract can be
+     * per-screenshot instead of one blanket floor that a dark frame can quietly undercut. The numbers are
+     * written to the instrumentation output directory (uploaded with the screenshots) and printed, because
+     * a gate whose reference is not published is a gate nobody can check.
+     */
+    private static float[] measureBrightness(Bitmap screenshot, String name) {
         long total = 0L;
         int samples = 0;
+        int darkest = 255;
+        int brightest = 0;
+        int litPixels = 0;
         for (int y = 0; y < screenshot.getHeight(); y += 12) {
             for (int x = 0; x < screenshot.getWidth(); x += 12) {
                 int pixel = screenshot.getPixel(x, y);
                 int r = (pixel >> 16) & 0xFF;
                 int g = (pixel >> 8) & 0xFF;
                 int b = pixel & 0xFF;
-                total += Math.round(0.2126f * r + 0.7152f * g + 0.0722f * b);
+                int luma = Math.round(0.2126f * r + 0.7152f * g + 0.0722f * b);
+                total += luma;
+                darkest = Math.min(darkest, luma);
+                brightest = Math.max(brightest, luma);
+                if (luma >= 16) {
+                    litPixels++;
+                }
                 samples++;
             }
         }
         float mean = samples == 0 ? 0f : (float) total / samples;
-        assertTrue(name + " mean luma " + mean + " below " + MIN_MEAN_LUMA, mean >= MIN_MEAN_LUMA);
+        float lit = samples == 0 ? 0f : (float) litPixels / samples;
+        return new float[] {mean, darkest, brightest, lit};
+    }
+
+    /** Writes one line per captured frame so the numbers end up in the CI artifact, not only in a log. */
+    @After
+    public void publishBrightnessMeasurements() {
+        StringBuilder report = new StringBuilder();
+        for (Map.Entry<String, float[]> entry : BRIGHTNESS.entrySet()) {
+            float[] value = entry.getValue();
+            String line = String.format(java.util.Locale.US,
+                "%s mean=%.2f min=%.0f max=%.0f lit=%.4f",
+                entry.getKey(), value[0], value[1], value[2], value[3]);
+            report.append(line).append(System.lineSeparator());
+            System.out.println("BRIGHTNESS " + line);
+        }
+        if (report.length() == 0) {
+            return;
+        }
+        Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
+        File directory = new File(context.getExternalMediaDirs()[0], "additional_test_output");
+        if (!directory.isDirectory() && !directory.mkdirs()) {
+            throw new AssertionError("Could not create " + directory);
+        }
+        File reportFile = new File(directory, "brightness-measurements.txt");
+        try (FileOutputStream output = new FileOutputStream(reportFile, false)) {
+            output.write(report.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        } catch (IOException exception) {
+            throw new AssertionError("Could not write " + reportFile, exception);
+        }
+        assertTrue(reportFile.isFile());
     }
 
     private static void captureScreen(String name) {
@@ -619,7 +669,12 @@ public final class AndroidTouchSmokeTest {
             .getUiAutomation()
             .takeScreenshot();
         assertNotNull(screenshot);
-        if (!name.startsWith("vfx-")) assertReadableBrightness(screenshot, name);
+        float[] brightness = measureBrightness(screenshot, name);
+        BRIGHTNESS.put(name, brightness);
+        if (!name.startsWith("vfx-")) {
+            assertTrue(name + " mean luma " + brightness[0] + " below " + MIN_MEAN_LUMA,
+                brightness[0] >= MIN_MEAN_LUMA);
+        }
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         File directory = new File(context.getExternalMediaDirs()[0], "additional_test_output");
         assertTrue(directory.isDirectory() || directory.mkdirs());
