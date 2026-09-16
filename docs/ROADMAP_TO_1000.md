@@ -980,7 +980,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `5b78835` |
 | 2026-09-17 | 91 | R7.7 | the main menu's press states and the device journey's menu taps both still read the pre-R3.5 row table; both now derive from `MainMenuTouchLayout.rowBottom(row)`, and the journey finds a row by asking for its action -- the nine Android journeys that have been timing out behind a missed tap are expected green on this commit | `398e149` |
 | 2026-09-17 | 91 | R4.2 | the boss telegraph asserted as a contract: five promises over four identities x forty encounters x tiers 0/3/6/10 x both vigils, 6 cases in 0.06 s, with the roster table and the per-strike damage published | `67bdd26` |
-| 2026-09-17 | 91 | R4.3 | the drop economy's table generated from the code and drift-gated against `docs/BALANCE.md`, plus three measured pity rules recorded with the ceilings each one broke | `PENDING` |
+| 2026-09-17 | 91 | R4.3 | the drop economy's table generated from the code and drift-gated against `docs/BALANCE.md`, plus three measured pity rules recorded with the ceilings each one broke | `06b2676` |
 
 ## Definition of done
 
