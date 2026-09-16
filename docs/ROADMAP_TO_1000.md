@@ -314,7 +314,20 @@ sentence has to name the two scores and the commit they were measured on.
   954 → **927 lines** (39 % below the 1,519 the audit measured), fields 95 → 94, ratchet freeze lowered in the
   same commit.
   *Remaining:* the 400-line ceiling and the before/after emulator smoke comparison.
-- [ ] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
+- [~] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
+  *Started with the first two slices:* `WaveDirectorTest` (five cases: hero death fells every tree on the epilogue
+  screen and persists it, a level-up opens before the wave advances, an idle frame only offers the reflection and
+  writes nothing, clearing wave 19 announces the wave-20 boss and rolls the run forward, and wave 200 offers the
+  final card before the run may end) and `SessionControllerTest` (seven cases: a fresh run discards the save and
+  opens the draft, a same-tier restart keeps tier and heartwood, an ascension climbs exactly one tier and pays,
+  continuing without an offer does nothing, a save closed mid-draft resumes at the draft, `canContinue` refuses a
+  dead hero and a completed run, and the opening tier comes from the snapshot when there is one).
+  *Testability that made it possible:* the extracted systems used to name `GameAudioManager` and
+  `LocalSaveRepository` directly, and both open libGDX resources in their constructors, so no core test could
+  instantiate them. Two one-method-wide interfaces now sit in between — `audio/AudioPlayback` and
+  `save/RunSaveRepository` — implemented by those classes; `WaveDirector`, `CombatSystem`, `CinematicFlow` and
+  `SessionController` depend on the interfaces, and the tests record cues and saves in fakes. The remaining
+  extracted systems get their tests when their slice lands.
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
@@ -382,7 +395,7 @@ sentence has to name the two scores and the commit they were measured on.
   whose economy reaches level 10 *and* the price — measured 4 of 9 seeds on the shipped build, 7 of 9 before.
   *Evidence:* `BossEncounterTableTest` (five cases over all forty encounters: the encounter-to-script mapping,
   the twenty-window property, the no-consecutive-repeat property and the out-of-range fallback);
-  `BossFightScriptTest` (seven cases: eight scripts, no two parameter sets alike, the sweep-safe axes pinned,
+  `BossFightScriptTest` (eight cases: eight scripts, no two parameter sets alike, the sweep-safe axes pinned,
   values inside sane bounds, the roster varying tell size, hit count and reaction, per-cycle damage parity, no
   hit above the reference, unknown names falling back to the measured fight, and the enrage shrinking the tell
   while leaving the warning and the cycle alone); three new `BossSpecialAttackSystemTest` cases that assert the
@@ -616,7 +629,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; the manifest is the single source of truth for the four revision labels, and 36+6+4 assets were re-stamped to match their real provenance | `37b6aec` |
 | 2026-09-16 | 86 | R2.2 slice 1 | `RunPresentationSystem` extracted from the god class; `HeroDefenseGame` 1,519 → 1,447 lines; ratchet freeze lowered to 1,447 / 91; layered-event test strengthened to scan both files and require exactly one binding per effect | `49923b3` |
 | 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | `442687b` |
-| 2026-09-16 | 88 | R3.2 | eight encounter scripts over forty encounters (tell size 0.85×–1.35×, one or two half hits per warning, an enrage that shrinks the tell) with a deterministic encounter table; four wider drafts were measured and dropped because they moved the sweep's worst-wave cells by 15–45 %, so physics and warning timing are pinned by test and the pinned roster reproduces the phase-87 cells bit for bit; 16 new or extended test cases, and the two spike matrices now sample five seeds instead of three with every ceiling unchanged | `4af8101` |
+| 2026-09-16 | 88 | R3.2 | eight encounter scripts over forty encounters (tell size 0.85×–1.35×, one or two half hits per warning, an enrage that shrinks the tell) with a deterministic encounter table; four wider drafts were measured and dropped because they moved the sweep's worst-wave cells by 15–45 %, so physics and warning timing are pinned by test and the pinned roster reproduces the phase-87 cells bit for bit; 17 new or extended test cases, and the two spike matrices now sample five seeds instead of three with every ceiling unchanged | `4af8101` |
 | 2026-09-16 | 87 | R3.1 | tap-to-focus: the player can now point the bow at any enemy for 6 s (×1.2 damage), release it with a tap on empty ground, and see the window fade out; 11 new test cases; the wave is no longer a spectator sport | `499da95` |
 | 2026-09-16 | 86 | R2.2 slice 3 | per-state frame build extracted into `ScreenStateComposer` (arena, actors, effects, HUD, all overlays) behind a 51-getter port; `HeroDefenseGame` 1,201 → 1,072 lines; ratchet freeze lowered; guard test extended to the draw calls | `177aabe` |
 | 2026-09-16 | — | CI honesty | `937e8b2` turned `Test core logic` red: the pipeline's Python UI source test still looked for the touch lifecycle inside the game class that slice 2 had just emptied. Fixed in `c8c2b27`, which reads the router instead, so the check follows the code rather than a file location | `c8c2b27` |
@@ -630,6 +643,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 86 | R2.2 slice 6 | run session (fresh run, restart at the same tier, ascension, and continue-on-the-right-screen) extracted into `gameplay/SessionController`; the three duplicated fifteen-line resets collapsed into one `prepareFreshRun()`; `HeroDefenseGame` 980 → 954 lines (37 percent smaller than the audited 1,519-line god class), fields 94 → 95, ratchet freeze lowered in the same commit | `eab4fcc` |
 
 | 2026-09-16 | 86 | R2.2 slice 7 | the prologue and the grove-planting ceremonies extracted into `gameplay/CinematicFlow` (tier snapshot, planted tree, water drops, wave hand-off and the boss entrance at it); `HeroDefenseGame` 954 → 927 lines (39 percent smaller than the audited 1,519-line god class), fields 95 → 94, ratchet freeze lowered in the same commit | `7d1b7da` |
+
+| 2026-09-16 | 86 | R2.2/R2.3 | `WaveDirectorTest` (5 cases) and `SessionControllerTest` (7 cases) make the two extracted flows testable without libGDX: `audio/AudioPlayback` and `save/RunSaveRepository` now sit between the gameplay systems and the libGDX-backed classes that open resources in their constructors | `_PENDING_` |
 
 ## Definition of done
 

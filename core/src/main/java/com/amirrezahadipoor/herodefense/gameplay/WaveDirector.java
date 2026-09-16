@@ -3,7 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.WorldLayout;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
@@ -38,7 +38,7 @@ public final class WaveDirector {
 
     private final Host host;
     private final WaveLifecycleSystem waveLifecycleSystem;
-    private final GameAudioManager audioManager;
+    private final AudioPlayback audioManager;
     private final ParticleSystem particleSystem;
     private final ScreenShakeSystem screenShakeSystem;
     private final RunPresentationSystem presentationSystem;
@@ -47,7 +47,7 @@ public final class WaveDirector {
     public WaveDirector(
         Host host,
         WaveLifecycleSystem waveLifecycleSystem,
-        GameAudioManager audioManager,
+        AudioPlayback audioManager,
         ParticleSystem particleSystem,
         ScreenShakeSystem screenShakeSystem,
         RunPresentationSystem presentationSystem,

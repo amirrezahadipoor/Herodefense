@@ -1,7 +1,7 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.FloatingCoinTextSystem;
@@ -47,7 +47,7 @@ public final class CombatSystem {
     private final FloatingDamageTextSystem floatingDamageTextSystem;
     private final HitStopSystem hitStopSystem;
     private final ScreenShakeSystem screenShakeSystem;
-    private final GameAudioManager audioManager;
+    private final AudioPlayback audioManager;
 
     public CombatSystem(
         HeroAutoAttackSystem heroAutoAttackSystem,
@@ -66,7 +66,7 @@ public final class CombatSystem {
         FloatingDamageTextSystem floatingDamageTextSystem,
         HitStopSystem hitStopSystem,
         ScreenShakeSystem screenShakeSystem,
-        GameAudioManager audioManager
+        AudioPlayback audioManager
     ) {
         this.heroAutoAttackSystem = heroAutoAttackSystem;
         this.bossSpecialAttackSystem = bossSpecialAttackSystem;

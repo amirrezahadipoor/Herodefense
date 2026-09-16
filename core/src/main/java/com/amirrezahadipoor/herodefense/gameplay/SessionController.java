@@ -4,7 +4,7 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.items.StarterLoadoutSystem;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.FloatingCoinTextSystem;
@@ -12,7 +12,7 @@ import com.amirrezahadipoor.herodefense.polish.FloatingDamageTextSystem;
 import com.amirrezahadipoor.herodefense.polish.HitStopSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
-import com.amirrezahadipoor.herodefense.save.LocalSaveRepository;
+import com.amirrezahadipoor.herodefense.save.RunSaveRepository;
 import com.amirrezahadipoor.herodefense.trials.TrialDraftSystem;
 
 /**
@@ -44,7 +44,7 @@ public final class SessionController {
     }
 
     private final Host host;
-    private final LocalSaveRepository saves;
+    private final RunSaveRepository saves;
     private final GameFlowController flow;
     private final StarterLoadoutSystem starterLoadoutSystem;
     private final RootNetworkSystem rootNetworkSystem;
@@ -56,11 +56,11 @@ public final class SessionController {
     private final WaveLifecycleSystem waveLifecycleSystem;
     private final RunPresentationSystem presentationSystem;
     private final OpeningCinematic openingCinematic;
-    private final GameAudioManager audioManager;
+    private final AudioPlayback audioManager;
 
     public SessionController(
         Host host,
-        LocalSaveRepository saves,
+        RunSaveRepository saves,
         GameFlowController flow,
         StarterLoadoutSystem starterLoadoutSystem,
         RootNetworkSystem rootNetworkSystem,
@@ -72,7 +72,7 @@ public final class SessionController {
         WaveLifecycleSystem waveLifecycleSystem,
         RunPresentationSystem presentationSystem,
         OpeningCinematic openingCinematic,
-        GameAudioManager audioManager
+        AudioPlayback audioManager
     ) {
         this.host = host;
         this.saves = saves;

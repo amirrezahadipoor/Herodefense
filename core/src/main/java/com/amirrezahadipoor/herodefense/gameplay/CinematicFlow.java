@@ -3,7 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
@@ -37,7 +37,7 @@ public final class CinematicFlow {
     private final ParticleSystem particleSystem;
     private final HeroAnimationController heroAnimationController;
     private final RunPresentationSystem presentationSystem;
-    private final GameAudioManager audioManager;
+    private final AudioPlayback audioManager;
 
     private float waterDropAccumulator;
 
@@ -50,7 +50,7 @@ public final class CinematicFlow {
         ParticleSystem particleSystem,
         HeroAnimationController heroAnimationController,
         RunPresentationSystem presentationSystem,
-        GameAudioManager audioManager
+        AudioPlayback audioManager
     ) {
         this.host = host;
         this.flow = flow;

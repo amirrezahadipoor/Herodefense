@@ -6,7 +6,7 @@ import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.Optional;
 
 /** Atomic-ish local Preferences save with one known-good fallback copy. */
-public final class LocalSaveRepository {
+public final class LocalSaveRepository implements RunSaveRepository {
     public static final String PREFERENCES_NAME = "hero-defense-local-save";
     private static final String PRIMARY_KEY = "run.primary";
     private static final String BACKUP_KEY = "run.backup";
@@ -26,7 +26,8 @@ public final class LocalSaveRepository {
         this.codec = codec;
     }
 
-    public void save(GameState state) {
+        @Override
+public void save(GameState state) {
         String nextJson = codec.encode(state);
         String previousJson = preferences.getString(PRIMARY_KEY, "");
         if (!previousJson.isBlank()) {
@@ -36,7 +37,8 @@ public final class LocalSaveRepository {
         preferences.flush();
     }
 
-    public Optional<GameState> load() {
+        @Override
+public Optional<GameState> load() {
         Optional<GameState> primary = decodeSafely(preferences.getString(PRIMARY_KEY, ""));
         if (primary.isPresent()) {
             return primary;
@@ -44,11 +46,13 @@ public final class LocalSaveRepository {
         return decodeSafely(preferences.getString(BACKUP_KEY, ""));
     }
 
-    public boolean hasSave() {
+        @Override
+public boolean hasSave() {
         return load().isPresent();
     }
 
-    public void clear() {
+        @Override
+public void clear() {
         preferences.remove(PRIMARY_KEY);
         preferences.remove(BACKUP_KEY);
         preferences.flush();
