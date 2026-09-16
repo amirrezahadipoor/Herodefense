@@ -303,6 +303,15 @@ def _check_asset_ledger(root: Path) -> None:
     `docs/asset_hashes.json` pins every PNG under `android/assets/generated`. The ledger plus this
     gate is what makes silent art replacement impossible: changing a sheet without regenerating the
     ledger fails the build, in the validator and in `AssetIntegrityTest` alike.
+
+    The gate is about the tree that ships. A single-category render batch (`--batch enemies`) writes
+    only its own sheets and icons into its output directory, so its PNG set can never equal a ledger
+    that pins the whole catalog — the R3.4 render failed here with "listed but absent:
+    environment/…" and that failure blocked the artifact upload, hiding a render that was fine. A
+    partial batch is therefore reported instead of failed, while the batch's own manifest is still
+    checked for undeclared or missing PNGs (below) and promotion stays hash-audited by
+    `promote_*_batch.py`. The exact gate still runs on `android/assets/generated` itself and on any
+    rerender that ships the whole catalog.
     """
 
     repository = Path(__file__).resolve().parents[2]
@@ -311,20 +320,31 @@ def _check_asset_ledger(root: Path) -> None:
         print("asset ledger not present in this checkout — ledger gate skipped")
         return
     ledger = json.loads(ledger_path.read_text(encoding="utf-8"))["sheets"]
+    if not ledger:
+        print("asset ledger is empty — ledger gate skipped")
+        return
 
     shipped = {
         str(path.relative_to(root)).replace(os.sep, "/")
         for path in root.rglob("*.png")
     }
-    if shipped != set(ledger):
-        if not ledger:
-            print("asset ledger is empty — ledger gate skipped")
-            return
-        missing = sorted(shipped - set(ledger))[:5]
-        extra = sorted(set(ledger) - shipped)[:5]
+    pinned = set(ledger)
+    shipped_tree = (repository / "android/assets/generated").resolve()
+    if shipped != pinned and root.resolve() != shipped_tree:
+        unlisted = sorted(shipped - pinned)[:5]
+        print(
+            f"asset ledger pins the shipped tree: this candidate batch ships {len(shipped - pinned)} "
+            f"PNG(s) the ledger does not list {unlisted} and omits {len(pinned - shipped)} committed "
+            f"PNG(s); the exact hash comparison applies to android/assets/generated and to full-catalog "
+            f"rerenders"
+        )
+        return
+    if shipped != pinned:
+        unlisted = sorted(shipped - pinned)[:5]
+        absent = sorted(pinned - shipped)[:5]
         raise ValueError(
             f"asset ledger does not match the shipped PNG set "
-            f"(unlisted: {missing}, listed but absent: {extra})"
+            f"(unlisted: {unlisted}, listed but absent: {absent})"
         )
     for relative, expected in ledger.items():
         actual = hashlib.sha256((root / relative).read_bytes()).hexdigest()

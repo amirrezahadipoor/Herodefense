@@ -67,16 +67,26 @@ jobs:
       - name: Validate frame, pivot, alpha, page, and decoded-memory contracts
         run: python3 tools/visual/validate_generated_assets.py /tmp/hero-defense-rendered
 
+      # The budget applies to the reviewable payload: sheets, atlases, per-asset metadata, manifest. The
+      # working frames under _frames/ are intermediates (every frame they contain is in the packed sheet at
+      # 1x, and their alpha/pivot contracts are validated by the step above), and with the doubled R3.4
+      # roster they would have eaten most of the 100 MB artifact cap for no review value.
       - name: Enforce generated-artifact size budget
         run: |
-          size=$(du -sb /tmp/hero-defense-rendered | cut -f1)
+          size=$(du -sb --exclude=_frames /tmp/hero-defense-rendered | cut -f1)
           test "$size" -lt 100000000
-          echo "Rendered batch bytes: $size"
+          echo "Reviewable payload bytes (working frames excluded): $size"
 
+      # A failed validation must not throw away the render that produced it: the R3.4 render was lost this
+      # way once (the ledger gate rejected a partial batch after ~35 minutes of rendering), and the only way
+      # to look at the failure was to render again. The job still fails; the artifact is just evidence.
       - name: Upload reviewable render batch
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: hero-defense-${{ inputs.batch }}-sprites
-          path: /tmp/hero-defense-rendered/
+          path: |
+            /tmp/hero-defense-rendered/
+            !/tmp/hero-defense-rendered/_frames/
           if-no-files-found: error
           retention-days: 14
