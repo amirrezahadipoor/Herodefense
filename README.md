@@ -9,7 +9,10 @@ Android-only single-hero action-defense game made with Java and libGDX.
 
 There are intentionally no desktop, iOS, or browser modules. Input is touch-only.
 
-See [`ROADMAP.md`](ROADMAP.md) for tracked scope and progress.
+See [`ROADMAP.md`](ROADMAP.md) for tracked scope and progress, and
+[`docs/ROADMAP_TO_1000.md`](docs/ROADMAP_TO_1000.md) for the plan that answers the independent
+audit of 2026-09-16 ([`docs/audit/AUDIT_2026-09-16.md`](docs/audit/AUDIT_2026-09-16.md),
+550/1000). Until the roadmap is complete, no document in this repository claims a score.
 
 ## Build cache policy
 

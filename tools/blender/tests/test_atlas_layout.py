@@ -31,14 +31,22 @@ class AtlasLayoutTest(unittest.TestCase):
 
     def test_supersampled_batch_spills_deterministically_across_pages(self) -> None:
         pages, regions = plan_grid(self.CLIPS, 512)
+        repeat_pages, repeat_regions = plan_grid(self.CLIPS, 512)
 
-        # Phase 54: with MAX 4096, capacity 64, so 28 frames fits in 1 page, not 2
-        # Keep check that pages are bounded and deterministic
-        self.assertTrue(len(pages) >= 1)
+        # Phase 54 raised MAX_ATLAS_SIZE to 4096, so the 28-frame batch now fits on one page.
+        # The contract is still exact: deterministic plan, bounded pages, frames in clip order.
+        self.assertEqual(1, len(pages))
+        self.assertEqual(pages, repeat_pages, "atlas plan must be deterministic")
+        self.assertEqual(regions, repeat_regions, "atlas regions must be deterministic")
         self.assertTrue(all(page["width"] <= MAX_ATLAS_SIZE for page in pages))
         self.assertTrue(all(page["height"] <= MAX_ATLAS_SIZE for page in pages))
-        self.assertEqual({0} if len(pages) == 1 else {0, 1}, {region["page"] for frames in regions.values() for region in frames})
+        self.assertEqual({0}, {region["page"] for frames in regions.values() for region in frames})
         self.assertEqual(list(range(10)), [frame["index"] for frame in regions["death"]])
+        self.assertEqual(
+            sum(len(frames) for frames in regions.values()),
+            sum(self.CLIPS.values()),
+            "every requested frame must be placed exactly once",
+        )
 
     def test_rejects_a_frame_larger_than_a_page(self) -> None:
         with self.assertRaises(ValueError):

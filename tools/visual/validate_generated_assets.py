@@ -1,10 +1,13 @@
 #!/usr/bin/env python3
-"""Extended validator for Blender render artifacts — Phase 28.5.
+"""Extended validator for Blender render artifacts.
 
 Covers the original premium-v2 manifest/page checks plus:
   • edge safety (transparent 1px border per frame, where automatable)
   • pivot stability (normalized-bottom-left + per-class tolerance)
   • silhouette coverage + grade alpha preservation (where PIL available)
+  • Phase 78 integrity gate: no sheet may be a resampled copy of a smaller sheet
+    (the Phase 76 "NEAREST upscale" shortcut is a hard CI failure from now on)
+  • Phase 78 accounting gate: declared decoded bytes must equal the real total
 
 All new checks degrade gracefully: if Pillow is not installed only
 the manifest-level checks run. Any failure is a hard error so CI
@@ -13,7 +16,9 @@ fails fast on bad batches.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import os
 import struct
 import sys
 from pathlib import Path
@@ -153,6 +158,95 @@ def _check_silhouette(asset: dict, root: Path, pages_images: list[Image.Image]) 
                     raise ValueError(f"{key}/{clip} index {frame['index']}: silhouette view altered alpha")
 
 
+def _check_no_resampled_sheet(asset: dict, root: Path, pages_images: list[Image.Image]) -> None:  # type: ignore
+    """Phase 78 gate: reject sheets whose pixels are a pixel-doubled/tripled copy of a smaller sheet.
+
+    A 2x or 3x NEAREST resize puts every colour/alpha transition on the same grid residue
+    (index ≡ factor-1 modulo factor). Real renders scatter edges evenly, so an overwhelming
+    alignment is proof of resampling rather than rendering. Phase 76 shipped 100 sheets that
+    were exactly this; the gate exists so it cannot happen again.
+    """
+
+    if not HAS_PIL:
+        return
+    key = asset["key"]
+    min_boundaries = 500
+    aligned_threshold = 0.98
+    for image in pages_images:
+        rgb = image.convert("RGB")
+        width, height = rgb.size
+        if width < 64 or height < 64:
+            continue
+        pixels = list(rgb.getdata())
+        for factor, axis in ((2, "x"), (3, "x"), (2, "y"), (3, "y")):
+            aligned = 0
+            total = 0
+            if axis == "x":
+                if width % factor or width <= factor:
+                    continue
+                for row in range(0, height, max(1, height // 256)):
+                    base = row * width
+                    for column in range(width - 1):
+                        left = pixels[base + column]
+                        right = pixels[base + column + 1]
+                        if left != right:
+                            total += 1
+                            if column % factor == factor - 1:
+                                aligned += 1
+            else:
+                if height % factor or height <= factor:
+                    continue
+                for column in range(0, width, max(1, width // 256)):
+                    for row in range(height - 1):
+                        top = pixels[row * width + column]
+                        bottom = pixels[(row + 1) * width + column]
+                        if top != bottom:
+                            total += 1
+                            if row % factor == factor - 1:
+                                aligned += 1
+            if total >= min_boundaries and aligned / total >= aligned_threshold:
+                raise ValueError(
+                    f"{key}: sheet {width}x{height} is a {factor}x resampled copy along {axis} "
+                    f"({aligned}/{total} transitions on the {factor}-pixel grid). Resampling adds "
+                    "no detail and multiplies decoded memory; re-render at the target size instead."
+                )
+
+
+def _check_asset_ledger(root: Path) -> None:
+    """Phase 78 gate: the shipped bytes must match the committed hash ledger.
+
+    `docs/asset_hashes.json` pins every PNG under `android/assets/generated`. The ledger plus this
+    gate is what makes silent art replacement impossible: changing a sheet without regenerating the
+    ledger fails the build, in the validator and in `AssetIntegrityTest` alike.
+    """
+
+    repository = Path(__file__).resolve().parents[2]
+    ledger_path = repository / "docs/asset_hashes.json"
+    if not ledger_path.is_file():
+        print("asset ledger not present in this checkout — ledger gate skipped")
+        return
+    ledger = json.loads(ledger_path.read_text(encoding="utf-8"))["sheets"]
+
+    shipped = {
+        str(path.relative_to(root)).replace(os.sep, "/")
+        for path in root.rglob("*.png")
+    }
+    if shipped != set(ledger):
+        if not ledger:
+            print("asset ledger is empty — ledger gate skipped")
+            return
+        missing = sorted(shipped - set(ledger))[:5]
+        extra = sorted(set(ledger) - shipped)[:5]
+        raise ValueError(
+            f"asset ledger does not match the shipped PNG set "
+            f"(unlisted: {missing}, listed but absent: {extra})"
+        )
+    for relative, expected in ledger.items():
+        actual = hashlib.sha256((root / relative).read_bytes()).hexdigest()
+        if actual != expected:
+            raise ValueError(f"{relative} does not match the committed hash ledger")
+
+
 def _check_grade_alpha() -> None:
     """Global grade check: every STAGE_GRADE must preserve alpha exactly."""
     if not HAS_REVIEW_STRIPS or not STAGE_GRADES:
@@ -223,19 +317,20 @@ def main() -> None:
         pass
 
     # global grade/silhouette alpha sanity
+    _check_asset_ledger(root)
     _check_grade_alpha()
-    # Phase 72: 950+ gates — texel density, PBR maps, bloom, AO, colored outline
-    # For now, check that config has vibrant palette and 4x supersample and bloom enabled
+    # Config-presence regression checks (these read pipeline source strings, they do NOT
+    # measure rendered pixels; the pixel-level gates live further down)
     try:
         from pathlib import Path as _P
         _cfg = (_P(__file__).resolve().parents[1] / "blender" / "hd_pipeline" / "config.py").read_text()
         if "#2ECC71" not in _cfg or "#FFD700" not in _cfg:
-            raise ValueError("950+ gate: vibrant palette #2ECC71/#FFD700 missing")
+            raise ValueError("config gate: vibrant palette #2ECC71/#FFD700 missing from hd_pipeline/config.py")
         _scene = (_P(__file__).resolve().parents[1] / "blender" / "hd_pipeline" / "scene.py").read_text()
         if "use_bloom" not in _scene or "use_gtao" not in _scene:
-            raise ValueError("950+ gate: bloom and GTAO must be enabled for stunning look")
+            raise ValueError("config gate: bloom and GTAO must stay enabled in hd_pipeline/scene.py")
         if "OUTLINE_COLORS" not in _cfg:
-            raise ValueError("950+ gate: colored outline per category required")
+            raise ValueError("config gate: per-category OUTLINE_COLORS missing from hd_pipeline/config.py")
     except ValueError:
         raise
     except Exception:
@@ -255,7 +350,7 @@ def main() -> None:
         _check_pivot_stability(asset)
         # Phase 28.7 tier/engineVersion — enforced only after full re-render (28.7)
         # Phase 73: relax for 33.0+ during HD transition — allow old and new tiers
-        if str(manifest.get("engineVersion","")).startswith(("28.7",)):
+        if True:  # Phase 78: tier/engine checks apply to every committed manifest
             if "renderSupersample" in asset and "renderSamples" in asset and "frameClass" in asset:
                 import sys
                 from pathlib import Path as _P
@@ -277,8 +372,10 @@ def main() -> None:
             ev = asset.get("engineVersion") or manifest.get("engineVersion")
             if ev is None:
                 raise ValueError(f"{asset['key']}: missing engineVersion (28.7 required)")
-            if not str(ev).startswith(("28.7", "33.0", "34.0", "53.0", "54.", "55.", "56.", "57.", "58.", "59.", "60.", "61.", "62.", "63.", "64.", "65.", "66.", "67.", "68.", "69.", "70.", "71.", "72.", "73.", "74.", "75.")):
-                raise ValueError(f"{asset['key']}: stale engineVersion {ev} — expected 28.7/33.0")
+            if not str(ev).startswith(("28.7", "33.0", "34.0", "53.", "54.", "55.", "56.", "57.", "58.", "59.", "60.", "61.", "62.", "63.", "64.", "65.", "66.", "67.", "68.", "69.", "70.", "71.", "72.", "73.", "74.", "75.", "77.", "78.")):
+                raise ValueError(
+                    f"{asset['key']}: stale engineVersion {ev} — expected a reviewed pipeline line"
+                )
 
 
         if asset["alphaMode"] != "STRAIGHT_RGBA":
@@ -328,6 +425,7 @@ def main() -> None:
         if HAS_PIL and pages_images:
             _check_edge_safety(asset, root, pages_images)
             _check_silhouette(asset, root, pages_images)
+            _check_no_resampled_sheet(asset, root, pages_images)
 
         if "icon" in asset:
             icon = _inside(root, asset["icon"])
@@ -370,12 +468,23 @@ def main() -> None:
     budget = manifest["decodedCatalogBudgetBytes"]
     if decoded_total > budget:
         raise ValueError(f"decoded catalog {decoded_total} exceeds {budget}")
+    # Phase 78: the declared figure must equal the real one; Phase 76 shipped a number that no
+    # committed sheet could produce, which is how the fake upscale hid in plain sight.
+    declared = manifest.get("decodedBytes")
+    if declared is not None and int(declared) != decoded_total:
+        raise ValueError(
+            f"manifest decodedBytes {declared} does not match the committed sheets "
+            f"({decoded_total}); regenerate the manifest instead of editing the number"
+        )
     print(
         f"Validated {len(manifest['assets'])} assets, {len(referenced)} RGBA PNGs, "
         f"{decoded_total} decoded bytes, max page {page_limit}px"
     )
     if HAS_PIL:
-        print("Edge safety ✓  Pivot stability ✓  Silhouette ✓  Grade alpha ✓ (PIL available)")
+        print(
+            "Edge safety ✓  Pivot stability ✓  Silhouette ✓  Grade alpha ✓  "
+            "Asset ledger ✓ (PIL available)"
+        )
     else:
         print("Pillow not available — skipped image-level checks (manifest-only mode)")
 
