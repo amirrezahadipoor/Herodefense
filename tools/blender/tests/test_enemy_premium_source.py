@@ -63,6 +63,43 @@ class EnemyPremiumSourceTest(unittest.TestCase):
                 continue
             self.assertIn(f'"{asset.builder}": build_{asset.builder}', registry)
 
+    def test_every_enemy_idle_keys_a_moving_beat(self) -> None:
+        """Proxy guard for the review gate's motion floor, checked at the source.
+
+        `create_enemy_batch_review.py` requires five distinct rendered frames out of the six an idle clip holds.
+        The first eight-enemy batch failed on exactly that: the bark stalker keyed its crouch twice in a row, so
+        the last three frames rendered identically and the audit counted four. Whether rendered frames differ
+        can only be measured on pixels, but the authored keys can be read here: a repeated consecutive key is
+        always a dead beat, and it is what the mistake looked like in source.
+        """
+        source = (BLENDER_ROOT / "hd_pipeline" / "rig.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        functions = {node.name: node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
+        authors = {
+            "rootling": "_author_rootling_idle",
+            "stonekin": "_author_stonekin_idle",
+            "gloom_wolf": "_author_gloom_wolf_idle",
+            "fungal_brute": "_author_fungal_brute_idle",
+            "bark_stalker": "_author_bark_stalker_idle",
+            "sap_hound": "_author_sap_hound_idle",
+            "husk_warden": "_author_husk_warden_idle",
+            "bramble_thrall": "_author_bramble_thrall_idle",
+        }
+        for key, name in authors.items():
+            self.assertIn(name, functions, f"{key}: no idle author")
+            poses = [
+                ast.get_source_segment(source, node.args[2])
+                for node in ast.walk(functions[name])
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "_key"
+                and len(node.args) >= 3
+            ]
+            self.assertGreaterEqual(len(poses), 3, f"{key}: idle needs at least three keys")
+            self.assertGreaterEqual(len(set(poses)), 2, f"{key}: idle never moves")
+            for first, second in zip(poses, poses[1:]):
+                self.assertNotEqual(first, second, f"{key}: idle keys the same pose twice in a row")
+
     def test_new_enemy_clips_keep_the_ground_line(self) -> None:
         """Proxy guard for the frame-border rule the validator enforces on rendered pixels.
 

@@ -50,7 +50,19 @@ def master_asset(frames: list[tuple[int, int]], key: str = "test_creature") -> d
 def write_master(root: Path, asset: dict) -> None:
     (root / "sprites").mkdir(parents=True, exist_ok=True)
     (root / "asset_manifest.json").write_text(
-        json.dumps({"maxAtlasPageSize": 4096, "pipelineVersion": 4, "assets": [asset]}), encoding="utf-8"
+        json.dumps(
+            {
+                "maxAtlasPageSize": 4096,
+                "pipelineVersion": 4,
+                "renderSupersample": 3,
+                "opaqueRenderSamples": 32,
+                "renderTierTop": [4, 48],
+                "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+                "generatedCommit": "0" * 40,
+                "assets": [asset],
+            }
+        ),
+        encoding="utf-8",
     )
     Image.new("RGBA", (asset["sheetWidth"], asset["sheetHeight"]), (10, 20, 30, 255)).save(
         root / asset["sheets"][0]["file"]
@@ -104,6 +116,38 @@ class PublishRuntimeTierTest(unittest.TestCase):
             with Image.open(runtime_dir / entry["sheets"][0]["file"]) as sheet:
                 self.assertEqual((FRAME * 2, FRAME), sheet.size)
             self.assertEqual(1, result["decodedBytes"] // (FRAME * 2 * FRAME * 4))
+
+    def test_top_level_ships_the_reviewed_contract_and_keeps_the_master_truth(self) -> None:
+        with tempfile.TemporaryDirectory() as workspace:
+            master_dir, runtime_dir = Path(workspace) / "master", Path(workspace) / "runtime"
+            write_master(master_dir, master_asset([(0, 0), (1, 0)]))
+            tier.publish(master_dir, runtime_dir, reviewed_manifest(self.reviewed_grid))
+            manifest = json.loads((runtime_dir / "asset_manifest.json").read_text())
+            entry = manifest["assets"][0]
+            # What ships is fingerprinted at the reviewed runtime tier, so the runtime manifest reads like the
+            # other 103 committed assets and the promotion tools' fingerprint checks still mean something.
+            self.assertEqual((2, 28), (manifest["renderSupersample"], manifest["opaqueRenderSamples"]))
+            self.assertEqual([3, 36], manifest["renderTierTop"])
+            self.assertEqual(2_048, manifest["maxAtlasPageSize"])
+            self.assertEqual("33.0-studio-v3-3x36-full", entry["engineVersion"])
+            # ... and what produced it is on the record, per asset and per batch: the 3x/32 master render is not
+            # hidden behind the runtime numbers.
+            self.assertEqual(3, entry["masterRender"]["renderSupersample"])
+            self.assertEqual(32, entry["masterRender"]["renderSamples"])
+            self.assertEqual("73.0-studio-v5-hd-pbr-4x48-pbr", entry["masterRender"]["engineVersion"])
+            self.assertEqual(4, manifest["masterRender"]["pipelineVersion"])
+            self.assertEqual([4, 48], manifest["masterRender"]["renderTierTop"])
+            self.assertEqual("73.0-studio-v5-hd-pbr-4x48-pbr", manifest["masterRender"]["engineVersion"])
+
+    def test_resampling_fringe_is_cleared_without_touching_the_silhouette(self) -> None:
+        # A resampling kernel spreads a few percent of alpha past the geometry. That halo is invisible, but it
+        # walks a frame towards its atlas cell border, so the LOD erases exactly it: nothing at 0, nothing at the
+        # anti-aliased edge (4 % and up).
+        halo = Image.new("RGBA", (5, 1))
+        halo.putdata([(10, 10, 10, 0), (10, 10, 10, 3), (10, 10, 10, 7), (10, 10, 10, 8), (10, 10, 10, 255)])
+        cleared = tier.clear_resampling_fringe(halo)
+        self.assertEqual(2, cleared)
+        self.assertEqual([0, 0, 0, 8, 255], [pixel[3] for pixel in halo.getdata()])
 
     def test_a_grid_that_is_not_the_reviewed_one_is_refused(self) -> None:
         with tempfile.TemporaryDirectory() as workspace:

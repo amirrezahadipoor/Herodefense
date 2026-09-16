@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Audit and render exhaustive review evidence for the four regular enemies."""
+"""Audit and render exhaustive review evidence for the eight regular enemies."""
 from __future__ import annotations
 
 import argparse
@@ -33,6 +33,13 @@ ENEMIES = (
     ("stonekin", "Stonekin", "stonekin-rune-bulwark-v2", "premium-heavy-humanoid-v2", "stonekin-juggernaut-v2"),
     ("gloom_wolf", "Gloom Wolf", "gloom-wolf-shadow-stalker-v2", "premium-quadruped-mapped-v2", "gloom-wolf-pouncer-v2"),
     ("fungal_brute", "Fungal Brute", "fungal-brute-spore-bruiser-v2", "premium-heavy-humanoid-v2", "fungal-brute-brawler-v2"),
+    # R3.4: the roster doubles. These four have no predecessor render, which the audit records
+    # explicitly (`predecessor: "none"`) instead of inventing a comparison: their readability sheet
+    # is the new master against itself, and the review document says so.
+    ("bark_stalker", "Bark Stalker", "bark-stalker-moss-climber-v2", "premium-humanoid-v2", "bark-stalker-lurker-v2"),
+    ("sap_hound", "Sap Hound", "sap-hound-resin-runner-v2", "premium-quadruped-mapped-v2", "sap-hound-runner-v2"),
+    ("husk_warden", "Husk Warden", "husk-warden-shield-bearer-v2", "premium-heavy-humanoid-v2", "husk-warden-bulwark-v2"),
+    ("bramble_thrall", "Bramble Thrall", "bramble-thrall-thorn-lumberer-v2", "premium-heavy-humanoid-v2", "bramble-thrall-lumber-v2"),
 )
 EXPECTED_CLIPS = {"idle": 6, "attack": 8, "hit": 4, "death": 10}
 MIN_UNIQUE = {"idle": 5, "attack": 7, "hit": 3, "death": 9}
@@ -51,9 +58,12 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
 
     audit = audit_batch(baseline, candidate)
+    baseline_keys = {asset["key"] for asset in read_json(baseline / "asset_manifest.json")["assets"]}
     for key, label, *_ in ENEMIES:
-        old = CharacterFrames(baseline, key)
         new = CharacterFrames(candidate, key)
+        # A first render has no predecessor to compare against: its readability sheet is the new master against
+        # itself, exactly as the audit records it (`predecessor: "none"`).
+        old = CharacterFrames(baseline, key) if key in baseline_keys else new
         create_motion_sheet(new, label, output / f"{key}_full_motion.png")
         create_readability_sheet(old, new, label, output / f"{key}_readability.png")
     create_lineup_sheet(baseline, candidate, audit, output / "regular_enemies_lineup.png")
@@ -104,14 +114,12 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
     total_decoded = 0
 
     for key, label, revision, rig_profile, animation_profile in ENEMIES:
-        if key not in baseline_entries:
-            raise ValueError(f"Baseline manifest is missing {key}")
         entry = candidate_entries[key]
+        first_render = key not in baseline_entries
         validate_metadata(entry, key, revision, rig_profile, animation_profile, required_bones)
         metadata_entry = read_json(candidate / "sprites" / f"{key}.json")
         if metadata_entry != entry:
             raise ValueError(f"{key} manifest and per-asset metadata differ")
-        baseline_character = CharacterFrames(baseline, key)
         candidate_character = CharacterFrames(candidate, key)
         clip_records = {}
         asset_margins = {side: 10_000 for side in global_margins}
@@ -160,14 +168,16 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             }
             total_frames += expected_count
 
-        baseline_sheet = baseline / baseline_entries[key]["sheet"]
         candidate_sheet = candidate / entry["sheet"]
         candidate_atlas = candidate / entry["atlas"]
         candidate_metadata = candidate / "sprites" / f"{key}.json"
-        baseline_hash = sha256(baseline_sheet)
         candidate_hash = sha256(candidate_sheet)
-        if baseline_hash == candidate_hash:
-            raise ValueError(f"{key} candidate sheet is byte-identical to the baseline")
+        if first_render:
+            baseline_hash = candidate_hash
+        else:
+            baseline_hash = sha256(baseline / baseline_entries[key]["sheet"])
+            if baseline_hash == candidate_hash:
+                raise ValueError(f"{key} candidate sheet is byte-identical to the baseline")
         if len(set(all_hashes)) < 20:
             raise ValueError(f"{key} has insufficient full-set motion diversity")
         for sheet in entry["sheets"]:
@@ -176,6 +186,7 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
         records.append({
             "key": key,
             "label": label,
+            "predecessor": "none" if first_render else "premium-v2",
             "baselineSheetSha256": baseline_hash,
             "candidateSheetSha256": candidate_hash,
             "candidateAtlasSha256": sha256(candidate_atlas),
@@ -191,7 +202,9 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             "clips": clip_records,
         })
 
-    decoded_limit = 32 * 1024 * 1024
+    # The batch doubled from four enemies to eight (R3.4), so the per-batch decoded budget doubles too:
+    # 8 x 1920 x 768 x 4 = 47,185,920 bytes, and the committed budget carries 1 MiB of headroom over it.
+    decoded_limit = 48 * 1024 * 1024
     if total_decoded > decoded_limit:
         raise ValueError(f"Enemy batch decodes to {total_decoded} bytes, over {decoded_limit}")
     return {
@@ -264,7 +277,13 @@ def validate_metadata(
 
 
 def create_lineup_sheet(baseline: Path, candidate: Path, audit: dict, output: Path) -> None:
-    width, height = 1_900, 1_390
+    """One shared scale sheet for the whole roster: eight enemies, four per block.
+
+    An enemy with no predecessor render (R3.4's four additions) shows its own master in the baseline row,
+    because there is nothing older to show; the audit's `predecessor` field records which is which.
+    """
+    columns = 4
+    width, height = 1_900, 1_900
     canvas = canvas_base(width, height, "REGULAR ENEMIES — PREMIUM V2 LINEUP & GAMEPLAY HIERARCHY")
     draw = ImageDraw.Draw(canvas)
     text(
@@ -277,24 +296,34 @@ def create_lineup_sheet(baseline: Path, candidate: Path, audit: dict, output: Pa
     )
     row_labels = ("BASELINE", "PREMIUM IDLE", "ATTACK IMPACT", "SILHOUETTE")
     row_positions = (150, 380, 610, 840)
-    for label, y in zip(row_labels, row_positions):
-        text(draw, (30, y + 100), label, 18, bold=True, anchor="lm", color="#F2D58A")
+    baseline_keys = {
+        asset["key"] for asset in read_json(baseline / "asset_manifest.json")["assets"]
+    }
+    for block in range((len(ENEMIES) + columns - 1) // columns):
+        block_top = block * 880
+        for label, y in zip(row_labels, row_positions):
+            text(draw, (30, block_top + y + 100), label, 18, bold=True, anchor="lm", color="#F2D58A")
     audit_by_key = {entry["key"]: entry for entry in audit["assets"]}
-    for column, (key, label, *_rest) in enumerate(ENEMIES):
-        old = CharacterFrames(baseline, key)
+    for index, (key, label, *_rest) in enumerate(ENEMIES):
+        block = index // columns
+        column = index % columns
+        block_top = block * 880
         new = CharacterFrames(candidate, key)
+        old = CharacterFrames(baseline, key) if key in baseline_keys else new
         x = 200 + column * 420
-        text(draw, (x + 180, 128), label.upper(), 22, bold=True, anchor="ma")
+        text(draw, (x + 180, block_top + 128), label.upper(), 22, bold=True, anchor="ma")
         frames = (old.frame("idle", 0), new.frame("idle", 0), new.frame("attack", 4))
         modes = ("checker", "checker", "checker", "silhouette")
         for y, sprite, mode in zip(row_positions, frames + (frames[1],), modes):
             card = presentation_card(sprite, mode, 360, 205)
-            canvas.paste(card.convert("RGB"), (x, y))
-            draw.rounded_rectangle((x, y, x + 360, y + 205), 10, outline="#58706A", width=2)
+            canvas.paste(card.convert("RGB"), (x, block_top + y))
+            draw.rounded_rectangle(
+                (x, block_top + y, x + 360, block_top + y + 205), 10, outline="#58706A", width=2
+            )
         record = audit_by_key[key]
         text(
             draw,
-            (x + 180, 1302),
+            (x + 180, block_top + 1302),
             f"{record['triangles']:,} triangles  •  {record['meshParts']} purposeful parts",
             15,
             anchor="ma",
@@ -302,15 +331,15 @@ def create_lineup_sheet(baseline: Path, candidate: Path, audit: dict, output: Pa
         )
         text(
             draw,
-            (x + 180, 1327),
+            (x + 180, block_top + 1327),
             f"{record['materialCount']} coherent materials  •  25-bone animated rig",
             15,
             anchor="ma",
             color="#AFC5BE",
         )
     grade = grade_row(CharacterFrames(candidate, ENEMIES[0][0]).frame("idle", 0))
-    canvas.paste(grade.convert("RGB"), ((width - grade.width) // 2, 1075))
-    text(draw, ((width // 2), 1060), f"STAGE GRADE — {ENEMIES[0][1].upper()} (REPRESENTATIVE)",
+    canvas.paste(grade.convert("RGB"), ((width - grade.width) // 2, 1795))
+    text(draw, ((width // 2), 1780), f"STAGE GRADE — {ENEMIES[0][1].upper()} (REPRESENTATIVE)",
          16, bold=True, anchor="ma", color="#F2D58A")
     canvas.save(output, optimize=True)
 

@@ -718,9 +718,19 @@ def _author_bark_stalker_idle(armature: bpy.types.Object, count: int) -> None:
         "upper_arm.R": (0.03, 0.04, 0.10), "forearm.R": (-0.05, 0.0, 0.04),
         "thigh.L": (-0.04, 0.0, 0.03), "thigh.R": (0.06, 0.0, -0.03),
     }
+    # The third key used to repeat the crouch, which made the last three rendered frames of the six-frame idle
+    # identical and failed the review gate ("bark_stalker idle has only 4 unique visible frames"; the floor is
+    # five of six). A stalker that settles deeper before it loops reads better and measures correctly.
+    coil = {
+        "pelvis": (0.05, 0.0, -0.10), "spine": (0.08, 0.0, -0.14), "chest": (0.06, 0.0, -0.08),
+        "head": (-0.14, 0.06, 0.22), "neck": (0.07, 0.0, 0.05),
+        "upper_arm.L": (0.14, -0.12, -0.30), "forearm.L": (-0.16, 0.0, -0.13),
+        "upper_arm.R": (0.08, 0.10, 0.24), "forearm.R": (-0.12, 0.0, 0.09),
+        "thigh.L": (-0.11, 0.0, 0.07), "thigh.R": (0.13, 0.0, -0.07),
+    }
     _key(armature, 1, crouch, {"root": (0.0, 0.02, -0.03)})
     _key(armature, 1 + count // 3, scan, {"root": (0.0, 0.01, -0.015)})
-    _key(armature, 1 + (2 * count) // 3, crouch, {"root": (0.0, 0.02, -0.03)})
+    _key(armature, 1 + (2 * count) // 3, coil, {"root": (0.0, 0.02, -0.045)})
     _key(armature, count, crouch, {"root": (0.0, 0.02, -0.03)})
 
 
