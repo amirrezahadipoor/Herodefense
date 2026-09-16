@@ -1533,6 +1533,12 @@ BUILDERS: dict[str, Callable[[], BuiltModel]] = {
     "stonekin": build_stonekin,
     "gloom_wolf": build_gloom_wolf,
     "fungal_brute": build_fungal_brute,
+    # R3.4: the doubled regular-enemy roster. A builder that is authored but not registered here renders as
+    # "Unknown character builder" in CI, which is exactly what the first attempt at this batch did.
+    "bark_stalker": build_bark_stalker,
+    "sap_hound": build_sap_hound,
+    "husk_warden": build_husk_warden,
+    "bramble_thrall": build_bramble_thrall,
     "ancient_golem": build_ancient_golem,
     "thorn_matriarch": build_thorn_matriarch,
     "ember_wyrm": build_ember_wyrm,

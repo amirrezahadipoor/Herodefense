@@ -47,6 +47,21 @@ class EnemyPremiumSourceTest(unittest.TestCase):
             for value in provenance:
                 self.assertIn(value, segment)
 
+    def test_every_configured_enemy_is_a_registered_builder(self) -> None:
+        """The pipeline dispatches through BUILDERS; authoring a function is not enough.
+
+        The first R3.4 render attempt failed in CI with "Unknown character builder: bark_stalker" because the
+        four builders existed and the batch listed them, but the registry dict was not updated. This case is
+        the guard for that mistake.
+        """
+        models = (BLENDER_ROOT / "hd_pipeline" / "models.py").read_text(encoding="utf-8")
+        registry_start = models.index("BUILDERS: dict[str, Callable[[], BuiltModel]] = {")
+        registry = models[registry_start : models.index("}", registry_start)]
+        for asset in REGULAR_CHARACTERS:
+            if asset.family != "enemy":
+                continue
+            self.assertIn(f'"{asset.builder}": build_{asset.builder}', registry)
+
     def test_every_enemy_profile_authors_all_four_clips(self) -> None:
         source = (BLENDER_ROOT / "hd_pipeline" / "rig.py").read_text(encoding="utf-8")
         tree = ast.parse(source)
