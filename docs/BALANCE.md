@@ -402,3 +402,38 @@ What the band says, and what it found:
   to be found without spending the spike headroom the trial and tier ceilings need (see R4.6), which is why R4.7 is
   an item with numbers rather than a paragraph of intent.
 
+## The telegraph contract (Phase 91, roadmap R4.2)
+
+A boss special is the only attack in this game that announces itself, so what the announcement promises has to
+hold for every encounter rather than for the first golem. `BossTelegraphContractTest` writes that promise down as
+five rules and checks them over all four identities, the forty encounters of a run, ascension tiers 0/3/6/10 and
+both vigils — 224 combinations for the first rule alone — plus the stun, the stutter and the double strike.
+
+| the promise | how it is checked | what it measures |
+|---|---|---|
+| every boss warns for the reference window | the window is compared against `BossFightScript.REFERENCE_TELEGRAPH_SECONDS` and the encounter's own script, at every tier and in both vigils | **0.50 s** everywhere |
+| the special lands when the window closes, never before | the window is walked in twenty steps of 0.05 s and the hero's health is read after each one | untouched for the first nineteen, hit by the twentieth |
+| one warning carries exactly the hits its script authorises | the landed damage is compared against boss damage x the identity's authored per-strike figure x the script's multiplier x its hit count | one strike, or two for `TWIN_TELEGRAPH` — never a third |
+| the ladder buys power and never reaction time | tier 0 against tier 10 on the same identity and encounter | the same window, a strictly harder hit |
+| both vigils promise the same thing | the whole sweep runs in `STANDARD` and in `BRIEF` | identical windows |
+
+The roster behind it, read out of `BossSpecialAttackSystem` and measured with a probe over the forty encounters:
+
+| identity | reach | cycle | per-strike damage | strikes per warning |
+|---|---|---|---|---|
+| `ANCIENT_GOLEM` | 145 | 5.5 s | 1.60x boss damage | 1 |
+| `THORN_MATRIARCH` | 210 | 5.0 s | 0.50x | 1 |
+| `EMBER_WYRM` | 250 | 4.5 s | 0.55x twice inside one strike (1.10x) | 1 |
+| `VOID_KNIGHT` | 480 | 4.0 s | 1.25x | 1 |
+
+Three details the sweep had to get right, all of them measured rather than assumed:
+
+* **The dodge die is rolled when the warning starts.** The roll is drawn at trigger and spent at detonation, so the
+  outcome cannot change while the player is reading the tell, and a stun cannot re-roll it.
+* **A stun holds the warning instead of cancelling it.** A stunned boss's window stops counting; when the stun ends
+  the same warning finishes and lands once. It is never re-rolled and never thrown away.
+* **A big health pool hides small differences.** These measurements hold the hero at 1000 health, because a float at
+  100000 has a spacing of 1/128: a 1.31-health slam would land as 1.3125 and the tier-10 bonus at the first
+  encounters — about one percent of the boss's damage, `+0.00025` per tier compounding — would vanish into the
+  rounding. That is also why the earliest bosses make the ladder's damage bump invisible in play (R4.7).
+
