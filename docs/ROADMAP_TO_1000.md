@@ -1,6 +1,6 @@
 # Roadmap to a real 1000
 
-> **خلاصه فارسی (۳ خط):** امتیاز مرجع این مخزن ۵۵۰ از ۱۰۰۰ است. این فایل برنامه‌ی بستن کسرهاست؛ هر تیک فقط با شاهد قابل بازتولید زده می‌شود و هیچ تستی برای سبز شدن شل نمی‌شود. دسته‌ی «آماده‌سازی انتشار» بنابر نظر صاحب پروژه بیرون از محدوده است، پس سقف این نقشه راه **۹۲۰ از ۱۰۰۰** است (۸۰ امتیاز آن دسته). ریزمترها و معیار پذیرش هر فاز، پایین‌تر در بخش‌های `R1`–`R8` آمده است.
+> **خلاصه فارسی (۳ خط):** امتیاز مرجع این مخزن ۵۵۰ از ۱۰۰۰ است. عدد اصلی گزارش، «نمرهٔ تجربهٔ بازی» است (بخش ۴): نه فقط کد، بلکه دارایی‌ها، حجم محتوا، زمان بازی، نوآوری، جذابیت، رمز و راز و روایت. کارِ انتشار/درآمدزایی بیرون از محدوده است. این فایل برنامه‌ی بستن کسرهاست؛ هر تیک فقط با شاهد قابل بازتولید زده می‌شود و هیچ تستی برای سبز شدن شل نمی‌شود. دسته‌ی «آماده‌سازی انتشار» بنابر نظر صاحب پروژه بیرون از محدوده است، پس سقف این نقشه راه **۹۲۰ از ۱۰۰۰** است (۸۰ امتیاز آن دسته). ریزمترها و معیار پذیرش هر فاز، پایین‌تر در بخش‌های `R1`–`R8` آمده است.
 
 **Repository:** `amirrezahadipoor/Herodefense` · **Baseline commit:** `49fa799` · **Audit:** [docs/audit/AUDIT_2026-09-16.md](audit/AUDIT_2026-09-16.md) (550/1000)
 
@@ -22,11 +22,21 @@ document, and the repository's language is English.
    is pushed as soon as it is verified, so neither the workspace nor the review can lose it.
 5. **Failure is recorded**, never deleted: an abandoned item becomes `[!]` with its reason.
 
+6. **Two rubrics, one headline.** The *repo rubric* (the 2026-09-16 audit, 1,000 points, release category
+   excluded by owner direction) gates the code. The *experience rubric* in section 4 is the headline number:
+   it scores the game as something a person plays. A completion claim needs both, and neither may be
+   supported by prose alone.
+7. **Nothing here is designed around revenue.** Monetisation, store pages and release preparation stay out of
+   scope by owner direction; no system may depend on timers, paywalls or engagement metrics that exist to
+   sell something.
+
 Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]` stopped, with reason.
 
 ## 2. Phase plan (numbered, English)
 
 `Phase 78` is complete and pushed. `Phase 79` onward is the remaining work, one phase per commit.
+
+**Table A — repo rubric (the code and the assets it ships).**
 
 | Phase | Title | Roadmap items | Status |
 |---|---|---|---|
@@ -49,7 +59,63 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[ ]` |
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[ ]` |
 | **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[ ]` |
-| **97** | Re-audit with the same granular method and publish the new score | Definition of done | `[ ]` |
+| **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[ ]` |
+
+**Table B — experience phases (added 2026-09-16 at the owner's direction: assets, content, playtime,
+human-feel innovation, engagement, secrets, narrative, and a 2026 benchmark).** These phases start from the
+premise that a 1000-level game is not a codebase with a high score; it is a game that a person wants to keep
+playing, and every item below has to end in something measurable.
+
+| Phase | Title | Roadmap items | Status |
+|---|---|---|---|
+| **98** | Asset quality audit: every asset's texel density, contrast and framing measured | R9.1 | `[ ]` |
+| **99** | Art upgrade batches for every category, delivered by real renders and reviewed per batch | R9.2 | `[ ]` |
+| **100** | Shading pass: normal/roughness/AO maps for hero, bosses and creatures | R9.3 | `[ ]` |
+| **101** | Palette, value range and gameplay-contrast pass with measured ratios | R9.4 | `[ ]` |
+| **102** | Animation pass: real clip counts and frame coverage per entity | R9.5 | `[ ]` |
+| **103** | Content register: machine-readable inventory of every game asset with an owner phase | R10.1 | `[ ]` |
+| **104** | Creature families: new enemy archetypes with distinct mechanics and telegraphs | R10.2 | `[ ]` |
+| **105** | Boss roster and elite variants across the act structure | R10.3 | `[ ]` |
+| **106** | Biomes and arenas: four visually and mechanically distinct theatres | R10.4 | `[ ]` |
+| **107** | Equipment, consumables, affixes and set bonuses | R10.5 | `[ ]` |
+| **108** | Authored VFX library replacing shape primitives | R10.6 | `[ ]` |
+| **109** | Playtime model: target sessions, measured against automated play | R11.1 | `[ ]` |
+| **110** | Act structure: three acts of twelve waves with intermissions and mini-bosses | R11.2 | `[ ]` |
+| **111** | Mirror/endless mode with scaling modifiers and local records | R11.3 | `[ ]` |
+| **112** | Seeded daily trial, offline and deterministic | R11.4 | `[ ]` |
+| **113** | Achievements and bounties (60+) that unlock cosmetics and codex pages | R11.5 | `[ ]` |
+| **114** | Ascension tiers / new-game-plus modifiers | R11.6 | `[ ]` |
+| **115** | Living arena: allies, critters, weather and a day/night cycle that changes waves | R12.1 | `[ ]` |
+| **116** | Physicality: weight, knockback, hit-stop measured in milliseconds | R12.2 | `[ ]` |
+| **117** | Expressive hero: mood state, contextual lines, near-death presentation | R12.3 | `[ ]` |
+| **118** | Scripted beats: hand-authored moments inside runs | R12.4 | `[ ]` |
+| **119** | Adaptive pressure with a documented policy and a visible indicator | R12.5 | `[ ]` |
+| **120** | Accessibility and comfort: one-hand mode, palettes, text scaling, reduced flash | R12.6 | `[ ]` |
+| **121** | Touch feel: haptic vocabulary, precision assist, mis-tap forgiveness | R12.7 | `[ ]` |
+| **122** | The 30-second loop: input-to-feedback latency budget on the emulator | R13.1 | `[ ]` |
+| **123** | Reward cadence: unlocks and drops per minute, verified by the simulator | R13.2 | `[ ]` |
+| **124** | One-more-run hooks: visible seeds, personal bests, streaks | R13.3 | `[ ]` |
+| **125** | Mastery curve and measurable skill gap | R13.4 | `[ ]` |
+| **126** | Session boundaries: save anywhere, resume and first-wave budgets | R13.5 | `[ ]` |
+| **127** | No dark patterns: checklist enforced by a test | R13.6 | `[ ]` |
+| **128** | Secret registry: data-driven mysteries with deterministic triggers | R14.1 | `[ ]` |
+| **129** | Environmental mysteries inside the arenas | R14.2 | `[ ]` |
+| **130** | Lore fragments and a connected codex graph | R14.3 | `[ ]` |
+| **131** | Rare run anomalies with seeds a test can replay | R14.4 | `[ ]` |
+| **132** | A meta-mystery that spans save files | R14.5 | `[ ]` |
+| **133** | Spoiler discipline: hidden content stays hidden outside the game | R14.6 | `[ ]` |
+| **134** | Narrative bible, beat sheet and delivery map | R15.1 | `[ ]` |
+| **135** | Cinematic timeline runtime (camera, letterbox, typewriter, skippable) | R15.2 | `[ ]` |
+| **136** | Opening prologue animation | R15.3 | `[ ]` |
+| **137** | Interludes for act transitions and boss beats | R15.4 | `[ ]` |
+| **138** | Dialogue system with portraits and localisation-ready text | R15.5 | `[ ]` |
+| **139** | In-world storytelling: props, epitaphs, arena state that changes | R15.6 | `[ ]` |
+| **140** | Narrator stingers and per-act audio motifs | R15.7 | `[ ]` |
+| **141** | 2026 benchmark rubric: reference titles and comparable criteria | R16.1 | `[ ]` |
+| **142** | `docs/audit/BENCHMARK_2026.md` measured on our build | R16.2 | `[ ]` |
+| **143** | Close the benchmark gaps, or record them as accepted trade-offs | R16.3 | `[ ]` |
+| **144** | Experience re-audit with the granular method, both scores published | R16.4 | `[ ]` |
+| **145** | Final claim gate: both rubrics at target, no open `[!]` | R16.5 | `[ ]` |
 
 ## 3. Baseline: where the 450 missing points are
 
@@ -70,6 +136,30 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 re-run on a finished round (Phase 97).
 
 ---
+
+## 4. The experience rubric (the headline number)
+
+The repo rubric asks "is the code and are the assets honest and well built". This one asks the question the
+owner actually cares about: **is this a game someone would rather play than the 2026 titles it competes
+with?** It is scored out of 1,000, every category needs evidence of the kind described, and a category cannot
+pass on prose.
+
+| # | Category | Weight | What earns the points | How it is measured |
+|---|---|---|---|---|
+| 1 | Asset quality | 150 | every shipped asset is drawn at or above its on-screen texel density, reads at 1080p, has authored shading detail, and matches its category's style guide | texel-density audit per asset (R9.1), contrast ratios measured from screenshots (R9.4), animation coverage per entity (R9.5) |
+| 2 | Content volume and variety | 130 | creature families with distinct mechanics, boss roster with identities, four biomes, equipment and affix breadth, authored VFX | counts and variety matrix from the content register (R10.1), each entry traced to a reviewed render or authored file |
+| 3 | Playtime and pacing | 110 | 8–12 minute runs, a 3-act arc worth 20–30 hours to full completion, escalation that stays legible, no filler | playtime model against automated play (R11.1) and the act structure (R11.2) |
+| 4 | Systems depth and mastery | 120 | decisions inside a wave, build-defining equipment, meaningful combos, a skill ceiling an expert can climb | simulator policy gap (R13.4) plus unit-tested systems |
+| 5 | Human-feel innovation | 110 | living arena, physicality, an expressive hero, hand-authored beats, adaptive pressure that is documented rather than hidden | each item has a dedicated test or a measured capture (R12.x) |
+| 6 | Engagement and reward cadence | 110 | feedback under 100 ms, unlocks paced across a session, one-more-run hooks, respect for the player's time | latency budget on the emulator (R13.1), cadence from the simulator (R13.2), the no-dark-patterns checklist (R13.6) |
+| 7 | Secrets and mysteries | 80 | discoveries that are findable, not random; lore that connects; rare events worth retelling | deterministic trigger tests (R14.1/R14.4), codex graph connectivity (R14.3), spoiler gate (R14.6) |
+| 8 | Narrative and cinematics | 100 | a prologue worth watching, interludes that land the story beats, in-world storytelling, a skippable timeline runtime | narrative delivery map (R15.1), timeline player tests (R15.2), recordings of the prologue and one interlude |
+| 9 | Presentation feel | 90 | audio identity, UI that reads at a glance, haptics, transitions and ceremony that feel authored | audio asset register with licences, screenshot set with brightness contract, haptic vocabulary list |
+
+**Gate 1 (repo rubric):** ≥ 900 of 920 in-scope points at Phase 97.
+**Gate 2 (experience rubric):** ≥ 900 of 1,000 at Phase 144, with no category below 80 % of its weight.
+**Claim rule:** only when both gates pass may this repository describe the game as "1000-level", and the
+sentence has to name the two scores and the commit they were measured on.
 
 ## R1 — Truth, tests and verification integrity  `+95` — complete
 
@@ -240,7 +330,139 @@ re-run on a finished round (Phase 97).
 
 ---
 
-## R9 — Release preparation *(out of scope by owner direction; recorded for the arithmetic)*
+## R9 — Asset quality: improve every shipped asset  `+150 experience`
+
+Deliverable per item: a measurement plus either a better asset or a documented reason it stays.
+
+- [ ] **R9.1 Texel-density audit for every asset.** For each asset: sheet frame size, drawn size in world
+  units, device pixels at 720p and 1080p, and the ratio. Produces `docs/art_reviews/ASSET_TEXEL_AUDIT.md`
+  from a tool, and a gate that fails when a gameplay-critical asset is more than 1.35× undersampled at 1080p
+  or more than 4× oversampled.
+- [ ] **R9.2 Art upgrade batches, per category.** Hero, bosses, creatures, world tree, environment and props,
+  equipment, icons, UI frames, ceremony. Each batch is produced by the render workflow, shipped with a
+  per-batch review document, contact sheet and ledger hashes; the resampling and ledger gates from R1.1/R1.4
+  must stay green, so an upgrade can never again be a resize.
+- [ ] **R9.3 Shading pass.** Authored normal, roughness and ambient-occlusion maps for hero, bosses and
+  creatures, used by the runtime shader path, with before/after captures at a fixed seed.
+- [ ] **R9.4 Palette, value range and gameplay contrast.** Hero, enemies, projectiles, pickups and telegraphs
+  must hold at least 4.5:1 contrast against the arena behind them, measured from real captures rather than
+  asserted in a style guide.
+- [ ] **R9.5 Animation pass.** Every creature and boss gets idle, wind-up, impact and defeat clips with real
+  frame counts; a test asserts the clip inventory per entity and that no clip is empty or duplicated.
+
+## R10 — Asset expansion  `+130 experience`
+
+- [ ] **R10.1 Content register.** One machine-readable file listing every gameplay asset with its category,
+  owner phase, review document and licence. A test fails when a shipped asset has no register entry.
+- [ ] **R10.2 Creature families.** New enemy archetypes with mechanics the current four cannot express:
+  burrower, flyer, shield-bearer, healer, splitter, ranged caster, swarm-mother, corpse-bloomer, mirror
+  duplicate, frost-warden, ember-hound, root-tender — each with a telegraph, a counter, and its own review
+  coverage.
+- [ ] **R10.3 Boss roster and elites.** Distinct boss identities with multi-phase fights, elite variants of
+  regular enemies, and an act-aware boss schedule.
+- [ ] **R10.4 Biomes and arenas.** Four theatres (sanctum, ashfall ridge, frost hollow, corrupted rootway)
+  with their own tilesets, backdrops, weather, ambient VFX and audio hooks, each with a review document.
+- [ ] **R10.5 Equipment, consumables, affixes, sets.** More items per slot, affixes that change how the hero
+  plays, set bonuses, and consumables with meaningful trade-offs; icons and overlays in the same batch style.
+- [ ] **R10.6 Authored VFX library.** Impact, cast, aura, pickup, level-up, weather and death effects as
+  authored textures and shaders instead of shape primitives, with a budget per effect and a capture sheet.
+- [ ] **R10.7 Story art kit.** Portraits, panel backgrounds, props and title art for the narrative phases.
+
+## R11 — Content volume and playtime  `+110 experience`
+
+- [ ] **R11.1 Playtime model.** Targets: 8–12 minute runs, an act arc of roughly 40–60 minutes, 20–30 hours
+  to full completion. Measured against automated play plus recorded smoke timings, not estimated.
+- [ ] **R11.2 Act structure.** Three acts of twelve waves with intermissions, mini-bosses at 4/8/12, escalating
+  modifiers and a legible threat curve between waves 25 and 80 (the flat middle the audit measured).
+- [ ] **R11.3 Mirror mode.** Endless run that mirrors the player's own build back at them with scaling
+  modifiers, ending in a score and a local record board.
+- [ ] **R11.4 Seeded daily trial.** One generated seed per day, offline, fixed loadout, comparable score.
+- [ ] **R11.5 Achievements and bounties.** 60+ entries that unlock cosmetics, codex pages and titles; each
+  entry has a testable trigger.
+- [ ] **R11.6 Ascension tiers.** New-game-plus with modifiers that change how the game is played, not only how
+  hard it hits.
+- [ ] **R11.7 Playtime telemetry, local.** Run durations, wave reached, deaths and builds recorded in the save
+  file so the playtime model can be checked against real sessions; no network.
+
+## R12 — Human-feel innovation  `+110 experience`
+
+- [ ] **R12.1 Living arena.** Critters and ambient life, weather that changes wave behaviour, a day/night cycle
+  that alters enemy and plant behaviour, occasional allied spirits.
+- [ ] **R12.2 Physicality.** Weight in movement, knockback that reads, hit-stop measured in milliseconds,
+  screen-space impacts that never obscure gameplay-critical information.
+- [ ] **R12.3 Expressive hero.** A mood state that shows in posture and lines, near-death presentation
+  (heartbeat, vignette, slowed music), reactions to the tree, to boss kills and to the first defeat.
+- [ ] **R12.4 Scripted beats.** Hand-authored moments inside runs: the tree speaks, a wolf refuses to attack, a
+  wandering merchant appears mid-wave, a dying enemy drops a note.
+- [ ] **R12.5 Adaptive pressure.** A documented, testable policy with a visible indicator, never a hidden
+  difficulty rubber band.
+- [ ] **R12.6 Accessibility and comfort.** One-hand mode, colour-blind palettes, text scaling, reduced flash,
+  pause anywhere, hold-to-confirm for destructive actions.
+- [ ] **R12.7 Touch feel.** Haptic vocabulary per event, precision assist for drag targets, a mis-tap
+  forgiveness window, all covered by the touch smoke journeys.
+
+## R13 — Engagement without monetisation  `+110 experience`
+
+- [ ] **R13.1 The 30-second loop.** Tap to visible feedback under 100 ms, measured on the emulator; the first
+  wave starts within 5 seconds of launch.
+- [ ] **R13.2 Reward cadence.** Unlocks, drops and discoveries per minute of play defined as a schedule and
+  verified against the drop tables and the simulator.
+- [ ] **R13.3 One-more-run hooks.** Visible run seed, personal bests, streaks, a "next run" panel that shows
+  what changed.
+- [ ] **R13.4 Mastery curve.** Skill-expressive systems (focus targeting, ability timing, positioning) with a
+  measured gap between an optimiser policy and a casual policy.
+- [ ] **R13.5 Session boundaries.** Save anywhere, resume in under 3 seconds, no lost progress on process
+  death; each budget has a test.
+- [ ] **R13.6 No dark patterns.** A checklist in the repository — no energy timers, no loot boxes, no
+  artificial grind gates, no notification pressure — enforced by a test over the systems that could grow one.
+
+## R14 — Mysteries and secrets  `+80 experience`
+
+- [ ] **R14.1 Secret registry.** Data-driven definitions with trigger conditions, discovery states, hinting
+  and rewards; deterministic tests prove each trigger fires exactly when intended.
+- [ ] **R14.2 Environmental mysteries.** Hidden interactions in the arenas: a hollow that answers three taps,
+  a reflection that only appears at night, a crystal that hums a sequence, a tile that remembers a seed.
+- [ ] **R14.3 Lore fragments.** 40+ collectible fragments that cross-reference each other; a test asserts the
+  graph is connected and no fragment is orphaned.
+- [ ] **R14.4 Rare run anomalies.** 1-in-N events with seeds a test can replay: red moon, a stranger at the
+  gate, a wounded beast that can be spared, a wave that arrives from the wrong direction.
+- [ ] **R14.5 Meta-mystery.** A puzzle spanning save files whose solution path is documented in the repository
+  but never stated in the game's UI.
+- [ ] **R14.6 Spoiler discipline.** Hidden content names, art and text must not appear in boot flow, menu
+  hints, tutorial text or the store-facing strings; enforced by a test.
+
+## R15 — Narrative and cinematics  `+100 experience`
+
+- [ ] **R15.1 Narrative bible and delivery map.** Characters, acts, beats and, for every beat, the exact
+  in-game delivery (cinematic, dialogue, environmental, audio) tracked like an asset.
+- [ ] **R15.2 Cinematic timeline runtime.** A data-driven timeline for camera, letterbox, focus, shake,
+  typewriter text, fades and audio cues; deterministic, skippable, unit-tested, and usable by the smoke suite.
+- [ ] **R15.3 Opening prologue.** A 45–60 second staged prologue animation replacing the text-only opening,
+  skippable, replayable from the menu, recorded in CI as screenshots.
+- [ ] **R15.4 Interludes.** 10–20 second panels at act transitions, first boss kill, first defeat, tree
+  ceremonies and the ending; each act dressed differently.
+- [ ] **R15.5 Dialogue system.** Portraits, speaker names, typewriter pacing, localisation-ready strings,
+  with a test that every line exists in every supported language.
+- [ ] **R15.6 In-world storytelling.** Props, epitaphs, tree carvings and an arena whose state changes as the
+  story progresses.
+- [ ] **R15.7 Narrator stingers.** Short narration motifs per act and per major beat, produced with the audio
+  phases and registered like every other audio asset.
+
+## R16 — 2026 benchmark and the experience re-audit  `gate`
+
+- [ ] **R16.1 Benchmark rubric.** Six reference titles of the genre and roughly forty comparable criteria
+  (menu-to-game time, input latency, content volume, presentation polish, session design, meta depth,
+  accessibility, secrets, story delivery, offline-first design), each with a measurement method.
+- [ ] **R16.2 `docs/audit/BENCHMARK_2026.md`.** Our build measured on every criterion, generated by a tool
+  where a tool can do it and by recorded captures where it cannot.
+- [ ] **R16.3 Gap closure.** Every criterion below the reference either fixed or recorded as an accepted
+  trade-off with the reason; nothing quietly dropped.
+- [ ] **R16.4 Experience re-audit.** Score the experience rubric with the same granular method, publish it
+  next to the repo-rubric score, and list the remaining weaknesses plainly.
+- [ ] **R16.5 Final claim gate.** Both gates at target, no open `[!]`, then and only then the "1000-level"
+  sentence is allowed.
+
+## RX — Release preparation *(out of scope by owner direction; recorded for the arithmetic)*
 
 Version/versionCode, `minify`/`shrinkResources`, a real tag and release, `allowBackup=false`,
 real-device testing: **+35 points, not planned here.**
@@ -270,10 +492,18 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | CI | run [`35078435013`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35078435013) at `0ccc92c`: both workflows green (covers phases 81 step 1, 83, 84, 85a, 85b) | `0ccc92c` |
 | 2026-09-16 | — | CI | run [`35079208076`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35079208076) at `772fb45`: both workflows green with the per-screenshot brightness contract active; 28/28 captures referenced, drift ≤ 0.07 luma except the animated collapse frame (7.14), which is why that entry carries a ±12 band | `772fb45` |
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
+| 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | *(this commit)* |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |
 
 ## Definition of done
 
-The roadmap is complete when the same granular audit, re-run on the then-current commit (Phase 97),
-scores **920/1000 or more** on the nine in-scope categories and every figure in this file is still
-reproducible from the repository.
+Two gates, both measured with the granular method of the 2026-09-16 audit and both reproducible from the
+repository:
+
+1. **Repo rubric (Phase 97):** the nine in-scope categories score **≥ 900 of 920** — the release category
+   stays out of scope by owner direction — and every figure in this file is still reproducible.
+2. **Experience rubric (Phase 144):** **≥ 900 of 1,000**, with no category below 80 % of its weight.
+
+Only then may this repository describe the game as a "1000-level" title, and the sentence has to name both
+scores and the commit they were measured on. Until then every claim stays per-item, with its evidence, and
+the remaining weaknesses are listed instead of hidden.
