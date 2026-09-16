@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs exclusions for :core (roadmap R2.5). Each match names the pattern and the reason; the rest of the
+  report stays unfiltered. What was fixed rather than excluded is listed in docs/STATIC_ANALYSIS.md.
+-->
+<FindBugsFilter>
+    <!-- 95 + 2 reports. GameState, Hero, Enemy, HeroStats, TrophyLedger and GameSettings ARE the simulation's
+         data model: the systems read and write those fields directly, which is why the simulators can replay a
+         run without a rendering layer. Turning 97 fields into getter/setter pairs would put method calls in the
+         hot loop and change nothing about behaviour. -->
+    <Match>
+        <Bug pattern="PA_PUBLIC_PRIMITIVE_ATTRIBUTE"/>
+    </Match>
+    <Match>
+        <Bug pattern="PA_PUBLIC_MUTABLE_OBJECT_ATTRIBUTE"/>
+    </Match>
+    <!-- 27 reports. Constructor injection of collaborators: a system, controller or renderer is handed the
+         objects it drives. Sharing that reference is the design (the alternative, copying mutable state, would
+         break determinism), so the report is an architectural note, not a defect. -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+    </Match>
+    <!-- 3 reports. Accessors that deliberately hand back a live object: the host's own GameState and the forge
+         system behind the inventory controller. Callers act on the live object on purpose. -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP"/>
+    </Match>
+    <!-- 2 reports. Exact tie-breakers between two computed floats (rot-trail damage, focus-fire distance). Both
+         pick a deterministic winner when two values are bit-identical; an epsilon would silently change which
+         candidate wins, which is a gameplay change, not a cleanup. -->
+    <Match>
+        <Bug pattern="FE_FLOATING_POINT_EQUALITY"/>
+    </Match>
+    <!-- 5 reports. Fields the test suite and the save format read (Boss.uniqueAttack, Enemy.spawnLane,
+         Hero.currentTargetId, GameState.schemaVersion, GameState.bareHandedEligible). SpotBugs analyses the main
+         source set only, so a field read from tests/documentation looks unread. -->
+    <Match>
+        <Bug pattern="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD"/>
+    </Match>
+    <!-- 4 reports, all GameFonts.shared. The game runs entirely on the LibGDX render thread: the shared font set
+         is created there, replaced there when a new Application starts, and released from close(). A lock would
+         protect nothing, and the class documents the lifecycle it implements. -->
+    <Match>
+        <Bug pattern="LI_LAZY_INIT_STATIC"/>
+    </Match>
+    <Match>
+        <Bug pattern="SING_SINGLETON_GETTER_NOT_SYNCHRONIZED"/>
+    </Match>
+    <Match>
+        <Bug pattern="ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD"/>
+    </Match>
+    <!-- 2 reports. The layer-order test reads a private member through reflection; that is the point of the test,
+         and it never runs inside a security manager. Unreachable bytecode is the price of not widening production
+         visibility for a test. -->
+    <Match>
+        <Bug pattern="DP_DO_INSIDE_DO_PRIVILEGED"/>
+    </Match>
+</FindBugsFilter>

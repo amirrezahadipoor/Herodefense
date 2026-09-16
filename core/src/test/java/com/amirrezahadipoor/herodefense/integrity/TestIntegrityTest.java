@@ -68,7 +68,7 @@ final class TestIntegrityTest {
             try (Stream<Path> walk = Files.walk(root)) {
                 for (Path file : walk.filter(Files::isRegularFile)
                     .filter(path -> path.toString().endsWith(".java"))
-                    .filter(path -> !path.getFileName().toString().equals(SELF))
+                    .filter(path -> !SELF.equals(String.valueOf(path.getFileName())))
                     .sorted()
                     .toList()) {
                     findings.addAll(scan(REPOSITORY.relativize(file).toString(),

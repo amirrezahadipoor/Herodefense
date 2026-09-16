@@ -25,9 +25,9 @@ final class VisualRarityTest {
             VisualRarity rarity = VisualRarity.fromTier(definition.tier().name());
             assertTrue(
                 rarity.isGlowing()
-                    == (definition.tier().name().equals("RARE")
-                        || definition.tier().name().equals("LEGENDARY")
-                        || definition.tier().name().equals("MYTHIC"))
+                    == ("RARE".equals(definition.tier().name())
+                        || "LEGENDARY".equals(definition.tier().name())
+                        || "MYTHIC".equals(definition.tier().name()))
             );
         }
     }

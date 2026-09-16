@@ -200,15 +200,12 @@ final class FrameDriverTest {
     }
 
     private static final class RecordingAudio implements AudioFrame {
-        private float ticked;
-
         @Override
         public void update(GameSettings settings) {
         }
 
         @Override
         public void tick(float realDeltaSeconds) {
-            ticked += realDeltaSeconds;
         }
     }
 }

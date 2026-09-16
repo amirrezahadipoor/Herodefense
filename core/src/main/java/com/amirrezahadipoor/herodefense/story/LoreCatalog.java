@@ -11,7 +11,7 @@ import java.util.Map;
  * Trigger params: wave number, boss identity, Elite affix id, completed Ascension count, secret id.
  */
 public final class LoreCatalog {
-    private static final List<LoreEntry> ALL = Collections.unmodifiableList(Arrays.asList(
+    private static final List<LoreEntry> ALL = List.copyOf(Arrays.asList(
         entry(1, "Before You.",
             "Others stood here before you. I do not recall most of their names. I recall all of their last stands.",
             LoreTrigger.WAVE_MILESTONE, "1"),

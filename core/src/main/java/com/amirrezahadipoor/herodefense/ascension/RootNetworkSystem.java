@@ -3,12 +3,12 @@ package com.amirrezahadipoor.herodefense.ascension;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 
+import java.util.Locale;
 import java.util.Map;
 
 /** Purchase and application of permanent Root Network nodes. */
 public final class RootNetworkSystem {
     private static final float FEEDBACK_SECONDS = 1.2f;
-    private String feedbackId;
     private String feedbackMessage;
     private float feedbackRemaining;
 
@@ -16,7 +16,6 @@ public final class RootNetworkSystem {
         if (feedbackRemaining > 0f) {
             feedbackRemaining = Math.max(0f, feedbackRemaining - delta);
             if (feedbackRemaining == 0f) {
-                feedbackId = null;
                 feedbackMessage = null;
             }
         }
@@ -53,14 +52,14 @@ public final class RootNetworkSystem {
         if (!canPurchase(state, nodeId)) {
             RootNodeDefinition def = RootNetworkCatalog.byId(nodeId);
             if (def != null && state != null && state.heartwood < def.cost()) {
-                showFeedback(nodeId, "NEED " + (def.cost() - state.heartwood) + " MORE HEARTWOOD");
+                showFeedback("NEED " + (def.cost() - state.heartwood) + " MORE HEARTWOOD");
             }
             return false;
         }
         RootNodeDefinition def = RootNetworkCatalog.byId(nodeId);
         state.heartwood -= def.cost();
         state.rootNodesPurchased.put(nodeId, true);
-        showFeedback(nodeId, "ROOT AWAKENED | " + def.name().toUpperCase());
+        showFeedback("ROOT AWAKENED | " + def.name().toUpperCase(Locale.ROOT));
         return true;
     }
 
@@ -116,8 +115,8 @@ public final class RootNetworkSystem {
         }
     }
 
-    private void showFeedback(String id, String msg) {
-        feedbackId = id;
+    /** One line of feedback for the shop overlay; the node id is already carried by the row that was tapped. */
+    private void showFeedback(String msg) {
         feedbackMessage = msg;
         feedbackRemaining = FEEDBACK_SECONDS;
     }

@@ -10,6 +10,7 @@ import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.WaveModifier;
 import com.amirrezahadipoor.herodefense.trials.TrialId;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -52,9 +53,8 @@ final class WaveOmenTest {
     @Test
     void theTwistComesFromTheSeedAndTheSeedAlone() {
         assertEquals(WaveModifier.forWave(SEED, 43), WaveModifier.forWave(SEED, 43));
-        Set<WaveModifier> seen = new HashSet<>();
+        Set<WaveModifier> seen = EnumSet.noneOf(WaveModifier.class);
         for (long seed = 0; seed < 64; seed++) {
-            WaveOmens.of(seed, 9, 0, true);
             WaveModifier omen = WaveOmens.of(seed, 9, 0, true);
             if (omen.isOmen()) seen.add(omen);
         }

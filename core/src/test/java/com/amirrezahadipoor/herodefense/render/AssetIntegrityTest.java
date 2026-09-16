@@ -58,7 +58,7 @@ class AssetIntegrityTest {
         Set<String> onDisk = new TreeSet<>();
         try (Stream<Path> walk = Files.walk(GENERATED)) {
             walk.filter(Files::isRegularFile)
-                .filter(path -> path.getFileName().toString().endsWith(".png"))
+                .filter(path -> String.valueOf(path.getFileName()).endsWith(".png"))
                 .forEach(path -> onDisk.add(GENERATED.relativize(path).toString().replace('\\', '/')));
         }
         Set<String> listed = new TreeSet<>();
@@ -105,8 +105,9 @@ class AssetIntegrityTest {
             byte[] hash = digest.digest(Files.readAllBytes(path));
             StringBuilder builder = new StringBuilder(hash.length * 2);
             for (byte value : hash) {
-                builder.append(Character.forDigit((value >> 4) & 0xF, 16));
-                builder.append(Character.forDigit(value & 0xF, 16));
+                char high = Character.forDigit((value >> 4) & 0xF, 16);
+                char low = Character.forDigit(value & 0xF, 16);
+                builder.append(high).append(low);
             }
             return builder.toString();
         } catch (NoSuchAlgorithmException error) {

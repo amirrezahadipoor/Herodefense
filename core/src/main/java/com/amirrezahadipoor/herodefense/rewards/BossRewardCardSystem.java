@@ -62,10 +62,12 @@ public final class BossRewardCardSystem {
             return false;
         }
 
+        String cardName = state.pendingRewardCards.get(choiceIndex);
+        if (cardName == null) return false;
         RewardCardId card;
         try {
-            card = RewardCardId.valueOf(state.pendingRewardCards.get(choiceIndex));
-        } catch (IllegalArgumentException | NullPointerException error) {
+            card = RewardCardId.valueOf(cardName);
+        } catch (IllegalArgumentException error) {
             return false;
         }
         applyScaledEffect(state, card, bossNumber);

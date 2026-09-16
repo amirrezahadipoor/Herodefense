@@ -11,8 +11,9 @@ public enum EquipmentSlot {
 
     public static EquipmentSlot parse(String value) {
         try {
+            if (value == null) return null;
             return EquipmentSlot.valueOf(value);
-        } catch (IllegalArgumentException | NullPointerException error) {
+        } catch (IllegalArgumentException error) {
             return null;
         }
     }

@@ -124,8 +124,8 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         drawText(batch, "Tap a loadout slot to unequip", 40f, 1189f, 0.76f, SUBTLE);
         drawText(batch, "AUTO-SELL", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1102f, 0.62f, GOLD);
         drawText(batch, "on pickup", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1072f, 0.54f, SUBTLE);
-        for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.length; index++) {
-            ItemTier tier = InventoryTouchLayout.AUTO_SELL_TIERS[index];
+        for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.size(); index++) {
+            ItemTier tier = InventoryTouchLayout.AUTO_SELL_TIERS.get(index);
             boolean on = settings != null && settings.autoSells(tier);
             float chipX = InventoryTouchLayout.autoSellChipX(index);
             float centerX = chipX + InventoryTouchLayout.AUTO_SELL_WIDTH * 0.5f;
@@ -250,8 +250,8 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             InventoryTouchLayout.CLOSE_SIZE, InventoryTouchLayout.CLOSE_SIZE,
             true, false
         );
-        for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.length; index++) {
-            boolean on = settings != null && settings.autoSells(InventoryTouchLayout.AUTO_SELL_TIERS[index]);
+        for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.size(); index++) {
+            boolean on = settings != null && settings.autoSells(InventoryTouchLayout.AUTO_SELL_TIERS.get(index));
             frames.draw(
                 batch, UiFrameRenderer.Kind.SLOT,
                 InventoryTouchLayout.autoSellChipX(index), InventoryTouchLayout.AUTO_SELL_Y,

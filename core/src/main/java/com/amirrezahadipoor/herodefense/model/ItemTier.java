@@ -31,8 +31,9 @@ public enum ItemTier {
     /** Null for unknown or missing persisted values. */
     public static ItemTier parse(String value) {
         try {
+            if (value == null) return null;
             return ItemTier.valueOf(value);
-        } catch (IllegalArgumentException | NullPointerException error) {
+        } catch (IllegalArgumentException error) {
             return null;
         }
     }

@@ -216,8 +216,9 @@ public final class PlantingCeremony {
     public int heroFrame() {
         return switch (phase()) {
             case WALK_OUT, WALK_BACK -> (int) (phaseSeconds() * WALK_FPS) % WALK_FRAMES;
-            case PLANT -> Math.min(PLANT_FRAMES - 1, (int) (phaseSeconds() * GESTURE_FPS));
-            case WATER -> Math.min(WATER_FRAMES - 1, (int) (phaseSeconds() * GESTURE_FPS));
+            // The two gesture clips are the same length (PLANT_FRAMES == WATER_FRAMES), so they share a branch
+            // rather than repeating it; `PlantingCeremonyTest` asserts the frame counts it depends on.
+            case PLANT, WATER -> Math.min(PLANT_FRAMES - 1, (int) (phaseSeconds() * GESTURE_FPS));
             case GROW -> WATER_FRAMES - 1;
             default -> 0;
         };
@@ -246,10 +247,7 @@ public final class PlantingCeremony {
     /** Frame of the grow clip: sprout until GROW starts, then the growth ramp, then fully grown. */
     public int saplingGrowFrame() {
         if (shortMode) {
-            return switch (phase()) {
-                case WALK_BACK, DONE -> GROW_FRAMES - 1;
-                default -> 0;
-            };
+            return phase() == Phase.WALK_BACK || phase() == Phase.DONE ? GROW_FRAMES - 1 : 0;
         }
         return switch (phase()) {
             case GROW -> Math.min(GROW_FRAMES - 1, (int) (phaseSeconds() * GROW_FPS));

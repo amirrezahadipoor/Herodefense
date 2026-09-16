@@ -73,10 +73,11 @@ public final class EquipmentSetBonus {
     public static String statusLine(GameState state) {
         Map<String, Integer> counts = equippedCounts(state);
         StringBuilder line = new StringBuilder("SETS:");
-        for (SetBonus set : ALL) {
+        for (int index = 0; index < ALL.size(); index++) {
+            SetBonus set = ALL.get(index);
             line.append(' ').append(set.displayName()).append(' ')
                 .append(counts.getOrDefault(set.setId(), 0)).append('/').append(set.pieces());
-            if (set != ALL.get(ALL.size() - 1)) line.append(" |");
+            if (index < ALL.size() - 1) line.append(" |");
         }
         return line.toString();
     }

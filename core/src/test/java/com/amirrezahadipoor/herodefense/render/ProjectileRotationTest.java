@@ -29,7 +29,8 @@ final class ProjectileRotationTest {
     @Test
     void secondaryAndCritVariantsKeepSameRotationMath() {
         // Variants must not affect angle — only sprite size changes.
-        float vx = 3f, vy = 4f;
+        float vx = 3f;
+        float vy = 4f;
         float expected = 53.1301f;
         assertEquals(expected, CombatEntityRenderer.projectileRotation(vx, vy), 0.05f);
         assertEquals(expected, CombatEntityRenderer.projectileRotation(vx * 0.5f, vy * 0.5f), 0.05f);

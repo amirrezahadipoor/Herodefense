@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import com.amirrezahadipoor.herodefense.model.Enemy;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test;
 final class ElitePresentationTest {
     @Test
     void everyAffixMapsToItsOwnGlowingOutline() {
-        Set<VisualRarity> seen = new HashSet<>();
+        Set<VisualRarity> seen = EnumSet.noneOf(VisualRarity.class);
         for (EliteAffix affix : EliteAffix.values()) {
             VisualRarity rarity = CombatEntityRenderer.eliteGlow(affix.id());
             assertTrue(rarity.isGlowing(), affix.id());

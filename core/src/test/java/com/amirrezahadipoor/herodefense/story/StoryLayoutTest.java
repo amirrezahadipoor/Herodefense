@@ -8,7 +8,6 @@ import org.junit.jupiter.api.Test;
 /** Phase 31.3: verifies no rewritten line overflows its overlay at minimum density (60-char aim, hard cap 120). */
 final class StoryLayoutTest {
 
-    private static final int AIM = 60;
     private static final int HARD_CAP = 120;
     private static final int MAX_WORD = 22; // longest common word in our plain set is "Rootlings"(9) / "something" gone
 

@@ -59,10 +59,6 @@ public final class SaplingTreeRenderer implements AutoCloseable {
         return Math.floorMod((int) (loopTimeSeconds * IDLE_FRAME_RATE), IDLE_FRAMES);
     }
 
-    private static void drawFrame(SpriteBatch batch, TextureAtlas.AtlasRegion region) {
-        drawFrameAt(batch, region, WorldLayout.SECOND_TREE_X, WorldLayout.SECOND_TREE_Y);
-    }
-
     private static void drawFrameAt(SpriteBatch batch, TextureAtlas.AtlasRegion region, float x, float y) {
         batch.draw(
             region,

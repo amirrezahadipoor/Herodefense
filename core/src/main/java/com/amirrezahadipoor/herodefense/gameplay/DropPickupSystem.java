@@ -70,9 +70,10 @@ public final class DropPickupSystem {
                 }
             } else if ("POTION".equals(drop.dropType)) {
                 try {
+                    if (drop.itemId == null) throw new IllegalArgumentException("missing potion tier");
                     potionSystem.add(state, PotionTier.valueOf(drop.itemId), drop.quantity);
                     collected++;
-                } catch (IllegalArgumentException | NullPointerException ignored) {
+                } catch (IllegalArgumentException ignored) {
                     // Invalid loaded drop is discarded below rather than blocking the run.
                 }
             }

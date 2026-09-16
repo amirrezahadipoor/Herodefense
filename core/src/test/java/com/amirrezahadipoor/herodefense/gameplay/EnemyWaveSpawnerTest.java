@@ -87,7 +87,7 @@ final class EnemyWaveSpawnerTest {
             for (Enemy enemy : state.aliveEnemies) {
                 if (enemy.eliteAffix != null) elites.add(enemy);
             }
-            assertTrue(elites.size() >= 1 && elites.size() <= 2, "seed " + seed);
+            assertTrue(!elites.isEmpty() && elites.size() <= 2, "seed " + seed);
             for (Enemy elite : elites) {
                 assertFalse(elite.silentWatcher);
                 assertTrue(com.amirrezahadipoor.herodefense.model.EliteAffix
@@ -207,7 +207,7 @@ final class EnemyWaveSpawnerTest {
             state.aliveEnemies.clear();
             int count = Math.max(4, spawner.regularCountForWave(wave));
             spawner.spawnRegularEnemies(state, wave, count);
-            java.util.Set<EnemyType> seen = new java.util.HashSet<>();
+            java.util.Set<EnemyType> seen = java.util.EnumSet.noneOf(EnemyType.class);
             EnemyType previous = null;
             for (int index = 0; index < count; index++) {
                 EnemyType type = state.aliveEnemies.get(index).type();

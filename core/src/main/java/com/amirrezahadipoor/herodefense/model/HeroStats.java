@@ -12,6 +12,11 @@ public final class HeroStats {
     public static final float BASE_MAX_HEALTH = 100f;
     public static final float MAX_HEALTH_PER_POINT = 10f;
 
+    /** The percentages the UI shows, rounded once here instead of at every draw. */
+    public static final int DROP_MULTIPLIER_PERCENT = Math.round((DROP_MULTIPLIER_PER_LUCK - 1f) * 100f);
+    public static final int MAX_DODGE_PERCENT = Math.round(MAX_DODGE_CHANCE * 100f);
+    public static final int MAX_HEALTH_PER_POINT_ROUNDED = Math.round(MAX_HEALTH_PER_POINT);
+
     public int strength;
     public int agility;
     public int luck;

@@ -310,9 +310,9 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
             case CHAIN_LIGHTNING -> String.format(Locale.ROOT, "%d%% arc to %d foe%s for %d%% dmg",
                 Math.round(SkillEffects.chainChance(next) * 100f), SkillEffects.chainTargets(next),
                 SkillEffects.chainTargets(next) == 1 ? "" : "s",
-                Math.round(SkillEffects.CHAIN_DAMAGE_SHARE * 100f));
+                SkillEffects.CHAIN_DAMAGE_PERCENT);
             case MULTI_SHOT -> String.format(Locale.ROOT, "+%.1f arrows per volley at %d%% dmg",
-                SkillEffects.extraArrows(next), Math.round(SkillEffects.MULTI_SHOT_DAMAGE_SHARE * 100f));
+                SkillEffects.extraArrows(next), SkillEffects.MULTI_SHOT_DAMAGE_PERCENT);
             case STUN_CHANCE -> String.format(Locale.ROOT, "%d%% chance to stun for %.2fs",
                 Math.round(SkillEffects.stunChance(next) * 100f), SkillEffects.stunDuration(next));
             case CRITICAL_MASTERY -> String.format(Locale.ROOT, "%.1f%% crit chance, x%.2f crit dmg",

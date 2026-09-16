@@ -26,7 +26,8 @@ final class BossTelegraphPresentationTest {
         for (float fraction : new float[] {0f, 0.25f, 0.5f, 0.75f, 1f}) {
             float min = 1f;
             float max = 0f;
-            for (float time = 0f; time <= 2f; time += 0.05f) {
+            for (int step = 0; step <= 40; step++) {
+                float time = step * 0.05f;
                 float alpha = CombatEntityRenderer.telegraphAlpha(time, fraction);
                 assertTrue(alpha >= 0.15f && alpha <= 0.95f,
                     "fraction=" + fraction + " time=" + time + " alpha=" + alpha);

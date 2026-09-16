@@ -42,7 +42,9 @@ public final class InventoryTouchLayout {
     public static final float AUTO_SELL_Y = 1046f;
     public static final float AUTO_SELL_WIDTH = 110f;
     public static final float AUTO_SELL_HEIGHT = 80f;
-    public static final ItemTier[] AUTO_SELL_TIERS = {ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE};
+    /** The auto-sell chips, in screen order. Immutable: callers may not swap a tier out from under the UI. */
+    public static final java.util.List<ItemTier> AUTO_SELL_TIERS =
+        java.util.List.of(ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE);
 
     private InventoryTouchLayout() {
     }
@@ -91,9 +93,9 @@ public final class InventoryTouchLayout {
 
     /** Tier whose auto-sell chip contains the point, or null. */
     public static ItemTier autoSellTierAt(float x, float y) {
-        for (int index = 0; index < AUTO_SELL_TIERS.length; index++) {
+        for (int index = 0; index < AUTO_SELL_TIERS.size(); index++) {
             if (inside(x, y, autoSellChipX(index), AUTO_SELL_Y, AUTO_SELL_WIDTH, AUTO_SELL_HEIGHT)) {
-                return AUTO_SELL_TIERS[index];
+                return AUTO_SELL_TIERS.get(index);
             }
         }
         return null;

@@ -51,8 +51,9 @@ public class Enemy extends ArenaEntity {
 
     public EnemyType type() {
         try {
+            if (enemyType == null) return EnemyType.ROOTLING;
             return EnemyType.valueOf(enemyType);
-        } catch (IllegalArgumentException | NullPointerException ignored) {
+        } catch (IllegalArgumentException ignored) {
             return EnemyType.ROOTLING;
         }
     }

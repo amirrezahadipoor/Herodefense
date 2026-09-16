@@ -48,10 +48,9 @@ public final class FloatingDamageTextRenderer implements AutoCloseable {
         switch (style) {
             case NORMAL -> font.setColor(0.953f, 0.894f, 0.737f, alpha);
             case SECONDARY -> font.setColor(0.682f, 0.737f, 0.682f, alpha);
-            case CRITICAL -> font.setColor(0.918f, 0.776f, 0.427f, alpha);
+            case CRITICAL, COIN -> font.setColor(0.918f, 0.776f, 0.427f, alpha);
             case CHAIN -> font.setColor(0.561f, 0.831f, 0.949f, alpha);
             case STUN -> font.setColor(0.792f, 0.686f, 0.945f, alpha);
-            case COIN -> font.setColor(0.918f, 0.776f, 0.427f, alpha);
         }
     }
 

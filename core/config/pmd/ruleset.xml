@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PMD ruleset for :core (roadmap R2.5).
+
+  Every rule below is enabled; the excludes carry the reason they are excluded, because a rule that is switched
+  off without a reason is a rule that was never triaged. The triage record (what was fixed, what was excluded and
+  why, and the counts either way) lives in docs/STATIC_ANALYSIS.md.
+-->
+<ruleset name="HeroDefense"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+    <description>Hero Defense source rules</description>
+
+    <rule ref="category/java/errorprone.xml">
+        <!-- 145 hits are the project's accessor convention: a member is named after the field it exposes
+             (`state()` / `state`, `bossType()` / `bossType`), as records do. Renaming 145 members would churn the
+             public API of the simulation without changing a line of behaviour. -->
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <!-- Gameplay thresholds are inline where the number IS the rule (`if (life &gt; 0.4f)`, `if (dropChance
+             &gt; 0.5f)`). Named constants cover values that are shared between systems or tuned by the balance
+             program; the rest would be a name per comparison for no gain. -->
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <!-- The 15 reports are reference releases: a closed font set, a run being reset, a consumed drop. Setting
+             the reference to null is the intent; a tombstone object would say the same thing less clearly. -->
+        <exclude name="NullAssignment"/>
+        <!-- The remaining identity comparisons are identity comparisons on purpose: excluding one entity instance
+             from a target scan, a same-object fast path in item details, and the shared-font owner checks
+             (`shared == this`, `shared.owner == application`). -->
+        <exclude name="CompareObjectsWithEquals"/>
+    </rule>
+    <rule ref="category/java/bestpractices.xml">
+        <!-- The two reports are record compact constructors (`events = events == null ? ...`), where reassigning
+             the component parameter is exactly how the canonical constructor stores the field. PMD 7 keeps this
+             rule in the Best Practices category and does not model that, so the report is a false positive. -->
+        <exclude name="UnusedAssignment"/>
+        <!-- ArenaEntity is a shared base holding common combat fields for its subclasses; the hierarchy is about
+             reuse, not about an abstract contract, and the rule's advice (make it concrete) would be a rename. -->
+        <exclude name="AbstractClassWithoutAbstractMethod"/>
+    </rule>
+    <rule ref="category/java/performance.xml">
+        <!-- Six reports, all deliberate: the catalogs build their per-tier lists once at construction, and the
+             renderers allocate small label/frame objects while drawing. Frame cost is measured on device (R8.4,
+             R13.1) and the profiler, not a style rule, is what decides whether an allocation in a draw loop is
+             worth removing. -->
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+</ruleset>

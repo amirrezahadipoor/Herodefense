@@ -18,6 +18,10 @@ public final class SkillEffects {
     public static final float MULTI_SHOT_ARROWS_PER_LEVEL = 0.30f;
     public static final float MULTI_SHOT_DAMAGE_SHARE = 0.70f;
 
+    /** Shares as whole percent, rounded once for the shop text instead of at every draw. */
+    public static final int CHAIN_DAMAGE_PERCENT = Math.round(CHAIN_DAMAGE_SHARE * 100f);
+    public static final int MULTI_SHOT_DAMAGE_PERCENT = Math.round(MULTI_SHOT_DAMAGE_SHARE * 100f);
+
     /** Stun: chance per arrow hit, duration in seconds. Bosses resist half the duration. */
     public static final float STUN_CHANCE_PER_LEVEL = 0.02f;
     public static final float STUN_BASE_DURATION = 0.50f;

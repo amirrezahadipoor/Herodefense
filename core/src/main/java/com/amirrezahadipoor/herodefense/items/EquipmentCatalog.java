@@ -16,7 +16,11 @@ import java.util.Map;
  * same-slot Rare/Legendary art until their own glow tier lands.
  */
 public final class EquipmentCatalog {
-    private static final List<EquipmentDefinition> ALL = Collections.unmodifiableList(Arrays.asList(
+    /** Set ids shared by four pieces each; spelled once so a typo cannot split a set in half. */
+    private static final String VERDANT_COVENANT = "verdant_covenant";
+    private static final String BASTION_OATH = "bastion_oath";
+
+    private static final List<EquipmentDefinition> ALL = List.copyOf(Arrays.asList(
         item("ashwood_bow", "Ashwood Bow", EquipmentSlot.WEAPON, ItemTier.COMMON, HeroStat.STRENGTH, 1, HeroStat.AGILITY, 0),
         bow("yew_shortbow", "Yew Shortbow", ItemTier.COMMON, HeroStat.AGILITY, 1, HeroStat.STRENGTH, 0, "yew_shortbow"),
         bow("thornwood_bow", "Thornwood Bow", ItemTier.COMMON, HeroStat.LUCK, 1, HeroStat.STRENGTH, 0, "thornwood_bow"),
@@ -32,23 +36,23 @@ public final class EquipmentCatalog {
         item("hunter_loop", "Hunter Loop", EquipmentSlot.RING_2, ItemTier.COMMON, HeroStat.LUCK, 1, HeroStat.AGILITY, 0),
         item("twine_circle", "Twine Circle", EquipmentSlot.RING_1, ItemTier.COMMON, HeroStat.LUCK, 1, HeroStat.DODGE, 0),
         item("moonwood_longbow", "Moonwood Longbow", EquipmentSlot.WEAPON, ItemTier.UNCOMMON, HeroStat.AGILITY, 2, HeroStat.STRENGTH, 0),
-        bow("verdant_recurve", "Verdant Recurve", ItemTier.UNCOMMON, HeroStat.STRENGTH, 2, HeroStat.AGILITY, 0, "verdant_recurve", "verdant_covenant"),
-        item("fern_guard", "Fern Guard", EquipmentSlot.HELMET, ItemTier.UNCOMMON, HeroStat.DODGE, 2, HeroStat.HEALTH, 0, "verdant_covenant"),
+        bow("verdant_recurve", "Verdant Recurve", ItemTier.UNCOMMON, HeroStat.STRENGTH, 2, HeroStat.AGILITY, 0, "verdant_recurve", VERDANT_COVENANT),
+        item("fern_guard", "Fern Guard", EquipmentSlot.HELMET, ItemTier.UNCOMMON, HeroStat.DODGE, 2, HeroStat.HEALTH, 0, VERDANT_COVENANT),
         item("antler_circlet", "Antler Circlet", EquipmentSlot.HELMET, ItemTier.UNCOMMON, HeroStat.HEALTH, 2, HeroStat.DODGE, 0),
         item("ranger_mail", "Ranger Mail", EquipmentSlot.ARMOR, ItemTier.UNCOMMON, HeroStat.HEALTH, 2, HeroStat.STRENGTH, 0),
-        item("mossweave_coat", "Mossweave Coat", EquipmentSlot.ARMOR, ItemTier.UNCOMMON, HeroStat.STRENGTH, 2, HeroStat.HEALTH, 0, "verdant_covenant"),
-        item("windstep_boots", "Windstep Boots", EquipmentSlot.BOOTS, ItemTier.UNCOMMON, HeroStat.AGILITY, 2, HeroStat.DODGE, 0, "verdant_covenant"),
+        item("mossweave_coat", "Mossweave Coat", EquipmentSlot.ARMOR, ItemTier.UNCOMMON, HeroStat.STRENGTH, 2, HeroStat.HEALTH, 0, VERDANT_COVENANT),
+        item("windstep_boots", "Windstep Boots", EquipmentSlot.BOOTS, ItemTier.UNCOMMON, HeroStat.AGILITY, 2, HeroStat.DODGE, 0, VERDANT_COVENANT),
         item("rootguard_sabatons", "Rootguard Sabatons", EquipmentSlot.BOOTS, ItemTier.UNCOMMON, HeroStat.DODGE, 2, HeroStat.AGILITY, 0),
         item("jade_sap_ring", "Jade Sap Ring", EquipmentSlot.RING_1, ItemTier.UNCOMMON, HeroStat.LUCK, 2, HeroStat.STRENGTH, 0),
         item("hawk_eye_band", "Hawk Eye Band", EquipmentSlot.RING_2, ItemTier.UNCOMMON, HeroStat.LUCK, 2, HeroStat.HEALTH, 0),
         item("silver_briar_ring", "Silver Briar Ring", EquipmentSlot.RING_1, ItemTier.UNCOMMON, HeroStat.LUCK, 2, HeroStat.DODGE, 0),
         item("dewstone_loop", "Dewstone Loop", EquipmentSlot.RING_2, ItemTier.UNCOMMON, HeroStat.LUCK, 2, HeroStat.AGILITY, 0),
         item("starfall_bow", "Starfall Bow", EquipmentSlot.WEAPON, ItemTier.RARE, HeroStat.AGILITY, 3, HeroStat.STRENGTH, 1),
-        bow("golemsbane_warbow", "Golemsbane Warbow", ItemTier.RARE, HeroStat.STRENGTH, 3, HeroStat.AGILITY, 1, "golemsbane_warbow", "bastion_oath"),
-        item("owlguard_helm", "Owlguard Helm", EquipmentSlot.HELMET, ItemTier.RARE, HeroStat.DODGE, 3, HeroStat.HEALTH, 1, "bastion_oath"),
-        item("crystalbark_plate", "Crystalbark Plate", EquipmentSlot.ARMOR, ItemTier.RARE, HeroStat.HEALTH, 3, HeroStat.STRENGTH, 1, "bastion_oath"),
+        bow("golemsbane_warbow", "Golemsbane Warbow", ItemTier.RARE, HeroStat.STRENGTH, 3, HeroStat.AGILITY, 1, "golemsbane_warbow", BASTION_OATH),
+        item("owlguard_helm", "Owlguard Helm", EquipmentSlot.HELMET, ItemTier.RARE, HeroStat.DODGE, 3, HeroStat.HEALTH, 1, BASTION_OATH),
+        item("crystalbark_plate", "Crystalbark Plate", EquipmentSlot.ARMOR, ItemTier.RARE, HeroStat.HEALTH, 3, HeroStat.STRENGTH, 1, BASTION_OATH),
         item("shadeleaf_mantle", "Shadeleaf Mantle", EquipmentSlot.ARMOR, ItemTier.RARE, HeroStat.STRENGTH, 3, HeroStat.HEALTH, 1),
-        item("stormrunner_boots", "Stormrunner Boots", EquipmentSlot.BOOTS, ItemTier.RARE, HeroStat.AGILITY, 3, HeroStat.DODGE, 1, "bastion_oath"),
+        item("stormrunner_boots", "Stormrunner Boots", EquipmentSlot.BOOTS, ItemTier.RARE, HeroStat.AGILITY, 3, HeroStat.DODGE, 1, BASTION_OATH),
         item("sapphire_luck_ring", "Sapphire Luck Ring", EquipmentSlot.RING_1, ItemTier.RARE, HeroStat.LUCK, 3, HeroStat.STRENGTH, 1),
         item("bloodroot_signet", "Bloodroot Signet", EquipmentSlot.RING_2, ItemTier.RARE, HeroStat.LUCK, 3, HeroStat.HEALTH, 1),
         item("echo_band", "Echo Band", EquipmentSlot.RING_1, ItemTier.RARE, HeroStat.LUCK, 3, HeroStat.DODGE, 1),

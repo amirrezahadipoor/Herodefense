@@ -34,7 +34,7 @@ final class EquipmentCatalogTest {
 
     @Test
     void everyItemHasNameSlotTierBonusesAndReviewedIconPath() {
-        EnumSet<EquipmentSlot> slots = EnumSet.noneOf(EquipmentSlot.class);
+        Set<EquipmentSlot> slots = EnumSet.noneOf(EquipmentSlot.class);
         Set<String> names = new HashSet<>();
         for (EquipmentDefinition item : EquipmentCatalog.all()) {
             slots.add(item.slot());

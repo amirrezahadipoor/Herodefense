@@ -126,7 +126,8 @@ final class PremiumVfxRestraintTest {
     @Test
     void ambientSporesStayBelowCharacterContrastAndInsideTheArena() {
         for (int index = 0; index < AmbientMoteField.COUNT; index++) {
-            for (float time = 0f; time < 120f; time += 0.7f) {
+            for (int step = 0; step < 172; step++) {
+                float time = step * 0.7f;
                 float alpha = AmbientMoteField.alpha(index, time);
                 assertTrue(alpha >= 0f && alpha <= VfxBudget.AMBIENT_MAX_ALPHA);
                 float x = AmbientMoteField.x(index, time);

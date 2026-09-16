@@ -44,7 +44,7 @@ public enum Epilogue {
     private final List<String> lines;
 
     Epilogue(List<String> lines) {
-        this.lines = lines;
+        this.lines = List.copyOf(lines);
     }
 
     public List<String> lines() {

@@ -87,10 +87,10 @@ public final class EnemyWaveSpawner {
         if (state == null || count <= 0) {
             return;
         }
-        count = omenAdjustedCount(state, waveNumber, count);
+        int spawnCount = omenAdjustedCount(state, waveNumber, count);
         int firstIndex = state.aliveEnemies.size();
         EnemyType[] types = EnemyType.values();
-        for (int index = 0; index < count; index++) {
+        for (int index = 0; index < spawnCount; index++) {
             SpawnLane lane = SpawnLane.fromIndex(index);
             float jitter = signedUnit(state.runSeed, waveNumber, index);
             float x;

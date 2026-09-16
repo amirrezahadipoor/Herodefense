@@ -127,7 +127,7 @@ final class ItemForgeSystemTest {
         assertEquals(0, bow.upgradeLevel);
         assertEquals("Starfall Bow", bow.name);
         assertEquals(agility, bow.statBonuses.get(HeroStat.AGILITY.name()), 1e-6f);
-        assertFalse(bow.affixId == null || bow.affixId.isEmpty() || bow.affixId.equals("DAMAGE"));
+        assertFalse(bow.affixId == null || bow.affixId.isEmpty() || "DAMAGE".equals(bow.affixId));
         assertTrue(forge.feedbackMessage().startsWith("AFFIX REROLLED"));
     }
 

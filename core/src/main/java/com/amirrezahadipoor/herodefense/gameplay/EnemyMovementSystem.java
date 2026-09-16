@@ -53,7 +53,7 @@ public final class EnemyMovementSystem {
         if (groveCount == 0 && state.secondTreePlanted) {
             float d2 = enemy.distanceSquaredTo(WorldLayout.SECOND_TREE_X, WorldLayout.SECOND_TREE_Y);
             if (d2 < bestDist2) {
-                bestDist2 = d2;
+                // The legacy branch switches the target once; nothing reads bestDist2 again on this path.
                 targetX = WorldLayout.SECOND_TREE_X;
                 targetY = WorldLayout.SECOND_TREE_Y;
             }

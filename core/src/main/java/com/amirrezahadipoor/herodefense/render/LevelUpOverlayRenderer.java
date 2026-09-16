@@ -101,11 +101,10 @@ public final class LevelUpOverlayRenderer implements AutoCloseable {
         return switch (stat) {
             case STRENGTH -> "+" + fmt(HeroStats.DAMAGE_PER_STRENGTH) + " damage per attack";
             case AGILITY -> "+" + fmt(HeroStats.ATTACK_SPEED_PER_AGILITY) + " attacks per second";
-            case LUCK -> "+" + Math.round((HeroStats.DROP_MULTIPLIER_PER_LUCK - 1f) * 100f)
-                + "% item-drop multiplier";
+            case LUCK -> "+" + HeroStats.DROP_MULTIPLIER_PERCENT + "% item-drop multiplier";
             case DODGE -> "+" + fmt(HeroStats.DODGE_CHANCE_PER_POINT * 100f)
-                + "% dodge chance (cap " + Math.round(HeroStats.MAX_DODGE_CHANCE * 100f) + "%)";
-            case HEALTH -> "+" + Math.round(HeroStats.MAX_HEALTH_PER_POINT) + " maximum HP";
+                + "% dodge chance (cap " + HeroStats.MAX_DODGE_PERCENT + "%)";
+            case HEALTH -> "+" + HeroStats.MAX_HEALTH_PER_POINT_ROUNDED + " maximum HP";
         };
     }
 

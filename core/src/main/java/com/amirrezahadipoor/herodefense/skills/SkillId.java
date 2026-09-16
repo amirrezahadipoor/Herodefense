@@ -48,8 +48,9 @@ public enum SkillId {
 
     public static SkillId parse(String value) {
         try {
+            if (value == null) return null;
             return SkillId.valueOf(value);
-        } catch (IllegalArgumentException | NullPointerException error) {
+        } catch (IllegalArgumentException error) {
             return null;
         }
     }

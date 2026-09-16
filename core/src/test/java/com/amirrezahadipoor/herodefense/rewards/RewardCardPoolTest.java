@@ -17,7 +17,7 @@ final class RewardCardPoolTest {
             .collect(Collectors.toSet());
         assertTrue(ids.containsAll(Set.of("STRENGTH", "AGILITY", "LUCK", "DODGE", "HEALTH")));
 
-        EnumSet<RewardEffectType> categories = Arrays.stream(RewardCardId.values())
+        Set<RewardEffectType> categories = Arrays.stream(RewardCardId.values())
             .map(RewardCardId::effectType)
             .collect(Collectors.toCollection(() -> EnumSet.noneOf(RewardEffectType.class)));
         assertEquals(EnumSet.allOf(RewardEffectType.class), categories);

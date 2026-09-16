@@ -47,11 +47,11 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 · R8.2 | `[x]` |
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[x]` |
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[x]` |
-| **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[~]` |
+| **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[x]` |
 | **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[~]` |
 | **87** | Gameplay: one real player decision inside a wave | R3.1 | `[x]` |
 | **88** | Boss identity variety across the 20 encounters | R3.2 | `[x]` |
-| **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[~]` |
+| **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[x]` |
 | **90** | Human playtest protocol and recorded findings | R3.6 | `[ ]` |
 | **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[ ]` |
 | **92** | Runtime tier composed from the genuine master renders | R5.1 · R5.2 | `[~]` |
@@ -357,7 +357,37 @@ sentence has to name the two scores and the commit they were measured on.
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
   so the exception list is self-cleaning. Negative controls cover a rendering import in `model`, an
   700-line class, a 45-field class, and a frozen offender that grows.
-- [ ] **R2.5 Static analysis in CI** (ErrorProne or SpotBugs + PMD), findings triaged not silenced.
+- [x] **R2.5 Static analysis in CI** (ErrorProne or SpotBugs + PMD), findings triaged not silenced.
+  *Two analysers, because they see different things.* **SpotBugs 4.8.6** (Gradle plugin 6.0.26, effort MAX,
+  confidence LOW) reads the compiled bytecode of main **and** test sources: null dereferences, ignored return
+  values, exposure of mutable state, dead stores. **PMD 7.7.0** reads the source: unused or shadowed declarations,
+  missing braces, resource leaks, collections that should be the interface or an `EnumSet`. Neither is wired into
+  `test`, so the fast loop and the full suite keep their pace; `./gradlew :core:ciStaticAnalysis` runs all four
+  reports and is what CI executes next to the tests, uploading both HTML reports as an artifact on failure.
+  *The triage is the item.* First pass: **306 PMD findings** and **171 SpotBugs findings** in main, **3,198** and
+  **7** in test. Around fifty of them were real and are fixed in code: a dead `nodesToApply` budget and a dead
+  distance store (`UnusedAssignment` / `DLS_DEAD_LOCAL_STORE`), a `keySet()` + `get()` loop
+  (`WMI_WRONG_MAP_ITERATOR`), `% 2 == 1` for odd (`IM_BAD_CHECK_FOR_ODD`), an integer division cast to float
+  (`ICAST_IDIV_CAST_TO_DOUBLE`), a `volatile long` incremented from the input callback (`VO_VOLATILE_INCREMENT`),
+  `toUpperCase()` without a locale (`DM_CONVERT_CASE`), a hand-rounded `6.2831f` circle
+  (`CNT_ROUGH_CONSTANT_VALUE`), ten `catch (NullPointerException)` parses that now check for `null` explicitly
+  (`DCN_NULLPOINTER_EXCEPTION`), two uncalled private methods, a write-only field and its only caller's parameter,
+  a duplicated `secondTreePlanted` sync, four repeated string literals that became constants, two identical switch
+  branches, `EnumSet`/`TreeSet` in signatures that became `Set`, a `continue`-as-last-statement loop, an untested
+  resource in `UiFrameRendererTest` (now try-with-resources), two float loop indices, and a test helper that
+  returned `null` for an unreadable PNG header instead of an empty array. Every remaining finding class is
+  **excluded with a written reason** — 16 rule classes, each reasoned where it is excluded: the accessor naming
+  convention (145), inline gameplay thresholds (99), reference releases (15), record compact constructors (2),
+  deliberate identity comparisons (7), per-frame renderer allocations (6), and on the SpotBugs side the public
+  simulation data model (95 + 2), constructor injection (27), live-object accessors (3), exact float tie-breakers
+  (2), fields read from tests or the save format (5), and the single-threaded `GameFonts.shared` lifecycle (4).
+  Test sources get their own ruleset: the same rules minus four that describe test-writing style rather than
+  defects (`UnitTestAssertionsShouldIncludeMessage` 2,505, `UnitTestContainsTooManyAsserts` 553,
+  `SimplifiableTestAssertion` 28, `SystemPrintln` 25 — the sweeping gates print their CSV tables into the CI log on
+  purpose). The audit trail is `docs/STATIC_ANALYSIS.md`, which lists every fix and every exclusion with its
+  reason and its count; the configs sit in `core/config/pmd/` and `core/config/spotbugs/`. After triage the task is
+  green on an untriaged-free report, so a new finding shows up as a failing step rather than as noise in 300
+  standing warnings.
 - [x] **R2.6 A test budget: the suite's cost is measured, and the local loop is not a second CI.**
   *Measured 2026-09-16 (157 classes, 579 tests, `./gradlew :core:test`):* three suites spend **311 of the
   suite's 322 seconds of test time** — `TrialSimulationTest` 109 s, `RewardCardSimulationTest` 106 s,
@@ -559,6 +589,10 @@ sentence has to name the two scores and the commit they were measured on.
   of six frames rendered identically against a floor of five unique (the pose now settles into a coil before it
   loops, and a source-level guard makes a repeated consecutive key a test failure). Neither gate was relaxed; both
   found art that needed to change.
+  *Evidence, not summaries:* the accepted run is `35137859000` / artifact `10463764236`, the audit
+  *One follow-up the first re-dispatch forced:* the workflow now installs Pillow before the publisher runs (the
+  publisher resamples with LANCZOS, and the runner's Python does not ship Pillow), which the run `35148572358`
+  failed on one step before the validator — the fix is in the same commit as this paragraph.
   *Evidence, not summaries:* the accepted run is `35137859000` / artifact `10463764236`, the audit
   `docs/art_reviews/regular_enemies_premium_v2/regular_enemies_audit.json` hashes all 17 review sheets, 224 frames,
   every candidate sheet/atlas/metadata and the baseline state, and `docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md`
@@ -845,6 +879,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 89 | R3.4a | wave omens as the thirteenth drafted trial: `model/WaveModifier` (SWARM / IRON_HIDE / BLOODRUSH / QUICKSTEP, +25% coins on the wave), `gameplay/WaveOmens` policy (never on a boss or elite wave), a HUD line, and `TrialEffects.omensEnabled` read by the spawner, the factory, kill rewards and the HUD; the untrialled run is unchanged by construction, so the counterfactual is the same seed without the trial | `af92ff1` |
 
 | 2026-09-16 | 89 | R3.4c | enemy roster 4 → 8: four authored enemies (Bark Stalker, Sap Hound, Husk Warden, Bramble Thrall) with per-type means held exactly (health 117 / damage 28 / exp 69 / coins 19 / speed 242 / reach 172 / interval 5.10 over eight roles), a staggered spawner that keeps waves 1-10 on the field roster and interleaves deep waves, 384 px masters rendered in CI and published onto the reviewed 192 px tier with `masterRender` provenance, two art defects found and fixed by the gates (frame-border extremes, a flat idle), 17 review sheets + audit hashes, catalog budget 370 → 390 MB, combat set 95.9 MiB of 100 MiB, and the ascension gate's one red cell (forced Dodge, tier 6, seed 20342418142676295 at 15.907% vs a 15% ceiling) repaired by re-deriving the per-tier health/damage bumps (0.0005/0.0002 → 0.0004/0.00025), a change tier 0 cannot see | `b186c42` · `0e32e8a` · `621bec6` |
+
+| 2026-09-16 | 89 | R2.5 | static analysis in CI: SpotBugs 4.8.6 (bytecode, main + test) and PMD 7.7.0 (source, main + test) run as `:core:ciStaticAnalysis` next to the tests, reports uploaded on failure; first pass found 306 + 171 findings in main and 3,198 + 7 in test, ~50 fixed in code (dead stores, a `keySet()`+`get()` loop, `%2==1`, a locale-free `toUpperCase`, ten `catch (NullPointerException)` parses, uncalled private methods, duplicated literals, a leaked renderer in a test, two float loop indices) and 16 rule classes excluded **with a written reason each** in `docs/STATIC_ANALYSIS.md` | `this commit` |
 
 | 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `5b78835` |
 

@@ -1,5 +1,8 @@
 plugins {
     id "java-library"
+    // Roadmap R2.5: static analysis, run as its own task so the test loop keeps its pace.
+    id "com.github.spotbugs" version "6.0.26"
+    id "pmd"
 }
 
 java {
@@ -43,4 +46,51 @@ test {
             excludeTestsMatching "*AscensionGateTest"
         }
     }
+}
+
+// --- Static analysis (roadmap R2.5) -----------------------------------------------------------------------
+// Two analysers with different eyes: SpotBugs reads the compiled bytecode (null dereferences, ignored return
+// values, exposure of mutable state), PMD reads the source (unused or shadowing declarations, missing braces,
+// needless object churn). Neither is wired into `test`, so the fast loop stays fast; `ciStaticAnalysis` is what
+// the workflow runs, and `check` stays the aggregate of tests plus both reports.
+//
+// Findings are triaged, never silenced: every exclusion below names a rule AND the file or pattern it covers, so
+// the reports stay actionable. The triage record lives in docs/STATIC_ANALYSIS.md.
+
+spotbugs {
+    toolVersion = "4.8.6"
+    effort.set(com.github.spotbugs.snom.Effort.valueOf("MAX"))
+    reportLevel.set(com.github.spotbugs.snom.Confidence.valueOf("LOW"))
+    excludeFilter = file("config/spotbugs/exclude.xml")
+}
+
+pmd {
+    toolVersion = "7.7.0"
+    consoleOutput = true
+    ruleSetFiles = files("config/pmd/ruleset.xml")
+    ruleSets = []
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+    reports {
+        html.required = true
+        xml.required = true
+    }
+}
+
+tasks.withType(Pmd).configureEach {
+    ignoreFailures = false
+}
+
+// Test sources get the same rules minus four that describe test-writing style rather than defects (see
+// config/pmd/ruleset-tests.xml for each reason). A broken test is as expensive as a broken system, so the
+// correctness rules -- unused members, resource leaks, float loop indices, collection choices -- stay on.
+tasks.named("pmdTest") {
+    ruleSetFiles = files("config/pmd/ruleset-tests.xml")
+}
+
+tasks.register("ciStaticAnalysis") {
+    group = "verification"
+    description = "Both analysers over main and test sources; fails on any finding they have not been told to ignore."
+    dependsOn "spotbugsMain", "spotbugsTest", "pmdMain", "pmdTest"
 }

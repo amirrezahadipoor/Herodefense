@@ -184,8 +184,9 @@ public final class CodexSystem {
 
     private static int parseInt(String value, int fallback) {
         try {
+            if (value == null) return fallback;
             return Integer.parseInt(value);
-        } catch (NumberFormatException | NullPointerException bad) {
+        } catch (NumberFormatException bad) {
             return fallback;
         }
     }

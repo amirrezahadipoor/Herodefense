@@ -10,7 +10,7 @@ public final class EliteFragments {
      * two-part thread alternates deterministically per affix.
      */
     public static String fragmentFor(String affixId, int killCount) {
-        boolean first = Math.max(1, killCount) % 2 == 1;
+        boolean first = (Math.max(1, killCount) & 1) == 1;
         if ("blightburst".equals(affixId)) {
             return first
                 ? "It does not die so much as let go. What was holding it together was never its own to keep."

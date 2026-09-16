@@ -57,7 +57,7 @@ final class PremiumCeremonyAssetContractTest {
             JsonValue record = audit.get("assets").get(key);
             assertNotNull(asset, key);
             assertNotNull(record, key);
-            boolean hero = key.equals("hero_ceremony");
+            boolean hero = "hero_ceremony".equals(key);
             assertEquals(hero ? "hero" : "world_tree", asset.getString("family"), key);
             // Phase 54 HD: hero 192->384, boss 256->384
             assertTrue(asset.getInt("frameSize") >= 192, key);

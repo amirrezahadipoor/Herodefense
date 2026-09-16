@@ -41,14 +41,11 @@ public final class BossTitleCards {
                 continue;
             }
             String line = titleFor(boss.bossType);
-            if (line == null) {
-                continue;
+            boolean alreadySeen = Boolean.TRUE.equals(state.firstBossEncounters.get(boss.bossType));
+            if (line != null && !alreadySeen) {
+                state.firstBossEncounters.put(boss.bossType, Boolean.TRUE);
+                return line;
             }
-            if (Boolean.TRUE.equals(state.firstBossEncounters.get(boss.bossType))) {
-                continue;
-            }
-            state.firstBossEncounters.put(boss.bossType, Boolean.TRUE);
-            return line;
         }
         return null;
     }

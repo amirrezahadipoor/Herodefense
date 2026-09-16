@@ -312,8 +312,6 @@ public final class GameState {
             float cur = plantedTreeHealth.get(i);
             plantedTreeHealth.set(i, Math.max(0f, Math.min(max, cur)));
         }
-        // Sync deprecated boolean
-        secondTreePlanted = plantedTreesCount > 0;
         // Grove ceremony bookkeeping for 50/100/150
         if (waveNumber <= 50) {
             ceremonyPending = false;
@@ -342,8 +340,8 @@ public final class GameState {
                 plantedTreesCount = 1;
                 while (plantedTreeHealth.size() > 1) plantedTreeHealth.remove(plantedTreeHealth.size() - 1);
                 while (plantedTreeMaxHealth.size() > 1) plantedTreeMaxHealth.remove(plantedTreeMaxHealth.size() - 1);
-                while (plantedTreeHealth.size() < 1) plantedTreeHealth.add(worldTreeMaxHealth);
-                while (plantedTreeMaxHealth.size() < 1) plantedTreeMaxHealth.add(worldTreeMaxHealth);
+                while (plantedTreeHealth.isEmpty()) plantedTreeHealth.add(worldTreeMaxHealth);
+                while (plantedTreeMaxHealth.isEmpty()) plantedTreeMaxHealth.add(worldTreeMaxHealth);
             } else {
                 if (plantedTreesCount < 2) {
                     plantedTreesCount = 2;

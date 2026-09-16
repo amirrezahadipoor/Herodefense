@@ -45,6 +45,9 @@ final class TrialSimulationTest {
     private static final float MINIMUM_PRESSURED_WAVE_FRACTION = 0.875f;
     private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 0.40f;
     private static final float MAXIMUM_CLEAR_SECONDS = 120f;
+    /** Minimum waves that must land above the pressure floor: a fixed share of the run length. */
+    private static final long MINIMUM_PRESSURED_WAVES =
+        (long) Math.ceil(GameState.FINAL_WAVE * MINIMUM_PRESSURED_WAVE_FRACTION);
 
     private record PerRun(
         float averageDamage,
@@ -103,7 +106,7 @@ final class TrialSimulationTest {
             scenario + " trivialized median clear time: " + median.averageClearTime());
         check(failures,
             median.pressuredWaves()
-                >= Math.ceil(GameState.FINAL_WAVE * MINIMUM_PRESSURED_WAVE_FRACTION),
+                >= MINIMUM_PRESSURED_WAVES,
             scenario + " left too few pressured waves: " + median.pressuredWaves());
         check(failures, median.maximumDamage() <= MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION,
             scenario + " caused a damage spike: " + median.maximumDamage() + " at wave "

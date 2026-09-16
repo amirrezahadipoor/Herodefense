@@ -33,7 +33,7 @@ final class CodexOverlayRendererTest {
             "ok pneumonoultramicroscopicsilicovolcanoconiosis ok", s -> s.length() * 10.0, 100f);
         assertEquals(3, lines.size());
         assertEquals("ok", lines.get(0));
-        assertTrue(lines.get(2).equals("ok"));
+        assertEquals("ok", lines.get(2));
     }
 
     @Test

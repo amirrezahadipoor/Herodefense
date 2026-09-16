@@ -244,7 +244,8 @@ public final class CombatEntityRenderer implements AutoCloseable {
             }
             // Real arrow sprite rotated onto velocity vector
             Texture arrowTex;
-            float arrowW, arrowH;
+            float arrowW;
+            float arrowH;
             if (projectile.critical) {
                 arrowTex = arrowCrit;
                 arrowW = 30f;
@@ -612,8 +613,9 @@ public final class CombatEntityRenderer implements AutoCloseable {
     private static String dropTexturePath(DropEntity drop) {
         if ("POTION".equals(drop.dropType)) {
             try {
+                if (drop.itemId == null) throw new IllegalArgumentException("missing potion tier");
                 return PotionTier.valueOf(drop.itemId).iconPath();
-            } catch (IllegalArgumentException | NullPointerException ignored) {
+            } catch (IllegalArgumentException ignored) {
                 return PotionTier.TIER_1.iconPath();
             }
         }

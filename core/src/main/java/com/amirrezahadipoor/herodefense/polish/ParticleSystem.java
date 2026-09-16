@@ -155,7 +155,8 @@ public final class ParticleSystem {
     public void emitTreeDestruction(float x, float y) {
         for (int index = 0; index < 18; index++) {
             float spread = (index % 6 - 2.5f) * 34f;
-            float lift = (index / 6) * 46f;
+            int row = index / 6;
+            float lift = row * 46f;
             add(
                 ParticleType.TREE_LEAF,
                 x + spread,

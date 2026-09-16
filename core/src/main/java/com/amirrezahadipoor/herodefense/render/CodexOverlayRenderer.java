@@ -22,6 +22,8 @@ import java.util.function.ToDoubleFunction;
 
 /** Read-only Grove Codex: silhouetted locked rows, full Tree-voice text in leaf-green. */
 public final class CodexOverlayRenderer implements AutoCloseable {
+    /** Separator between a codex entry's two halves; one spelling, four uses. */
+    private static final String HALF_SEPARATOR = " / ";
     private static final float HEADER_PANEL_X = 40f;
     private static final float HEADER_PANEL_Y = 1052f;
     private static final float HEADER_PANEL_WIDTH = 510f;
@@ -130,9 +132,9 @@ public final class CodexOverlayRenderer implements AutoCloseable {
     /** "12 / 30 WRITTEN" on the lore shelf, "7 / 12 EARNED" on the trophy shelf. */
     private String headerLine(GameState state, CodexTouchController controller) {
         if (controller.tab() == CodexTouchLayout.Tab.TROPHIES) {
-            return state.trophies.earnedCount() + " / " + Trophy.values().length + " EARNED";
+            return state.trophies.earnedCount() + HALF_SEPARATOR + Trophy.values().length + " EARNED";
         }
-        return codex.unlockedCount(state) + " / " + LoreCatalog.all().size() + " WRITTEN";
+        return codex.unlockedCount(state) + HALF_SEPARATOR + LoreCatalog.all().size() + " WRITTEN";
     }
 
     private void drawTabs(
@@ -178,7 +180,7 @@ public final class CodexOverlayRenderer implements AutoCloseable {
             text.draw(batch, (earned ? "[*] " : "[ ] ") + trophy.title(),
                 CodexTouchLayout.LIST_X + 20f, bottom + 42f, 0.8f,
                 earned ? OverlayText.GOLD : OverlayText.MUTED);
-            text.draw(batch, progress + " / " + trophy.target(),
+            text.draw(batch, progress + HALF_SEPARATOR + trophy.target(),
                 CodexTouchLayout.LIST_X + 20f, bottom + 14f, 0.62f,
                 earned ? OverlayText.POSITIVE : OverlayText.SUBTLE);
         }
@@ -208,7 +210,7 @@ public final class CodexOverlayRenderer implements AutoCloseable {
             text.draw(batch, line, DETAILS_X + DETAILS_PADDING, y, BODY_SCALE, OverlayText.POSITIVE);
             y -= step;
         }
-        text.draw(batch, TrophyBook.progress(state, trophy) + " / " + trophy.target(),
+        text.draw(batch, TrophyBook.progress(state, trophy) + HALF_SEPARATOR + trophy.target(),
             DETAILS_X + DETAILS_PADDING, DETAILS_Y + 40f, 0.8f,
             earned ? OverlayText.GOLD : OverlayText.SUBTLE);
     }

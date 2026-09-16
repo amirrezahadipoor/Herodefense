@@ -88,13 +88,13 @@ class RuntimeResidencyTest {
                 byte[] header = new byte[24];
                 try (var stream = Files.newInputStream(GENERATED.resolve(path))) {
                     if (stream.read(header) != header.length) {
-                        return null;
+                        return new int[0];
                     }
                 }
                 ByteBuffer buffer = ByteBuffer.wrap(header).order(ByteOrder.BIG_ENDIAN);
                 return new int[] {buffer.getInt(16), buffer.getInt(20)};
             } catch (IOException error) {
-                return null;
+                return new int[0];
             }
         });
     }

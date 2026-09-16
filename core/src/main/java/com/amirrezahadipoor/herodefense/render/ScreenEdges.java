@@ -9,7 +9,7 @@ import com.amirrezahadipoor.herodefense.WorldLayout;
  * it to anchor bars and scrims to the real panel; touch layouts stay on the 1280 design grid.
  */
 public final class ScreenEdges {
-    private static float bottom = 0f;
+    private static float bottom;
     private static float top = WorldLayout.REFERENCE_HEIGHT;
 
     private ScreenEdges() {

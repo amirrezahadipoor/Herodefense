@@ -30,8 +30,9 @@ public final class Boss extends Enemy {
 
     public BossType bossDefinition() {
         try {
+            if (bossType == null) return BossType.ANCIENT_GOLEM;
             return BossType.valueOf(bossType);
-        } catch (IllegalArgumentException | NullPointerException ignored) {
+        } catch (IllegalArgumentException ignored) {
             return BossType.ANCIENT_GOLEM;
         }
     }

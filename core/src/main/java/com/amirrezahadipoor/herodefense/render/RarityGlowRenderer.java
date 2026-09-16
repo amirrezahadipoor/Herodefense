@@ -10,8 +10,14 @@ import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 public final class RarityGlowRenderer implements AutoCloseable {
     private final ShaderProgram glowShader;
 
-    public RarityGlowRenderer() {
+    static {
+        // libGDX compiles shaders lazily and silently; pedantic mode turns a bad shader into a thrown error at
+        // construction. It is a process-wide library flag, so it is set once when this class loads rather than
+        // from every constructor, which is also what the static-analysis report asks for.
         ShaderProgram.pedantic = true;
+    }
+
+    public RarityGlowRenderer() {
         glowShader = new ShaderProgram(
             Gdx.files.internal("shaders/rarity-glow.vert"),
             Gdx.files.internal("shaders/rarity-glow.frag")

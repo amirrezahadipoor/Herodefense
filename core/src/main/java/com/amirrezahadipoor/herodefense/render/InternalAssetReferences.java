@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
@@ -36,7 +37,7 @@ public final class InternalAssetReferences {
 
     /** Distinct literal paths referenced by the Java sources under {@code root}. */
     public static List<String> literalPaths(Path root) {
-        TreeSet<String> paths = new TreeSet<>();
+        Set<String> paths = new TreeSet<>();
         for (Path file : javaFiles(root)) {
             String text = stripCommentsAndLiterals(read(file));
             Matcher matcher = LITERAL.matcher(text);

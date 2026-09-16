@@ -193,7 +193,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private GameState gameState;
     private boolean continueAvailable;
     private volatile boolean readyForTouch;
-    private volatile long handledTouchUpCount;
+    private final java.util.concurrent.atomic.AtomicLong handledTouchUpCount =
+        new java.util.concurrent.atomic.AtomicLong();
     private volatile float lastTouchWorldX = Float.NaN;
     private volatile float lastTouchWorldY = Float.NaN;
     private OrthographicCamera camera;
@@ -392,7 +393,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     /** Read-only test visibility used to confirm device touches reached libGDX coordinates. */
     public long handledTouchUpCount() {
-        return handledTouchUpCount;
+        return handledTouchUpCount.get();
     }
 
     public float lastTouchWorldX() {
@@ -487,7 +488,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void setWhisperLine(String line) { frameDriver.setWhisperLine(line); }
         @Override public void setLastTouchWorldX(float value) { lastTouchWorldX = value; }
         @Override public void setLastTouchWorldY(float value) { lastTouchWorldY = value; }
-        @Override public void countHandledTouchUp() { handledTouchUpCount++; }
+        @Override public void countHandledTouchUp() { handledTouchUpCount.incrementAndGet(); }
         @Override public void saveNow() { HeroDefenseGame.this.saveNow(); }
         @Override public void startNewRunSameTier() { HeroDefenseGame.this.startNewRunSameTier(); }
         @Override public void startBriefRun() { sessionController.startBriefRun(); }
@@ -500,10 +501,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void focusFireAt(float worldX, float worldY) {
             HeroDefenseGame.this.focusFireAt(worldX, worldY);
         }
-    }
-
-    private void startNewRun() {
-        sessionController.startNewRun();
     }
 
     private void startNewRunSameTier() {

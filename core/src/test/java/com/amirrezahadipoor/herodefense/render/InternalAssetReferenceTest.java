@@ -48,7 +48,7 @@ class InternalAssetReferenceTest {
     void aReferenceWithoutAFileIsRejected() {
         List<String> problems = InternalAssetReferences.problems(
             List.of("shaders/post-process.frag", "shaders/rarity-glow.frag"),
-            path -> path.equals("shaders/rarity-glow.frag"));
+            path -> "shaders/rarity-glow.frag".equals(path));
         assertTrue(problems.stream().anyMatch(problem -> problem.contains("shaders/post-process.frag")),
             problems.toString());
         assertFalse(problems.stream().anyMatch(problem -> problem.contains("rarity-glow")), problems.toString());

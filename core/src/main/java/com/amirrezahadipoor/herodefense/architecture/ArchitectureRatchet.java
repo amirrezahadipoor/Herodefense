@@ -57,14 +57,15 @@ public final class ArchitectureRatchet {
             problems.addAll(forbiddenImports(relative, source));
             problems.addAll(size(relative, source, frozen.get(relative)));
         }
-        for (String entry : frozen.keySet()) {
+        for (Map.Entry<String, Frozen> frozenEntry : frozen.entrySet()) {
+            String entry = frozenEntry.getKey();
             Path file = sourceRoot.resolve(entry);
             if (!Files.isRegularFile(file)) {
                 problems.add("frozen offender " + entry + " no longer exists; remove it from the freeze list");
                 continue;
             }
             String source = read(file);
-            Frozen allowed = frozen.get(entry);
+            Frozen allowed = frozenEntry.getValue();
             if (countLines(source) <= MAX_LINES && countFields(source) <= MAX_FIELDS) {
                 problems.add("frozen offender " + entry + " is inside the limits now; remove it from the "
                     + "freeze list");

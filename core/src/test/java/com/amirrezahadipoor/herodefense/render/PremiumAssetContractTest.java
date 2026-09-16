@@ -85,7 +85,6 @@ final class PremiumAssetContractTest {
             assertTrue(asset != null, "missing premium pilot asset " + key);
             assertTrue(Set.of("premium-v2" /* allow studio-v3 etc */, "studio-v3", "studio-v4-vibrant", "studio-v5-hd-pbr").contains(asset.getString("visualQuality")), key + " visualQuality=" + asset.getString("visualQuality"));
             assertTrue(asset.getInt("renderSupersample") >= 2, key);
-            int expectedSamples = "equipment".equals(asset.getString("family")) ? 8 : 16;
             assertTrue(asset.getInt("renderSamples") >= 8, key);
             assertEquals(PILOT_REVIEW, asset.getString(
                 "pilotReviewDocument", asset.getString("reviewDocument", "")

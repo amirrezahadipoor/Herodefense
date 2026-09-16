@@ -270,12 +270,8 @@ public final class BalanceSimulator {
 
     private static void applyRootBonusesForTier(GameState state, int tier) {
         if (state == null || state.hero == null) return;
-        // Simulate heartwood spending: tier 3 = first 8 nodes, tier 6 = 16, tier 10 = all
-        int nodesToApply;
-        if (tier >= 10) nodesToApply = 24;
-        else if (tier >= 6) nodesToApply = 16;
-        else if (tier >= 3) nodesToApply = 8;
-        else nodesToApply = tier * 2;
+        // Simulate heartwood spending: the node budget per tier (3 -> 8 nodes, 6 -> 16, 10 -> 24) is applied
+        // as the per-tier bonuses below; counting it into a variable first was dead weight.
         // Approximate permanent bonuses from root network without needing full catalog
         // Each tier gives +1 strength, +1 health, +25 coins, +0.2 talent point average
         state.hero.stats.strength += tier;

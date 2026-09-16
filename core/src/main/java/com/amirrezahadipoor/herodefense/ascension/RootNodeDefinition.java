@@ -34,7 +34,7 @@ public final class RootNodeDefinition {
         this.bonusAmount = bonusAmount;
         this.x = x;
         this.y = y;
-        this.requires = requires == null ? Collections.emptyList() : Collections.unmodifiableList(requires);
+        this.requires = requires == null ? List.of() : List.copyOf(requires);
     }
 
     public String id() { return id; }

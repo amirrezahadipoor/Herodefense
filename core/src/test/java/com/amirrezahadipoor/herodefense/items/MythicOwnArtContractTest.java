@@ -59,7 +59,6 @@ final class MythicOwnArtContractTest {
                 case "emberless_core" -> "eternal_seed";
                 default -> throw new IllegalStateException(id);
             };
-            Path oldAtlas = GENERATED.resolve("equipment/" + oldBorrow + ".atlas");
             Path oldSheet = GENERATED.resolve("equipment/" + oldBorrow + ".png");
             if (Files.exists(oldSheet) && Files.exists(sheet)) {
                 byte[] mythBytes = Files.readAllBytes(sheet);

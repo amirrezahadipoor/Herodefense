@@ -4,10 +4,11 @@ import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /** Owns legal top-level state transitions without depending on rendering APIs. */
 public final class GameFlowController {
-    private static final Map<GameScreenState, EnumSet<GameScreenState>> ALLOWED = buildTransitions();
+    private static final Map<GameScreenState, Set<GameScreenState>> ALLOWED = buildTransitions();
 
     private volatile GameScreenState state = GameScreenState.MENU;
     private GameScreenState returnState = GameScreenState.PLAYING;
@@ -57,8 +58,8 @@ public final class GameFlowController {
         }
     }
 
-    private static Map<GameScreenState, EnumSet<GameScreenState>> buildTransitions() {
-        Map<GameScreenState, EnumSet<GameScreenState>> transitions = new EnumMap<>(GameScreenState.class);
+    private static Map<GameScreenState, Set<GameScreenState>> buildTransitions() {
+        Map<GameScreenState, Set<GameScreenState>> transitions = new EnumMap<>(GameScreenState.class);
         transitions.put(GameScreenState.MENU, EnumSet.of(
             GameScreenState.SETTINGS, GameScreenState.PLAYING, GameScreenState.SHOP,
             GameScreenState.ROOT_NETWORK, GameScreenState.CODEX, GameScreenState.TRIAL_DRAFT

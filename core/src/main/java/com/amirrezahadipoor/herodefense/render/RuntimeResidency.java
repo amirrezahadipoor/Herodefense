@@ -48,7 +48,7 @@ public final class RuntimeResidency {
             total += sheetBytes(asset);
             if (asset.has("icon")) {
                 int[] size = icons.sizeOf(asset.getString("icon"));
-                if (size != null) {
+                if (size != null && size.length == 2) {
                     total += (long) size[0] * size[1] * 4L;
                 }
             }
@@ -138,7 +138,11 @@ public final class RuntimeResidency {
         return heaviest;
     }
 
-    /** Decoded dimensions of the icon files, so the catalog number can include them. */
+    /**
+     * Decoded dimensions of the icon files, so the catalog number can include them. An icon whose header cannot
+     * be read is reported as an EMPTY array, never null: the caller skips it either way, and callers that forget
+     * to check get an array with no dimensions instead of a null dereference.
+     */
     public interface IconSizes {
         int[] sizeOf(String iconPath);
     }

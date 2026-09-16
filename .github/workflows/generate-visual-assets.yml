@@ -70,6 +70,9 @@ jobs:
       # publisher refuses geometry it cannot halve or a master grid that disagrees with the reviewed one, so a
       # batch that cannot become the reviewed tier fails here rather than at promotion time. (Batches whose class
       # has no published tier definition yet -- bosses, the world tree -- are refused by the same tool.)
+      - name: Install Pillow for the runtime-tier publisher
+        run: python3 -m pip install --break-system-packages pillow
+
       - name: Publish the reviewed runtime tier of the rendered batch
         run: >-
           python3 tools/visual/publish_runtime_tier.py

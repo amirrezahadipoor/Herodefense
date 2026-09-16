@@ -51,8 +51,9 @@ public enum VisualRarity {
 
     public static VisualRarity fromTier(String tier) {
         try {
+            if (tier == null) return COMMON;
             return VisualRarity.valueOf(tier);
-        } catch (IllegalArgumentException | NullPointerException error) {
+        } catch (IllegalArgumentException error) {
             return COMMON;
         }
     }

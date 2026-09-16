@@ -62,7 +62,7 @@ final class WaveLifecycleSystemTest {
         GameState state = GameState.newRun(100L);
         state.waveNumber = GameState.PLANTING_WAVE;
         assertTrue(lifecycle.startCurrentWave(state));
-        assertTrue(state.aliveBosses.size() > 0);
+        assertFalse(state.aliveBosses.isEmpty());
         for (Boss boss : state.aliveBosses) boss.receiveDamage(Float.MAX_VALUE);
         assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
         assertTrue(new BossRewardCardSystem().chooseCard(state, 0));

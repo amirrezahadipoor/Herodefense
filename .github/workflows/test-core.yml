@@ -49,6 +49,20 @@ jobs:
       - name: Run unit tests and the 100-wave balance gate
         run: ./scripts/gradle.sh :core:test --stacktrace
 
+      - name: Static analysis (roadmap R2.5 -- PMD + SpotBugs, findings triaged not silenced)
+        run: ./scripts/gradle.sh :core:ciStaticAnalysis
+
+      - name: Upload static-analysis reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-static-analysis
+          path: |
+            core/build/reports/pmd/
+            core/build/reports/spotbugs/
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4

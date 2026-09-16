@@ -8,7 +8,7 @@ import java.util.Map;
 
 /** Data table of 24 permanent Root Network nodes laid along the World Tree. */
 public final class RootNetworkCatalog {
-    private static final List<RootNodeDefinition> ALL = Collections.unmodifiableList(Arrays.asList(
+    private static final List<RootNodeDefinition> ALL = List.copyOf(Arrays.asList(
         // Trunk base - cheap starters
         node("root_strength_1", "Root of Might", "+1 Starting Strength", 15, RootNodeBonusType.STARTING_STRENGTH, 1, 360f, 280f, null),
         node("root_health_1", "Root of Vitality", "+1 Starting Health", 15, RootNodeBonusType.STARTING_HEALTH, 1, 320f, 300f, null),

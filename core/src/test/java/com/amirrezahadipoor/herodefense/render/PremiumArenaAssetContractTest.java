@@ -40,15 +40,6 @@ final class PremiumArenaAssetContractTest {
         "ground_tile_0", "ground_tile_1", "ground_tile_2",
         "crystal_prop_0", "crystal_prop_1", "crystal_prop_2"
     );
-    private static final Map<String, String> SHEET_HASHES = Map.of(
-        "arena_backdrop", "3fed1b8e8d227b224cd2060f7396b10a4898d8ba6e8ebe44f25329575f52f608",
-        "ground_tile_0", "b298e52a52d88d13be5acaf12364fb5956137f8d964bb517e3f2e7503ec3d512",
-        "ground_tile_1", "33be1a79dc93ed5bcb6dfa72094dd6fb646131d5a35b54eb31c9429c62f0d633",
-        "ground_tile_2", "25db0fcd43b0200df92f132bc1df13ce40ee9d03e80907738d78f92364d05ad7",
-        "crystal_prop_0", "458dd7f0712446cf82024e969d4fe8761922374297bdc40b285bc41d4b1356a7",
-        "crystal_prop_1", "ab62b5a38ec6df9109dff11d15c8da2b5e498cc3ceb506a4a7d6c0208b8fc208",
-        "crystal_prop_2", "4c170c5984d464ec7b42990a921f80c399b862ae43dba85c2f21d1887f59314f"
-    );
 
     @Test
     void acceptedAuditAndEveryReviewSheetRemainHashBound() throws IOException {
