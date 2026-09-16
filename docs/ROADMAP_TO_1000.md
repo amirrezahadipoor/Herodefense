@@ -313,7 +313,17 @@ sentence has to name the two scores and the commit they were measured on.
   and `updateCinematic`, three hundred lines apart from the ceremony objects that drove them. `HeroDefenseGame`
   954 → **927 lines** (39 % below the 1,519 the audit measured), fields 95 → 94, ratchet freeze lowered in the
   same commit.
-  *Remaining:* the 400-line ceiling and the before/after emulator smoke comparison.
+  *Slice 8 (done):* renderer ownership moved into `render/RenderStack` — the twenty-seven renderers and the
+  sprite batch are now declared, created and closed in one place (the audit's `ArenaRendererFacade` item). Three
+  blocks used to have to be edited in step in the game class, and a forgotten close call was a silent leak; the
+  stack's `close()` mirrors the original teardown statement for statement, in the same order, renderer by
+  renderer and then the batch. Nothing draws differently: the frame still asks the same objects for the same
+  calls, and the twenty-seven `ComposerHost` getters now read from the stack. `HeroDefenseGame` 927 → **797
+  lines** (47 % below the 1,519 the audit measured; fourteen fields became one), fields 94 → 68, ratchet freeze
+  lowered in the same commit. This is the first slice shipped on the roadmap's new fast test loop: 573 tests in
+  26 seconds instead of a seven-minute wait.
+  *Remaining:* the host adapters (`HudFlow`), the 400-line ceiling and the before/after emulator smoke
+  comparison.
 - [~] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
   *Started with the first two slices:* `WaveDirectorTest` (five cases: hero death fells every tree on the epilogue
   screen and persists it, a level-up opens before the wave advances, an idle frame only offers the reflection and
@@ -331,7 +341,7 @@ sentence has to name the two scores and the commit they were measured on.
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
-  size** — `HeroDefenseGame` (927 lines / 94 fields after roadmap phase 86 slice 7),
+  size** — `HeroDefenseGame` (797 lines / 68 fields after roadmap phase 86 slice 8),
   `CombatEntityRenderer` (681 / 13 after roadmap phase 87 and 88),
   `BalanceSimulator` (639 / 23), `model/GameState` (592 / 80). The freeze may only shrink: the ratchet fails
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
@@ -663,7 +673,9 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 86 | R2.2/R2.3 | `WaveDirectorTest` (5 cases) and `SessionControllerTest` (7 cases) make the two extracted flows testable without libGDX: `audio/AudioPlayback` and `save/RunSaveRepository` now sit between the gameplay systems and the libGDX-backed classes that open resources in their constructors | `44285d4` |
 
-| 2026-09-16 | 86 | R2.6 | test-cost measurement (3 suites = 311 of 322 s of test time, 157 classes / 579 tests) plus two speed changes that keep every gate: two parallel test JVMs (`-PserialTests` to opt out) took the full suite from 7 m 29 s to 3 m 45 s, and `-PfastTests` gives a 21-second local loop that skips only the three sweeping suites, which CI still runs on every push | `_PENDING_` |
+| 2026-09-16 | 86 | R2.6 | test-cost measurement (3 suites = 311 of 322 s of test time, 157 classes / 579 tests) plus two speed changes that keep every gate: two parallel test JVMs (`-PserialTests` to opt out) took the full suite from 7 m 29 s to 3 m 45 s, and `-PfastTests` gives a 21-second local loop that skips only the three sweeping suites, which CI still runs on every push | `705a3a3` |
+
+| 2026-09-16 | 86 | R2.2 slice 8 | renderer ownership (27 renderers + the batch) extracted into `render/RenderStack`, with the teardown kept statement for statement; `HeroDefenseGame` 927 → 797 lines (47 percent smaller than the audited 1,519-line god class), fields 94 → 68; first slice verified on the new fast loop (573 tests in 26 s) | `_PENDING_` |
 
 ## Definition of done
 

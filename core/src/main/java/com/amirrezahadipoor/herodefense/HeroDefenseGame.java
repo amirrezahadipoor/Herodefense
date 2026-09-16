@@ -79,6 +79,7 @@ import com.amirrezahadipoor.herodefense.polish.HitStopSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
 import com.amirrezahadipoor.herodefense.polish.TouchFeedbackSystem;
+import com.amirrezahadipoor.herodefense.render.RenderStack;
 import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
 import com.amirrezahadipoor.herodefense.render.CodexOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.IdleWhisperRenderer;
@@ -135,16 +136,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     private GameFlowController flow;
     private GameAudioManager audioManager;
-    private ArenaEnvironmentRenderer arenaEnvironmentRenderer;
     private AutoPotionSystem autoPotionSystem;
     private BossRewardCardSystem bossRewardCardSystem;
-    private EquipmentSpriteRenderer equipmentSpriteRenderer;
-    private FloatingCoinTextRenderer floatingCoinTextRenderer;
     private FloatingCoinTextSystem floatingCoinTextSystem;
     private FloatingDamageTextSystem floatingDamageTextSystem;
-    private FloatingDamageTextRenderer floatingDamageTextRenderer;
     private BossSpecialAttackSystem bossSpecialAttackSystem;
-    private CombatEntityRenderer combatEntityRenderer;
     private DropPickupSystem dropPickupSystem;
     private EnemyMeleeAttackSystem enemyMeleeAttackSystem;
     private EnemyMovementSystem enemyMovementSystem;
@@ -155,24 +151,17 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private CinematicFlow cinematicFlow;
     private HeroAnimationController heroAnimationController;
     private HeroAutoAttackSystem heroAutoAttackSystem;
-    private GameOverOverlayRenderer gameOverOverlayRenderer;
     private HeroProgressionSystem heroProgressionSystem;
-    private HeroSpriteRenderer heroSpriteRenderer;
-    private CeremonyHeroRenderer ceremonyHeroRenderer;
-    private SaplingTreeRenderer saplingTreeRenderer;
     private final PlantingCeremony plantingCeremony = new PlantingCeremony();
     private final OpeningCinematic openingCinematic = new OpeningCinematic();
     private final CodexSystem codexSystem = new CodexSystem();
     private GameScreenState lastFrameState = GameScreenState.MENU;
     private long pauseStartNanos;
-    private OpeningCinematicRenderer openingCinematicRenderer;
     private HapticFeedback hapticFeedback;
     private HitStopSystem hitStopSystem;
     private ScreenStateComposer screenStateComposer;
-    private HudRenderer hudRenderer;
+    private RenderStack renderers;
     private CodexTouchController codexTouchController;
-    private CodexOverlayRenderer codexOverlayRenderer;
-    private IdleWhisperRenderer idleWhisperRenderer;
     /** Current idle-whisper line, or null when no whisper is showing. */
     private String whisperLine;
     private float whisperSeconds;
@@ -181,38 +170,24 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private float storyBeatSeconds;
     private RunPresentationSystem presentationSystem;
     private InventoryTouchController inventoryTouchController;
-    private InventoryOverlayRenderer inventoryOverlayRenderer;
     private ItemDropSystem itemDropSystem;
     private KillRewardSystem killRewardSystem;
     private EliteAffixSystem eliteAffixSystem;
-    private LevelUpOverlayRenderer levelUpOverlayRenderer;
-    private MainMenuRenderer mainMenuRenderer;
-    private ParticleRenderer particleRenderer;
     private ParticleSystem particleSystem;
-    private PauseOverlayRenderer pauseOverlayRenderer;
     private PauseTouchController pauseTouchController;
     private PotionDropSystem potionDropSystem;
-    private RewardCardOverlayRenderer rewardCardOverlayRenderer;
     private RewardCardTouchController rewardCardTouchController;
     private TrialDraftSystem trialDraftSystem;
-    private TrialDraftOverlayRenderer trialDraftOverlayRenderer;
     private TrialDraftTouchController trialDraftTouchController;
-    private SettingsOverlayRenderer settingsOverlayRenderer;
     private ScreenShakeSystem screenShakeSystem;
     private SettingsTouchController settingsTouchController;
     private SimulationSpeedTouchController simulationSpeedTouchController;
-    private StatShopOverlayRenderer statShopOverlayRenderer;
-    private RootNetworkOverlayRenderer rootNetworkOverlayRenderer;
     private StatShopSystem statShopSystem;
     private SkillShopSystem skillShopSystem;
     private RootNetworkSystem rootNetworkSystem;
     private RootNetworkTouchController rootNetworkTouchController;
     private StatShopTouchLayout.Tab shopTab = StatShopTouchLayout.Tab.STATS;
-    private TouchFeedbackRenderer touchFeedbackRenderer;
     private TouchFeedbackSystem touchFeedbackSystem;
-    private UiFrameRenderer uiFrameRenderer;
-    private UiIconRenderer uiIconRenderer;
-    private SpriteBatch spriteBatch;
     private LocalSaveRepository saves;
     private LocalSettingsRepository settingsRepository;
     private GameSettings settings;
@@ -302,34 +277,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             camera
         );
         applyDisplayMetrics(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
-        spriteBatch = new SpriteBatch();
-        screenStateComposer = new ScreenStateComposer(new ComposerHost(), camera, spriteBatch);
-        arenaEnvironmentRenderer = new ArenaEnvironmentRenderer();
-        combatEntityRenderer = new CombatEntityRenderer();
-        floatingCoinTextRenderer = new FloatingCoinTextRenderer();
-        floatingDamageTextRenderer = new FloatingDamageTextRenderer();
-        gameOverOverlayRenderer = new GameOverOverlayRenderer();
-        heroSpriteRenderer = new HeroSpriteRenderer();
-        ceremonyHeroRenderer = new CeremonyHeroRenderer();
-        saplingTreeRenderer = new SaplingTreeRenderer();
-        openingCinematicRenderer = new OpeningCinematicRenderer();
-        hudRenderer = new HudRenderer();
-        equipmentSpriteRenderer = new EquipmentSpriteRenderer();
-        codexOverlayRenderer = new CodexOverlayRenderer();
-        idleWhisperRenderer = new IdleWhisperRenderer();
-        inventoryOverlayRenderer = new InventoryOverlayRenderer();
-        levelUpOverlayRenderer = new LevelUpOverlayRenderer();
-        mainMenuRenderer = new MainMenuRenderer();
-        particleRenderer = new ParticleRenderer();
-        pauseOverlayRenderer = new PauseOverlayRenderer();
-        rewardCardOverlayRenderer = new RewardCardOverlayRenderer();
-        trialDraftOverlayRenderer = new TrialDraftOverlayRenderer();
-        settingsOverlayRenderer = new SettingsOverlayRenderer();
-        statShopOverlayRenderer = new StatShopOverlayRenderer();
-        rootNetworkOverlayRenderer = new RootNetworkOverlayRenderer();
-        touchFeedbackRenderer = new TouchFeedbackRenderer();
-        uiFrameRenderer = new UiFrameRenderer();
-        uiIconRenderer = new UiIconRenderer();
+        renderers = new RenderStack();
+        screenStateComposer = new ScreenStateComposer(new ComposerHost(), camera, renderers.spriteBatch);
         cinematicFlow = new CinematicFlow(
             new CinematicHost(), flow, openingCinematic, plantingCeremony, waveLifecycleSystem, particleSystem,
             heroAnimationController, presentationSystem, audioManager
@@ -510,87 +459,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         if (audioManager != null) {
             audioManager.close();
         }
-        if (arenaEnvironmentRenderer != null) {
-            arenaEnvironmentRenderer.close();
-        }
-        if (combatEntityRenderer != null) {
-            combatEntityRenderer.close();
-        }
-        if (floatingDamageTextRenderer != null) {
-            floatingDamageTextRenderer.close();
-            floatingDamageTextRenderer = null;
-        }
-        if (floatingCoinTextRenderer != null) {
-            floatingCoinTextRenderer.close();
-        }
-        if (gameOverOverlayRenderer != null) {
-            gameOverOverlayRenderer.close();
-        }
-        if (heroSpriteRenderer != null) {
-            heroSpriteRenderer.close();
-        }
-        if (ceremonyHeroRenderer != null) {
-            ceremonyHeroRenderer.close();
-        }
-        if (saplingTreeRenderer != null) {
-            saplingTreeRenderer.close();
-        }
-        if (openingCinematicRenderer != null) {
-            openingCinematicRenderer.close();
-        }
-        if (hudRenderer != null) {
-            hudRenderer.close();
-        }
-        if (equipmentSpriteRenderer != null) {
-            equipmentSpriteRenderer.close();
-        }
-        if (codexOverlayRenderer != null) {
-            codexOverlayRenderer.close();
-        }
-        if (idleWhisperRenderer != null) {
-            idleWhisperRenderer.close();
-        }
-        if (inventoryOverlayRenderer != null) {
-            inventoryOverlayRenderer.close();
-        }
-        if (levelUpOverlayRenderer != null) {
-            levelUpOverlayRenderer.close();
-        }
-        if (mainMenuRenderer != null) {
-            mainMenuRenderer.close();
-        }
-        if (particleRenderer != null) {
-            particleRenderer.close();
-        }
-        if (pauseOverlayRenderer != null) {
-            pauseOverlayRenderer.close();
-        }
-        if (rewardCardOverlayRenderer != null) {
-            rewardCardOverlayRenderer.close();
-        }
-        if (trialDraftOverlayRenderer != null) {
-            trialDraftOverlayRenderer.close();
-        }
-        if (settingsOverlayRenderer != null) {
-            settingsOverlayRenderer.close();
-        }
-        if (statShopOverlayRenderer != null) {
-            statShopOverlayRenderer.close();
-        }
-        if (rootNetworkOverlayRenderer != null) {
-            rootNetworkOverlayRenderer.close();
-        }
-        if (touchFeedbackRenderer != null) {
-            touchFeedbackRenderer.close();
-        }
-        if (uiFrameRenderer != null) {
-            uiFrameRenderer.close();
-        }
-        if (uiIconRenderer != null) {
-            uiIconRenderer.close();
-        }
-        if (spriteBatch != null) {
-            spriteBatch.dispose();
+        if (renderers != null) {
+            renderers.close();
         }
     }
 
@@ -663,7 +533,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public String whisperLine() { return whisperLine; }
         @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
         @Override public TrialDraftTouchController trialDraftTouchController() { return trialDraftTouchController; }
-        @Override public UiFrameRenderer uiFrameRenderer() { return uiFrameRenderer; }
+        @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
         @Override public WaveLifecycleSystem waveLifecycleSystem() { return waveLifecycleSystem; }
         @Override public void setShopTab(StatShopTouchLayout.Tab tab) { shopTab = tab; }
         @Override public void setStoryBeatLine(String line) { storyBeatLine = line; }
@@ -872,54 +742,54 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     private final class ComposerHost implements ScreenStateComposer.Host {
         @Override public float ambientSeconds() { return ambientSeconds; }
-        @Override public ArenaEnvironmentRenderer arenaEnvironmentRenderer() { return arenaEnvironmentRenderer; }
-        @Override public CeremonyHeroRenderer ceremonyHeroRenderer() { return ceremonyHeroRenderer; }
-        @Override public CodexOverlayRenderer codexOverlayRenderer() { return codexOverlayRenderer; }
+        @Override public ArenaEnvironmentRenderer arenaEnvironmentRenderer() { return renderers.arenaEnvironmentRenderer; }
+        @Override public CeremonyHeroRenderer ceremonyHeroRenderer() { return renderers.ceremonyHeroRenderer; }
+        @Override public CodexOverlayRenderer codexOverlayRenderer() { return renderers.codexOverlayRenderer; }
         @Override public CodexTouchController codexTouchController() { return codexTouchController; }
-        @Override public CombatEntityRenderer combatEntityRenderer() { return combatEntityRenderer; }
+        @Override public CombatEntityRenderer combatEntityRenderer() { return renderers.combatEntityRenderer; }
         @Override public boolean continueAvailable() { return continueAvailable; }
-        @Override public EquipmentSpriteRenderer equipmentSpriteRenderer() { return equipmentSpriteRenderer; }
-        @Override public FloatingCoinTextRenderer floatingCoinTextRenderer() { return floatingCoinTextRenderer; }
+        @Override public EquipmentSpriteRenderer equipmentSpriteRenderer() { return renderers.equipmentSpriteRenderer; }
+        @Override public FloatingCoinTextRenderer floatingCoinTextRenderer() { return renderers.floatingCoinTextRenderer; }
         @Override public FloatingCoinTextSystem floatingCoinTextSystem() { return floatingCoinTextSystem; }
-        @Override public FloatingDamageTextRenderer floatingDamageTextRenderer() { return floatingDamageTextRenderer; }
+        @Override public FloatingDamageTextRenderer floatingDamageTextRenderer() { return renderers.floatingDamageTextRenderer; }
         @Override public FloatingDamageTextSystem floatingDamageTextSystem() { return floatingDamageTextSystem; }
         @Override public GameFlowController flow() { return flow; }
-        @Override public GameOverOverlayRenderer gameOverOverlayRenderer() { return gameOverOverlayRenderer; }
+        @Override public GameOverOverlayRenderer gameOverOverlayRenderer() { return renderers.gameOverOverlayRenderer; }
         @Override public float gameOverPresentationSeconds() { return gameOverPresentationSeconds; }
         @Override public GameState gameState() { return gameState; }
         @Override public HeroAnimationController heroAnimationController() { return heroAnimationController; }
-        @Override public HeroSpriteRenderer heroSpriteRenderer() { return heroSpriteRenderer; }
-        @Override public HudRenderer hudRenderer() { return hudRenderer; }
-        @Override public IdleWhisperRenderer idleWhisperRenderer() { return idleWhisperRenderer; }
-        @Override public InventoryOverlayRenderer inventoryOverlayRenderer() { return inventoryOverlayRenderer; }
+        @Override public HeroSpriteRenderer heroSpriteRenderer() { return renderers.heroSpriteRenderer; }
+        @Override public HudRenderer hudRenderer() { return renderers.hudRenderer; }
+        @Override public IdleWhisperRenderer idleWhisperRenderer() { return renderers.idleWhisperRenderer; }
+        @Override public InventoryOverlayRenderer inventoryOverlayRenderer() { return renderers.inventoryOverlayRenderer; }
         @Override public InventoryTouchController inventoryTouchController() { return inventoryTouchController; }
-        @Override public LevelUpOverlayRenderer levelUpOverlayRenderer() { return levelUpOverlayRenderer; }
-        @Override public MainMenuRenderer mainMenuRenderer() { return mainMenuRenderer; }
+        @Override public LevelUpOverlayRenderer levelUpOverlayRenderer() { return renderers.levelUpOverlayRenderer; }
+        @Override public MainMenuRenderer mainMenuRenderer() { return renderers.mainMenuRenderer; }
         @Override public OpeningCinematic openingCinematic() { return openingCinematic; }
-        @Override public OpeningCinematicRenderer openingCinematicRenderer() { return openingCinematicRenderer; }
-        @Override public ParticleRenderer particleRenderer() { return particleRenderer; }
+        @Override public OpeningCinematicRenderer openingCinematicRenderer() { return renderers.openingCinematicRenderer; }
+        @Override public ParticleRenderer particleRenderer() { return renderers.particleRenderer; }
         @Override public ParticleSystem particleSystem() { return particleSystem; }
-        @Override public PauseOverlayRenderer pauseOverlayRenderer() { return pauseOverlayRenderer; }
+        @Override public PauseOverlayRenderer pauseOverlayRenderer() { return renderers.pauseOverlayRenderer; }
         @Override public PlantingCeremony plantingCeremony() { return plantingCeremony; }
-        @Override public RewardCardOverlayRenderer rewardCardOverlayRenderer() { return rewardCardOverlayRenderer; }
-        @Override public RootNetworkOverlayRenderer rootNetworkOverlayRenderer() { return rootNetworkOverlayRenderer; }
+        @Override public RewardCardOverlayRenderer rewardCardOverlayRenderer() { return renderers.rewardCardOverlayRenderer; }
+        @Override public RootNetworkOverlayRenderer rootNetworkOverlayRenderer() { return renderers.rootNetworkOverlayRenderer; }
         @Override public RootNetworkSystem rootNetworkSystem() { return rootNetworkSystem; }
-        @Override public SaplingTreeRenderer saplingTreeRenderer() { return saplingTreeRenderer; }
+        @Override public SaplingTreeRenderer saplingTreeRenderer() { return renderers.saplingTreeRenderer; }
         @Override public ScreenShakeSystem screenShakeSystem() { return screenShakeSystem; }
         @Override public GameSettings settings() { return settings; }
-        @Override public SettingsOverlayRenderer settingsOverlayRenderer() { return settingsOverlayRenderer; }
+        @Override public SettingsOverlayRenderer settingsOverlayRenderer() { return renderers.settingsOverlayRenderer; }
         @Override public StatShopTouchLayout.Tab shopTab() { return shopTab; }
         @Override public float simulationSeconds() { return simulationSeconds; }
         @Override public SkillShopSystem skillShopSystem() { return skillShopSystem; }
-        @Override public StatShopOverlayRenderer statShopOverlayRenderer() { return statShopOverlayRenderer; }
+        @Override public StatShopOverlayRenderer statShopOverlayRenderer() { return renderers.statShopOverlayRenderer; }
         @Override public StatShopSystem statShopSystem() { return statShopSystem; }
         @Override public String storyBeatLine() { return storyBeatLine; }
         @Override public float storyBeatSeconds() { return storyBeatSeconds; }
-        @Override public TouchFeedbackRenderer touchFeedbackRenderer() { return touchFeedbackRenderer; }
+        @Override public TouchFeedbackRenderer touchFeedbackRenderer() { return renderers.touchFeedbackRenderer; }
         @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
-        @Override public TrialDraftOverlayRenderer trialDraftOverlayRenderer() { return trialDraftOverlayRenderer; }
-        @Override public UiFrameRenderer uiFrameRenderer() { return uiFrameRenderer; }
-        @Override public UiIconRenderer uiIconRenderer() { return uiIconRenderer; }
+        @Override public TrialDraftOverlayRenderer trialDraftOverlayRenderer() { return renderers.trialDraftOverlayRenderer; }
+        @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
+        @Override public UiIconRenderer uiIconRenderer() { return renderers.uiIconRenderer; }
         @Override public String whisperLine() { return whisperLine; }
         @Override public float whisperSeconds() { return whisperSeconds; }
     }
