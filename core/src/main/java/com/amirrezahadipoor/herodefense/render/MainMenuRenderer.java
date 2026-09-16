@@ -87,24 +87,31 @@ public final class MainMenuRenderer implements AutoCloseable {
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
+        // The frame, the label and the press state all come off the layout's rows. These resolutions used to
+        // carry the old five-row table's 780/620/460/300/140, so pressing a drawn button lit whichever button was
+        // nearest its stale rectangle, and pressing Brief Vigil lit New Game because the two shared one state.
         UiFrameRenderer.State newGameState = frames.resolve(
-            true, false, MainMenuTouchLayout.BUTTON_X, 780f,
+            true, false, MainMenuTouchLayout.BUTTON_X, MainMenuTouchLayout.rowBottom(0),
+            MainMenuTouchLayout.BUTTON_WIDTH, MainMenuTouchLayout.BUTTON_HEIGHT
+        );
+        UiFrameRenderer.State briefState = frames.resolve(
+            true, false, MainMenuTouchLayout.BUTTON_X, MainMenuTouchLayout.rowBottom(1),
             MainMenuTouchLayout.BUTTON_WIDTH, MainMenuTouchLayout.BUTTON_HEIGHT
         );
         UiFrameRenderer.State continueState = frames.resolve(
-            continueAvailable, false, MainMenuTouchLayout.BUTTON_X, 620f,
+            continueAvailable, false, MainMenuTouchLayout.BUTTON_X, MainMenuTouchLayout.rowBottom(2),
             MainMenuTouchLayout.BUTTON_WIDTH, MainMenuTouchLayout.BUTTON_HEIGHT
         );
         UiFrameRenderer.State rootState = frames.resolve(
-            true, false, MainMenuTouchLayout.BUTTON_X, 460f,
+            true, false, MainMenuTouchLayout.BUTTON_X, MainMenuTouchLayout.rowBottom(3),
             MainMenuTouchLayout.BUTTON_WIDTH, MainMenuTouchLayout.BUTTON_HEIGHT
         );
         UiFrameRenderer.State codexState = frames.resolve(
-            true, false, MainMenuTouchLayout.BUTTON_X, 300f,
+            true, false, MainMenuTouchLayout.BUTTON_X, MainMenuTouchLayout.rowBottom(4),
             MainMenuTouchLayout.BUTTON_WIDTH, MainMenuTouchLayout.BUTTON_HEIGHT
         );
         UiFrameRenderer.State settingsState = frames.resolve(
-            true, false, MainMenuTouchLayout.BUTTON_X, 140f,
+            true, false, MainMenuTouchLayout.BUTTON_X, MainMenuTouchLayout.rowBottom(5),
             MainMenuTouchLayout.BUTTON_WIDTH, MainMenuTouchLayout.BUTTON_HEIGHT
         );
 
@@ -145,7 +152,7 @@ public final class MainMenuRenderer implements AutoCloseable {
         drawMenuAction(
             batch, icons, "general_power", "BRIEF VIGIL",
             "A full run in thirty waves | same tier, same grove",
-            MainMenuTouchLayout.rowBottom(1), newGameState, true
+            MainMenuTouchLayout.rowBottom(1), briefState, true
         );
         drawMenuAction(
             batch, icons, "continue", "CONTINUE", continueSubtitle,

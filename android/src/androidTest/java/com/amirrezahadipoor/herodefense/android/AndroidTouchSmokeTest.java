@@ -19,6 +19,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import com.badlogic.gdx.backends.android.AndroidGraphics;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.HeroDefenseGame;
+import com.amirrezahadipoor.herodefense.input.MainMenuTouchLayout;
 import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -46,6 +47,28 @@ public final class AndroidTouchSmokeTest {
     private static final float WORLD_HEIGHT = 1280f;
     private static final String SAVE_NAME = "hero-defense-local-save";
 
+    /** The centre of a menu row's width: every menu action spans the same 480 px column. */
+    private static final float MENU_X =
+        MainMenuTouchLayout.BUTTON_X + MainMenuTouchLayout.BUTTON_WIDTH / 2f;
+
+    /** How far down the menu to look for a row: well past the six it draws, so a grown menu still resolves. */
+    private static final int MAXIMUM_MENU_ROWS = 12;
+
+    /**
+     * Where the menu puts one of its actions: the layout owns the drawn row and the tappable row, so the journey
+     * asks it instead of copying a number. R3.5 re-tabled this menu from five rows of 120 px to six of 96 px, and
+     * the hardcoded Continue taps in this file stayed on the old row -- every journey that began from a saved run
+     * waited for a screen a missed tap could never reach. Asking by action keeps that from happening again: a
+     * reordered or resized menu still resolves, and an action with no row fails at the tap instead of in a timeout.
+     */
+    private static float menuActionY(MainMenuTouchLayout.Action action, boolean continueAvailable) {
+        for (int row = 0; row <= MAXIMUM_MENU_ROWS; row++) {
+            float y = MainMenuTouchLayout.rowBottom(row) + MainMenuTouchLayout.BUTTON_HEIGHT / 2f;
+            if (MainMenuTouchLayout.actionAt(MENU_X, y, continueAvailable) == action) return y;
+        }
+        throw new AssertionError("the main menu has no tappable row for " + action);
+    }
+
     @Test
     public void touchNavigatesMenuWavePauseInventoryDragAndResume() {
         clearRunSave();
@@ -58,9 +81,10 @@ public final class AndroidTouchSmokeTest {
             captureScreen("main-menu-premium-v2.png");
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 840f); // New Game
+            float newGameY = menuActionY(MainMenuTouchLayout.Action.NEW_GAME, false);
+            tapWorld(surface, MENU_X, newGameY); // New Game
             await("new-game touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 840f);
+            float[] correction = touchCorrection(game, MENU_X, newGameY);
             draftTwoTrials(surface, game, correction);
             // Phase 19: every new run opens with the Hero's zoomed-in challenge before Wave 1.
             await("opening cinematic", () -> game.screenState() == GameScreenState.CINEMATIC);
@@ -145,9 +169,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f); // Continue prepared run
+            float continueY = menuActionY(MainMenuTouchLayout.Action.CONTINUE, true);
+            tapWorld(surface, MENU_X, continueY); // Continue prepared run
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 680f);
+            float[] correction = touchCorrection(game, MENU_X, continueY);
             await("showcase run", () -> game.screenState() == GameScreenState.PLAYING);
 
             tapWorld(surface, 270f + correction[0], utilityRowY(surface) + correction[1]);
@@ -185,9 +210,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f);
+            float continueY = menuActionY(MainMenuTouchLayout.Action.CONTINUE, true);
+            tapWorld(surface, MENU_X, continueY);
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 680f);
+            float[] correction = touchCorrection(game, MENU_X, continueY);
             await("shop showcase run", () -> game.screenState() == GameScreenState.PLAYING);
             tapWorld(surface, 450f + correction[0], utilityRowY(surface) + correction[1]);
             await("premium shop", () -> game.screenState() == GameScreenState.SHOP);
@@ -222,9 +248,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f); // Continue
+            float continueY = menuActionY(MainMenuTouchLayout.Action.CONTINUE, true);
+            tapWorld(surface, MENU_X, continueY); // Continue
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 680f);
+            float[] correction = touchCorrection(game, MENU_X, continueY);
             await("reward cards", () -> game.screenState() == GameScreenState.CARD_CHOICE);
             assertEquals(3, game.gameState().pendingRewardCards.size());
             SystemClock.sleep(800L);
@@ -248,9 +275,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 200f); // Settings
+            float settingsY = menuActionY(MainMenuTouchLayout.Action.SETTINGS, false);
+            tapWorld(surface, MENU_X, settingsY); // Settings
             await("settings touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 200f);
+            float[] correction = touchCorrection(game, MENU_X, settingsY);
             await("settings opens", () -> game.screenState() == GameScreenState.SETTINGS);
             tapWorld(surface, 360f + correction[0], 775f + correction[1]); // Sound toggle
             SystemClock.sleep(700L);
@@ -271,9 +299,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 360f); // Grove Codex
+            float codexY = menuActionY(MainMenuTouchLayout.Action.CODEX, false);
+            tapWorld(surface, MENU_X, codexY); // Grove Codex
             await("codex touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 360f);
+            float[] correction = touchCorrection(game, MENU_X, codexY);
             await("codex opens", () -> game.screenState() == GameScreenState.CODEX);
             tapWorld(surface, 360f + correction[0], 973f + correction[1]); // First entry
             SystemClock.sleep(700L);
@@ -292,9 +321,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f); // Continue
+            float continueY = menuActionY(MainMenuTouchLayout.Action.CONTINUE, true);
+            tapWorld(surface, MENU_X, continueY); // Continue
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 680f);
+            float[] correction = touchCorrection(game, MENU_X, continueY);
             await("level-up overlay", () -> game.screenState() == GameScreenState.LEVEL_UP);
             assertEquals(2, game.gameState().unspentTalentPoints);
             SystemClock.sleep(800L);
@@ -320,9 +350,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f); // Continue the final reward choice
+            float continueY = menuActionY(MainMenuTouchLayout.Action.CONTINUE, true);
+            tapWorld(surface, MENU_X, continueY); // Continue the final reward choice
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 680f);
+            float[] correction = touchCorrection(game, MENU_X, continueY);
             await("final reward cards", () -> game.screenState() == GameScreenState.CARD_CHOICE);
             tapWorld(surface, 360f + correction[0], 890f + correction[1]); // Choose first card
             await("victory summary", () ->
@@ -354,9 +385,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f); // Continue into the boss 20 reward
+            float continueY = menuActionY(MainMenuTouchLayout.Action.CONTINUE, true);
+            tapWorld(surface, MENU_X, continueY); // Continue into the boss 20 reward
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 680f);
+            float[] correction = touchCorrection(game, MENU_X, continueY);
             await("boss 20 reward cards", () -> game.screenState() == GameScreenState.CARD_CHOICE);
             tapWorld(surface, 360f + correction[0], 890f + correction[1]); // Choose first card
             await("planting ceremony", () ->
@@ -393,9 +425,10 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f); // Continue the doomed one-HP run
+            float continueY = menuActionY(MainMenuTouchLayout.Action.CONTINUE, true);
+            tapWorld(surface, MENU_X, continueY); // Continue the doomed one-HP run
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
-            float[] correction = touchCorrection(game, 360f, 680f);
+            float[] correction = touchCorrection(game, MENU_X, continueY);
             await("doomed wave", () -> game.screenState() == GameScreenState.PLAYING);
             // Phase 18: the Hero's death starts a short tree siege before the sanctuary falls.
             await("hero falls to the first melee hit", 20_000L, () ->
@@ -437,7 +470,7 @@ public final class AndroidTouchSmokeTest {
             View surface = gameSurfaceFrom(scenario);
 
             long touchCount = game.handledTouchUpCount();
-            tapWorld(surface, 360f, 680f); // Continue into the boss wave
+            tapWorld(surface, MENU_X, menuActionY(MainMenuTouchLayout.Action.CONTINUE, true));
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
             await("boss wave", () ->
                 game.screenState() == GameScreenState.PLAYING

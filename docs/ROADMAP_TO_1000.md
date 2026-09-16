@@ -722,6 +722,18 @@ sentence has to name the two scores and the commit they were measured on.
 - [ ] **R7.4 Back button** handled in game and menus, with an instrumentation test.
 - [ ] **R7.5 Accessibility**: font scaling, colour-blind-safe rarity encoding, measured contrast.
 - [ ] **R7.6 Store-facing UI assets** (screenshots, description, feature graphic).
+- [x] **R7.7 The menu's rows are one table, and the device journey asks it instead of copying it.** R3.5 re-tabled
+  this menu from five rows of 120 px to six of 96 px and two readers of the old table stayed behind. `MainMenuRenderer`
+  resolved each button's *pressed* state against the old 780 / 620 / 460 / 300 / 140 rectangles, so pressing a drawn
+  button lit whichever button was nearest its stale rectangle, and Brief Vigil lit New Game because the two shared a
+  state. And eight taps in `AndroidTouchSmokeTest` asked for Continue at y=680 and Settings at y=200, which the new
+  table puts outside both rows (Continue is 576-672, Settings is 222-318) -- that is the reason the Android job has
+  been red since `b9027b7`: nine of its eleven journeys time out behind a tap that lands on nothing while the
+  remaining two, which never tap Continue, pass. Both now derive from `MainMenuTouchLayout.rowBottom(row)`: the
+  renderer with its own state per row, the journey by asking the layout which row carries an action, so a re-ordered
+  or resized menu still resolves and an action with no row fails at the tap instead of in a timeout. Verified by
+  `MainMenuRendererTest`, `MainMenuAndSettingsTouchTest` and `UiFrameRendererTest` in core, and by the Android job on
+  this commit.
 
 ## R8 — Performance, memory and size  `+40`
 
@@ -943,6 +955,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 90 | R3.6 | playtest protocol and ledger: the game writes a `herodefense.run-record/1` JSON beside the save when a run ends (both endings, newest twelve kept, nothing about the player), `tools/playtests/promote_run_record.py` files the raw record as evidence and fills the session from it, `tools/playtests/validate_playtest_ledger.py` checks every finding against the real roadmap (item must exist, `fixed` must name a commit, `accepted` must say why) and runs in CI with 16 Python cases; first automated session promoted (seed 20342418142676294, BRIEF, 30/30, avg 0.0511, peak 0.1756) and two findings opened against R4.1 and R3.6 | `ef55da9` |
 
 | 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `5b78835` |
+| 2026-09-17 | 91 | R7.7 | the main menu's press states and the device journey's menu taps both still read the pre-R3.5 row table; both now derive from `MainMenuTouchLayout.rowBottom(row)`, and the journey finds a row by asking for its action -- the nine Android journeys that have been timing out behind a missed tap are expected green on this commit | `PENDING` |
 
 ## Definition of done
 
