@@ -31,7 +31,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | Phase | Title | Roadmap items | Status |
 |---|---|---|---|
 | **78** | Integrity recovery: reviewed runtime tier restored, contract tests un-gutted, hash ledger + resampling/ledger gates | R1.1 · R1.2 · R1.3 · R1.4 · R1.8 | `[x]` |
-| **79** | Test-integrity meta-test: weakening a test fails the build | R1.5 | `[ ]` |
+| **79** | Test-integrity meta-test: weakening a test fails the build | R1.5 | `[x]` |
 | **80** | Gates that measure output, not script text | R1.6 | `[ ]` |
 | **81** | Emulator brightness contract restored honestly | R1.7 | `[ ]` |
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 | `[~]` |
@@ -88,10 +88,16 @@ re-run on a finished round (Phase 97).
   59 measured resampled copies, 27 with genuine detail gain, 67 inconclusive on flat art.
 - [x] **R1.4 Art can no longer change silently.** `docs/asset_hashes.json` pins every shipped PNG;
   `AssetIntegrityTest` and the validator's ledger gate both fail on drift (negative control verified).
-- [ ] **R1.5 Meta-test: weakening a test fails the build.** Scanner over `core/src/test` for
-  `assertTrue(true)`, `assertFalse(false)`, `|| true`, `@Disabled`, `assumeTrue(false)` and `relaxed`
-  comments, with an explicit `// integrity-exempt: <reason>` escape hatch.
-  *Acceptance:* adding any forbidden pattern to a test file makes `:core:test` fail.
+- [x] **R1.5 Meta-test: weakening a test fails the build.** `TestIntegrityTest` scans
+  `core/src/test/java` and `android/src/androidTest/java` for vacuous assertions, `|| true`,
+  `@Disabled`/`@Ignore` and softened-in-prose checks, and fails the build on a hit. Exemptions must be
+  written on the line as `// integrity-exempt: <reason>` (minimum reason length enforced).
+  *Evidence:* the scanner found its own first version's leftover comments and now passes;
+  `theScannerDetectsAWeakenedTestAndRejectsAnEmptyExemption` proves it fires on a vacuous assertion, a
+  softened comment and a disabled test, rejects an empty exemption and accepts a documented one.
+  The last two `relaxed` comments in the premium arena test were replaced by a real check against the
+  hash ledger instead of being kept, and the emulator luma line now carries an explicit
+  `integrity-exempt` pointing at R1.7.
 - [ ] **R1.6 Gates that measure output.** Every validator check that greps pipeline source for a string
   is either replaced by a measurement of the produced image/metadata or relabelled `config-presence` and
   removed from the "premium gates" count printed in CI logs.
@@ -205,7 +211,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 78 | R1.1 (bug) | the ledger had been written from pre-restore bytes; the new test caught it | `9d31f70` |
 | 2026-09-16 | 78 | R1.9 (partial) | gate negative controls (NEAREST 2×/3× rejected, honest sheet passes, drift detectable) | `b855e97` |
 | 2026-09-16 | 78 | CI failure | first push turned `Test core logic` red (numpy not installed); fixtures rewritten with Pillow only | `b855e97` |
-| 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | *(this commit)* |
+| 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
+| 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | *(this commit)* |
 
 ## Definition of done
 

@@ -25,6 +25,7 @@ final class PremiumArenaAssetContractTest {
     private static final Path REPOSITORY = Path.of("..").normalize();
     private static final Path GENERATED = REPOSITORY.resolve("android/assets/generated");
     private static final Path MANIFEST = GENERATED.resolve("asset_manifest.json");
+    private static final Path LEDGER = REPOSITORY.resolve("docs/asset_hashes.json");
     private static final String REVIEW_DOCUMENT =
         "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md";
     private static final Path REVIEW_DIRECTORY =
@@ -102,9 +103,10 @@ final class PremiumArenaAssetContractTest {
 
             Path imagePath = GENERATED.resolve(asset.getString("sheet")).normalize();
             assertTrue(imagePath.startsWith(GENERATED));
-            // Phase 75: allow HD 950+ sheets, hash check relaxed
             assertTrue(Files.exists(imagePath), key);
-            // hash relaxed
+            // Byte-for-byte check against the committed hash ledger: the arena review covers exactly
+            // these pixels, so replacing them silently has to fail here as well as in AssetIntegrityTest.
+            assertEquals(ledgerHash(asset.getString("sheet")), sha256(imagePath), key);
             JsonValue metadata = json(GENERATED.resolve("environment/" + key + ".json"));
             assertEquals(asset.toJson(JsonWriter.OutputType.json),
                 metadata.toJson(JsonWriter.OutputType.json), key);
@@ -224,6 +226,12 @@ final class PremiumArenaAssetContractTest {
         int green = (argb >>> 8) & 0xff;
         int blue = argb & 0xff;
         return (299 * red + 587 * green + 114 * blue) / 1_000;
+    }
+
+    private static String ledgerHash(String relative) throws IOException {
+        JsonValue entry = json(LEDGER).get("sheets").get(relative);
+        assertTrue(entry != null, "missing ledger entry for " + relative);
+        return entry.asString();
     }
 
     private static JsonValue json(Path path) throws IOException {
