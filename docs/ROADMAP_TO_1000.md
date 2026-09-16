@@ -322,8 +322,18 @@ sentence has to name the two scores and the commit they were measured on.
   lines** (47 % below the 1,519 the audit measured; fourteen fields became one), fields 94 → 68, ratchet freeze
   lowered in the same commit. This is the first slice shipped on the roadmap's new fast test loop: 573 tests in
   26 seconds instead of a seven-minute wait.
-  *Remaining:* the host adapters (`HudFlow`), the 400-line ceiling and the before/after emulator smoke
-  comparison.
+  *Slice 9 (done):* the frame moved into `presentation/FrameDriver` — the frame order (audio, the per-frame
+  system ticks, the decision between simulation and ceremony, drawing), the wall-clock pause record behind the
+  Long Pause secret, the two timed story lines (a wave reflection, an idle whisper), the ambient clock the arena
+  reads, and the game-over presentation timer with its ten-second cap. The logic moved, it was not re-decided: a
+  whisper still holds the simulation while it is up and a story line still does not. Two new ports made the frame
+  testable (`audio/AudioFrame` for the two calls a frame makes, and an injected `NanoClock` so a five-minute pause
+  can be asserted in microseconds), and `FrameDriverTest` covers the six behaviours above with real systems
+  behind them. `HeroDefenseGame` 797 → **760 lines** (half of the audited 1,519), fields 68 → 61.
+  *Remaining:* the host adapters that keep the game the single owner of its state, the before/after emulator
+  smoke comparison, and the 400-line ceiling — with the honest note that the last 200 lines are the public
+  surface plus five ~20-line adapters, so reaching 400 would mean trading cohesion for a line count (recorded
+  as a follow-up for phase 96, which measures memory and startup, rather than pretended).
 - [~] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
   *Started with the first two slices:* `WaveDirectorTest` (five cases: hero death fells every tree on the epilogue
   screen and persists it, a level-up opens before the wave advances, an idle frame only offers the reflection and
@@ -341,7 +351,7 @@ sentence has to name the two scores and the commit they were measured on.
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
-  size** — `HeroDefenseGame` (797 lines / 68 fields after roadmap phase 86 slice 8),
+  size** — `HeroDefenseGame` (760 lines / 61 fields after roadmap phase 86 slice 9),
   `CombatEntityRenderer` (681 / 13 after roadmap phase 87 and 88),
   `BalanceSimulator` (639 / 23), `model/GameState` (592 / 80). The freeze may only shrink: the ratchet fails
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
@@ -678,6 +688,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 86 | R2.2 slice 8 | renderer ownership (27 renderers + the batch) extracted into `render/RenderStack`, with the teardown kept statement for statement; `HeroDefenseGame` 927 → 797 lines (47 percent smaller than the audited 1,519-line god class), fields 94 → 68; first slice verified on the new fast loop (573 tests in 26 s) | `8af0ed1` |
 
 | 2026-09-16 | 86 | tests | full suite on the shipped tree at slice 8: 157 classes / 579 tests / 0 failures in 4 m 07 s (two forks, was 7 m 29 s serial) | `c2b6933` |
+
+| 2026-09-16 | 86 | R2.2 slice 9 | the frame extracted into `presentation/FrameDriver` (frame order, pause record, the two timed story lines, ambient clock, game-over timer) plus two ports that make it testable (`audio/AudioFrame`, injected `NanoClock`); `HeroDefenseGame` 797 → 760 lines (half of the audited 1,519), fields 68 → 61; `FrameDriverTest` 6 cases | `_PENDING_` |
 
 ## Definition of done
 

@@ -9,7 +9,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 /** Owns libGDX Music/Sound resources, looping watchdog, settings, and lifecycle pause. */
-public final class GameAudioManager implements AudioPlayback, AutoCloseable {
+public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCloseable {
     public static final String MUSIC_PATH = "audio/music/world_tree_vigil.ogg";
     private static final float MUSIC_VOLUME = 0.28f;
 
@@ -32,6 +32,7 @@ public final class GameAudioManager implements AudioPlayback, AutoCloseable {
     }
 
     /** Called each render so an interrupted looping track is restarted when policy permits. */
+    @Override
     public void update(GameSettings updatedSettings) {
         settings = updatedSettings;
         if (AudioPlaybackPolicy.shouldPlayMusic(settings, appBackgrounded)) {
@@ -50,6 +51,7 @@ public final class GameAudioManager implements AudioPlayback, AutoCloseable {
     }
 
     /** Advance the per-cue rate limiter with real (not simulation) time. */
+    @Override
     public void tick(float realDeltaSeconds) {
         throttle.advance(realDeltaSeconds);
     }

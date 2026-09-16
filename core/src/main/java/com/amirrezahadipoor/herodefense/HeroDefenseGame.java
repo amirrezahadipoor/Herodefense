@@ -45,6 +45,7 @@ import com.amirrezahadipoor.herodefense.gameplay.UltimateResult;
 import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.ScreenTouchRouter;
+import com.amirrezahadipoor.herodefense.presentation.FrameDriver;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
 import com.amirrezahadipoor.herodefense.presentation.ScreenStateComposer;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
@@ -148,6 +149,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private WaveDirector waveDirector;
     private CombatSystem combatSystem;
     private SessionController sessionController;
+    private FrameDriver frameDriver;
     private CinematicFlow cinematicFlow;
     private HeroAnimationController heroAnimationController;
     private HeroAutoAttackSystem heroAutoAttackSystem;
@@ -155,19 +157,13 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private final PlantingCeremony plantingCeremony = new PlantingCeremony();
     private final OpeningCinematic openingCinematic = new OpeningCinematic();
     private final CodexSystem codexSystem = new CodexSystem();
-    private GameScreenState lastFrameState = GameScreenState.MENU;
-    private long pauseStartNanos;
     private HapticFeedback hapticFeedback;
     private HitStopSystem hitStopSystem;
     private ScreenStateComposer screenStateComposer;
     private RenderStack renderers;
     private CodexTouchController codexTouchController;
     /** Current idle-whisper line, or null when no whisper is showing. */
-    private String whisperLine;
-    private float whisperSeconds;
     /** Current mid-run story beat (title card, reflection), or null when none is showing. */
-    private String storyBeatLine;
-    private float storyBeatSeconds;
     private RunPresentationSystem presentationSystem;
     private InventoryTouchController inventoryTouchController;
     private ItemDropSystem itemDropSystem;
@@ -201,8 +197,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private DisplayMetrics displayMetrics;
     private Viewport viewport;
     private float simulationSeconds;
-    private float ambientSeconds;
-    private float gameOverPresentationSeconds;
 
     @Override
     public void create() {
@@ -298,6 +292,12 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             new DirectorHost(), waveLifecycleSystem, audioManager, particleSystem,
             screenShakeSystem, presentationSystem, codexSystem
         );
+        frameDriver = new FrameDriver(
+            new FrameHost(), flow, audioManager, settings, touchFeedbackSystem, inventoryTouchController,
+            statShopSystem, skillShopSystem, rootNetworkSystem, hitStopSystem, screenShakeSystem, particleSystem,
+            codexSystem,
+            System::nanoTime
+        );
         installTouchInput();
         readyForTouch = true;
     }
@@ -328,44 +328,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     @Override
     public void render() {
-        audioManager.update(settings);
-        trackPauseDuration();
-        float deltaSeconds = Math.min(Gdx.graphics.getDeltaTime(), MAX_FRAME_DELTA);
-        audioManager.tick(deltaSeconds);
-        touchFeedbackSystem.update(deltaSeconds);
-        inventoryTouchController.update(deltaSeconds);
-        statShopSystem.update(deltaSeconds);
-        skillShopSystem.update(deltaSeconds);
-        if (rootNetworkSystem != null) rootNetworkSystem.update(deltaSeconds);
-        if (flow.simulationRunning() && whisperLine == null) {
-            float gameplayDelta = hitStopSystem.consume(deltaSeconds);
-            if (gameplayDelta > 0f) updatePlaying(gameplayDelta);
-        } else if (flow.state() == GameScreenState.CINEMATIC) {
-            updateCinematic(deltaSeconds);
-        }
-        if (whisperLine != null && flow.state() == GameScreenState.PLAYING) {
-            whisperSeconds += deltaSeconds;
-            if (whisperSeconds >= IdleWhisperRenderer.SHOW_SECONDS) whisperLine = null;
-        }
-        if (storyBeatLine != null && flow.state() == GameScreenState.PLAYING) {
-            storyBeatSeconds += deltaSeconds;
-            if (storyBeatSeconds >= IdleWhisperRenderer.SHOW_SECONDS) storyBeatLine = null;
-        }
-        ambientSeconds += deltaSeconds;
-        if (flow.state() == GameScreenState.GAME_OVER) {
-            // Combat has stopped; let the final death, shockwave, and leaf motes settle.
-            screenShakeSystem.update(deltaSeconds);
-            particleSystem.update(deltaSeconds);
-        }
-        if (flow.state() == GameScreenState.GAME_OVER && !gameState.runComplete) {
-            gameOverPresentationSeconds = Math.min(
-                10f,
-                gameOverPresentationSeconds + deltaSeconds
-            );
-        } else {
-            gameOverPresentationSeconds = 0f;
-        }
-        drawCurrentState(deltaSeconds);
+        frameDriver.update(Math.min(Gdx.graphics.getDeltaTime(), MAX_FRAME_DELTA));
     }
 
     public boolean readyForTouch() {
@@ -464,33 +427,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
     }
 
-    /** Wall-clock pause lengths feed the Long Pause secret; a resume persists the record. */
-    private void trackPauseDuration() {
-        if (gameState == null) {
-            lastFrameState = flow.state();
-            return;
-        }
-        GameScreenState now = flow.state();
-        if (now == GameScreenState.PAUSED && lastFrameState != GameScreenState.PAUSED) {
-            pauseStartNanos = TimeUtils.nanoTime();
-        } else if (now != GameScreenState.PAUSED && lastFrameState == GameScreenState.PAUSED) {
-            float seconds = (TimeUtils.nanoTime() - pauseStartNanos) / 1_000_000_000f;
-            if (seconds > 0f) {
-                gameState.longestPauseSeconds = Math.max(gameState.longestPauseSeconds, seconds);
-                codexSystem.unlockSecretsForPause(gameState);
-                if (whisperLine == null && seconds >= 300f && now == GameScreenState.PLAYING) {
-                    whisperLine = WhisperLines.firstUnused(gameState.usedWhisperIds);
-                    if (whisperLine != null) {
-                        whisperSeconds = 0f;
-                        WhisperLines.markUsed(gameState.usedWhisperIds, whisperLine);
-                    }
-                }
-                saveNow();
-            }
-        }
-        lastFrameState = now;
-    }
-
     private void saveNow() {
         if (saves != null && gameState != null) {
             saves.save(gameState);
@@ -511,7 +447,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public CodexTouchController codexTouchController() { return codexTouchController; }
         @Override public boolean continueAvailable() { return continueAvailable; }
         @Override public GameFlowController flow() { return flow; }
-        @Override public float gameOverPresentationSeconds() { return gameOverPresentationSeconds; }
+        @Override public float gameOverPresentationSeconds() { return frameDriver.gameOverPresentationSeconds(); }
         @Override public GameState gameState() { return gameState; }
         @Override public HapticFeedback hapticFeedback() { return hapticFeedback; }
         @Override public HeroProgressionSystem heroProgressionSystem() { return heroProgressionSystem; }
@@ -529,15 +465,15 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public SkillShopSystem skillShopSystem() { return skillShopSystem; }
         @Override public StatShopSystem statShopSystem() { return statShopSystem; }
         @Override public StatShopTouchLayout.Tab shopTab() { return shopTab; }
-        @Override public String storyBeatLine() { return storyBeatLine; }
-        @Override public String whisperLine() { return whisperLine; }
+        @Override public String storyBeatLine() { return frameDriver.storyBeatLine(); }
+        @Override public String whisperLine() { return frameDriver.whisperLine(); }
         @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
         @Override public TrialDraftTouchController trialDraftTouchController() { return trialDraftTouchController; }
         @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
         @Override public WaveLifecycleSystem waveLifecycleSystem() { return waveLifecycleSystem; }
         @Override public void setShopTab(StatShopTouchLayout.Tab tab) { shopTab = tab; }
-        @Override public void setStoryBeatLine(String line) { storyBeatLine = line; }
-        @Override public void setWhisperLine(String line) { whisperLine = line; }
+        @Override public void setStoryBeatLine(String line) { frameDriver.setStoryBeatLine(line); }
+        @Override public void setWhisperLine(String line) { frameDriver.setWhisperLine(line); }
         @Override public void setLastTouchWorldX(float value) { lastTouchWorldX = value; }
         @Override public void setLastTouchWorldY(float value) { lastTouchWorldY = value; }
         @Override public void countHandledTouchUp() { handledTouchUpCount++; }
@@ -611,7 +547,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     /** Shows the reflection line for a freshly started wave, unless a beat already shows. */
     private void showWaveReflection() {
-        if (storyBeatLine != null) {
+        if (frameDriver.storyBeatLine() != null) {
             return;
         }
         String reflection = presentationSystem.waveReflection(gameState);
@@ -622,8 +558,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     /** Single writer for the story line the HUD draws, so the beat timer cannot be forgotten. */
     private void showStoryBeat(String line) {
-        storyBeatLine = line;
-        storyBeatSeconds = 0f;
+        frameDriver.showStoryBeat(line);
     }
 
     private void beginPlantingCeremony() {
@@ -660,6 +595,34 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     /** Adapter for the frame composer; one line per member, like the touch host. */
+    /** What the frame needs from the game: its state, saving, the two update paths and the draw call. */
+    private final class FrameHost implements FrameDriver.Host {
+        @Override
+        public GameState gameState() {
+            return gameState;
+        }
+
+        @Override
+        public void saveNow() {
+            HeroDefenseGame.this.saveNow();
+        }
+
+        @Override
+        public void updatePlaying(float deltaSeconds) {
+            HeroDefenseGame.this.updatePlaying(deltaSeconds);
+        }
+
+        @Override
+        public void updateCinematic(float deltaSeconds) {
+            HeroDefenseGame.this.updateCinematic(deltaSeconds);
+        }
+
+        @Override
+        public void draw(float presentationDeltaSeconds) {
+            drawCurrentState(presentationDeltaSeconds);
+        }
+    }
+
     /** What the ceremony flow needs from the game: the run state and a save point at the hand-off. */
     private final class CinematicHost implements CinematicFlow.Host {
         @Override
@@ -688,7 +651,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override
         public void resetRunClock() {
             simulationSeconds = 0f;
-            gameOverPresentationSeconds = 0f;
+            frameDriver.resetGameOverPresentation();
         }
 
         @Override
@@ -741,7 +704,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     private final class ComposerHost implements ScreenStateComposer.Host {
-        @Override public float ambientSeconds() { return ambientSeconds; }
+        @Override public float ambientSeconds() { return frameDriver.ambientSeconds(); }
         @Override public ArenaEnvironmentRenderer arenaEnvironmentRenderer() { return renderers.arenaEnvironmentRenderer; }
         @Override public CeremonyHeroRenderer ceremonyHeroRenderer() { return renderers.ceremonyHeroRenderer; }
         @Override public CodexOverlayRenderer codexOverlayRenderer() { return renderers.codexOverlayRenderer; }
@@ -755,7 +718,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public FloatingDamageTextSystem floatingDamageTextSystem() { return floatingDamageTextSystem; }
         @Override public GameFlowController flow() { return flow; }
         @Override public GameOverOverlayRenderer gameOverOverlayRenderer() { return renderers.gameOverOverlayRenderer; }
-        @Override public float gameOverPresentationSeconds() { return gameOverPresentationSeconds; }
+        @Override public float gameOverPresentationSeconds() { return frameDriver.gameOverPresentationSeconds(); }
         @Override public GameState gameState() { return gameState; }
         @Override public HeroAnimationController heroAnimationController() { return heroAnimationController; }
         @Override public HeroSpriteRenderer heroSpriteRenderer() { return renderers.heroSpriteRenderer; }
@@ -783,15 +746,15 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public SkillShopSystem skillShopSystem() { return skillShopSystem; }
         @Override public StatShopOverlayRenderer statShopOverlayRenderer() { return renderers.statShopOverlayRenderer; }
         @Override public StatShopSystem statShopSystem() { return statShopSystem; }
-        @Override public String storyBeatLine() { return storyBeatLine; }
-        @Override public float storyBeatSeconds() { return storyBeatSeconds; }
+        @Override public String storyBeatLine() { return frameDriver.storyBeatLine(); }
+        @Override public float storyBeatSeconds() { return frameDriver.storyBeatSeconds(); }
         @Override public TouchFeedbackRenderer touchFeedbackRenderer() { return renderers.touchFeedbackRenderer; }
         @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
         @Override public TrialDraftOverlayRenderer trialDraftOverlayRenderer() { return renderers.trialDraftOverlayRenderer; }
         @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
         @Override public UiIconRenderer uiIconRenderer() { return renderers.uiIconRenderer; }
-        @Override public String whisperLine() { return whisperLine; }
-        @Override public float whisperSeconds() { return whisperSeconds; }
+        @Override public String whisperLine() { return frameDriver.whisperLine(); }
+        @Override public float whisperSeconds() { return frameDriver.whisperSeconds(); }
     }
 
 }
