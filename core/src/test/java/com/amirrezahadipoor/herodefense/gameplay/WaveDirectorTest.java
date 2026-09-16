@@ -59,6 +59,7 @@ final class WaveDirectorTest {
         assertFalse(state.epilogueId.isEmpty(), "an epilogue is chosen from the run");
         assertFalse(particles.particles().isEmpty(), "the world tree and both grove trees fall");
         assertTrue(shake.active(), "the tree fall shakes the screen");
+        assertEquals(1, host.records, "a run that ends writes exactly one session record (roadmap R3.6)");
     }
 
     @Test
@@ -86,7 +87,28 @@ final class WaveDirectorTest {
 
         assertNull(host.lastScreen, "nothing opens when the wave did not complete");
         assertEquals(0, host.saves, "an idle frame does not write the save file");
+        assertEquals(0, host.records, "and it writes no session record either");
         assertEquals(1, host.reflections, "the reflection line is offered every frame, as before");
+    }
+
+    /**
+     * The other ending of a run — the vigil completed — reaches the game-over screen through the reward card of the
+     * final boss wave, because both modes end on a boss wave (wave 200 and wave 30 are both multiples of five). The
+     * director's own {@code RUN_COMPLETED} branch is the guard for a completion that arrives through the wave loop,
+     * so it cannot be exercised from here with the real lifecycle; the router branch is the one that runs, and
+     * {@code SessionRecordIntegrityTest} is what keeps both of them writing the session record.
+     */
+    @Test
+    void theDirectorWritesNoRecordForARunThatIsStillRunning() {
+        GameState state = GameState.newRun(11L);
+        state.waveNumber = 19;
+        state.waveActive = true;
+        host.state = state;
+
+        director.afterCombat(false, false);
+
+        assertFalse(state.runComplete, "clearing wave 19 is not the end of a run");
+        assertEquals(0, host.records, "and a run that has not ended leaves no session record");
     }
 
     @Test
@@ -132,6 +154,7 @@ final class WaveDirectorTest {
         private int saves;
         private int reflections;
         private int ceremonies;
+        private int records;
 
         @Override
         public GameState gameState() {
@@ -156,6 +179,11 @@ final class WaveDirectorTest {
         @Override
         public void beginPlantingCeremony() {
             ceremonies++;
+        }
+
+        @Override
+        public void recordRunEnd() {
+            records++;
         }
     }
 

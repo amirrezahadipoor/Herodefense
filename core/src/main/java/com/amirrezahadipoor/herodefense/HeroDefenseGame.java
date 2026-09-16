@@ -112,6 +112,7 @@ import com.amirrezahadipoor.herodefense.render.TrialDraftOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.UiFrameRenderer;
 import com.amirrezahadipoor.herodefense.render.UiIconRenderer;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
+import com.amirrezahadipoor.herodefense.playtest.RunRecordStore;
 import com.amirrezahadipoor.herodefense.save.LocalSaveRepository;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import com.amirrezahadipoor.herodefense.settings.LocalSettingsRepository;
@@ -188,6 +189,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private StatShopTouchLayout.Tab shopTab = StatShopTouchLayout.Tab.STATS;
     private TouchFeedbackSystem touchFeedbackSystem;
     private LocalSaveRepository saves;
+    private RunRecordStore runRecords;
     private LocalSettingsRepository settingsRepository;
     private GameSettings settings;
     private GameState gameState;
@@ -256,6 +258,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         rootNetworkTouchController = new RootNetworkTouchController(rootNetworkSystem);
         touchFeedbackSystem = new TouchFeedbackSystem();
         saves = new LocalSaveRepository(Gdx.app.getPreferences(LocalSaveRepository.PREFERENCES_NAME));
+        // Session records live beside the save: readable with `adb exec-out run-as` (roadmap R3.6).
+        runRecords = new RunRecordStore(Gdx.files.local("playtests"));
         settingsRepository = new LocalSettingsRepository(
             Gdx.app.getPreferences(LocalSettingsRepository.PREFERENCES_NAME)
         );
@@ -438,6 +442,14 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
     }
 
+    /** Writes the session record of the run that just ended; the store ignores a repeated call (roadmap R3.6). */
+    private void recordRunEnd() {
+        if (runRecords == null) {
+            return;
+        }
+        runRecords.record(gameState, Gdx.app.getType().name(), Gdx.app.getVersion(), System.currentTimeMillis());
+    }
+
     private void saveNow() {
         if (saves != null && gameState != null) {
             trophyPresenter.announce(TrophyBook.evaluate(gameState));
@@ -490,10 +502,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void setLastTouchWorldY(float value) { lastTouchWorldY = value; }
         @Override public void countHandledTouchUp() { handledTouchUpCount.incrementAndGet(); }
         @Override public void saveNow() { HeroDefenseGame.this.saveNow(); }
-        @Override public void startNewRunSameTier() { HeroDefenseGame.this.startNewRunSameTier(); }
+        @Override public void recordRunEnd() { HeroDefenseGame.this.recordRunEnd(); }
+        @Override public void startNewRunSameTier() { sessionController.startNewRunSameTier(); }
         @Override public void startBriefRun() { sessionController.startBriefRun(); }
-        @Override public void ascendRun() { HeroDefenseGame.this.ascendRun(); }
-        @Override public void continueRun() { HeroDefenseGame.this.continueRun(); }
+        @Override public void ascendRun() { sessionController.ascendRun(); }
+        @Override public void continueRun() { sessionController.continueRun(); }
         @Override public void beginOpening() { HeroDefenseGame.this.beginOpening(); }
         @Override public void fireUltimate() { HeroDefenseGame.this.fireUltimate(); }
         @Override public void beginPlantingCeremony() { HeroDefenseGame.this.beginPlantingCeremony(); }
@@ -501,18 +514,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void focusFireAt(float worldX, float worldY) {
             HeroDefenseGame.this.focusFireAt(worldX, worldY);
         }
-    }
-
-    private void startNewRunSameTier() {
-        sessionController.startNewRunSameTier();
-    }
-
-    private void ascendRun() {
-        sessionController.ascendRun();
-    }
-
-    private void continueRun() {
-        sessionController.continueRun();
     }
 
     /** Snapshots the run's opening tier, then plays that tier's lines. */
@@ -709,6 +710,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override
         public void beginPlantingCeremony() {
             HeroDefenseGame.this.beginPlantingCeremony();
+        }
+
+        @Override
+        public void recordRunEnd() {
+            HeroDefenseGame.this.recordRunEnd();
         }
     }
 

@@ -133,6 +133,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
 
         void saveNow();
 
+        /** Writes down the session that just ended; a completed run ends here, through the reward card. */
+        void recordRunEnd();
+
         void startNewRunSameTier();
 
         void startBriefRun();
@@ -227,6 +230,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                     if (result == WaveCompletion.RUN_COMPLETED) {
                         host.codexSystem().unlockSecretsForEquipment(host.gameState());
                         host.flow().transitionTo(GameScreenState.GAME_OVER);
+                        // Both modes end on a boss wave, so a finished run reaches this branch rather than the
+                        // director's: the session record has to be written here too (roadmap R3.6).
+                        host.recordRunEnd();
                     } else if (result == WaveCompletion.PLANTING_CEREMONY) {
                         host.beginPlantingCeremony();
                     } else {

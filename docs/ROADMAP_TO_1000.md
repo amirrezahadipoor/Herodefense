@@ -589,7 +589,6 @@ sentence has to name the two scores and the commit they were measured on.
   of six frames rendered identically against a floor of five unique (the pose now settles into a coil before it
   loops, and a source-level guard makes a repeated consecutive key a test failure). Neither gate was relaxed; both
   found art that needed to change.
-  *Evidence, not summaries:* the accepted run is `35137859000` / artifact `10463764236`, the audit
   *One follow-up the first re-dispatch forced:* the workflow now installs Pillow before the publisher runs (the
   publisher resamples with LANCZOS, and the runner's Python does not ship Pillow), which the run `35148572358`
   failed on one step before the validator — the fix is in the same commit as this paragraph.

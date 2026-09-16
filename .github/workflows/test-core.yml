@@ -46,6 +46,11 @@ jobs:
       - name: Validate generated assets (edge safety, pivot stability, silhouette + grade — fail fast)
         run: python3 tools/visual/validate_generated_assets.py android/assets/generated
 
+      - name: Validate the playtest ledger
+        run: |
+          python3 tools/playtests/validate_playtest_ledger.py
+          python3 -m unittest discover -s tools/playtests/tests -t .
+
       - name: Run unit tests and the 100-wave balance gate
         run: ./scripts/gradle.sh :core:test --stacktrace
 

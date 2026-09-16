@@ -34,6 +34,9 @@ public final class WaveDirector {
         void showWaveReflection();
 
         void beginPlantingCeremony();
+
+        /** Writes down the session that just ended, once per run (roadmap R3.6). */
+        void recordRunEnd();
     }
 
     private final Host host;
@@ -71,6 +74,9 @@ public final class WaveDirector {
      */
     public void afterCombat(boolean gameOver, boolean leveledUp) {
         if (gameOver) {
+            // The two endings both write a session record before the save: a playtest that ends is exactly the
+            // moment the numbers have to leave the process, and both paths funnel through the host so the record
+            // cannot be forgotten by one of them (roadmap R3.6).
             GameState state = host.gameState();
             state.heroDiedThisRun = true;
             if (state.waveNumber > state.peakWaveReached) {
@@ -84,6 +90,7 @@ public final class WaveDirector {
             state.trophies.recordRunEnd(state.peakWaveReached, state.noPotionRun);
             state.epilogueId = Epilogue.select(state).name();
             host.transitionTo(GameScreenState.GAME_OVER);
+            host.recordRunEnd();
             host.saveNow();
             return;
         }
@@ -122,6 +129,7 @@ public final class WaveDirector {
             }
             state.epilogueId = Epilogue.select(state).name();
             host.transitionTo(GameScreenState.GAME_OVER);
+            host.recordRunEnd();
         }
         host.saveNow();
     }
