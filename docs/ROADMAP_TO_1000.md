@@ -796,7 +796,7 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 89 | R3.4a | wave omens as the thirteenth drafted trial: `model/WaveModifier` (SWARM / IRON_HIDE / BLOODRUSH / QUICKSTEP, +25% coins on the wave), `gameplay/WaveOmens` policy (never on a boss or elite wave), a HUD line, and `TrialEffects.omensEnabled` read by the spawner, the factory, kill rewards and the HUD; the untrialled run is unchanged by construction, so the counterfactual is the same seed without the trial | `af92ff1` |
 
-| 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `PENDINGHASH` |
+| 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `5b78835` |
 
 ## Definition of done
 
