@@ -51,7 +51,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[~]` |
 | **87** | Gameplay: one real player decision inside a wave | R3.1 | `[x]` |
 | **88** | Boss identity variety across the 20 encounters | R3.2 | `[x]` |
-| **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[ ]` |
+| **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[~]` |
 | **90** | Human playtest protocol and recorded findings | R3.6 | `[ ]` |
 | **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[ ]` |
 | **92** | Runtime tier composed from the genuine master renders | R5.1 · R5.2 | `[~]` |
@@ -442,7 +442,38 @@ sentence has to name the two scores and the commit they were measured on.
   *Deferred on purpose:* warning-length and tempo variety are recorded as a revisit for a later phase, with the
   measurements above; the four boss **visual** identities also stay as they are, because new art for extra
   identities is phase 99/105 work.
-- [ ] **R3.3 Meta progression.** Achievements/unlocks persisting between runs, with a save migration.
+- [x] **R3.3 Meta progression — twelve trophies that outlive the run, with a save migration.**
+  The game already kept heartwood, ascensions, the codex and a few counters, but none of it was ever *said*: a run
+  ended, the numbers moved nobody could see, and the codex was about the Tree rather than about the player. Now
+  every save point evaluates twelve trophy rules (`progression/Trophy`, `TrophyBook`) and announces whatever is new
+  — a haptic tap, the level-up chime, and one line on the HUD, which yields to the Tree whenever a story line is
+  already on screen so a trophy can never wipe out the game's own voice.
+  *Design that keeps it honest.* Each trophy is a counter with a target read from state the game already
+  maintains — the trophy ledger's own wave counter, the heartwood bank, the ascension tier, codex entries written,
+  elite kills, boss identities met, potionless runs — so `TrophyBook.progress` can show "7 / 100" instead of a
+  locked box, and `evaluate` is idempotent: it can run at every save point without any system having to thread an
+  achievement event through it.
+  *The ledger and the migration.* `GameState.trophies` is one field that `resetForNewRun` hands to the fresh run
+  instead of clearing, so a trophy is earned once, ever. `TrophyLedger.ledgerVersion` is what makes an old save
+  work: a save written before trophies existed has no ledger at all, and `TrophyBook.migrate` reads that save's
+  heartwood, ascensions, best wave, codex and boss kills once and converts them into what it already earned —
+  without it, a veteran would open the new build to an empty case and no way to know the game had forgotten.
+  *Where the trophies live in the UI.* The Codex grew a second shelf: the same overlay now has a LORE / TROPHIES
+  tab strip (`CodexTouchLayout.Tab`), the trophy shelf shows `[*] Title` with `n / target` under it, and the
+  details panel explains what earns the selected one. Tapping a shelf clears the other shelf's selection, and the
+  trophy list scrolls to its own end rather than to the codex's length — both asserted.
+  *Evidence:* `TrophyBookTest` (ten cases: an empty case on a fresh run, a trophy arriving exactly at its target
+  and only once, progress capping at the target, a potionless run earning BARE_HANDS while the ledger still keeps
+  the best run, three trees earning GARDENER, the meta trophies reading existing progress, the case surviving
+  `resetForNewRun`, a veteran save migrating instead of being forgotten, a broken ledger being repaired, and all
+  twelve ids/titles being distinct); `CodexTrophyShelfTest` (six cases: opening on LORE, switching shelves,
+  tapping the showing shelf doing nothing, a trophy selection never becoming a lore selection, the trophy list
+  stopping at its own end, and both shelves clearing the tab strip); `TrophyPresenterTest` (four cases: silence
+  with no trophy, tap-chime-name in order, a story line never overwritten, and three-at-once being counted rather
+  than listed).
+  *Recorded cost:* the ratchet freeze for `HeroDefenseGame` moved 760 → 771 lines (the save point evaluates and
+  announces; the presentation itself lives in the feature) and `model/GameState` 592 → 600 lines / 80 → 81 fields
+  (the ledger field). Both are noted in the ratchet test with the reason, not hidden.
 - [ ] **R3.4 Content breadth.** Enemy types 4 → 8+, item-pool diversity, wave modifiers.
 - [ ] **R3.5 Session shape.** A shorter mode (e.g. 30 waves) or checkpoints, measured with the simulator.
 - [ ] **R3.6 Human playtest protocol** plus recorded sessions; findings become roadmap items.
@@ -690,6 +721,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 86 | tests | full suite on the shipped tree at slice 8: 157 classes / 579 tests / 0 failures in 4 m 07 s (two forks, was 7 m 29 s serial) | `c2b6933` |
 
 | 2026-09-16 | 86 | R2.2 slice 9 | the frame extracted into `presentation/FrameDriver` (frame order, pause record, the two timed story lines, ambient clock, game-over timer) plus two ports that make it testable (`audio/AudioFrame`, injected `NanoClock`); `HeroDefenseGame` 797 → 760 lines (half of the audited 1,519), fields 68 → 61; `FrameDriverTest` 6 cases | `c055436` |
+
+| 2026-09-16 | 89 | R3.3 | twelve persistent trophies with a counter, a target and a progress reading; announced at the save point (haptic + chime + one HUD line that yields to a story line); Codex gained a LORE/TROPHIES tab strip with its own shelf and details panel; `TrophyLedger` survives `resetForNewRun` and `TrophyBook.migrate` back-fills a pre-trophy save from the progress it already had; 20 new test cases | `_PENDING_` |
 
 ## Definition of done
 

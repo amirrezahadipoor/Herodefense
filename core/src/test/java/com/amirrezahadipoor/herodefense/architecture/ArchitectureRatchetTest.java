@@ -38,8 +38,11 @@ class ArchitectureRatchetTest {
         // two timed story lines, the ambient clock and the game-over presentation timer). The class is 760
         // lines — half the 1,519-line god class the audit measured — and keeps shrinking toward the 400-line
         // ceiling.
+        // R3.3 (trophies) added thirteen lines here: the save point now evaluates the trophy rules and hands
+        // the result to `progression/TrophyPresenter`, and loading a save runs the one-time migration. The
+        // presentation of a trophy deliberately lives in the feature, not in the game class.
         "com/amirrezahadipoor/herodefense/HeroDefenseGame.java",
-        new ArchitectureRatchet.Frozen(760, 61),
+        new ArchitectureRatchet.Frozen(771, 62),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.
@@ -47,8 +50,9 @@ class ArchitectureRatchetTest {
         new ArchitectureRatchet.Frozen(681, 13),
         "com/amirrezahadipoor/herodefense/balance/BalanceSimulator.java",
         new ArchitectureRatchet.Frozen(639, 23),
+        // R3.3 added the trophy ledger: one field that carries what a run may not reset.
         "com/amirrezahadipoor/herodefense/model/GameState.java",
-        new ArchitectureRatchet.Frozen(592, 80)
+        new ArchitectureRatchet.Frozen(600, 81)
     );
 
     @Test

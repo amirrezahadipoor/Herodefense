@@ -81,6 +81,7 @@ public final class WaveDirector {
                 particleSystem.emitTreeDestruction(WorldLayout.groveTreeX(index), WorldLayout.groveTreeY(index));
             }
             screenShakeSystem.triggerTreeFall();
+            state.trophies.recordRunEnd(state.peakWaveReached, state.noPotionRun);
             state.epilogueId = Epilogue.select(state).name();
             host.transitionTo(GameScreenState.GAME_OVER);
             host.saveNow();
@@ -103,6 +104,8 @@ public final class WaveDirector {
         if (waveCompletion == WaveCompletion.NO_CHANGE) {
             return;
         }
+        // The wave is behind the player: the trophy ledger counts it even if the run ends here.
+        state.trophies.recordWaveCleared();
         if (state.waveNumber > state.peakWaveReached) {
             state.peakWaveReached = state.waveNumber;
         }
@@ -111,6 +114,7 @@ public final class WaveDirector {
         } else if (waveCompletion == WaveCompletion.PLANTING_CEREMONY) {
             host.beginPlantingCeremony();
         } else if (waveCompletion == WaveCompletion.RUN_COMPLETED) {
+            state.trophies.recordRunEnd(state.peakWaveReached, state.noPotionRun);
             state.runComplete = true;
             codexSystem.unlockSecretsForEquipment(state);
             if (state.waveNumber > state.peakWaveReached) {

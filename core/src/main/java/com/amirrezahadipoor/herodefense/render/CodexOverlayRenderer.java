@@ -8,6 +8,8 @@ import com.badlogic.gdx.math.Matrix4;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.CodexTouchLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.progression.Trophy;
+import com.amirrezahadipoor.herodefense.progression.TrophyBook;
 import com.amirrezahadipoor.herodefense.story.BossLore;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
 import com.amirrezahadipoor.herodefense.story.LoreCatalog;
@@ -31,6 +33,7 @@ public final class CodexOverlayRenderer implements AutoCloseable {
     private static final float DETAILS_PADDING = 24f;
     private static final float BODY_SCALE = 0.72f;
     private static final int BODY_MAX_LINES = 9;
+    private static final float TAB_SCALE = 0.78f;
 
     private final ShapeRenderer shapes = new ShapeRenderer();
     private final OverlayText text = new OverlayText();
@@ -72,8 +75,20 @@ public final class CodexOverlayRenderer implements AutoCloseable {
             CodexTouchLayout.CLOSE_SIZE, CodexTouchLayout.CLOSE_SIZE
         ));
         text.draw(batch, "GROVE CODEX", 64f, 1160f, 1.3f, OverlayText.GOLD);
-        text.draw(batch, codex.unlockedCount(state) + " / 30 WRITTEN", 64f, 1112f, 0.72f,
-            OverlayText.SUBTLE);
+        text.draw(batch, headerLine(state, controller), 64f, 1112f, 0.72f, OverlayText.SUBTLE);
+        drawTabs(batch, controller, frames);
+
+        if (controller.tab() == CodexTouchLayout.Tab.TROPHIES) {
+            drawTrophyRows(batch, state, controller, frames);
+            frames.draw(
+                batch, UiFrameRenderer.Kind.PANEL,
+                DETAILS_X, DETAILS_Y, DETAILS_WIDTH, DETAILS_HEIGHT,
+                true, false
+            );
+            drawTrophyDetail(batch, state, controller);
+            batch.end();
+            return;
+        }
 
         for (int row = 0; row < CodexTouchLayout.VISIBLE_ROWS; row++) {
             int index = controller.firstVisibleIndex() + row;
@@ -110,6 +125,92 @@ public final class CodexOverlayRenderer implements AutoCloseable {
         );
         drawDetail(batch, state, controller);
         batch.end();
+    }
+
+    /** "12 / 30 WRITTEN" on the lore shelf, "7 / 12 EARNED" on the trophy shelf. */
+    private String headerLine(GameState state, CodexTouchController controller) {
+        if (controller.tab() == CodexTouchLayout.Tab.TROPHIES) {
+            return state.trophies.earnedCount() + " / " + Trophy.values().length + " EARNED";
+        }
+        return codex.unlockedCount(state) + " / " + LoreCatalog.all().size() + " WRITTEN";
+    }
+
+    private void drawTabs(
+        SpriteBatch batch, CodexTouchController controller, UiFrameRenderer frames
+    ) {
+        boolean trophies = controller.tab() == CodexTouchLayout.Tab.TROPHIES;
+        drawTab(batch, frames, "LORE", CodexTouchLayout.TAB_LEFT_X, !trophies);
+        drawTab(batch, frames, "TROPHIES", CodexTouchLayout.TAB_RIGHT_X, trophies);
+    }
+
+    private void drawTab(
+        SpriteBatch batch, UiFrameRenderer frames, String label, float x, boolean active
+    ) {
+        frames.draw(
+            batch, UiFrameRenderer.Kind.BUTTON,
+            x, CodexTouchLayout.TAB_Y, CodexTouchLayout.TAB_WIDTH, CodexTouchLayout.TAB_HEIGHT,
+            true, active
+        );
+        text.draw(batch, label, x + 22f, CodexTouchLayout.TAB_Y + 30f, TAB_SCALE,
+            active ? OverlayText.GOLD : OverlayText.MUTED);
+        text.draw(batch, active ? "showing" : "tap to show", x + 22f, CodexTouchLayout.TAB_Y + 10f, 0.5f,
+            OverlayText.MUTED);
+    }
+
+    private void drawTrophyRows(
+        SpriteBatch batch, GameState state, CodexTouchController controller, UiFrameRenderer frames
+    ) {
+        Trophy[] trophies = Trophy.values();
+        for (int row = 0; row < CodexTouchLayout.VISIBLE_ROWS; row++) {
+            int index = controller.firstVisibleIndex() + row;
+            if (index >= trophies.length) break;
+            Trophy trophy = trophies[index];
+            int progress = TrophyBook.progress(state, trophy);
+            boolean earned = state.trophies.isEarned(trophy);
+            boolean selected = controller.selectedIndex() == index;
+            float bottom = CodexTouchLayout.rowBottom(CodexTouchLayout.Tab.TROPHIES, row);
+            frames.draw(
+                batch, UiFrameRenderer.Kind.SLOT,
+                CodexTouchLayout.LIST_X, bottom,
+                CodexTouchLayout.LIST_WIDTH, CodexTouchLayout.LIST_ROW_HEIGHT,
+                earned, selected
+            );
+            text.draw(batch, (earned ? "[*] " : "[ ] ") + trophy.title(),
+                CodexTouchLayout.LIST_X + 20f, bottom + 42f, 0.8f,
+                earned ? OverlayText.GOLD : OverlayText.MUTED);
+            text.draw(batch, progress + " / " + trophy.target(),
+                CodexTouchLayout.LIST_X + 20f, bottom + 14f, 0.62f,
+                earned ? OverlayText.POSITIVE : OverlayText.SUBTLE);
+        }
+    }
+
+    private void drawTrophyDetail(SpriteBatch batch, GameState state, CodexTouchController controller) {
+        int selected = controller.selectedIndex();
+        Trophy trophy = selected >= 0 && selected < Trophy.values().length ? Trophy.values()[selected] : null;
+        float titleY = DETAILS_Y + DETAILS_HEIGHT - 48f;
+        text.draw(batch, "WARDEN'S TROPHIES", DETAILS_X + DETAILS_PADDING, titleY, 1.0f, OverlayText.GOLD);
+        if (trophy == null) {
+            text.draw(batch, "Tap a trophy to read what earns it.",
+                DETAILS_X + DETAILS_PADDING, titleY - 48f, BODY_SCALE, OverlayText.MUTED);
+            return;
+        }
+        boolean earned = state.trophies.isEarned(trophy);
+        text.draw(batch, trophy.title(), DETAILS_X + DETAILS_PADDING, titleY - 46f, BODY_SCALE,
+            earned ? OverlayText.GOLD : OverlayText.IVORY);
+        List<String> lines = wrapLines(
+            trophy.hint(),
+            line -> text.width(line, BODY_SCALE),
+            DETAILS_WIDTH - DETAILS_PADDING * 2f
+        );
+        float step = text.lineHeight(GameFonts.Role.forLegacyScale(BODY_SCALE)) + 6f;
+        float y = titleY - 92f;
+        for (String line : capLines(lines, BODY_MAX_LINES)) {
+            text.draw(batch, line, DETAILS_X + DETAILS_PADDING, y, BODY_SCALE, OverlayText.POSITIVE);
+            y -= step;
+        }
+        text.draw(batch, TrophyBook.progress(state, trophy) + " / " + trophy.target(),
+            DETAILS_X + DETAILS_PADDING, DETAILS_Y + 40f, 0.8f,
+            earned ? OverlayText.GOLD : OverlayText.SUBTLE);
     }
 
     private void drawDetail(SpriteBatch batch, GameState state, CodexTouchController controller) {

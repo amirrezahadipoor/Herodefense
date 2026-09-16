@@ -89,6 +89,7 @@ public final class WaveLifecycleSystem {
             state.plantedTreeHealth.add(state.worldTreeMaxHealth);
             state.plantedTreeMaxHealth.add(state.worldTreeMaxHealth);
         }
+        state.trophies.recordTreePlanted(state.plantedTreesCount);
         state.secondTreePlanted = state.plantedTreesCount > 0;
         state.anchorHeroAtArenaCenter();
         return startCurrentWave(state);

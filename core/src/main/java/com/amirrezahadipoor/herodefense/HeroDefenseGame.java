@@ -46,6 +46,8 @@ import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.ScreenTouchRouter;
 import com.amirrezahadipoor.herodefense.presentation.FrameDriver;
+import com.amirrezahadipoor.herodefense.progression.TrophyBook;
+import com.amirrezahadipoor.herodefense.progression.TrophyPresenter;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
 import com.amirrezahadipoor.herodefense.presentation.ScreenStateComposer;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
@@ -150,6 +152,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private CombatSystem combatSystem;
     private SessionController sessionController;
     private FrameDriver frameDriver;
+    private TrophyPresenter trophyPresenter;
     private CinematicFlow cinematicFlow;
     private HeroAnimationController heroAnimationController;
     private HeroAutoAttackSystem heroAutoAttackSystem;
@@ -260,6 +263,9 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         Optional<GameState> loadedRun = saves.load();
         gameState = loadedRun.orElseGet(() -> GameState.newRun(System.currentTimeMillis()));
         continueAvailable = loadedRun.isPresent() && SessionController.canContinue(gameState);
+        // A save written before trophies existed is read once here, so a returning player keeps the credit
+        // their heartwood, ascensions and codex entries had already earned (roadmap R3.3).
+        TrophyBook.migrate(gameState);
         new StarterLoadoutSystem().provisionOnce(gameState);
         camera = new OrthographicCamera();
         // Width is pinned to 720; tall panels reveal more arena instead of black bars.
@@ -297,6 +303,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             statShopSystem, skillShopSystem, rootNetworkSystem, hitStopSystem, screenShakeSystem, particleSystem,
             codexSystem,
             System::nanoTime
+        );
+        trophyPresenter = new TrophyPresenter(
+            audioManager, hapticFeedback, frameDriver::showStoryBeat,
+            () -> frameDriver.storyBeatLine() != null
         );
         installTouchInput();
         readyForTouch = true;
@@ -429,6 +439,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     private void saveNow() {
         if (saves != null && gameState != null) {
+            trophyPresenter.announce(TrophyBook.evaluate(gameState));
             saves.save(gameState);
             continueAvailable = SessionController.canContinue(gameState);
         }

@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.model;
 
 import com.amirrezahadipoor.herodefense.WorldLayout;
+import com.amirrezahadipoor.herodefense.progression.TrophyLedger;
 import com.amirrezahadipoor.herodefense.trials.TrialDraftSystem;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 import com.amirrezahadipoor.herodefense.trials.TrialId;
@@ -93,6 +94,9 @@ public final class GameState {
     // Run stats for secret codex entries
     public boolean bareHandedEligible = true;
     public boolean noPotionRun = true;
+    /** What the trophies remember between runs (roadmap R3.3). A new run never clears it. */
+    public TrophyLedger trophies = new TrophyLedger();
+
     public int totalRunsCompleted;
     public int totalAscensionsCompleted;
     /** Times any run has advanced into wave 200; never reset (feeds codex entry 30). */
@@ -404,6 +408,10 @@ public final class GameState {
         focus = Float.isFinite(focus) ? Math.max(0f, Math.min(focusMax, focus)) : 0f;
         focusMax = Float.isFinite(focusMax) && focusMax > 0f ? focusMax : 100f;
         totalRunsCompleted = Math.max(0, totalRunsCompleted);
+        if (trophies == null) {
+            trophies = new TrophyLedger();
+        }
+        trophies.repair();
         totalAscensionsCompleted = Math.max(0, totalAscensionsCompleted);
         wave200ReachedCount = Math.max(0, wave200ReachedCount);
         openingTier = Math.max(-1, openingTier);
