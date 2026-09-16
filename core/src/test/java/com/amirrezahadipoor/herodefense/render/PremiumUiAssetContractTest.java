@@ -146,12 +146,14 @@ final class PremiumUiAssetContractTest {
         )) assertTrue(frames.contains(token), token);
         assertTrue(frames.contains("new NinePatch(texture, INSET, INSET, INSET, INSET)"));
 
-        String game = Files.readString(REPOSITORY.resolve(
-            "core/src/main/java/com/amirrezahadipoor/herodefense/HeroDefenseGame.java"
+        // The touch lifecycle moved into ScreenTouchRouter (roadmap R2.2), so scan the router, where the
+        // press/move/release calls are now made through the game's Host port.
+        String router = Files.readString(REPOSITORY.resolve(
+            "core/src/main/java/com/amirrezahadipoor/herodefense/input/ScreenTouchRouter.java"
         ));
-        assertTrue(game.contains("uiFrameRenderer.press(worldX, worldY)"));
-        assertTrue(game.contains("uiFrameRenderer.movePress(worldX, worldY)"));
-        assertTrue(game.contains("uiFrameRenderer.release()"));
+        assertTrue(router.contains("uiFrameRenderer().press(worldX, worldY)"));
+        assertTrue(router.contains("uiFrameRenderer().movePress(worldX, worldY)"));
+        assertTrue(router.contains("uiFrameRenderer().release()"));
 
         String inventory = Files.readString(REPOSITORY.resolve(
             "core/src/main/java/com/amirrezahadipoor/herodefense/render/InventoryOverlayRenderer.java"

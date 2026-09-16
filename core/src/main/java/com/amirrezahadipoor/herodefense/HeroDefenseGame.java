@@ -38,6 +38,7 @@ import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
 import com.amirrezahadipoor.herodefense.gameplay.UltimateResult;
 import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
+import com.amirrezahadipoor.herodefense.input.ScreenTouchRouter;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
 import com.amirrezahadipoor.herodefense.input.GdxHapticFeedback;
@@ -598,302 +599,55 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     private void installTouchInput() {
-        Gdx.input.setInputProcessor(new TouchInputController(viewport, new TouchInputController.Listener() {
-            @Override
-            public boolean onTouchDown(float worldX, float worldY, int pointer) {
-                uiFrameRenderer.press(worldX, worldY);
-                return true;
-            }
+        Gdx.input.setInputProcessor(
+            new TouchInputController(viewport, new ScreenTouchRouter(new TouchHost()))
+        );
+    }
 
-            @Override
-            public boolean onTouchDragged(
-                float worldX,
-                float worldY,
-                float deltaX,
-                float deltaY,
-                int pointer
-            ) {
-                uiFrameRenderer.movePress(worldX, worldY);
-                if (flow.state() == GameScreenState.INVENTORY
-                    && inventoryTouchController.isOpen()) {
-                    inventoryTouchController.drag(gameState, deltaY);
-                }
-                if (flow.state() == GameScreenState.CODEX
-                    && codexTouchController.isOpen()) {
-                    codexTouchController.drag(gameState, deltaY);
-                }
-                return true;
-            }
-
-            @Override
-            public boolean onTouchUp(float worldX, float worldY, int pointer, boolean isTap) {
-                uiFrameRenderer.release();
-                lastTouchWorldX = worldX;
-                lastTouchWorldY = worldY;
-                handledTouchUpCount++;
-                if (!isTap) {
-                    return true;
-                }
-                boolean cardChoiceTap = flow.state() == GameScreenState.CARD_CHOICE
-                    || flow.state() == GameScreenState.TRIAL_DRAFT;
-                if (!cardChoiceTap) {
-                    touchFeedbackSystem.triggerTap(worldX, worldY);
-                    hapticFeedback.tap();
-                }
-                if (flow.state() == GameScreenState.SETTINGS) {
-                    SettingsTouchLayout.Action action = settingsTouchController.tap(
-                        settings, worldX, worldY
-                    );
-                    if (action == SettingsTouchLayout.Action.CLOSE) {
-                        flow.transitionTo(GameScreenState.MENU);
-                    } else if (action != SettingsTouchLayout.Action.NONE) {
-                        settingsRepository.save(settings);
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.GAME_OVER) {
-                    if (GameOverOverlayRenderer.isInteractive(
-                        gameOverPresentationSeconds,
-                        gameState.runComplete
-                    )) {
-                        GameOverTouchLayout.Action action = GameOverTouchLayout.actionAt(worldX, worldY);
-                        if (action == GameOverTouchLayout.Action.RESTART) {
-                            startNewRunSameTier();
-                        } else if (action == GameOverTouchLayout.Action.ASCEND) {
-                            ascendRun();
-                        } else if (action == GameOverTouchLayout.Action.ROOT_NETWORK) {
-                            flow.transitionTo(GameScreenState.ROOT_NETWORK);
-                        }
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.CARD_CHOICE) {
-                    if (rewardCardTouchController.tap(gameState, worldX, worldY)) {
-                        touchFeedbackSystem.triggerCardSelection(worldX, worldY);
-                        hapticFeedback.cardSelection();
-                        WaveCompletion result = waveLifecycleSystem.continueAfterBossReward(gameState);
-                        if (result == WaveCompletion.RUN_COMPLETED) {
-                            codexSystem.unlockSecretsForEquipment(gameState);
-                            flow.transitionTo(GameScreenState.GAME_OVER);
-                        } else if (result == WaveCompletion.PLANTING_CEREMONY) {
-                            beginPlantingCeremony();
-                        } else {
-                            flow.transitionTo(GameScreenState.PLAYING);
-                        }
-                        saveNow();
-                    } else {
-                        touchFeedbackSystem.triggerTap(worldX, worldY);
-                        hapticFeedback.tap();
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.TRIAL_DRAFT) {
-                    int picksBefore = gameState.trialDraftPicks.size();
-                    if (trialDraftTouchController.tap(gameState, worldX, worldY)) {
-                        touchFeedbackSystem.triggerCardSelection(worldX, worldY);
-                        hapticFeedback.cardSelection();
-                        flow.transitionTo(GameScreenState.CINEMATIC);
-                        beginOpening();
-                        saveNow();
-                    } else {
-                        touchFeedbackSystem.triggerTap(worldX, worldY);
-                        hapticFeedback.tap();
-                        if (gameState.trialDraftPicks.size() > picksBefore) {
-                            saveNow();
-                        }
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.CINEMATIC) {
-                    if (openingCinematic.isActive()) {
-                        openingCinematic.skip();
-                    } else {
-                        plantingCeremony.skip();
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.LEVEL_UP) {
-                    HeroStat selectedStat = LevelUpTouchLayout.statAt(worldX, worldY);
-                    if (heroProgressionSystem.allocateTalentPoint(gameState, selectedStat)) {
-                        saveNow();
-                        if (gameState.unspentTalentPoints == 0) {
-                            flow.transitionTo(GameScreenState.PLAYING);
-                        }
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.SHOP) {
-                    StatShopTouchLayout.Tab tab = StatShopTouchLayout.tabAt(worldX, worldY);
-                    if (StatShopTouchLayout.closeAt(worldX, worldY)) {
-                        flow.returnFromOverlay();
-                        saveNow();
-                    } else if (StatShopTouchLayout.rootAt(worldX, worldY)) {
-                        flow.transitionTo(GameScreenState.ROOT_NETWORK);
-                    } else if (tab != null) {
-                        shopTab = tab;
-                    } else if (shopTab == StatShopTouchLayout.Tab.SKILLS) {
-                        SkillId skill = StatShopTouchLayout.skillAt(worldX, worldY);
-                        if (skill != null && skillShopSystem.atEvolutionFork(gameState, skill)) {
-                            int option = StatShopTouchLayout.evolutionOptionAt(worldX, worldY);
-                            if (option >= 0 && skillShopSystem.purchaseEvolution(
-                                gameState, skill, SkillEvolution.forSkill(skill).get(option)
-                            )) {
-                                codexSystem.unlockSecretsForSkillPurchase(gameState);
-                                audioManager.play(AudioCue.PURCHASE);
-                                saveNow();
-                            }
-                        } else if (skillShopSystem.purchase(gameState, skill)) {
-                            codexSystem.unlockSecretsForSkillPurchase(gameState);
-                            audioManager.play(AudioCue.PURCHASE);
-                            saveNow();
-                        }
-                    } else {
-                        HeroStat stat = StatShopTouchLayout.statAt(worldX, worldY);
-                        if (statShopSystem.purchase(gameState, stat)) {
-                            gameState.shopStatsBoughtThisRun++;
-                            gameState.bareHandedEligible = false;
-                            audioManager.play(AudioCue.PURCHASE);
-                            saveNow();
-                        }
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.MENU) {
-                    MainMenuTouchLayout.Action action = MainMenuTouchLayout.actionAt(
-                        worldX, worldY, continueAvailable
-                    );
-                    if (action == MainMenuTouchLayout.Action.NEW_GAME) {
-                        startNewRunSameTier();
-                    } else if (action == MainMenuTouchLayout.Action.CONTINUE) {
-                        continueRun();
-                    } else if (action == MainMenuTouchLayout.Action.SETTINGS) {
-                        flow.transitionTo(GameScreenState.SETTINGS);
-                    } else if (action == MainMenuTouchLayout.Action.ROOT_NETWORK) {
-                        flow.transitionTo(GameScreenState.ROOT_NETWORK);
-                    } else if (action == MainMenuTouchLayout.Action.CODEX) {
-                        flow.transitionTo(GameScreenState.CODEX);
-                        codexTouchController.open();
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.ROOT_NETWORK) {
-                    com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action rnAction =
-                        rootNetworkTouchController.tap(gameState, worldX, worldY);
-                    if (rnAction == com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action.CLOSED) {
-                        flow.returnFromOverlay();
-                        saveNow();
-                    } else if (rnAction == com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action.PURCHASED) {
-                        // Re-apply bonuses live and save
-                        rootNetworkSystem.applyPermanentBonuses(gameState);
-                        audioManager.play(AudioCue.PURCHASE);
-                        saveNow();
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PLAYING && whisperLine != null) {
-                    whisperLine = null;
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PLAYING && storyBeatLine != null) {
-                    storyBeatLine = null;
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PLAYING
-                    && HudTouchLayout.inventoryAt(worldX, worldY)) {
-                    flow.transitionTo(GameScreenState.INVENTORY);
-                    inventoryTouchController.open();
-                    saveNow();
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PLAYING
-                    && HudTouchLayout.shopAt(worldX, worldY)) {
-                    flow.transitionTo(GameScreenState.SHOP);
-                    saveNow();
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PLAYING
-                    && HudTouchLayout.ultimateAt(worldX, worldY)) {
-                    if (FocusSystem.isFull(gameState)) {
-                        fireUltimate();
-                        saveNow();
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PLAYING
-                    && simulationSpeedTouchController.tap(gameState, worldX, worldY)) {
-                    saveNow();
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PLAYING
-                    && pauseTouchController.tap(flow, worldX, worldY)) {
-                    saveNow();
-                    return true;
-                }
-                if (flow.state() == GameScreenState.INVENTORY
-                    && inventoryTouchController.isOpen()) {
-                    InventoryTouchController.Action action = inventoryTouchController.tap(
-                        gameState, settings, worldX, worldY
-                    );
-                    if (action == InventoryTouchController.Action.CLOSED) {
-                        flow.returnFromOverlay();
-                        saveNow();
-                    } else if (action == InventoryTouchController.Action.EQUIPPED
-                        || action == InventoryTouchController.Action.UNEQUIPPED
-                        || action == InventoryTouchController.Action.SOLD
-                        || action == InventoryTouchController.Action.FORGED) {
-                        if (action == InventoryTouchController.Action.FORGED) {
-                            codexSystem.unlockSecretsForForge(gameState);
-                            audioManager.play(AudioCue.PURCHASE);
-                        }
-                        if (action == InventoryTouchController.Action.EQUIPPED) {
-                            codexSystem.unlockSecretsForEquipment(gameState);
-                        }
-                        saveNow();
-                    } else if (action == InventoryTouchController.Action.AUTO_SELL_TOGGLED) {
-                        settingsRepository.save(settings);
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.CODEX
-                    && codexTouchController.isOpen()) {
-                    CodexTouchController.Action action = codexTouchController.tap(
-                        gameState, worldX, worldY
-                    );
-                    if (action == CodexTouchController.Action.CLOSED) {
-                        codexTouchController.close();
-                        flow.returnFromOverlay();
-                        saveNow();
-                    }
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PAUSED
-                    && PauseTouchLayout.shopAt(worldX, worldY)) {
-                    flow.transitionTo(GameScreenState.SHOP);
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PAUSED
-                    && PauseTouchLayout.inventoryAt(worldX, worldY)) {
-                    flow.transitionTo(GameScreenState.INVENTORY);
-                    inventoryTouchController.open();
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PAUSED
-                    && PauseTouchLayout.rootAt(worldX, worldY)) {
-                    flow.transitionTo(GameScreenState.ROOT_NETWORK);
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PAUSED
-                    && PauseTouchLayout.codexAt(worldX, worldY)) {
-                    flow.transitionTo(GameScreenState.CODEX);
-                    codexTouchController.open();
-                    return true;
-                }
-                if (flow.state() == GameScreenState.PAUSED) {
-                    pauseTouchController.tap(flow, worldX, worldY);
-                }
-                return true;
-            }
-        }));
+    /** Adapter the touch router uses; one line per member, so the game keeps ownership of its state. */
+    private final class TouchHost implements ScreenTouchRouter.Host {
+        @Override public GameAudioManager audioManager() { return audioManager; }
+        @Override public CodexSystem codexSystem() { return codexSystem; }
+        @Override public CodexTouchController codexTouchController() { return codexTouchController; }
+        @Override public boolean continueAvailable() { return continueAvailable; }
+        @Override public GameFlowController flow() { return flow; }
+        @Override public float gameOverPresentationSeconds() { return gameOverPresentationSeconds; }
+        @Override public GameState gameState() { return gameState; }
+        @Override public HapticFeedback hapticFeedback() { return hapticFeedback; }
+        @Override public HeroProgressionSystem heroProgressionSystem() { return heroProgressionSystem; }
+        @Override public InventoryTouchController inventoryTouchController() { return inventoryTouchController; }
+        @Override public OpeningCinematic openingCinematic() { return openingCinematic; }
+        @Override public PauseTouchController pauseTouchController() { return pauseTouchController; }
+        @Override public PlantingCeremony plantingCeremony() { return plantingCeremony; }
+        @Override public RewardCardTouchController rewardCardTouchController() { return rewardCardTouchController; }
+        @Override public RootNetworkSystem rootNetworkSystem() { return rootNetworkSystem; }
+        @Override public RootNetworkTouchController rootNetworkTouchController() { return rootNetworkTouchController; }
+        @Override public GameSettings settings() { return settings; }
+        @Override public LocalSettingsRepository settingsRepository() { return settingsRepository; }
+        @Override public SettingsTouchController settingsTouchController() { return settingsTouchController; }
+        @Override public SimulationSpeedTouchController simulationSpeedTouchController() { return simulationSpeedTouchController; }
+        @Override public SkillShopSystem skillShopSystem() { return skillShopSystem; }
+        @Override public StatShopSystem statShopSystem() { return statShopSystem; }
+        @Override public StatShopTouchLayout.Tab shopTab() { return shopTab; }
+        @Override public String storyBeatLine() { return storyBeatLine; }
+        @Override public String whisperLine() { return whisperLine; }
+        @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
+        @Override public TrialDraftTouchController trialDraftTouchController() { return trialDraftTouchController; }
+        @Override public UiFrameRenderer uiFrameRenderer() { return uiFrameRenderer; }
+        @Override public WaveLifecycleSystem waveLifecycleSystem() { return waveLifecycleSystem; }
+        @Override public void setShopTab(StatShopTouchLayout.Tab tab) { shopTab = tab; }
+        @Override public void setStoryBeatLine(String line) { storyBeatLine = line; }
+        @Override public void setWhisperLine(String line) { whisperLine = line; }
+        @Override public void setLastTouchWorldX(float value) { lastTouchWorldX = value; }
+        @Override public void setLastTouchWorldY(float value) { lastTouchWorldY = value; }
+        @Override public void countHandledTouchUp() { handledTouchUpCount++; }
+        @Override public void saveNow() { HeroDefenseGame.this.saveNow(); }
+        @Override public void startNewRunSameTier() { HeroDefenseGame.this.startNewRunSameTier(); }
+        @Override public void ascendRun() { HeroDefenseGame.this.ascendRun(); }
+        @Override public void continueRun() { HeroDefenseGame.this.continueRun(); }
+        @Override public void beginOpening() { HeroDefenseGame.this.beginOpening(); }
+        @Override public void fireUltimate() { HeroDefenseGame.this.fireUltimate(); }
+        @Override public void beginPlantingCeremony() { HeroDefenseGame.this.beginPlantingCeremony(); }
     }
 
     private void startNewRun() {

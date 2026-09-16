@@ -2,6 +2,9 @@ package com.amirrezahadipoor.herodefense.architecture;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +24,15 @@ class ArchitectureRatchetTest {
 
     private static final Path SOURCES = Path.of("..", "core", "src", "main", "java").normalize();
 
+    private static final Path GAME = SOURCES.resolve("com/amirrezahadipoor/herodefense/HeroDefenseGame.java");
+
+    private static final Path ROUTER = SOURCES.resolve(
+        "com/amirrezahadipoor/herodefense/input/ScreenTouchRouter.java");
+
     /** Measured on 2026-09-16; the ratchet fails if one of these grows or if a new one appears. */
     private static final Map<String, ArchitectureRatchet.Frozen> FROZEN = Map.of(
         "com/amirrezahadipoor/herodefense/HeroDefenseGame.java",
-        new ArchitectureRatchet.Frozen(1447, 91),
+        new ArchitectureRatchet.Frozen(1201, 91),
         "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
         new ArchitectureRatchet.Frozen(667, 11),
         "com/amirrezahadipoor/herodefense/balance/BalanceSimulator.java",
@@ -72,6 +80,67 @@ class ArchitectureRatchetTest {
         assertTrue(ArchitectureRatchet
             .size("com/x/Wide.java", fields, new ArchitectureRatchet.Frozen(45, 41)).size() == 1,
             "a frozen offender that grows fails");
+    }
+
+    /**
+     * R2.2 guard: the screen-state touch chain lives in {@linkplain #ROUTER the router} and the game class only
+     * wires it. Without this, the next screen added to the game would grow the god class again and no test would
+     * notice until the next audit.
+     */
+    @Test
+    void theTouchChainLivesBehindTheRouter() {
+        String game = read(GAME);
+        String router = read(ROUTER);
+        assertTrue(router.contains("implements TouchInputController.Listener"),
+            "the router is the listener the touch input calls back into");
+        assertTrue(game.contains("new ScreenTouchRouter(new TouchHost())"), "the game must wire the router");
+        assertEquals(1, occurrences(game, "setInputProcessor"), "exactly one input registration in the game");
+        Map<String, Integer> inputOnlyClasses = Map.ofEntries(
+            Map.entry("PauseTouchLayout.", 0),
+            Map.entry("HudTouchLayout.", 0),
+            Map.entry("MainMenuTouchLayout.", 0),
+            Map.entry("GameOverTouchLayout.", 0),
+            Map.entry("LevelUpTouchLayout.", 0),
+            Map.entry("SettingsTouchLayout.", 0),
+            Map.entry("RewardCardTouchController.", 0),
+            Map.entry("CodexTouchController.", 0),
+            Map.entry("InventoryTouchController.", 0),
+            Map.entry("RootNetworkTouchController.", 0),
+            Map.entry("TrialDraftTouchController.", 0),
+            Map.entry("SimulationSpeedTouchController.", 0)
+        );
+        for (Map.Entry<String, Integer> entry : inputOnlyClasses.entrySet()) {
+            assertTrue(occurrences(game, entry.getKey()) <= entry.getValue(),
+                "the touch chain moved to the router; " + entry.getKey() + " still appears in the game");
+        }
+        // The shop-tab field stays in the game (the HUD renders it), but its hit tests belong to the router.
+        assertTrue(occurrences(game, "shopTab") > 0, "the game still owns the selected shop tab");
+        for (String hitTest : List.of("statAt(", "tabAt(", "closeAt(", "rootAt(", "skillAt(", "evolutionOptionAt(")) {
+            assertEquals(0, occurrences(game, "StatShopTouchLayout." + hitTest),
+                "the router owns the StatShopTouchLayout." + hitTest + " hit test");
+            assertTrue(occurrences(router, "StatShopTouchLayout." + hitTest) > 0,
+                "the router keeps the StatShopTouchLayout." + hitTest + " hit test");
+        }
+        assertTrue(occurrences(router, "host.") > 100,
+            "the router talks to the game only through its Host port");
+    }
+
+    private static int occurrences(String source, String needle) {
+        int total = 0;
+        int index = source.indexOf(needle);
+        while (index >= 0) {
+            total++;
+            index = source.indexOf(needle, index + needle.length());
+        }
+        return total;
+    }
+
+    private static String read(Path file) {
+        try {
+            return Files.readString(file);
+        } catch (IOException error) {
+            throw new UncheckedIOException(error);
+        }
     }
 
     @Test

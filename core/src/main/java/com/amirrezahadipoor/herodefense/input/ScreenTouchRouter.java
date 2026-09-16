@@ -1,0 +1,443 @@
+package com.amirrezahadipoor.herodefense.input;
+
+import com.amirrezahadipoor.herodefense.GameFlowController;
+import com.amirrezahadipoor.herodefense.GameScreenState;
+import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
+import com.amirrezahadipoor.herodefense.audio.AudioCue;
+import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
+import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
+import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
+import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
+import com.amirrezahadipoor.herodefense.gameplay.WaveCompletion;
+import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
+import com.amirrezahadipoor.herodefense.input.CodexTouchController;
+import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
+import com.amirrezahadipoor.herodefense.input.HapticFeedback;
+import com.amirrezahadipoor.herodefense.input.HudTouchLayout;
+import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
+import com.amirrezahadipoor.herodefense.input.LevelUpTouchLayout;
+import com.amirrezahadipoor.herodefense.input.MainMenuTouchLayout;
+import com.amirrezahadipoor.herodefense.input.PauseTouchController;
+import com.amirrezahadipoor.herodefense.input.PauseTouchLayout;
+import com.amirrezahadipoor.herodefense.input.RewardCardTouchController;
+import com.amirrezahadipoor.herodefense.input.RootNetworkTouchController;
+import com.amirrezahadipoor.herodefense.input.SettingsTouchController;
+import com.amirrezahadipoor.herodefense.input.SettingsTouchLayout;
+import com.amirrezahadipoor.herodefense.input.SimulationSpeedTouchController;
+import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout;
+import com.amirrezahadipoor.herodefense.input.TouchInputController;
+import com.amirrezahadipoor.herodefense.input.TrialDraftTouchController;
+import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.HeroStat;
+import com.amirrezahadipoor.herodefense.polish.TouchFeedbackSystem;
+import com.amirrezahadipoor.herodefense.render.GameOverOverlayRenderer;
+import com.amirrezahadipoor.herodefense.render.UiFrameRenderer;
+import com.amirrezahadipoor.herodefense.settings.GameSettings;
+import com.amirrezahadipoor.herodefense.settings.LocalSettingsRepository;
+import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
+import com.amirrezahadipoor.herodefense.skills.SkillEvolution;
+import com.amirrezahadipoor.herodefense.skills.SkillId;
+import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
+import com.amirrezahadipoor.herodefense.story.CodexSystem;
+
+/**
+ * Routes touch events by screen state: menu, run, overlays, shops, codex, ceremonies.
+ *
+ * <p>Extracted from {@code HeroDefenseGame} (roadmap R2.2) because the state chain is the part of the game
+ * class that grows with every new screen. The router owns no state of its own; it reads and writes the game
+ * through the {@link Host} interface, which keeps the game class the single owner of the flow, the story line
+ * and the save file. The chain was moved verbatim, so the behaviour is the one the emulator smoke journeys
+ * already cover.
+ */
+public final class ScreenTouchRouter implements TouchInputController.Listener {
+
+    private final Host host;
+
+    public ScreenTouchRouter(Host host) {
+        this.host = host;
+    }
+
+
+    /** What the router needs from the game; implemented by an adapter inside the game class. */
+    public interface Host {
+        GameAudioManager audioManager();
+
+        CodexSystem codexSystem();
+
+        CodexTouchController codexTouchController();
+
+        boolean continueAvailable();
+
+        GameFlowController flow();
+
+        float gameOverPresentationSeconds();
+
+        GameState gameState();
+
+        HapticFeedback hapticFeedback();
+
+        HeroProgressionSystem heroProgressionSystem();
+
+        InventoryTouchController inventoryTouchController();
+
+        OpeningCinematic openingCinematic();
+
+        PauseTouchController pauseTouchController();
+
+        PlantingCeremony plantingCeremony();
+
+        RewardCardTouchController rewardCardTouchController();
+
+        RootNetworkSystem rootNetworkSystem();
+
+        RootNetworkTouchController rootNetworkTouchController();
+
+        GameSettings settings();
+
+        LocalSettingsRepository settingsRepository();
+
+        SettingsTouchController settingsTouchController();
+
+        SimulationSpeedTouchController simulationSpeedTouchController();
+
+        SkillShopSystem skillShopSystem();
+
+        StatShopSystem statShopSystem();
+
+        StatShopTouchLayout.Tab shopTab();
+
+        String storyBeatLine();
+
+        String whisperLine();
+
+        TouchFeedbackSystem touchFeedbackSystem();
+
+        TrialDraftTouchController trialDraftTouchController();
+
+        UiFrameRenderer uiFrameRenderer();
+
+        WaveLifecycleSystem waveLifecycleSystem();
+
+        void setShopTab(StatShopTouchLayout.Tab tab);
+
+        void setStoryBeatLine(String line);
+
+        void setWhisperLine(String line);
+
+        void setLastTouchWorldX(float x);
+
+        void setLastTouchWorldY(float y);
+
+        void countHandledTouchUp();
+
+        void saveNow();
+
+        void startNewRunSameTier();
+
+        void ascendRun();
+
+        void continueRun();
+
+        void beginOpening();
+
+        void fireUltimate();
+
+        void beginPlantingCeremony();
+    }
+
+        @Override
+        public boolean onTouchDown(float worldX, float worldY, int pointer) {
+            host.uiFrameRenderer().press(worldX, worldY);
+            return true;
+        }
+
+        @Override
+        public boolean onTouchDragged(
+            float worldX,
+            float worldY,
+            float deltaX,
+            float deltaY,
+            int pointer
+        ) {
+            host.uiFrameRenderer().movePress(worldX, worldY);
+            if (host.flow().state() == GameScreenState.INVENTORY
+                && host.inventoryTouchController().isOpen()) {
+                host.inventoryTouchController().drag(host.gameState(), deltaY);
+            }
+            if (host.flow().state() == GameScreenState.CODEX
+                && host.codexTouchController().isOpen()) {
+                host.codexTouchController().drag(host.gameState(), deltaY);
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onTouchUp(float worldX, float worldY, int pointer, boolean isTap) {
+            host.uiFrameRenderer().release();
+            host.setLastTouchWorldX(worldX);
+            host.setLastTouchWorldY(worldY);
+            host.countHandledTouchUp();
+            if (!isTap) {
+                return true;
+            }
+            boolean cardChoiceTap = host.flow().state() == GameScreenState.CARD_CHOICE
+                || host.flow().state() == GameScreenState.TRIAL_DRAFT;
+            if (!cardChoiceTap) {
+                host.touchFeedbackSystem().triggerTap(worldX, worldY);
+                host.hapticFeedback().tap();
+            }
+            if (host.flow().state() == GameScreenState.SETTINGS) {
+                SettingsTouchLayout.Action action = host.settingsTouchController().tap(
+                    host.settings(), worldX, worldY
+                );
+                if (action == SettingsTouchLayout.Action.CLOSE) {
+                    host.flow().transitionTo(GameScreenState.MENU);
+                } else if (action != SettingsTouchLayout.Action.NONE) {
+                    host.settingsRepository().save(host.settings());
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.GAME_OVER) {
+                if (GameOverOverlayRenderer.isInteractive(
+                    host.gameOverPresentationSeconds(),
+                    host.gameState().runComplete
+                )) {
+                    GameOverTouchLayout.Action action = GameOverTouchLayout.actionAt(worldX, worldY);
+                    if (action == GameOverTouchLayout.Action.RESTART) {
+                        host.startNewRunSameTier();
+                    } else if (action == GameOverTouchLayout.Action.ASCEND) {
+                        host.ascendRun();
+                    } else if (action == GameOverTouchLayout.Action.ROOT_NETWORK) {
+                        host.flow().transitionTo(GameScreenState.ROOT_NETWORK);
+                    }
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.CARD_CHOICE) {
+                if (host.rewardCardTouchController().tap(host.gameState(), worldX, worldY)) {
+                    host.touchFeedbackSystem().triggerCardSelection(worldX, worldY);
+                    host.hapticFeedback().cardSelection();
+                    WaveCompletion result = host.waveLifecycleSystem().continueAfterBossReward(host.gameState());
+                    if (result == WaveCompletion.RUN_COMPLETED) {
+                        host.codexSystem().unlockSecretsForEquipment(host.gameState());
+                        host.flow().transitionTo(GameScreenState.GAME_OVER);
+                    } else if (result == WaveCompletion.PLANTING_CEREMONY) {
+                        host.beginPlantingCeremony();
+                    } else {
+                        host.flow().transitionTo(GameScreenState.PLAYING);
+                    }
+                    host.saveNow();
+                } else {
+                    host.touchFeedbackSystem().triggerTap(worldX, worldY);
+                    host.hapticFeedback().tap();
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.TRIAL_DRAFT) {
+                int picksBefore = host.gameState().trialDraftPicks.size();
+                if (host.trialDraftTouchController().tap(host.gameState(), worldX, worldY)) {
+                    host.touchFeedbackSystem().triggerCardSelection(worldX, worldY);
+                    host.hapticFeedback().cardSelection();
+                    host.flow().transitionTo(GameScreenState.CINEMATIC);
+                    host.beginOpening();
+                    host.saveNow();
+                } else {
+                    host.touchFeedbackSystem().triggerTap(worldX, worldY);
+                    host.hapticFeedback().tap();
+                    if (host.gameState().trialDraftPicks.size() > picksBefore) {
+                        host.saveNow();
+                    }
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.CINEMATIC) {
+                if (host.openingCinematic().isActive()) {
+                    host.openingCinematic().skip();
+                } else {
+                    host.plantingCeremony().skip();
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.LEVEL_UP) {
+                HeroStat selectedStat = LevelUpTouchLayout.statAt(worldX, worldY);
+                if (host.heroProgressionSystem().allocateTalentPoint(host.gameState(), selectedStat)) {
+                    host.saveNow();
+                    if (host.gameState().unspentTalentPoints == 0) {
+                        host.flow().transitionTo(GameScreenState.PLAYING);
+                    }
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.SHOP) {
+                StatShopTouchLayout.Tab tab = StatShopTouchLayout.tabAt(worldX, worldY);
+                if (StatShopTouchLayout.closeAt(worldX, worldY)) {
+                    host.flow().returnFromOverlay();
+                    host.saveNow();
+                } else if (StatShopTouchLayout.rootAt(worldX, worldY)) {
+                    host.flow().transitionTo(GameScreenState.ROOT_NETWORK);
+                } else if (tab != null) {
+                    host.setShopTab(tab);
+                } else if (host.shopTab() == StatShopTouchLayout.Tab.SKILLS) {
+                    SkillId skill = StatShopTouchLayout.skillAt(worldX, worldY);
+                    if (skill != null && host.skillShopSystem().atEvolutionFork(host.gameState(), skill)) {
+                        int option = StatShopTouchLayout.evolutionOptionAt(worldX, worldY);
+                        if (option >= 0 && host.skillShopSystem().purchaseEvolution(
+                            host.gameState(), skill, SkillEvolution.forSkill(skill).get(option)
+                        )) {
+                            host.codexSystem().unlockSecretsForSkillPurchase(host.gameState());
+                            host.audioManager().play(AudioCue.PURCHASE);
+                            host.saveNow();
+                        }
+                    } else if (host.skillShopSystem().purchase(host.gameState(), skill)) {
+                        host.codexSystem().unlockSecretsForSkillPurchase(host.gameState());
+                        host.audioManager().play(AudioCue.PURCHASE);
+                        host.saveNow();
+                    }
+                } else {
+                    HeroStat stat = StatShopTouchLayout.statAt(worldX, worldY);
+                    if (host.statShopSystem().purchase(host.gameState(), stat)) {
+                        host.gameState().shopStatsBoughtThisRun++;
+                        host.gameState().bareHandedEligible = false;
+                        host.audioManager().play(AudioCue.PURCHASE);
+                        host.saveNow();
+                    }
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.MENU) {
+                MainMenuTouchLayout.Action action = MainMenuTouchLayout.actionAt(
+                    worldX, worldY, host.continueAvailable()
+                );
+                if (action == MainMenuTouchLayout.Action.NEW_GAME) {
+                    host.startNewRunSameTier();
+                } else if (action == MainMenuTouchLayout.Action.CONTINUE) {
+                    host.continueRun();
+                } else if (action == MainMenuTouchLayout.Action.SETTINGS) {
+                    host.flow().transitionTo(GameScreenState.SETTINGS);
+                } else if (action == MainMenuTouchLayout.Action.ROOT_NETWORK) {
+                    host.flow().transitionTo(GameScreenState.ROOT_NETWORK);
+                } else if (action == MainMenuTouchLayout.Action.CODEX) {
+                    host.flow().transitionTo(GameScreenState.CODEX);
+                    host.codexTouchController().open();
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.ROOT_NETWORK) {
+                com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action rnAction =
+                    host.rootNetworkTouchController().tap(host.gameState(), worldX, worldY);
+                if (rnAction == com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action.CLOSED) {
+                    host.flow().returnFromOverlay();
+                    host.saveNow();
+                } else if (rnAction == com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action.PURCHASED) {
+                    // Re-apply bonuses live and save
+                    host.rootNetworkSystem().applyPermanentBonuses(host.gameState());
+                    host.audioManager().play(AudioCue.PURCHASE);
+                    host.saveNow();
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PLAYING && host.whisperLine() != null) {
+                host.setWhisperLine(null);
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PLAYING && host.storyBeatLine() != null) {
+                host.setStoryBeatLine(null);
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PLAYING
+                && HudTouchLayout.inventoryAt(worldX, worldY)) {
+                host.flow().transitionTo(GameScreenState.INVENTORY);
+                host.inventoryTouchController().open();
+                host.saveNow();
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PLAYING
+                && HudTouchLayout.shopAt(worldX, worldY)) {
+                host.flow().transitionTo(GameScreenState.SHOP);
+                host.saveNow();
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PLAYING
+                && HudTouchLayout.ultimateAt(worldX, worldY)) {
+                if (FocusSystem.isFull(host.gameState())) {
+                    host.fireUltimate();
+                    host.saveNow();
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PLAYING
+                && host.simulationSpeedTouchController().tap(host.gameState(), worldX, worldY)) {
+                host.saveNow();
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PLAYING
+                && host.pauseTouchController().tap(host.flow(), worldX, worldY)) {
+                host.saveNow();
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.INVENTORY
+                && host.inventoryTouchController().isOpen()) {
+                InventoryTouchController.Action action = host.inventoryTouchController().tap(
+                    host.gameState(), host.settings(), worldX, worldY
+                );
+                if (action == InventoryTouchController.Action.CLOSED) {
+                    host.flow().returnFromOverlay();
+                    host.saveNow();
+                } else if (action == InventoryTouchController.Action.EQUIPPED
+                    || action == InventoryTouchController.Action.UNEQUIPPED
+                    || action == InventoryTouchController.Action.SOLD
+                    || action == InventoryTouchController.Action.FORGED) {
+                    if (action == InventoryTouchController.Action.FORGED) {
+                        host.codexSystem().unlockSecretsForForge(host.gameState());
+                        host.audioManager().play(AudioCue.PURCHASE);
+                    }
+                    if (action == InventoryTouchController.Action.EQUIPPED) {
+                        host.codexSystem().unlockSecretsForEquipment(host.gameState());
+                    }
+                    host.saveNow();
+                } else if (action == InventoryTouchController.Action.AUTO_SELL_TOGGLED) {
+                    host.settingsRepository().save(host.settings());
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.CODEX
+                && host.codexTouchController().isOpen()) {
+                CodexTouchController.Action action = host.codexTouchController().tap(
+                    host.gameState(), worldX, worldY
+                );
+                if (action == CodexTouchController.Action.CLOSED) {
+                    host.codexTouchController().close();
+                    host.flow().returnFromOverlay();
+                    host.saveNow();
+                }
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PAUSED
+                && PauseTouchLayout.shopAt(worldX, worldY)) {
+                host.flow().transitionTo(GameScreenState.SHOP);
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PAUSED
+                && PauseTouchLayout.inventoryAt(worldX, worldY)) {
+                host.flow().transitionTo(GameScreenState.INVENTORY);
+                host.inventoryTouchController().open();
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PAUSED
+                && PauseTouchLayout.rootAt(worldX, worldY)) {
+                host.flow().transitionTo(GameScreenState.ROOT_NETWORK);
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PAUSED
+                && PauseTouchLayout.codexAt(worldX, worldY)) {
+                host.flow().transitionTo(GameScreenState.CODEX);
+                host.codexTouchController().open();
+                return true;
+            }
+            if (host.flow().state() == GameScreenState.PAUSED) {
+                host.pauseTouchController().tap(host.flow(), worldX, worldY);
+            }
+            return true;
+        }
+}

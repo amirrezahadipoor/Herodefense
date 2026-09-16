@@ -261,13 +261,22 @@ sentence has to name the two scores and the commit they were measured on.
   headroom. The layered-event test was strengthened rather than moved: it now scans the game class *and* the
   presentation system and requires each layered effect to be bound **exactly once** (twice for tree
   destruction, which has a world-tree and a grove-tree binding).
+  *Slice 2 (done):* the whole per-screen touch chain moved out of the game class into
+  `input/ScreenTouchRouter`, which implements `TouchInputController.Listener` and reaches the game only
+  through a nested `Host` port (29 readers, 5 setters, 7 commands, and one counter for the handled-touch-up
+  statistic). The chain was moved **verbatim** — a whitespace-insensitive comparison of the 8,184-character
+  normalised body against the pre-extraction file is byte-identical — so no behaviour changed while
+  `HeroDefenseGame` went from **1,447 to 1,201 lines**. The game keeps the `setInputProcessor` registration
+  and the `viewport` it needs, the shop-tab field it renders, and the story line it writes. The ratchet freeze
+  dropped to 1,201 / 91 in the same commit, and a new guard test (`theTouchChainLivesBehindTheRouter`) fails
+  if any touch layout or touch controller is referenced from the game class again.
   *Remaining:* `WaveDirector`, `CombatSystem`, `ArenaRendererFacade`, `HudFlow`, `SessionController`,
   the 400-line ceiling, and the before/after emulator smoke comparison.
 - [ ] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
-  size** — `HeroDefenseGame` (1,519 lines / 90 fields), `CombatEntityRenderer` (667 / 11),
+  size** — `HeroDefenseGame` (1,201 lines / 91 fields after roadmap phase 86), `CombatEntityRenderer` (667 / 11),
   `BalanceSimulator` (639 / 23), `model/GameState` (592 / 80). The freeze may only shrink: the ratchet fails
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
   so the exception list is self-cleaning. Negative controls cover a rendering import in `model`, an
@@ -494,17 +503,18 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
 | 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | `71bab7d` |
 | 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | `651d56a` |
-| 2026-09-16 | 85b | R2.4 | architecture ratchet enforced: layer imports, 600-line and 40-field ceilings, four frozen offenders that may only shrink, with negative controls | *(this commit)* |
+| 2026-09-16 | 85b | R2.4 | architecture ratchet enforced: layer imports, 600-line and 40-field ceilings, four frozen offenders that may only shrink, with negative controls | `0ccc92c` |
 | 2026-09-16 | 85a | R2.1 | dead `PostProcessRenderer` deleted; new packaging test fails on any `Gdx.files.internal` literal without a shipped file (5 literals checked, 15 computed paths reported) | `16bac49` |
-| 2026-09-16 | 84 | R1.10 | CRITICAL_REVIEW status header with re-measured numbers, style-guide budget note, ASSET_ENGINE values pointed at the manifest, batch-record banners on 21 review docs; count-like claim scan: 8 documents left, all accounted for | *(this commit)* |
+| 2026-09-16 | 84 | R1.10 | CRITICAL_REVIEW status header with re-measured numbers, style-guide budget note, ASSET_ENGINE values pointed at the manifest, batch-record banners on 21 review docs; count-like claim scan: 8 documents left, all accounted for | `e406773` |
 | 2026-09-16 | 81 | R1.7 step 1 | emulator smoke test measures every captured frame and publishes `brightness-measurements.txt` in the CI artifact; assertions unchanged in this step | `9089e1b` |
-| 2026-09-16 | 81 | R1.7 step 2 | per-screenshot brightness references enforced (28 captures, vfx included), ±8 luma, lit fraction −0.10, absolute floor 30; measured min 34.17 / max 48.30 | *(this commit)* |
+| 2026-09-16 | 81 | R1.7 step 2 | per-screenshot brightness references enforced (28 captures, vfx included), ±8 luma, lit fraction −0.10, absolute floor 30; measured min 34.17 / max 48.30 | `772fb45` |
 | 2026-09-16 | — | CI | run [`35078435013`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35078435013) at `0ccc92c`: both workflows green (covers phases 81 step 1, 83, 84, 85a, 85b) | `0ccc92c` |
 | 2026-09-16 | — | CI | run [`35079208076`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35079208076) at `772fb45`: both workflows green with the per-screenshot brightness contract active; 28/28 captures referenced, drift ≤ 0.07 luma except the animated collapse frame (7.14), which is why that entry carries a ±12 band | `772fb45` |
-| 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; `ReviewLabelBinding` enforced in core and in the validator | *(this commit)* |
-| 2026-09-16 | 86 | R2.2 slice 1 | `RunPresentationSystem` extracted from the god class; `HeroDefenseGame` 1,519 → 1,447 lines; ratchet freeze lowered to 1,447 / 91; layered-event test strengthened to scan both files and require exactly one binding per effect | *(this commit)* |
-| 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | *(this commit)* |
-| 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | *(this commit)* |
+| 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; the manifest is the single source of truth for the four revision labels, and 36+6+4 assets were re-stamped to match their real provenance | `37b6aec` |
+| 2026-09-16 | 86 | R2.2 slice 1 | `RunPresentationSystem` extracted from the god class; `HeroDefenseGame` 1,519 → 1,447 lines; ratchet freeze lowered to 1,447 / 91; layered-event test strengthened to scan both files and require exactly one binding per effect | `49923b3` |
+| 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | `442687b` |
+| 2026-09-16 | 86 | R2.2 slice 2 | per-screen touch chain extracted verbatim into `ScreenTouchRouter` behind a `Host` port; `HeroDefenseGame` 1,447 → 1,201 lines; ratchet freeze lowered; new guard test fails if a touch layout returns to the game class; prior progress-log rows back-filled with their real commit hashes | *(this commit)* |
+| 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | `317728c` |
 
 ## Definition of done
 
