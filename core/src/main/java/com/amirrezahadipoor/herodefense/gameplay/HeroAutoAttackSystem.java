@@ -57,7 +57,10 @@ public final class HeroAutoAttackSystem {
             hero.mythicLifestealRemainingSeconds =
                 Math.max(0f, hero.mythicLifestealRemainingSeconds - deltaSeconds);
         }
-        Enemy target = findNearestTarget(state, hero.x, hero.y, attackRange(state));
+        Enemy target = FocusFireSystem.markedTargetInRange(state, hero.x, hero.y, attackRange(state));
+        if (target == null) {
+            target = findNearestTarget(state, hero.x, hero.y, attackRange(state));
+        }
         hero.currentTargetId = target == null ? -1L : target.id;
         if (target == null) {
             hero.attackCooldownSeconds = Math.max(0f, hero.attackCooldownSeconds);
@@ -167,7 +170,8 @@ public final class HeroAutoAttackSystem {
                 : 1f)
             * (secondary ? SkillEffects.secondaryArrowShare(state) : 1f)
             * SkillEffects.deadeyeMultiplier(state, distance)
-            * (target instanceof Boss ? AffixEffects.bossDamageMultiplier(state) : 1f);
+            * (target instanceof Boss ? AffixEffects.bossDamageMultiplier(state) : 1f)
+            * (FocusFireSystem.isMarked(target) ? FocusFireSystem.DAMAGE_MULTIPLIER : 1f);
         projectile.remainingLifetimeSeconds = distance / PROJECTILE_SPEED + 0.25f;
         setVelocityToward(projectile, target);
         state.projectiles.add(projectile);

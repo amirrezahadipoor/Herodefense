@@ -20,6 +20,8 @@ import com.amirrezahadipoor.herodefense.gameplay.EnemyFactory;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyMeleeAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyMovementSystem;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyWaveSpawner;
+import com.amirrezahadipoor.herodefense.gameplay.ArenaQueries;
+import com.amirrezahadipoor.herodefense.gameplay.FocusFireSystem;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAnimationController;
 import com.amirrezahadipoor.herodefense.gameplay.CombatEvent;
@@ -651,6 +653,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void beginOpening() { HeroDefenseGame.this.beginOpening(); }
         @Override public void fireUltimate() { HeroDefenseGame.this.fireUltimate(); }
         @Override public void beginPlantingCeremony() { HeroDefenseGame.this.beginPlantingCeremony(); }
+
+        @Override public void focusFireAt(float worldX, float worldY) {
+            HeroDefenseGame.this.focusFireAt(worldX, worldY);
+        }
     }
 
     private void startNewRun() {
@@ -723,14 +729,14 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             beginPlantingCeremony();
         } else if (gameState.unspentTalentPoints > 0) {
             flow.transitionTo(GameScreenState.LEVEL_UP);
-        } else if (!gameState.waveActive && untouchedFirstWave(gameState)) {
+        } else if (!gameState.waveActive && ArenaQueries.untouchedFirstWave(gameState)) {
             // Killed during the opening: replay it so every new run still starts with the prologue.
             flow.transitionTo(GameScreenState.CINEMATIC);
             openingCinematic.begin(openingTierFor(gameState));
         } else if (!gameState.waveActive) {
-            int bossesBefore = livingBossCount(gameState);
+            int bossesBefore = ArenaQueries.livingBossCount(gameState);
             waveLifecycleSystem.startCurrentWave(gameState);
-            if (livingBossCount(gameState) > bossesBefore) {
+            if (ArenaQueries.livingBossCount(gameState) > bossesBefore) {
                 audioManager.play(AudioCue.BOSS_ENTRANCE);
                 presentationSystem.presentBossEntrance(gameState);
             }
@@ -749,10 +755,17 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         return state.openingTier >= 0 ? state.openingTier : state.ascensionTier;
     }
 
-    /** True while a run has not yet begun wave 1 (the save written right after New Game). */
-    static boolean untouchedFirstWave(GameState state) {
-        return state.waveNumber == 1 && !state.waveActive && state.totalKills == 0
-            && state.aliveEnemies.isEmpty() && state.aliveBosses.isEmpty();
+    /**
+     * Tap-to-focus (roadmap R3.1): marks the enemy under the finger for the bow, clears the mark on a miss,
+     * and answers with the same ripple and haptic the rest of the UI uses so the tap is never silent.
+     */
+    private void focusFireAt(float worldX, float worldY) {
+        if (gameState == null || !gameState.hero.alive) return;
+        Enemy marked = FocusFireSystem.markAt(gameState, worldX, worldY);
+        touchFeedbackSystem.triggerTap(worldX, worldY);
+        if (marked != null) {
+            hapticFeedback.tap();
+        }
     }
 
     /** Fires the Ultimate and plays its blast, beam fan, shake, and sound. */
@@ -786,25 +799,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private void showStoryBeat(String line) {
         storyBeatLine = line;
         storyBeatSeconds = 0f;
-    }
-
-    private static float totalEnemyHealth(GameState state) {
-        float total = 0f;
-        for (Enemy enemy : state.aliveEnemies) {
-            if (enemy != null) total += Math.max(0f, enemy.health);
-        }
-        for (Boss boss : state.aliveBosses) {
-            if (boss != null) total += Math.max(0f, boss.health);
-        }
-        return total;
-    }
-
-    private static int livingBossCount(GameState state) {
-        int count = 0;
-        for (Boss boss : state.aliveBosses) {
-            if (boss != null && boss.alive) count++;
-        }
-        return count;
     }
 
     private void beginPlantingCeremony() {
@@ -851,10 +845,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             waterDropAccumulator = 0f;
         }
         if (finished) {
-            int bossesBefore = livingBossCount(gameState);
+            int bossesBefore = ArenaQueries.livingBossCount(gameState);
             waveLifecycleSystem.completePlantingCeremony(gameState);
             flow.transitionTo(GameScreenState.PLAYING);
-            if (livingBossCount(gameState) > bossesBefore) {
+            if (ArenaQueries.livingBossCount(gameState) > bossesBefore) {
                 audioManager.play(AudioCue.BOSS_ENTRANCE);
                 presentationSystem.presentBossEntrance(gameState);
             }
@@ -876,9 +870,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         gameState.anchorHeroAtArenaCenter();
         heroAnimationController.update(gameState.hero, simulationDelta);
         enemyMovementSystem.update(gameState, simulationDelta);
+        FocusFireSystem.tick(gameState, simulationDelta);
         int livingBeforeAttack = gameState.livingEnemyCount();
-        int bossesBeforeAttack = livingBossCount(gameState);
-        float enemyHealthBeforeAttack = totalEnemyHealth(gameState);
+        int bossesBeforeAttack = ArenaQueries.livingBossCount(gameState);
+        float enemyHealthBeforeAttack = ArenaQueries.totalEnemyHealth(gameState);
         HeroAttackUpdateResult attackEvents = heroAutoAttackSystem.update(gameState, simulationDelta);
         floatingDamageTextSystem.emitAll(attackEvents.events());
         // Every arrow in a Multi Shot volley bursts where it lands (events carry y + 40 for text).
@@ -903,14 +898,14 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             audioManager.play(AudioCue.MULTI_SHOT);
             particleSystem.emitMuzzleFlash(gameState.hero.x, gameState.hero.y + 45f, attackEvents.shots());
         }
-        if (totalEnemyHealth(gameState) < enemyHealthBeforeAttack - 0.001f) {
+        if (ArenaQueries.totalEnemyHealth(gameState) < enemyHealthBeforeAttack - 0.001f) {
             audioManager.play(AudioCue.HIT);
         }
         if (gameState.livingEnemyCount() < livingBeforeAttack) {
             audioManager.play(AudioCue.DEATH);
             audioManager.play(AudioCue.KILL);
         }
-        if (livingBossCount(gameState) < bossesBeforeAttack) {
+        if (ArenaQueries.livingBossCount(gameState) < bossesBeforeAttack) {
             screenShakeSystem.triggerBossKill();
         }
         float heroHealthBeforeAttack = gameState.hero.health;
@@ -978,9 +973,9 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             flow.transitionTo(GameScreenState.LEVEL_UP);
             saveNow();
         } else {
-            int bossesBeforeWaveAdvance = livingBossCount(gameState);
+            int bossesBeforeWaveAdvance = ArenaQueries.livingBossCount(gameState);
             WaveCompletion waveCompletion = waveLifecycleSystem.updateAfterCombat(gameState);
-            if (livingBossCount(gameState) > bossesBeforeWaveAdvance) {
+            if (ArenaQueries.livingBossCount(gameState) > bossesBeforeWaveAdvance) {
                 audioManager.play(AudioCue.BOSS_ENTRANCE);
                 presentationSystem.presentBossEntrance(gameState);
             }

@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.items.EquipmentDefinition;
 import com.amirrezahadipoor.herodefense.model.Boss;
+import com.amirrezahadipoor.herodefense.gameplay.FocusFireSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossSpecialAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
 import com.amirrezahadipoor.herodefense.gameplay.EliteAffixSystem;
@@ -62,6 +63,8 @@ public final class CombatEntityRenderer implements AutoCloseable {
     private final Map<String, EntityClips> clipsByKey = new LinkedHashMap<>();
     private final Map<String, Texture> dropTextures = new HashMap<>();
     private final RarityGlowRenderer dropGlowRenderer = new RarityGlowRenderer();
+
+    private final FocusMarkRenderer focusMarkRenderer = new FocusMarkRenderer();
     private final Texture pixel;
     private final Texture arrowNormal;
     private final Texture arrowCrit;
@@ -141,6 +144,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         drawRotTrail(batch, state);
         drawTelegraphWarnings(batch, state, runTimeSeconds);
         drawFocusRing(batch, state);
+        focusMarkRenderer.drawMarks(batch, state, runTimeSeconds, this::focusMarkBox);
         drawProjectiles(batch, state);
         drawDrops(batch, state, runTimeSeconds);
         batch.setColor(1f, 1f, 1f, 1f);
@@ -357,6 +361,15 @@ public final class CombatEntityRenderer implements AutoCloseable {
         float urgency = MathUtils.clamp(1f - fractionRemaining, 0f, 1f);
         float wave = (float) Math.sin(runTimeSeconds * (6f + 14f * urgency));
         return MathUtils.clamp(0.55f + 0.35f * wave + 0.1f * urgency, 0.15f, 0.95f);
+    }
+
+    /** Frame box of an enemy, shared with the focus mark renderer so both agree on the sprite bounds. */
+    private float[] focusMarkBox(Enemy enemy) {
+        boolean boss = enemy instanceof Boss;
+        float size = boss ? 240f : regularDrawSize(enemy.type());
+        if (!boss && enemy.eliteAffix != null) size *= ELITE_DRAW_SCALE;
+        float feet = boss ? BOSS_FEET_RATIO : REGULAR_FEET_RATIO;
+        return new float[] {enemy.x - size * 0.5f, enemy.y - size * feet, size};
     }
 
     private void drawFocusRing(SpriteBatch batch, GameState state) {

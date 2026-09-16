@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.amirrezahadipoor.herodefense.gameplay.ArenaQueries;
 import com.amirrezahadipoor.herodefense.gameplay.ContinuousWaveRun;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyFactory;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyWaveSpawner;
@@ -17,7 +18,7 @@ class OpeningReplayTest {
     @Test
     void freshRunSaveIsRecognisedAsUntouched() {
         GameState state = GameState.newRun(7L);
-        assertTrue(HeroDefenseGame.untouchedFirstWave(state));
+        assertTrue(ArenaQueries.untouchedFirstWave(state));
     }
 
     @Test
@@ -25,14 +26,14 @@ class OpeningReplayTest {
         GameState state = GameState.newRun(7L);
         new WaveLifecycleSystem(new EnemyWaveSpawner(new EnemyFactory()), new ContinuousWaveRun())
             .startCurrentWave(state);
-        assertFalse(HeroDefenseGame.untouchedFirstWave(state));
+        assertFalse(ArenaQueries.untouchedFirstWave(state));
     }
 
     @Test
     void laterWaveBetweenSpawnsIsNotUntouched() {
         GameState state = GameState.newRun(7L);
         state.waveNumber = 2;
-        assertFalse(HeroDefenseGame.untouchedFirstWave(state));
+        assertFalse(ArenaQueries.untouchedFirstWave(state));
     }
 
     @Test

@@ -49,7 +49,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **84** | Documentation honesty sweep (stale and inflated docs) | R1.10 | `[x]` |
 | **85** | Dead code out, architecture ratchet in | R2.1 · R2.4 · R2.5 | `[~]` |
 | **86** | Break up `HeroDefenseGame` into systems, with tests | R2.2 · R2.3 | `[~]` |
-| **87** | Gameplay: one real player decision inside a wave | R3.1 | `[ ]` |
+| **87** | Gameplay: one real player decision inside a wave | R3.1 | `[x]` |
 | **88** | Boss identity variety across the 20 encounters | R3.2 | `[ ]` |
 | **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[ ]` |
 | **90** | Human playtest protocol and recorded findings | R3.6 | `[ ]` |
@@ -292,8 +292,27 @@ sentence has to name the two scores and the commit they were measured on.
 
 ## R3 — Gameplay depth  `+45`
 
-- [ ] **R3.1 Player agency inside a wave.** One active, touch-only decision per wave (target priority,
-  dodge step, or aimed/charged shot), tuned with the simulator and exercised by the balance sweep.
+- [x] **R3.1 Player agency inside a wave — tap-to-focus.** The bow used to pick the nearest foe and the only
+  in-run choice happened between waves, which is exactly the "hero is locked to the arena centre" finding of
+  the audit. Tapping an enemy now marks it for **6 s**: the bow switches to the marked target while it is
+  inside reach and every arrow into it carries **×1.2** damage, a second tap refreshes the window, and a tap on
+  empty ground releases the mark, so a bad pick is always undoable. The choice is touch-only and readable —
+  corner brackets pulse around the marked enemy and fade as the window runs out, and the tap answers with the
+  usual ripple and haptic.
+  *Implementation:* `gameplay/FocusFireSystem` (deterministic, platform independent: window, tap radius,
+  damage multiplier as constants), `Enemy.focusMarkSeconds` (kept separate from the Crown mythic mark so the
+  two never stack by accident), target selection plus damage in `HeroAutoAttackSystem`, corner brackets in
+  `render/FocusMarkRenderer`, and the routing rule in `ScreenTouchRouter` — any tap inside a running wave that
+  no HUD element claimed marks or releases.
+  *Evidence:* `FocusFireSystemTest` (8 cases: mark switches the bow off the nearer foe, empty-ground release,
+  expiry returning to the nearest target, dead/silent enemies never marked, bosses markable and dropping out
+  on death, nearest-candidate tie broken on the lower id, the 56 px radius as a hard limit, degenerate input
+  ignored) and three new cases in `HeroAutoAttackSystemTest` (marked target overrides proximity, damage is
+  exactly ×1.2, an expired mark falls back to the nearest foe). The balance sweep is untouched because a run
+  without taps behaves exactly as before.
+  *Cost:* `HeroDefenseGame` stayed inside its ratchet freeze (1,072 → 1,067 lines after three arena queries
+  moved to `gameplay/ArenaQueries`); `CombatEntityRenderer` gained 13 lines and one field for the shared
+  sprite-box helper, recorded in the freeze ledger instead of being hidden.
 - [ ] **R3.2 Boss identity variety.** 20 encounters map to ≥ 8 distinct fight scripts (specials,
   telegraph shapes, arena modifiers) with a test asserting the mapping.
 - [ ] **R3.3 Meta progression.** Achievements/unlocks persisting between runs, with a save migration.
@@ -520,6 +539,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; the manifest is the single source of truth for the four revision labels, and 36+6+4 assets were re-stamped to match their real provenance | `37b6aec` |
 | 2026-09-16 | 86 | R2.2 slice 1 | `RunPresentationSystem` extracted from the god class; `HeroDefenseGame` 1,519 → 1,447 lines; ratchet freeze lowered to 1,447 / 91; layered-event test strengthened to scan both files and require exactly one binding per effect | `49923b3` |
 | 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | `442687b` |
+| 2026-09-16 | 87 | R3.1 | tap-to-focus: the player can now point the bow at any enemy for 6 s (×1.2 damage), release it with a tap on empty ground, and see the window fade out; 11 new test cases; the wave is no longer a spectator sport | *(this commit)* |
 | 2026-09-16 | 86 | R2.2 slice 3 | per-state frame build extracted into `ScreenStateComposer` (arena, actors, effects, HUD, all overlays) behind a 51-getter port; `HeroDefenseGame` 1,201 → 1,072 lines; ratchet freeze lowered; guard test extended to the draw calls | *(this commit)* |
 | 2026-09-16 | — | CI honesty | `937e8b2` turned `Test core logic` red: the pipeline's Python UI source test still looked for the touch lifecycle inside the game class that slice 2 had just emptied. Fixed in `c8c2b27`, which reads the router instead, so the check follows the code rather than a file location | `c8c2b27` |
 | 2026-09-16 | 86 | R2.2 slice 2 | per-screen touch chain extracted verbatim into `ScreenTouchRouter` behind a `Host` port; `HeroDefenseGame` 1,447 → 1,201 lines; ratchet freeze lowered; new guard test fails if a touch layout returns to the game class; prior progress-log rows back-filled with their real commit hashes | `937e8b2` |

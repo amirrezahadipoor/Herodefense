@@ -144,6 +144,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
         void fireUltimate();
 
         void beginPlantingCeremony();
+
+        /** Tap-to-focus: marks the enemy under the tap, or clears the mark when the tap hits nothing. */
+        void focusFireAt(float worldX, float worldY);
     }
 
         @Override
@@ -374,6 +377,12 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             if (host.flow().state() == GameScreenState.PLAYING
                 && host.pauseTouchController().tap(host.flow(), worldX, worldY)) {
                 host.saveNow();
+                return true;
+            }
+            // Anything still unclaimed inside a running wave is a tap on the arena: mark the enemy under the
+            // finger so the bow focuses it, or release the mark when the tap lands on empty ground (R3.1).
+            if (host.flow().state() == GameScreenState.PLAYING) {
+                host.focusFireAt(worldX, worldY);
                 return true;
             }
             if (host.flow().state() == GameScreenState.INVENTORY

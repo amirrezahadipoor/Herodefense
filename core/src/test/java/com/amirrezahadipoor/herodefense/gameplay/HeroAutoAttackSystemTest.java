@@ -188,6 +188,60 @@ final class HeroAutoAttackSystemTest {
         assertEquals(-1L, state.hero.currentTargetId);
     }
 
+    @Test
+    void aFocusMarkMakesTheBowIgnoreTheNearerFoeAndHitsTheMarkedOneHarder() {
+        GameState state = GameState.newRun(25L);
+        state.hero.stats.strength = 3;
+        Enemy near = enemy(state, 90f, 0f);
+        Enemy marked = enemy(state, 300f, 0f);
+        state.aliveEnemies.add(near);
+        state.aliveEnemies.add(marked);
+        FocusFireSystem.markAt(state, marked.x, marked.y);
+
+        system.update(state, 0f);
+
+        assertEquals(marked.id, state.hero.currentTargetId);
+        assertEquals(1, state.projectiles.size());
+        assertEquals(16f * FocusFireSystem.DAMAGE_MULTIPLIER, state.projectiles.get(0).damage, 1e-4f,
+            "an arrow into the player's marked target carries the focus bonus");
+
+        system.update(state, 0.4f);
+
+        assertEquals(100f - 16f * FocusFireSystem.DAMAGE_MULTIPLIER, marked.health, 1e-4f);
+        assertEquals(100f, near.health, "the untouched nearer foe takes nothing");
+    }
+
+    @Test
+    void withoutAMarkTheSameVolleyStaysOnTheNearestFoeAtBaseDamage() {
+        GameState state = GameState.newRun(26L);
+        state.hero.stats.strength = 3;
+        Enemy near = enemy(state, 90f, 0f);
+        Enemy far = enemy(state, 300f, 0f);
+        state.aliveEnemies.add(near);
+        state.aliveEnemies.add(far);
+
+        system.update(state, 0f);
+
+        assertEquals(near.id, state.hero.currentTargetId);
+        assertEquals(16f, state.projectiles.get(0).damage, 1e-4f,
+            "an unmarked target takes exactly the base damage");
+    }
+
+    @Test
+    void expiredMarksFallBackToTheNearestFoe() {
+        GameState state = GameState.newRun(27L);
+        Enemy near = enemy(state, 90f, 0f);
+        Enemy marked = enemy(state, 300f, 0f);
+        state.aliveEnemies.add(near);
+        state.aliveEnemies.add(marked);
+        FocusFireSystem.markAt(state, marked.x, marked.y);
+        FocusFireSystem.tick(state, FocusFireSystem.MARK_SECONDS + 0.1f);
+
+        system.update(state, 0f);
+
+        assertEquals(near.id, state.hero.currentTargetId);
+    }
+
     private static Enemy enemy(GameState state, float offsetX, float offsetY) {
         Enemy enemy = new Enemy(
             state.allocateEntityId(),

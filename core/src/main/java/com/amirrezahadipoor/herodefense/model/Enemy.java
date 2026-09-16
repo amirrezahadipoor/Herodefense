@@ -20,6 +20,8 @@ public class Enemy extends ArenaEntity {
     public float stunRemainingSeconds;
     /** Seconds the Crown of the Hollow Eye's mark lasts; marked foes take +25%. */
     public float markRemainingSeconds;
+    /** Tap-to-focus window left (roadmap R3.1); independent from the Crown mythic mark above. */
+    public float focusMarkSeconds;
     /** Brief white hit-flash after taking damage for readability. */
     public float hitFlashSeconds;
     /**
