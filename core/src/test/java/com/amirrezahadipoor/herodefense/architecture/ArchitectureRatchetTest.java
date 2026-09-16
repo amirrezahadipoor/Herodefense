@@ -29,10 +29,13 @@ class ArchitectureRatchetTest {
     private static final Path ROUTER = SOURCES.resolve(
         "com/amirrezahadipoor/herodefense/input/ScreenTouchRouter.java");
 
+    private static final Path COMPOSER = SOURCES.resolve(
+        "com/amirrezahadipoor/herodefense/presentation/ScreenStateComposer.java");
+
     /** Measured on 2026-09-16; the ratchet fails if one of these grows or if a new one appears. */
     private static final Map<String, ArchitectureRatchet.Frozen> FROZEN = Map.of(
         "com/amirrezahadipoor/herodefense/HeroDefenseGame.java",
-        new ArchitectureRatchet.Frozen(1201, 91),
+        new ArchitectureRatchet.Frozen(1072, 92),
         "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
         new ArchitectureRatchet.Frozen(667, 11),
         "com/amirrezahadipoor/herodefense/balance/BalanceSimulator.java",
@@ -123,6 +126,21 @@ class ArchitectureRatchetTest {
         }
         assertTrue(occurrences(router, "host.") > 100,
             "the router talks to the game only through its Host port");
+        // Same guard for the frame composer: the per-state dispatch draws through its own port, and the game
+        // keeps only the delegation, so a new overlay cannot be wired straight into the god class again.
+        String composer = read(COMPOSER);
+        assertTrue(composer.contains("public void draw(float presentationDeltaSeconds)"),
+            "the composer owns the per-state frame build");
+        assertTrue(occurrences(composer, "host.") > 100, "the composer reads the run through its Host port");
+        // The renderers stay owned by the game (they are created and closed there), but every draw call of the
+        // per-state frame now goes through the composer's port.
+        for (String renderer : List.of("mainMenuRenderer", "statShopOverlayRenderer", "pauseOverlayRenderer",
+                "rootNetworkOverlayRenderer", "hudRenderer", "combatEntityRenderer", "particleRenderer")) {
+            assertTrue(occurrences(game, renderer + ".draw") == 0,
+                "the draw call moved to the composer: " + renderer);
+            assertTrue(occurrences(composer, "host." + renderer + "().draw") > 0,
+                "the composer draws through its Host port: " + renderer);
+        }
     }
 
     private static int occurrences(String source, String needle) {

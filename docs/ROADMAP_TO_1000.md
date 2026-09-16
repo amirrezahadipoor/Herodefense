@@ -270,13 +270,20 @@ sentence has to name the two scores and the commit they were measured on.
   and the `viewport` it needs, the shop-tab field it renders, and the story line it writes. The ratchet freeze
   dropped to 1,201 / 91 in the same commit, and a new guard test (`theTouchChainLivesBehindTheRouter`) fails
   if any touch layout or touch controller is referenced from the game class again.
+  *Slice 3 (done):* the per-state frame build (the audit's `ArenaRendererFacade` and `HudFlow` items) moved
+  into `presentation/ScreenStateComposer`. It draws the arena, actors, effects, floating numbers, the HUD and
+  all twelve overlays through a 51-getter `Host` port and receives only the camera and the sprite batch it is
+  allowed to drive; the 5,492-character normalised body is byte-identical to the pre-extraction method, so the
+  frame the emulator captures is built by the same code. `HeroDefenseGame` went from **1,201 to 1,072 lines**
+  (29 % smaller than the 1,519-line god class the audit measured) and the ratchet freeze dropped to
+  1,072 / 92. The guard test now also fails if any per-state draw call returns to the game class.
   *Remaining:* `WaveDirector`, `CombatSystem`, `ArenaRendererFacade`, `HudFlow`, `SessionController`,
   the 400-line ceiling, and the before/after emulator smoke comparison.
 - [ ] **R2.3 Unit-test the extracted systems** (spawn scheduling, damage, reward selection, save/restore).
 - [x] **R2.4 Architecture ratchet test.** `ArchitectureRatchet` + `ArchitectureRatchetTest`: files under
   `model/` and `balance/` may not import `render`/graphics types (currently 0 violations), no class over
   600 lines or 40 instance fields, and the four pre-existing offenders are frozen **at their measured
-  size** — `HeroDefenseGame` (1,201 lines / 91 fields after roadmap phase 86), `CombatEntityRenderer` (667 / 11),
+  size** — `HeroDefenseGame` (1,072 lines / 92 fields after roadmap phase 86), `CombatEntityRenderer` (667 / 11),
   `BalanceSimulator` (639 / 23), `model/GameState` (592 / 80). The freeze may only shrink: the ratchet fails
   if a frozen class grows, and it fails if an entry is left behind after the class comes inside the limits,
   so the exception list is self-cleaning. Negative controls cover a rendering import in `model`, an
@@ -513,7 +520,9 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 83 | R1.11 | ten post-audit art ids moved to their own contract record; generated revision-label blocks in 10 review documents; the manifest is the single source of truth for the four revision labels, and 36+6+4 assets were re-stamped to match their real provenance | `37b6aec` |
 | 2026-09-16 | 86 | R2.2 slice 1 | `RunPresentationSystem` extracted from the god class; `HeroDefenseGame` 1,519 → 1,447 lines; ratchet freeze lowered to 1,447 / 91; layered-event test strengthened to scan both files and require exactly one binding per effect | `49923b3` |
 | 2026-09-16 | — | Roadmap v3 | experience phases added at the owner's direction: asset quality and expansion, playtime and content volume, human-feel innovation, engagement without monetisation, secrets and mysteries, narrative and cinematics, and a 2026 benchmark; experience rubric defined as the headline number | `442687b` |
-| 2026-09-16 | 86 | R2.2 slice 2 | per-screen touch chain extracted verbatim into `ScreenTouchRouter` behind a `Host` port; `HeroDefenseGame` 1,447 → 1,201 lines; ratchet freeze lowered; new guard test fails if a touch layout returns to the game class; prior progress-log rows back-filled with their real commit hashes | *(this commit)* |
+| 2026-09-16 | 86 | R2.2 slice 3 | per-state frame build extracted into `ScreenStateComposer` (arena, actors, effects, HUD, all overlays) behind a 51-getter port; `HeroDefenseGame` 1,201 → 1,072 lines; ratchet freeze lowered; guard test extended to the draw calls | *(this commit)* |
+| 2026-09-16 | — | CI honesty | `937e8b2` turned `Test core logic` red: the pipeline's Python UI source test still looked for the touch lifecycle inside the game class that slice 2 had just emptied. Fixed in `c8c2b27`, which reads the router instead, so the check follows the code rather than a file location | `c8c2b27` |
+| 2026-09-16 | 86 | R2.2 slice 2 | per-screen touch chain extracted verbatim into `ScreenTouchRouter` behind a `Host` port; `HeroDefenseGame` 1,447 → 1,201 lines; ratchet freeze lowered; new guard test fails if a touch layout returns to the game class; prior progress-log rows back-filled with their real commit hashes | `937e8b2` |
 | 2026-09-16 | 82 | R1.9 · R8.2 | `RuntimeResidency` + `RuntimeResidencyTest` (catalog 361,279,488 bytes; combat set 76.8 MiB vs a 100 MiB budget) with negative controls; budget recorded in the restore tool | `317728c` |
 
 ## Definition of done

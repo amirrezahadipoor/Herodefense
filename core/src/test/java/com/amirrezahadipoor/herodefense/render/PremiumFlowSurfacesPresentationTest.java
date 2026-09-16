@@ -145,9 +145,11 @@ final class PremiumFlowSurfacesPresentationTest {
         }
         String inventory = Files.readString(RENDER.resolve("InventoryOverlayRenderer.java"));
         assertFalse(inventory.contains("drawPauseMenu"));
-        String game = Files.readString(Path.of(
-            "src/main/java/com/amirrezahadipoor/herodefense/HeroDefenseGame.java"
+        // Roadmap R2.2: the per-state frame build moved into ScreenStateComposer, which draws the overlay
+        // through the game's Host port; the assertion follows the code.
+        String composer = Files.readString(Path.of(
+            "src/main/java/com/amirrezahadipoor/herodefense/presentation/ScreenStateComposer.java"
         ));
-        assertTrue(game.contains("pauseOverlayRenderer.draw("));
+        assertTrue(composer.contains("host.pauseOverlayRenderer().draw("));
     }
 }

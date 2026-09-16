@@ -40,6 +40,7 @@ import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.ScreenTouchRouter;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
+import com.amirrezahadipoor.herodefense.presentation.ScreenStateComposer;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
 import com.amirrezahadipoor.herodefense.input.GdxHapticFeedback;
 import com.amirrezahadipoor.herodefense.input.HapticFeedback;
@@ -159,6 +160,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private float waterDropAccumulator;
     private HapticFeedback hapticFeedback;
     private HitStopSystem hitStopSystem;
+    private ScreenStateComposer screenStateComposer;
     private HudRenderer hudRenderer;
     private CodexTouchController codexTouchController;
     private CodexOverlayRenderer codexOverlayRenderer;
@@ -293,6 +295,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         );
         applyDisplayMetrics(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
         spriteBatch = new SpriteBatch();
+        screenStateComposer = new ScreenStateComposer(new ComposerHost(), camera, spriteBatch);
         arenaEnvironmentRenderer = new ArenaEnvironmentRenderer();
         combatEntityRenderer = new CombatEntityRenderer();
         floatingCoinTextRenderer = new FloatingCoinTextRenderer();
@@ -1008,194 +1011,62 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     private void drawCurrentState(float presentationDeltaSeconds) {
-        float tint = switch (flow.state()) {
-            case MENU -> 0.14f;
-            case SETTINGS -> 0.13f;
-            case PLAYING -> 0.20f;
-            case PAUSED -> 0.11f;
-            case LEVEL_UP -> 0.22f;
-            case CARD_CHOICE -> 0.24f;
-            case TRIAL_DRAFT -> 0.23f;
-            case CINEMATIC -> 0.21f;
-            case INVENTORY -> 0.18f;
-            case SHOP -> 0.18f;
-            case CODEX -> 0.18f;
-            case ROOT_NETWORK -> 0.10f;
-            case GAME_OVER -> 0.08f;
-        };
-        Gdx.gl.glClearColor(tint * 0.55f, tint, tint * 0.78f, 1f);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        if (flow.state() != GameScreenState.MENU && flow.state() != GameScreenState.SETTINGS) {
-            float baseCameraX = WorldLayout.REFERENCE_WIDTH * 0.5f;
-            float baseCameraY = WorldLayout.REFERENCE_HEIGHT * 0.5f;
-            boolean opening = flow.state() == GameScreenState.CINEMATIC && openingCinematic.isActive();
-            float focus = opening ? openingCinematic.cameraFocus() : 0f;
-            camera.zoom = opening ? openingCinematic.cameraZoom() : 1f;
-            camera.position.set(
-                baseCameraX + screenShakeSystem.offsetX()
-                    + (GameState.ARENA_CENTER_X - baseCameraX) * focus,
-                baseCameraY + screenShakeSystem.offsetY()
-                    + (GameState.ARENA_CENTER_Y + 60f - baseCameraY) * focus,
-                camera.position.z
-            );
-            camera.update();
-            spriteBatch.setProjectionMatrix(camera.combined);
-            spriteBatch.begin();
-            arenaEnvironmentRenderer.draw(
-                spriteBatch,
-                gameState,
-                simulationSeconds,
-                presentationDeltaSeconds
-            );
-            spriteBatch.end();
-            particleRenderer.drawAmbient(camera.combined, ambientSeconds);
-            spriteBatch.begin();
-            boolean cinematic = flow.state() == GameScreenState.CINEMATIC && !opening;
-            if (cinematic) {
-                if (gameState.plantedTreesCount > 0) {
-                    saplingTreeRenderer.drawGroveIdle(spriteBatch, gameState, ambientSeconds);
-                } else if (gameState.secondTreePlanted) {
-                    saplingTreeRenderer.drawIdle(spriteBatch, ambientSeconds);
-                }
-                if (plantingCeremony.saplingVisible()) {
-                    saplingTreeRenderer.drawGrowing(spriteBatch, plantingCeremony);
-                }
-            } else {
-                if (gameState.plantedTreesCount > 0) {
-                    saplingTreeRenderer.drawGroveIdle(spriteBatch, gameState, ambientSeconds);
-                } else if (gameState.secondTreePlanted) {
-                    saplingTreeRenderer.drawIdle(spriteBatch, ambientSeconds);
-                }
-            }
-            combatEntityRenderer.drawActors(spriteBatch, gameState, simulationSeconds);
-            if (cinematic) {
-                ceremonyHeroRenderer.draw(spriteBatch, plantingCeremony);
-            } else {
-                int heroFrame = heroAnimationController.frameIndex(gameState.hero);
-                heroSpriteRenderer.draw(spriteBatch, gameState.hero, heroFrame);
-                equipmentSpriteRenderer.draw(spriteBatch, gameState, heroFrame, simulationSeconds);
-            }
-            combatEntityRenderer.drawEffects(spriteBatch, gameState, simulationSeconds);
-            spriteBatch.end();
-            particleRenderer.draw(camera.combined, particleSystem, simulationSeconds);
-            floatingDamageTextRenderer.draw(
-                spriteBatch, camera.combined, floatingDamageTextSystem
-            );
-            floatingCoinTextRenderer.draw(
-                spriteBatch, camera.combined, floatingCoinTextSystem
-            );
-            camera.zoom = 1f;
-            camera.position.set(baseCameraX, baseCameraY, camera.position.z);
-            camera.update();
-            if (opening) {
-                openingCinematicRenderer.draw(spriteBatch, camera.combined, openingCinematic);
-            } else if (plantingCeremony.isActive()) {
-                String beat = CeremonyLines.lineFor(plantingCeremony.phase());
-                if (beat != null) {
-                    idleWhisperRenderer.draw(
-                        spriteBatch,
-                        camera.combined,
-                        beat,
-                        plantingCeremony.lineAlpha(),
-                        CeremonyLines.isTreeVoice(plantingCeremony.phase())
-                    );
-                }
-            }
-        }
-        boolean openingActive = flow.state() == GameScreenState.CINEMATIC && openingCinematic.isActive();
-        if (flow.state() == GameScreenState.PLAYING
-            || (flow.state() == GameScreenState.CINEMATIC && !openingActive)) {
-            hudRenderer.draw(
-                spriteBatch, camera.combined, gameState, uiIconRenderer, uiFrameRenderer,
-                presentationDeltaSeconds
-            );
-        }
-        if (flow.state() == GameScreenState.MENU) {
-            mainMenuRenderer.draw(
-                spriteBatch,
-                camera.combined,
-                continueAvailable,
-                gameState.coins,
-                uiIconRenderer,
-                uiFrameRenderer,
-                gameState
-            );
-        } else if (flow.state() == GameScreenState.SETTINGS) {
-            settingsOverlayRenderer.draw(
-                spriteBatch, camera.combined, settings, uiIconRenderer, uiFrameRenderer
-            );
-        } else if (flow.state() == GameScreenState.LEVEL_UP) {
-            levelUpOverlayRenderer.draw(
-                spriteBatch, camera.combined, gameState, uiIconRenderer, uiFrameRenderer
-            );
-        } else if (flow.state() == GameScreenState.GAME_OVER) {
-            gameOverOverlayRenderer.draw(
-                spriteBatch,
-                camera.combined,
-                gameState,
-                uiIconRenderer,
-                uiFrameRenderer,
-                gameOverPresentationSeconds
-            );
-        } else if (flow.state() == GameScreenState.CARD_CHOICE) {
-            rewardCardOverlayRenderer.draw(
-                spriteBatch, camera.combined, gameState, uiIconRenderer, uiFrameRenderer
-            );
-        } else if (flow.state() == GameScreenState.TRIAL_DRAFT) {
-            trialDraftOverlayRenderer.draw(
-                spriteBatch, camera.combined, gameState, uiIconRenderer, uiFrameRenderer
-            );
-        } else if (flow.state() == GameScreenState.SHOP) {
-            statShopOverlayRenderer.draw(
-                spriteBatch,
-                camera.combined,
-                gameState,
-                statShopSystem,
-                skillShopSystem,
-                shopTab,
-                uiIconRenderer,
-                uiFrameRenderer,
-                flow.returnState() == GameScreenState.PAUSED
-            );
-        } else if (flow.state() == GameScreenState.INVENTORY) {
-            inventoryOverlayRenderer.drawInventory(
-                spriteBatch,
-                camera.combined,
-                gameState,
-                inventoryTouchController,
-                uiIconRenderer,
-                uiFrameRenderer,
-                settings
-            );
-        } else if (flow.state() == GameScreenState.CODEX) {
-            codexOverlayRenderer.draw(
-                spriteBatch,
-                camera.combined,
-                gameState,
-                codexTouchController,
-                uiIconRenderer,
-                uiFrameRenderer
-            );
-        } else if (flow.state() == GameScreenState.PAUSED) {
-            pauseOverlayRenderer.draw(
-                spriteBatch, camera.combined, gameState, uiIconRenderer, uiFrameRenderer
-            );
-        } else if (flow.state() == GameScreenState.ROOT_NETWORK) {
-            rootNetworkOverlayRenderer.draw(
-                spriteBatch, camera.combined, gameState, rootNetworkSystem,
-                uiIconRenderer, uiFrameRenderer, saplingTreeRenderer, ambientSeconds
-            );
-        }
-        if (whisperLine != null && flow.state() == GameScreenState.PLAYING) {
-            idleWhisperRenderer.draw(
-                spriteBatch, camera.combined, whisperLine, whisperSeconds
-            );
-        } else if (storyBeatLine != null && flow.state() == GameScreenState.PLAYING) {
-            idleWhisperRenderer.draw(
-                spriteBatch, camera.combined, storyBeatLine, storyBeatSeconds
-            );
-        }
-        touchFeedbackRenderer.draw(camera.combined, touchFeedbackSystem);
+        screenStateComposer.draw(presentationDeltaSeconds);
     }
+
+    /** Adapter for the frame composer; one line per member, like the touch host. */
+    private final class ComposerHost implements ScreenStateComposer.Host {
+        @Override public float ambientSeconds() { return ambientSeconds; }
+        @Override public ArenaEnvironmentRenderer arenaEnvironmentRenderer() { return arenaEnvironmentRenderer; }
+        @Override public CeremonyHeroRenderer ceremonyHeroRenderer() { return ceremonyHeroRenderer; }
+        @Override public CodexOverlayRenderer codexOverlayRenderer() { return codexOverlayRenderer; }
+        @Override public CodexTouchController codexTouchController() { return codexTouchController; }
+        @Override public CombatEntityRenderer combatEntityRenderer() { return combatEntityRenderer; }
+        @Override public boolean continueAvailable() { return continueAvailable; }
+        @Override public EquipmentSpriteRenderer equipmentSpriteRenderer() { return equipmentSpriteRenderer; }
+        @Override public FloatingCoinTextRenderer floatingCoinTextRenderer() { return floatingCoinTextRenderer; }
+        @Override public FloatingCoinTextSystem floatingCoinTextSystem() { return floatingCoinTextSystem; }
+        @Override public FloatingDamageTextRenderer floatingDamageTextRenderer() { return floatingDamageTextRenderer; }
+        @Override public FloatingDamageTextSystem floatingDamageTextSystem() { return floatingDamageTextSystem; }
+        @Override public GameFlowController flow() { return flow; }
+        @Override public GameOverOverlayRenderer gameOverOverlayRenderer() { return gameOverOverlayRenderer; }
+        @Override public float gameOverPresentationSeconds() { return gameOverPresentationSeconds; }
+        @Override public GameState gameState() { return gameState; }
+        @Override public HeroAnimationController heroAnimationController() { return heroAnimationController; }
+        @Override public HeroSpriteRenderer heroSpriteRenderer() { return heroSpriteRenderer; }
+        @Override public HudRenderer hudRenderer() { return hudRenderer; }
+        @Override public IdleWhisperRenderer idleWhisperRenderer() { return idleWhisperRenderer; }
+        @Override public InventoryOverlayRenderer inventoryOverlayRenderer() { return inventoryOverlayRenderer; }
+        @Override public InventoryTouchController inventoryTouchController() { return inventoryTouchController; }
+        @Override public LevelUpOverlayRenderer levelUpOverlayRenderer() { return levelUpOverlayRenderer; }
+        @Override public MainMenuRenderer mainMenuRenderer() { return mainMenuRenderer; }
+        @Override public OpeningCinematic openingCinematic() { return openingCinematic; }
+        @Override public OpeningCinematicRenderer openingCinematicRenderer() { return openingCinematicRenderer; }
+        @Override public ParticleRenderer particleRenderer() { return particleRenderer; }
+        @Override public ParticleSystem particleSystem() { return particleSystem; }
+        @Override public PauseOverlayRenderer pauseOverlayRenderer() { return pauseOverlayRenderer; }
+        @Override public PlantingCeremony plantingCeremony() { return plantingCeremony; }
+        @Override public RewardCardOverlayRenderer rewardCardOverlayRenderer() { return rewardCardOverlayRenderer; }
+        @Override public RootNetworkOverlayRenderer rootNetworkOverlayRenderer() { return rootNetworkOverlayRenderer; }
+        @Override public RootNetworkSystem rootNetworkSystem() { return rootNetworkSystem; }
+        @Override public SaplingTreeRenderer saplingTreeRenderer() { return saplingTreeRenderer; }
+        @Override public ScreenShakeSystem screenShakeSystem() { return screenShakeSystem; }
+        @Override public GameSettings settings() { return settings; }
+        @Override public SettingsOverlayRenderer settingsOverlayRenderer() { return settingsOverlayRenderer; }
+        @Override public StatShopTouchLayout.Tab shopTab() { return shopTab; }
+        @Override public float simulationSeconds() { return simulationSeconds; }
+        @Override public SkillShopSystem skillShopSystem() { return skillShopSystem; }
+        @Override public StatShopOverlayRenderer statShopOverlayRenderer() { return statShopOverlayRenderer; }
+        @Override public StatShopSystem statShopSystem() { return statShopSystem; }
+        @Override public String storyBeatLine() { return storyBeatLine; }
+        @Override public float storyBeatSeconds() { return storyBeatSeconds; }
+        @Override public TouchFeedbackRenderer touchFeedbackRenderer() { return touchFeedbackRenderer; }
+        @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
+        @Override public TrialDraftOverlayRenderer trialDraftOverlayRenderer() { return trialDraftOverlayRenderer; }
+        @Override public UiFrameRenderer uiFrameRenderer() { return uiFrameRenderer; }
+        @Override public UiIconRenderer uiIconRenderer() { return uiIconRenderer; }
+        @Override public String whisperLine() { return whisperLine; }
+        @Override public float whisperSeconds() { return whisperSeconds; }
+    }
+
 }
