@@ -4,7 +4,10 @@ import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.BossType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
-/** Executes four mechanically distinct boss specials, all through Dodge-aware damage. */
+/**
+ * Executes the four authored boss specials, all through Dodge-aware damage, and lets the encounter's
+ * {@link BossFightScript} decide the tempo, the telegraph length and whether a special lands twice (roadmap R3.2).
+ */
 public final class BossSpecialAttackSystem {
     /** Warning window between a special's trigger and its damage landing. */
     public static final float TELEGRAPH_SECONDS = 0.5f;
@@ -22,6 +25,7 @@ public final class BossSpecialAttackSystem {
             if (boss == null || !boss.alive || !boss.active || !state.hero.alive) {
                 continue;
             }
+            BossFightScript script = BossFightScript.of(boss);
             boss.specialCooldownSeconds -= deltaSeconds;
             if (boss.specialPending) {
                 if (!boss.stunned()) {
@@ -29,8 +33,9 @@ public final class BossSpecialAttackSystem {
                     if (boss.specialAnimationSeconds <= 0f) {
                         boss.specialAnimationSeconds = 0f;
                         boss.specialPending = false;
-                        execute(state, boss);
-                        boss.specialCooldownSeconds += cooldown(boss.bossDefinition());
+                        execute(state, boss, script);
+                        boss.specialCooldownSeconds +=
+                            script.armedCooldownSeconds(cooldown(boss.bossDefinition()));
                         boss.specialUseCount++;
                     }
                 }
@@ -54,26 +59,34 @@ public final class BossSpecialAttackSystem {
                         chargeToMeleeRange(state, boss);
                     }
                     boss.specialPending = true;
-                    boss.specialAnimationSeconds = TELEGRAPH_SECONDS;
+                    boss.specialAnimationSeconds = script.currentTelegraphSeconds(boss);
                 }
             }
         }
     }
 
-    private void execute(GameState state, Boss boss) {
+    /** One special of the boss's identity, repeated when the encounter's script strikes twice. */
+    private void execute(GameState state, Boss boss, BossFightScript script) {
+        executeOnce(state, boss, script);
+        if (script.doubleStrike() && state.hero.alive) {
+            executeOnce(state, boss, script);
+        }
+    }
+
+    private void executeOnce(GameState state, Boss boss, BossFightScript script) {
         switch (boss.bossDefinition()) {
             case ANCIENT_GOLEM -> heroDamageSystem.applyIncomingHitWithRoll(
-                state, boss.damage * 1.6f, boss.specialPendingRollA);
+                state, boss.damage * 1.6f * script.specialDamageMultiplier(), boss.specialPendingRollA);
             case THORN_MATRIARCH -> heroDamageSystem.applyIncomingHitWithRoll(
-                state, boss.damage * 0.5f, boss.specialPendingRollA);
+                state, boss.damage * 0.5f * script.specialDamageMultiplier(), boss.specialPendingRollA);
             case EMBER_WYRM -> {
                 heroDamageSystem.applyIncomingHitWithRoll(
-                    state, boss.damage * 0.55f, boss.specialPendingRollA);
+                    state, boss.damage * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollA);
                 heroDamageSystem.applyIncomingHitWithRoll(
-                    state, boss.damage * 0.55f, boss.specialPendingRollB);
+                    state, boss.damage * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollB);
             }
             case VOID_KNIGHT -> heroDamageSystem.applyIncomingHitWithRoll(
-                state, boss.damage * 1.25f, boss.specialPendingRollA);
+                state, boss.damage * 1.25f * script.specialDamageMultiplier(), boss.specialPendingRollA);
         }
     }
 

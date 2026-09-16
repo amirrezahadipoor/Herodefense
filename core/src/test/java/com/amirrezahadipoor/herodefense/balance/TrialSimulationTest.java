@@ -19,7 +19,15 @@ import org.junit.jupiter.api.Test;
  */
 final class TrialSimulationTest {
     private static final long SEED = 0x747269616C7331L;
-    private static final long[] SEEDS = {SEED, SEED + 1, SEED + 2};
+    /**
+     * Phase 88 widened this matrix from three seeds to five, and re-derived nothing: a median of three
+     * single-wave maxima is a coin flip, because one seed in three can bloom on any behavioural change (the
+     * combat stream is one deterministic sequence, so a boss that warns for 0.42 s instead of 0.50 s reshuffles
+     * every later draw). Measured on the shipped game: the worst pair medians its spike at 0.32-0.38 over nine
+     * seeds, while the same runs over the first three seeds alone swing 0.27-0.46. Every ceiling below is
+     * unchanged from Phase 26.1c.
+     */
+    private static final long[] SEEDS = {SEED, SEED + 1, SEED + 2, SEED + 3, SEED + 4};
     /**
      * Empowered-run floors, recentered from 4% / 25s / 90% for the Elite era:
      * guaranteed Rare+ Elite drops grant ambient power to every empowered build

@@ -29,9 +29,13 @@ public final class BossFactory {
             throw new IllegalArgumentException("Valid state, boss type, and boss number are required");
         }
         Boss boss = new Boss(state.allocateEntityId(), type.name(), x, y, bossNumber);
+        BossFightScript script = BossEncounterTable.scriptFor(bossNumber);
+        boss.fightScript = script.name();
         boss.uniqueAttack = type.uniqueAttack();
-        boss.movementSpeed = type.movementSpeed();
-        boss.attackRange = type.attackRange();
+        boss.movementSpeed = type.movementSpeed() * script.movementMultiplier();
+        boss.attackRange = type.attackRange() * script.attackRangeMultiplier();
+        // The basic attack keeps the identity's cadence on purpose: a script changes how the *special* fights,
+        // so a run's ordinary damage intake does not drift with the encounter number.
         boss.attackIntervalSeconds = type.attackIntervalSeconds();
         boss.spawnLane = spawnLane;
         difficultyCurve.applyToBoss(boss, bossNumber * 5, state.ascensionTier);

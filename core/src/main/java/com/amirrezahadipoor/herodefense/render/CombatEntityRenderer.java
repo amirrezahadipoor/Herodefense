@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.items.EquipmentDefinition;
 import com.amirrezahadipoor.herodefense.model.Boss;
+import com.amirrezahadipoor.herodefense.gameplay.BossFightScript;
 import com.amirrezahadipoor.herodefense.gameplay.FocusFireSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossSpecialAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
@@ -306,9 +307,9 @@ public final class CombatEntityRenderer implements AutoCloseable {
         for (Boss boss : state.aliveBosses) {
             if (boss == null || !boss.alive || !boss.specialPending) continue;
             BossType type = boss.bossDefinition();
-            float fraction =
-                boss.specialAnimationSeconds / BossSpecialAttackSystem.TELEGRAPH_SECONDS;
-            float radius = TELEGRAPH_RADIUS + stack * TELEGRAPH_STACK_STEP;
+            BossFightScript script = BossFightScript.of(boss);
+            float fraction = boss.specialAnimationSeconds / script.telegraphSeconds();
+            float radius = (TELEGRAPH_RADIUS + stack * TELEGRAPH_STACK_STEP) * script.currentTellScale(boss);
             float centerX = state.hero.x;
             float centerY = state.hero.y + TELEGRAPH_GROUND_Y_OFFSET;
             batch.setColor(

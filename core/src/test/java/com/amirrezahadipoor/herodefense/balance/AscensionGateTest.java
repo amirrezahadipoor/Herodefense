@@ -107,7 +107,7 @@ final class AscensionGateTest {
             for (int tier : TIERS) {
                 List<Float> maxima = new ArrayList<>();
                 List<Float> maxClears = new ArrayList<>();
-                for (long s = 0; s < 3; s++) {
+                for (long s = 0; s < 5; s++) {
                     BalanceReport report = new BalanceSimulator()
                         .runWithForcedCardAndTier(BASELINE_SEED + s, card, 20, tier);
                     Summary summary = summarize(report.waves());
@@ -149,7 +149,9 @@ final class AscensionGateTest {
         for (TrialId[] pair : pairs) {
             for (int tier : TIERS) {
                 List<Summary> finished = new ArrayList<>();
-                for (long s = 0; s < 3; s++) {
+                // Five seeds, not three: see the note in TrialSimulationTest. The naked matrix above has always
+                // sampled nine; three was the coin flip this phase measured.
+                for (long s = 0; s < 5; s++) {
                     BalanceReport report = new BalanceSimulator()
                         .runWithTrialsAndTier(TRIAL_SEED + s, pair[0], pair[1], tier);
                     if (report.reachedFinalWave()

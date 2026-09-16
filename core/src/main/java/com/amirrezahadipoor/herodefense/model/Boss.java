@@ -4,6 +4,8 @@ package com.amirrezahadipoor.herodefense.model;
 public final class Boss extends Enemy {
     public String bossType = "ANCIENT_GOLEM";
     public String uniqueAttack = "GROUND_SLAM";
+    /** Fight script name from {@code BossFightScript}; unknown names fall back to the measured fight. */
+    public String fightScript = "MEASURED";
     public float specialCooldownSeconds;
     public float specialAnimationSeconds;
     /** A telegraph is counting down; the special lands when it reaches zero. */
