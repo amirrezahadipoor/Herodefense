@@ -18,7 +18,8 @@ final class TrialLockConditionsTest {
     void freshRunsLockExactlyHeavyCrownsAndBossBounty() {
         GameState state = GameState.newRun(1L);
         List<TrialId> pool = TrialLockConditions.unlockedPool(state);
-        assertEquals(10, pool.size());
+        // Eleven now: the thirteen trials minus the two that have to be earned.
+        assertEquals(11, pool.size());
         assertFalse(pool.contains(TrialId.HEAVY_CROWNS));
         assertFalse(pool.contains(TrialId.BOSS_BOUNTY));
         assertFalse(TrialId.HEAVY_CROWNS.lockHint().isBlank());

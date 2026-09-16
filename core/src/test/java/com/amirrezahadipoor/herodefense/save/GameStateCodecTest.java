@@ -45,6 +45,7 @@ final class GameStateCodecTest {
         source.chosenRewardCards.put("7", "CARD_LIFESTEAL");
         source.healthPotions.set(2, 3);
         source.mode = GameMode.BRIEF;
+        source.activeTrials.add("HOLLOW_OMENS");
         source.trophies.recordWaveCleared();
         source.trophies.wavesCleared = 42;
         source.trophies.award(com.amirrezahadipoor.herodefense.progression.Trophy.BARE_HANDS);
@@ -64,6 +65,8 @@ final class GameStateCodecTest {
         assertEquals("CARD_LIFESTEAL", restored.chosenRewardCards.get("7"));
         assertFalse(restored.runComplete);
         assertEquals(GameMode.BRIEF, restored.mode, "the run length is part of the save");
+        assertTrue(restored.activeTrials.contains("HOLLOW_OMENS"),
+            "and so are the trials the player drafted");
         assertEquals(42, restored.trophies.wavesCleared, "and so is what the trophies remember");
         assertTrue(restored.trophies.isEarned(com.amirrezahadipoor.herodefense.progression.Trophy.BARE_HANDS));
     }

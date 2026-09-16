@@ -1,7 +1,7 @@
 package com.amirrezahadipoor.herodefense.trials;
 
 /**
- * The twelve Convergence Trials: paired risk/reward modifiers drafted before a run (pick 2
+ * The thirteen Convergence Trials: paired risk/reward modifiers drafted before a run (pick 2
  * of 4 offered) and active for that run only. Each trial names its reward first — the green
  * line on the draft card — and its risk second, the red cost line.
  */
@@ -41,6 +41,14 @@ public enum TrialId {
     ),
     HOLLOW_CALLING(
         "Hollow Calling", "Enemies deal 20% more damage", "Hero has 15% more max health", "health"
+    ),
+    /**
+     * The omen trial (roadmap R3.4). Wave modifiers live here rather than in every run on purpose: the untrialled
+     * run is the run every balance gate measures, and its numbers must not move because a feature was added.
+     * A player who wants the wood to answer drafts it, and the trial's own band is measured like the other twelve.
+     */
+    HOLLOW_OMENS(
+        "Hollow Omens", "Every sixth wave carries an omen", "+25% coins on omen waves", "luck"
     );
 
     private final String title;

@@ -3,6 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.WaveModifier;
 import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
@@ -40,7 +41,8 @@ public final class KillRewardSystem {
         if (kills == 0) return KillRewardResult.NONE;
 
         float incomeMultiplier = (1f + effectValue(state, BossRewardCardSystem.COIN_INCOME_KEY))
-            * TrialEffects.coinIncomeMultiplier(state.activeTrials);
+            * TrialEffects.coinIncomeMultiplier(state.activeTrials)
+            * WaveOmens.of(state, state.waveNumber).coinMultiplier();
         int coins = Math.max(0, Math.round(baseCoins * incomeMultiplier)
             + Math.round(AffixEffects.coinsOnKill(state) * kills));
         state.coins = saturatedAdd(state.coins, coins);

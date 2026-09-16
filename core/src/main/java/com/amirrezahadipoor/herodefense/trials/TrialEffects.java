@@ -137,6 +137,11 @@ public final class TrialEffects {
         return has(trials, TrialId.BLOOD_PRICE) ? 0.03f : 0f;
     }
 
+    /** Wave omens (roadmap R3.4); Hollow Omens lets the wood answer every sixth wave. */
+    public static boolean omensEnabled(Collection<String> trials) {
+        return has(trials, TrialId.HOLLOW_OMENS);
+    }
+
     /** Enemy damage; Hollow Calling lends the horde its voice. */
     public static float enemyDamageMultiplier(Collection<String> trials) {
         return has(trials, TrialId.HOLLOW_CALLING) ? 1.2f : 1f;

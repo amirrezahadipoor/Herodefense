@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.render;
 
+import com.amirrezahadipoor.herodefense.gameplay.WaveOmens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,6 +11,7 @@ import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
 import com.amirrezahadipoor.herodefense.input.HudTouchLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.WaveModifier;
 import com.amirrezahadipoor.herodefense.trials.TrialId;
 
 /** Premium segmented portrait HUD that preserves a clear view of the active arena. */
@@ -210,6 +212,11 @@ public final class HudRenderer implements AutoCloseable {
         drawShadowed(batch, "WAVE", 84f, 1144f + up, 0.66f, GOLD);
         drawShadowed(batch, state.waveNumber + " / " + GameState.FINAL_WAVE,
             84f, 1107f + up, 1.02f, IVORY);
+        // Wave omens (roadmap R3.4): the wave says what it is going to do to you, in one line, while it runs.
+        WaveModifier omen = WaveOmens.of(state, state.waveNumber);
+        if (omen.isOmen()) {
+            drawShadowed(batch, omen.label(), 84f, 1076f + up, 0.44f, CRITICAL);
+        }
 
         icons.draw(batch, "coin", 231f, 1087f + up, 48f);
         drawShadowed(batch, "COINS", 286f, 1144f + up, 0.66f, GOLD);

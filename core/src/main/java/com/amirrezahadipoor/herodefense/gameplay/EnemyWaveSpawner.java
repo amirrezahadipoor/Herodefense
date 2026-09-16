@@ -6,6 +6,7 @@ import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.SpawnLane;
+import com.amirrezahadipoor.herodefense.model.WaveModifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,10 +53,18 @@ public final class EnemyWaveSpawner {
             && waveNumber % 5 != 0;
     }
 
+    /** A regular wave's body count including the SWARM omen, still capped by the arena's own ceiling. */
+    public static int omenAdjustedCount(GameState state, int waveNumber, int count) {
+        WaveModifier omen = WaveOmens.of(state, waveNumber);
+        if (!omen.isOmen()) return count;
+        return Math.min(MAX_REGULAR_ENEMIES, Math.max(1, Math.round(count * omen.enemyCountMultiplier())));
+    }
+
     public void spawnRegularEnemies(GameState state, int waveNumber, int count) {
         if (state == null || count <= 0) {
             return;
         }
+        count = omenAdjustedCount(state, waveNumber, count);
         int firstIndex = state.aliveEnemies.size();
         EnemyType[] types = EnemyType.values();
         for (int index = 0; index < count; index++) {

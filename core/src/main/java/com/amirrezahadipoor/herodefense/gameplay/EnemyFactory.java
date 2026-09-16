@@ -3,6 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.WaveModifier;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 
 /** Creates regular melee enemies from the typed gameplay/asset catalog. */
@@ -43,10 +44,12 @@ public final class EnemyFactory {
     ) {
         Enemy enemy = create(state, type, x, y, spawnLane);
         difficultyCurve.applyToRegularEnemy(enemy, type, waveNumber, state.ascensionTier);
-        float healthMult = TrialEffects.enemyHealthMultiplier(state.activeTrials);
+        WaveModifier omen = WaveOmens.of(state, waveNumber);
+        float healthMult = TrialEffects.enemyHealthMultiplier(state.activeTrials) * omen.healthMultiplier();
         enemy.health *= healthMult;
         enemy.maxHealth *= healthMult;
-        enemy.damage *= TrialEffects.enemyDamageMultiplier(state.activeTrials);
+        enemy.damage *= TrialEffects.enemyDamageMultiplier(state.activeTrials) * omen.damageMultiplier();
+        enemy.movementSpeed *= omen.speedMultiplier();
         return enemy;
     }
 }

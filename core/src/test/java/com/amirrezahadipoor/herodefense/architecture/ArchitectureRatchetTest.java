@@ -50,11 +50,13 @@ class ArchitectureRatchetTest {
         "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
         new ArchitectureRatchet.Frozen(681, 13),
         // R3.5 added a mode-aware entry point (`runBrief`) and kept the old signature as a one-line delegate,
-        // so the standard sweeps are unchanged by construction.
+        // so the standard sweeps are unchanged by construction. R3.4 needed no growth here at all: the omens'
+        // counterfactual is simply a run without the omen trial, which the existing trial axes already measure.
         "com/amirrezahadipoor/herodefense/balance/BalanceSimulator.java",
         new ArchitectureRatchet.Frozen(661, 23),
-        // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (one field
-        // plus `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one).
+        // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (plus
+        // `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one). R3.4 added
+        // no field: wave omens are switched on by the trial the player drafted, and the trial list already exists.
         "com/amirrezahadipoor/herodefense/model/GameState.java",
         new ArchitectureRatchet.Frozen(614, 82)
     );

@@ -475,6 +475,35 @@ sentence has to name the two scores and the commit they were measured on.
   announces; the presentation itself lives in the feature) and `model/GameState` 592 → 600 lines / 80 → 81 fields
   (the ledger field). Both are noted in the ratchet test with the reason, not hidden.
 - [ ] **R3.4 Content breadth.** Enemy types 4 → 8+, item-pool diversity, wave modifiers.
+  **Shipped: wave omens, as the thirteenth drafted trial.** Two hundred waves differ by their count and their place
+  on the curve, but nothing ever surprised a player twice: wave 43 and wave 143 were the same wave with bigger
+  numbers. A regular wave can now carry an **omen** (`model/WaveModifier`): `SWARM` (a quarter more of them),
+  `IRON_HIDE` (15% harder to fell), `BLOODRUSH` (12% heavier blows) or `QUICKSTEP` (10% faster), and an omen wave
+  pays 25% more coins — so it is a decision, not a punishment. The omen is derived, never stored: it is a pure
+  function of the run seed and the wave number, so a save that resumes mid-run resumes the same omen, and nothing had
+  to be encoded or repaired.
+  *Where it lives is the design decision.* Omens ship as a drafted trial (`TrialId.HOLLOW_OMENS`, "Hollow Omens /
+  Every sixth wave carries an omen / +25% coins on omen waves") rather than as a rule of every run, and the reason is
+  measurement: the untrialled run is the run every balance gate has ever measured, and adding a feature must not move
+  those numbers. Every lever already exists — `trials/TrialEffects.omensEnabled` is read by the spawner, the enemy
+  factory, the kill-reward system and the HUD — so a player who wants the wood to answer drafts it, and the trial's
+  own band runs through the trial gate with the other twelve instead of being asserted here. The simulator needed no
+  new API at all: the counterfactual is simply the same seed with the trial and without it.
+  *Where an omen may land* is one line of design, in `gameplay/WaveOmens`: never two twists at once. A boss wave
+  already has a script and an elite wave already carries triple-health enemies, so stacking an omen on either shows up
+  as exactly the single-wave spike the balance gates exist to catch (measured on the forced-card sweep: refusing the
+  elite collision moved the worst-case spike from 40.9% back to 37.2%, which is what kept the card gate green without
+  touching its ceiling). Twenty-two of the two hundred waves carry an omen once the boss and elite waves are excluded,
+  and the HUD prints the omen's name under the wave counter for as long as the wave runs.
+  *Measured,* trial against the same seed without it: all ten runs finish the vigil, and on the five seeds this was
+  measured on the omen trial's spike runs 35.9% / 27.7% / 31.7% / 30.3% / 39.9% against the plain run's 30.0% / 30.3%
+  / 26.4% / 32.1% / 24.0%, and the average pressure is up on four seeds. Of the twenty-two omen waves per run, 17, 15,
+  17, 10 and 18 pressed harder than the same wave without the trial — the twist is felt, not just labelled. One honest
+  caveat worth writing down: the worst of those seeds (39.9%) sits one seed away from the trial gate's own 40% ceiling,
+  so the omen trial is the tightest thing in the band today; widening that headroom is exactly what the balance program
+  (R4.1-R4.5) is scheduled to do.
+  **Remaining in this item:** enemy types 4 → 8+ (needs the Blender art pipeline — this sandbox has no root and cannot
+  install the X libraries Blender 4.2 asks for, so that slice runs where the pipeline runs) and item-pool diversity.
 - [x] **R3.5 Session shape — a second run length, measured with the simulator.**
   The game had exactly one session shape: two hundred waves, and a player who has forty minutes may not start one.
   A run now carries a **mode** (`model/GameMode`): `STANDARD` (The Long Vigil, 200 waves) and `BRIEF` (A Brief
@@ -746,6 +775,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 89 | R3.3 | twelve persistent trophies with a counter, a target and a progress reading; announced at the save point (haptic + chime + one HUD line that yields to a story line); Codex gained a LORE/TROPHIES tab strip with its own shelf and details panel; `TrophyLedger` survives `resetForNewRun` and `TrophyBook.migrate` back-fills a pre-trophy save from the progress it already had; 20 new test cases | `7323587` |
 
 | 2026-09-16 | 89 | R3.5 | a second run length: `GameMode.STANDARD` (200) / `BRIEF` (30) with `GameState.runLengthWaves()`, a brief-vigil row in the re-tabled six-row main menu, the game-over overlay showing this run's length, and `BalanceSimulator.runBrief`; measured: the brief run's first 30 waves are bit-identical to the long run's first 30 on the same seed, spike 0.1229 vs the 0.40 ceiling, its own bounded clear-time rule recorded as the one deliberate difference; 5 new simulation cases | `b9027b7` |
+
+| 2026-09-16 | 89 | R3.4a | wave omens as the thirteenth drafted trial: `model/WaveModifier` (SWARM / IRON_HIDE / BLOODRUSH / QUICKSTEP, +25% coins on the wave), `gameplay/WaveOmens` policy (never on a boss or elite wave), a HUD line, and `TrialEffects.omensEnabled` read by the spawner, the factory, kill rewards and the HUD; the untrialled run is unchanged by construction, so the counterfactual is the same seed without the trial | `_PENDING_` |
 
 ## Definition of done
 
