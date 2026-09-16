@@ -1,0 +1,24 @@
+{
+  "findings": [
+    {
+      "id": "finding-brief-vigil-has-no-teeth",
+      "session": "session-2026-09-17-simulator-20342418142676294-w30",
+      "date": "2026-09-17",
+      "severity": "high",
+      "summary": "the thirty-wave vigil can be completed without ever being in danger: the simulator's policy ends wave 30 with 82 percent of its health left and never loses more than 17.56 percent in a single wave",
+      "evidence": "the session record docs/playtests/records/session-2026-09-17-simulator-20342418142676294-w30.json: 30/30 waves cleared, average damage fraction 0.0511, peak 0.1756, reachedFinalWave true, heroDied false — measured on build ef55da9, and reproducible with the same seed",
+      "roadmapItem": "R4.1",
+      "status": "open"
+    },
+    {
+      "id": "finding-first-run-has-no-recorded-human-session",
+      "session": "session-2026-09-17-simulator-20342418142676294-w30",
+      "date": "2026-09-17",
+      "severity": "medium",
+      "summary": "every recorded session so far was played by a script; the device path that pulls a human session off the app has been unit-tested but has not yet carried a real one, so the protocol's human half is unproven end to end",
+      "evidence": "docs/playtests/sessions.json holds one session and its kind is automated; the adb commands in docs/PLAYTEST_PROTOCOL.md have not yet been run against a played build",
+      "roadmapItem": "R3.6",
+      "status": "open"
+    }
+  ]
+}

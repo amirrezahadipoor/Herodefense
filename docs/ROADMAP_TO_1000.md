@@ -52,7 +52,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **87** | Gameplay: one real player decision inside a wave | R3.1 | `[x]` |
 | **88** | Boss identity variety across the 20 encounters | R3.2 | `[x]` |
 | **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[x]` |
-| **90** | Human playtest protocol and recorded findings | R3.6 | `[ ]` |
+| **90** | Human playtest protocol and recorded findings | R3.6 | `[x]` |
 | **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[ ]` |
 | **92** | Runtime tier composed from the genuine master renders | R5.1 · R5.2 | `[~]` |
 | **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[ ]` |
@@ -622,7 +622,35 @@ sentence has to name the two scores and the commit they were measured on.
   24 s. A thirty-wave run legitimately opens with waves that resolve in 10 s, so the short mode gets its own bounded
   version of that rule (no wave under 4 s, none over 120 s, and the slowest at least twice the fastest) instead of a
   copy of a rule written for a two-hundred-wave curve.
-- [ ] **R3.6 Human playtest protocol** plus recorded sessions; findings become roadmap items.
+- [x] **R3.6 Human playtest protocol** plus recorded sessions; findings become roadmap items.
+  *The protocol is written, the sessions are recorded, and the gate that keeps them honest is in CI.*
+  `docs/PLAYTEST_PROTOCOL.md` defines what a session is, the two ways one gets recorded, and — in a section that is
+  not decoration — what a session cannot prove. **The game records it itself.** `playtest/RunRecord` is the format
+  (`herodefense.run-record/1`) and `playtest/RunRecordStore` writes it beside the save, keeping the newest twelve:
+  build, platform, mode, ascension tier, seed, waves cleared, how the run ended, the trials, and the counters the
+  state already keeps. A record carries nothing about the player — no name, no device id, no free text — so the
+  evidence is a build and its numbers, not a person. Both endings write it, and that was worth a lesson: the first
+  draft wired the death path and missed the completion path, because *both modes end on a boss wave*, so a finished
+  run leaves through the reward card in the touch router rather than through the wave director.
+  `SessionRecordIntegrityTest` now reads the sources and fails the build when a `transitionTo(GameScreenState.
+  GAME_OVER)` is not followed by a `recordRunEnd()`, which is the difference between fixing a bug and testing one.
+  *The ledger is a tool, not a document.* `tools/playtests/promote_run_record.py` is its only writer: it files the
+  raw record as evidence under `docs/playtests/records/`, fills the session from the record rather than from the
+  caller, and refuses a file that is not a run record. `tools/playtests/validate_playtest_ledger.py` reads the real
+  roadmap and enforces the three rules that make findings more than a wish list: a finding's `roadmapItem` must
+  exist in this file, a `fixed` finding must name the commit in its evidence, and an `accepted` finding must say in
+  a sentence that starts with "accepted:" why it was accepted instead of fixed. Sessions must name the build they
+  ran as a git hash and carry at least one line of notes, and a session whose filed record disagrees with it is
+  rejected. Sixteen Python cases (eleven for the gate, six for promotion) and nine Java cases cover the path,
+  including every negative rule; both commands run in CI next to the test suite.
+  *The first sessions, and what they found.* The ledger opens with a real run of this build: seed
+  `20342418142676294`, mode `BRIEF`, 30/30 waves cleared, `heroDied` false, average damage fraction **0.0511**, peak
+  **0.1756**, fastest wave 10.1 s, slowest 37.1 s — captured by `SimulatorSessionCaptureTest` and promoted rather
+  than typed. Two findings came out of it and both point at roadmap items: **R4.1** (a run at tier 0 that ends with
+  82 percent of its health untouched is not a difficulty promise; the win-rate band for a non-optimiser policy is
+  the item that fixes that) and **R3.6 itself** (every session so far was played by a script — the device path that
+  pulls a human session off the app is implemented and unit-tested, but the owner's first real session is what
+  turns the human half of this protocol from designed into proven). The ledger marks that gap instead of hiding it.
 
 ## R4 — Balance and difficulty curve  `+42`
 
@@ -880,6 +908,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 89 | R3.4c | enemy roster 4 → 8: four authored enemies (Bark Stalker, Sap Hound, Husk Warden, Bramble Thrall) with per-type means held exactly (health 117 / damage 28 / exp 69 / coins 19 / speed 242 / reach 172 / interval 5.10 over eight roles), a staggered spawner that keeps waves 1-10 on the field roster and interleaves deep waves, 384 px masters rendered in CI and published onto the reviewed 192 px tier with `masterRender` provenance, two art defects found and fixed by the gates (frame-border extremes, a flat idle), 17 review sheets + audit hashes, catalog budget 370 → 390 MB, combat set 95.9 MiB of 100 MiB, and the ascension gate's one red cell (forced Dodge, tier 6, seed 20342418142676295 at 15.907% vs a 15% ceiling) repaired by re-deriving the per-tier health/damage bumps (0.0005/0.0002 → 0.0004/0.00025), a change tier 0 cannot see | `b186c42` · `0e32e8a` · `621bec6` |
 
 | 2026-09-16 | 89 | R2.5 | static analysis in CI: SpotBugs 4.8.6 (bytecode, main + test) and PMD 7.7.0 (source, main + test) run as `:core:ciStaticAnalysis` next to the tests, reports uploaded on failure; first pass found 306 + 171 findings in main and 3,198 + 7 in test, ~50 fixed in code (dead stores, a `keySet()`+`get()` loop, `%2==1`, a locale-free `toUpperCase`, ten `catch (NullPointerException)` parses, uncalled private methods, duplicated literals, a leaked renderer in a test, two float loop indices) and 16 rule classes excluded **with a written reason each** in `docs/STATIC_ANALYSIS.md` | `0a987ae` |
+
+| 2026-09-17 | 90 | R3.6 | playtest protocol and ledger: the game writes a `herodefense.run-record/1` JSON beside the save when a run ends (both endings, newest twelve kept, nothing about the player), `tools/playtests/promote_run_record.py` files the raw record as evidence and fills the session from it, `tools/playtests/validate_playtest_ledger.py` checks every finding against the real roadmap (item must exist, `fixed` must name a commit, `accepted` must say why) and runs in CI with 16 Python cases; first automated session promoted (seed 20342418142676294, BRIEF, 30/30, avg 0.0511, peak 0.1756) and two findings opened against R4.1 and R3.6 | `ef55da9` |
 
 | 2026-09-16 | 89 | R3.4b | item pool: `ItemDropSystem.chooseFor` + a `tierPool` fallback that cannot index an empty tier, the pool composition asserted (46 pieces, 14/12/9/5/6, one mythic per slot, the first ring slot stops at rare) and the ownership-aware pick measured and held back with its gate numbers (ascension LIFESTEAL tier-0 40.24%, trial BOSS_BOUNTY+FAMISHED_EARTH 43.33%) | `5b78835` |
 

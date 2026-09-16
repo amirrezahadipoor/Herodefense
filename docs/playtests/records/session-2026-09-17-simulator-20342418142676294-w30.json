@@ -1,0 +1,22 @@
+{
+"schema": "herodefense.run-record/1",
+"source": "simulator",
+"platform": "headless",
+"appVersion": 0,
+"mode": "BRIEF",
+"ascensionTier": 0,
+"runSeed": 20342418142676294,
+"wavesCleared": 30,
+"runCompleted": true,
+"heroDied": false,
+"activeTrials": "",
+"recordedAtMillis": 1789594204184,
+"measurements": {
+	"averageDamageFraction": "0.05108436",
+	"peakDamageFraction": "0.17557655",
+	"reachedFinalWave": "true",
+	"fastestWaveSeconds": "10.066688",
+	"slowestWaveSeconds": "37.099777",
+	"waves": "30"
+}
+}

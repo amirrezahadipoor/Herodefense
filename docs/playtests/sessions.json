@@ -1,0 +1,19 @@
+{
+  "sessions": [
+    {
+      "id": "session-2026-09-17-simulator-20342418142676294-w30",
+      "date": "2026-09-17",
+      "kind": "automated",
+      "player": "balance simulator (runBrief sweep)",
+      "build": "ef55da9",
+      "protocol": "docs/PLAYTEST_PROTOCOL.md",
+      "durationMinutes": 1.0,
+      "wavesReached": 30,
+      "result": "victory",
+      "seed": 20342418142676294,
+      "mode": "BRIEF",
+      "record": "docs/playtests/records/session-2026-09-17-simulator-20342418142676294-w30.json",
+      "notes": "routine capture of the shipped build: the brief vigil completed all 30 waves at tier 0 average damage fraction 0.0511, peak 0.1756 — the run never dropped below 82 percent health"
+    }
+  ]
+}
