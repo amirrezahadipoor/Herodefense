@@ -39,6 +39,16 @@
       "evidence": "NonOptimiserBandTest over twelve seeds at tiers 0, 3, 6 and 10 (see docs/BALANCE.md): the tier hands the hero flat bonuses at run start (+10 strength, +20 health, +500 coins, +5 talent points and a wider Focus pool at tier 10) while the enemy growth is 0.0004 health and 0.00025 damage per tier compounding per wave, which is about four percent health by wave 200; the reward is large and the charge is nearly nothing. The tier-10 brief record is filed as session-2026-09-17-simulator-naive-t10-20342418142676294-w30. Filed as R4.7, which has to be fixed without spending the spike headroom R4.6 is also looking for.",
       "roadmapItem": "R4.7",
       "status": "open"
+    },
+    {
+      "id": "finding-menu-rows-had-two-stale-readers",
+      "session": "session-2026-09-17-simulator-20342418142676294-w30",
+      "date": "2026-09-17",
+      "severity": "high",
+      "summary": "R3.5's six-row menu left two readers of the old five-row table behind \u2014 the renderer's press feedback and the device journeys' menu taps \u2014 so the Android job failed nine of eleven journeys for eleven pushes behind a tap that landed on nothing, and a press lit the wrong button",
+      "evidence": "read out of the failing job's own logs rather than guessed: run 35154533580 on 3d48f7c (artifact 10470349026) fails touchRestartsFromPremiumDefeatSummary, touchTogglesSettingsFromMainMenu, touchSpendsTalentPointsFromPremiumLevelUp, touchSelectsComparesAndSellsFromPremiumInventory, touchContinuesIntoBossEntranceAndCombatVfx, touchReviewsAffordabilityAndPurchasesFromPausedShop, touchWatchesAndSkipsThePlantingCeremony, touchRestartsFromPremiumVictorySummary and touchContinuesIntoAndSelectsExactlyOneRewardCard, every one of them at an await after a Continue tap (y=680 against a row at 576-672) or the Settings tap (y=200 against a row at 222-318), while the only two journeys that pass never tap Continue; the same artifact shows the renderer resolving press states at the old 780/620/460/300/140. This session is the ledger's anchor for a finding whose evidence is a continuous-integration run rather than a played one. Fixed in 398e149, which makes the renderer resolve per row and the journey ask MainMenuTouchLayout for the row that carries an action; the device half is confirmed by the Android job on that commit.",
+      "roadmapItem": "R7.7",
+      "status": "fixed"
     }
   ]
 }
