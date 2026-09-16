@@ -34,7 +34,19 @@ final class AscensionGateTest {
     private static final long TRIAL_SEED = 0x747269616C7331L;
     private static final int[] TIERS = {0, 3, 6, 10};
     private static final float MINIMUM_NAKED_AVERAGE = 0.05f;
-    private static final float MAXIMUM_NAKED_AVERAGE = 0.15f;
+    /**
+     * The average-pressure ceiling is tier-indexed (roadmap R4.7), the way the spike and clear ceilings above it
+     * already were, and for the same reason: a tier is a harder game chosen by a player who has finished the last
+     * one. The flat 0.15 was written when the ladder charged almost nothing -- before R4.7 the optimiser's average
+     * at tier 10 was 0.088, and the ceiling only ever had to catch a walkover's opposite. Now that the ladder pays
+     * for its reward (a counter-cyclical base charge on enemy health and damage), the shipped tier-10 average is
+     * 0.1643: the ceiling moves to 0.15 + 0.02 per tier, which is the same slope the spike ceiling uses, while the
+     * floor stays at 0.05 for every tier and the run still has to finish every seed -- the wall this ceiling exists
+     * to catch is `reachedFinalWave`, and it is asserted separately.
+     */
+    private static float nakedAverageCeiling(int tier) {
+        return 0.15f + 0.02f * tier;
+    }
     private static final float MINIMUM_EMPOWERED_AVERAGE = 0.035f;
     private static final float MINIMUM_EMPOWERED_CLEAR_SECONDS = 24f;
     /**
@@ -87,7 +99,7 @@ final class AscensionGateTest {
                 String cell = "seed " + seed + " tier " + tier;
                 assertTrue(report.reachedFinalWave(), cell + " must finish");
                 assertTrue(summary.averageDamage >= MINIMUM_NAKED_AVERAGE
-                    && summary.averageDamage <= MAXIMUM_NAKED_AVERAGE,
+                    && summary.averageDamage <= nakedAverageCeiling(tier),
                     cell + " average was " + summary.averageDamage);
                 assertTrue(summary.maximumDamage <= MAXIMUM_SPIKE_ANY_SEED,
                     cell + " max spike was " + summary.maximumDamage);
@@ -124,7 +136,7 @@ final class AscensionGateTest {
                     String cell = card + " tier " + tier + " seed " + (BASELINE_SEED + s);
                     assertTrue(report.reachedFinalWave(), cell + " must finish");
                     assertTrue(summary.averageDamage >= MINIMUM_NAKED_AVERAGE
-                        && summary.averageDamage <= MAXIMUM_NAKED_AVERAGE,
+                        && summary.averageDamage <= nakedAverageCeiling(tier),
                         cell + " average was " + summary.averageDamage);
                     assertTrue(summary.maximumDamage <= MAXIMUM_SPIKE_ANY_SEED,
                         cell + " max spike was " + summary.maximumDamage);

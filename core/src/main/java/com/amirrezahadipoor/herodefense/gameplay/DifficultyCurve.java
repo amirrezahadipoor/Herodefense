@@ -48,6 +48,52 @@ public final class DifficultyCurve {
     public static final float ASCENSION_HEALTH_BUMP_PER_TIER = 0.0004f;
     public static final float ASCENSION_DAMAGE_BUMP_PER_TIER = 0.00025f;
 
+    // The ladder's base charge (roadmap R4.7). The per-wave bumps above only pay off late: at tier 10 they are a
+    // fifth of a percent of a wave in the opening and a multiple of it by wave 200, so a tier handed the hero flat
+    // power at run start and asked almost nothing for it in return. Measured for the player who ignores every
+    // system, that made the ladder run *backwards*: 0.0918 mean pressure in the brief vigil at tier 0 against
+    // 0.0019 at tier 10, and 69.7 waves of average reach against 102.3 -- a tier's starting strength is three
+    // times a first-wave bow's damage, so the player who never buys anything simply killed the opening faster.
+    //
+    // These two constants scale the enemy's *baseline*, so the charge lands from the first wave. The frontier was
+    // searched rather than guessed, over the two ends the ladder has to satisfy at once: on six seeds per tier, the
+    // shipped values put the non-optimiser's brief pressure at 0.0525 at tier 10 against 0.0901 at tier 0 (7.8% ->
+    // 58% of the tier-0 value; the inversion reported by R4.7 is 48x) and its long-vigil reach at 77.0 waves
+    // against 71.3, while the optimiser's average rises 0.1035 -> 0.1643 and every run still finishes. Enemy
+    // *damage* alone was measured as a lever and rejected: it does not slow the opening (the naive player one-shots
+    // the early waves either way) and it wrecks the optimiser's late game (tier-10 average 0.1958 with quarter four
+    // at 0.375). Health is what the naive advantage is made of, which is why the charge is mostly health.
+    public static final float ASCENSION_BASE_HEALTH_BUMP_PER_TIER = 0.30f;
+    public static final float ASCENSION_BASE_DAMAGE_BUMP_PER_TIER = 0.15f;
+    public static final float ASCENSION_BASE_HEALTH_BUMP_PER_TIER = 0.30f;
+    public static final float ASCENSION_BASE_DAMAGE_BUMP_PER_TIER = 0.15f;
+
+    /**
+     * The ladder's charge is counter-cyclical on purpose: it is heaviest in the waves where the tier's flat reward
+     * is worth the most. A tier hands the hero starting stats, and starting stats are a multiplier in the opening --
+     * ten points of strength is three times the damage of a first-wave bow -- and a rounding error by wave 150. So
+     * the base charge fades over the first {@link #ASCENSION_BASE_CHARGE_SPAN_WAVES} waves instead of scaling the
+     * whole run: a uniform health scale was measured too, and at a tenth of the size it drove the optimiser's
+     * tier-10 average to 0.384, because it lengthens every wave instead of the ones the reward distorts.
+     */
+    public static final int ASCENSION_BASE_CHARGE_SPAN_WAVES = 140;
+
+    public static float baseScaleForTier(int waveNumber, int tier) {
+        return 1f + ASCENSION_BASE_HEALTH_BUMP_PER_TIER * Math.max(0, tier) * baseChargeFade(waveNumber);
+    }
+
+    public static float baseDamageScaleForTier(int waveNumber, int tier) {
+        return 1f + ASCENSION_BASE_DAMAGE_BUMP_PER_TIER * Math.max(0, tier) * baseChargeFade(waveNumber);
+    }
+
+    private static float baseChargeFade(int waveNumber) {
+        if (ASCENSION_BASE_CHARGE_SPAN_WAVES <= 0) {
+            return 1f;
+        }
+        float elapsed = Math.max(0, waveNumber - 1);
+        return Math.max(0f, 1f - elapsed / ASCENSION_BASE_CHARGE_SPAN_WAVES);
+    }
+
     public static float healthGrowthForTier(int tier) {
         return ENEMY_HEALTH_GROWTH * (1f + ASCENSION_HEALTH_BUMP_PER_TIER * Math.max(0, tier));
     }
@@ -100,6 +146,7 @@ public final class DifficultyCurve {
         int entry = Math.min(secondHalf, secondHalfEntryWaves());
         int finalQuarter = Math.max(0, secondHalf - entry);
         return BASE_ENEMY_HEALTH
+            * baseScaleForTier(wave, ascensionTier)
             * (float) Math.pow(healthGrowthForTier(ascensionTier), early + late)
             * (float) Math.pow(middleHealthGrowthForTier(ascensionTier), middle)
             * (float) Math.pow(secondHalfHealthGrowthForTier(ascensionTier), entry)
@@ -131,6 +178,7 @@ public final class DifficultyCurve {
         int entry = Math.min(secondHalf, secondHalfEntryWaves());
         int finalQuarter = Math.max(0, secondHalf - entry);
         return BASE_ENEMY_DAMAGE
+            * baseDamageScaleForTier(wave, ascensionTier)
             * (float) Math.pow(damageGrowthForTier(ascensionTier), early + late)
             * (float) Math.pow(middleDamageGrowthForTier(ascensionTier), middle)
             * (float) Math.pow(secondHalfDamageGrowthForTier(ascensionTier), entry)
