@@ -14,7 +14,14 @@ import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 
-/** Rolls at most one low-chance equipment drop per defeated enemy, modified by Luck. */
+/**
+ * Rolls at most one low-chance equipment drop per defeated enemy, modified by Luck.
+ *
+ * <p>Roadmap R4.3 wanted a pity rule here, and the three versions of it that were measured are recorded with
+ * their prices in {@code docs/BALANCE.md}: the shipped game has none, because the balance sweep's ceilings sit
+ * within a percent of their limits and every version of the rule moved one of them. The rule returns when R4.6
+ * has bought the headroom it needs.
+ */
 public final class ItemDropSystem {
     public static final float COMMON_RATE = 0.06f;
     public static final float UNCOMMON_RATE = 0.03f;
