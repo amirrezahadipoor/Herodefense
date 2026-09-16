@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.amirrezahadipoor.herodefense.balance.BalanceSimulator.BalanceReport;
-import com.amirrezahadipoor.herodefense.balance.BalanceSimulator.WaveSample;
+import com.amirrezahadipoor.herodefense.balance.BalanceReport;
+import com.amirrezahadipoor.herodefense.balance.WaveSample;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.List;
 import org.junit.jupiter.api.Test;

@@ -6,7 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
+import com.amirrezahadipoor.herodefense.balance.BalanceReport;
 import com.amirrezahadipoor.herodefense.balance.BalanceSimulator;
+import com.amirrezahadipoor.herodefense.balance.WaveSample;
 import com.amirrezahadipoor.herodefense.model.GameMode;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
@@ -42,14 +44,14 @@ final class SimulatorSessionCaptureTest {
 
     @Test
     void theSimulatorSessionsAreWrittenWhereTheLedgerToolLooksForThem() {
-        BalanceSimulator.BalanceReport report = new BalanceSimulator().runBrief(SEED);
+        BalanceReport report = new BalanceSimulator().runBrief(SEED);
 
         assertTrue(report.waves().size() >= GameMode.BRIEF.waves() - 1,
             "the capture has to be a real run, saw " + report.waves().size() + " waves");
         float fastest = Float.MAX_VALUE;
         float slowest = 0f;
         float peak = 0f;
-        for (BalanceSimulator.WaveSample wave : report.waves()) {
+        for (WaveSample wave : report.waves()) {
             fastest = Math.min(fastest, wave.clearTimeSeconds());
             slowest = Math.max(slowest, wave.clearTimeSeconds());
             peak = Math.max(peak, wave.damageFraction());
@@ -99,7 +101,7 @@ final class SimulatorSessionCaptureTest {
      */
     @Test
     void theLongVigilIsCapturedWithItsQuarterPressures() {
-        BalanceSimulator.BalanceReport report = new BalanceSimulator().run(SEED);
+        BalanceReport report = new BalanceSimulator().run(SEED);
         assertEquals(GameState.FINAL_WAVE, report.waves().size(), "the long vigil is still two hundred waves");
         assertTrue(report.reachedFinalWave(), "and this seed still finishes it");
 
@@ -154,7 +156,7 @@ final class SimulatorSessionCaptureTest {
      */
     @Test
     void theNonOptimiserAtTierTenIsRecorded() {
-        BalanceSimulator.BalanceReport report = new BalanceSimulator()
+        BalanceReport report = new BalanceSimulator()
             .runWithPolicy(SEED, BalanceSimulator.Policy.NAIVE, 10, GameMode.BRIEF);
 
         Map<String, String> measurements = new LinkedHashMap<>();

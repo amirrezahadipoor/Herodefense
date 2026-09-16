@@ -27,15 +27,15 @@ final class GameModeSimulationTest {
     @Test
     void theBriefVigilIsTheLongVigilWithAShorterEnding() {
         long seed = SEEDS[0];
-        BalanceSimulator.BalanceReport full = new BalanceSimulator().run(seed);
-        BalanceSimulator.BalanceReport brief = new BalanceSimulator().runBrief(seed);
+        BalanceReport full = new BalanceSimulator().run(seed);
+        BalanceReport brief = new BalanceSimulator().runBrief(seed);
 
         assertEquals(GameState.FINAL_WAVE, full.waves().size(), "the long vigil is still two hundred waves");
         assertEquals(GameMode.BRIEF.waves(), brief.waves().size(), "the brief vigil ends where its mode says");
         assertTrue(brief.reachedFinalWave(), "and it counts as finished, not as a death");
         for (int wave = 0; wave < brief.waves().size(); wave++) {
-            BalanceSimulator.WaveSample fullWave = full.waves().get(wave);
-            BalanceSimulator.WaveSample briefWave = brief.waves().get(wave);
+            WaveSample fullWave = full.waves().get(wave);
+            WaveSample briefWave = brief.waves().get(wave);
             assertEquals(fullWave.wave(), briefWave.wave(), "same wave numbers");
             assertEquals(fullWave.damageFraction(), briefWave.damageFraction(), 0f,
                 "wave " + fullWave.wave() + " must play identically in both modes");
@@ -47,10 +47,10 @@ final class GameModeSimulationTest {
     @Test
     void theBriefVigilKeepsTheTunedPressureBand() {
         for (long seed : SEEDS) {
-            BalanceSimulator.BalanceReport report = new BalanceSimulator().runBrief(seed);
+            BalanceReport report = new BalanceSimulator().runBrief(seed);
             float spike = 0f;
             float total = 0f;
-            for (BalanceSimulator.WaveSample wave : report.waves()) {
+            for (WaveSample wave : report.waves()) {
                 spike = Math.max(spike, wave.damageFraction());
                 total += wave.damageFraction();
             }
@@ -64,8 +64,8 @@ final class GameModeSimulationTest {
 
     @Test
     void theBriefVigilStillRampsInsteadOfPeakingAtOnce() {
-        BalanceSimulator.BalanceReport report = new BalanceSimulator().runBrief(SEEDS[1]);
-        List<BalanceSimulator.WaveSample> waves = report.waves();
+        BalanceReport report = new BalanceSimulator().runBrief(SEEDS[1]);
+        List<WaveSample> waves = report.waves();
         float opening = 0f;
         float closing = 0f;
         for (int index = 0; index < 10; index++) {
@@ -84,10 +84,10 @@ final class GameModeSimulationTest {
      */
     @Test
     void theBriefVigilsFastOpeningIsExpectedAndBounded() {
-        BalanceSimulator.BalanceReport report = new BalanceSimulator().runBrief(SEEDS[2]);
+        BalanceReport report = new BalanceSimulator().runBrief(SEEDS[2]);
         float fastest = Float.MAX_VALUE;
         float slowest = 0f;
-        for (BalanceSimulator.WaveSample wave : report.waves()) {
+        for (WaveSample wave : report.waves()) {
             fastest = Math.min(fastest, wave.clearTimeSeconds());
             slowest = Math.max(slowest, wave.clearTimeSeconds());
         }

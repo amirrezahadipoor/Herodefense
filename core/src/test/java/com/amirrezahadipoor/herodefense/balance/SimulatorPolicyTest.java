@@ -2,7 +2,7 @@ package com.amirrezahadipoor.herodefense.balance;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.amirrezahadipoor.herodefense.balance.BalanceSimulator.BalanceReport;
+import com.amirrezahadipoor.herodefense.balance.BalanceReport;
 import org.junit.jupiter.api.Test;
 
 /**

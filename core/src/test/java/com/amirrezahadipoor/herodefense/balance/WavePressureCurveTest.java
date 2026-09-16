@@ -66,7 +66,7 @@ final class WavePressureCurveTest {
     private static final float MAXIMUM_AVERAGE = 0.15f;
     private static final float MAXIMUM_SPIKE = 0.40f;
 
-    private static float quarterAverage(List<BalanceSimulator.WaveSample> waves, int quarter) {
+    private static float quarterAverage(List<WaveSample> waves, int quarter) {
         float total = 0f;
         int count = 0;
         for (int wave = quarter * WAVES_PER_QUARTER; wave < (quarter + 1) * WAVES_PER_QUARTER; wave++) {
@@ -81,7 +81,7 @@ final class WavePressureCurveTest {
         float[][] quarters = new float[SEEDS.length][QUARTERS];
         List<String> readings = new ArrayList<>();
         for (int index = 0; index < SEEDS.length; index++) {
-            BalanceSimulator.BalanceReport report = new BalanceSimulator().run(SEEDS[index]);
+            BalanceReport report = new BalanceSimulator().run(SEEDS[index]);
             assertTrue(report.reachedFinalWave(), "seed " + Long.toHexString(SEEDS[index])
                 + " has to finish the run for its shape to mean anything");
             for (int quarter = 0; quarter < QUARTERS; quarter++) {
@@ -120,10 +120,10 @@ final class WavePressureCurveTest {
     @Test
     void theLateRunStaysInsideTheShippedPressureBand() {
         for (long seed : SEEDS) {
-            BalanceSimulator.BalanceReport report = new BalanceSimulator().run(seed);
+            BalanceReport report = new BalanceSimulator().run(seed);
             float average = report.averageDamageFraction();
             float peak = 0f;
-            for (BalanceSimulator.WaveSample wave : report.waves()) {
+            for (WaveSample wave : report.waves()) {
                 peak = Math.max(peak, wave.damageFraction());
             }
             String where = "seed " + Long.toHexString(seed);

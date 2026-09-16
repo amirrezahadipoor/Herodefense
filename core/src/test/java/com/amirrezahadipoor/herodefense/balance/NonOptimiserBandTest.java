@@ -59,7 +59,7 @@ final class NonOptimiserBandTest {
         int wins = 0;
         List<String> readings = new ArrayList<>();
         for (long seed : SEEDS) {
-            BalanceSimulator.BalanceReport report = new BalanceSimulator()
+            BalanceReport report = new BalanceSimulator()
                 .runWithPolicy(seed, BalanceSimulator.Policy.NAIVE, 0, GameMode.BRIEF);
             if (report.reachedFinalWave()) {
                 wins++;
@@ -87,9 +87,9 @@ final class NonOptimiserBandTest {
         int fell = 0;
         List<String> readings = new ArrayList<>();
         for (long seed : SEEDS) {
-            BalanceSimulator.BalanceReport naive = new BalanceSimulator()
+            BalanceReport naive = new BalanceSimulator()
                 .runWithPolicy(seed, BalanceSimulator.Policy.NAIVE, 0, GameMode.STANDARD);
-            BalanceSimulator.BalanceReport optimiser = new BalanceSimulator()
+            BalanceReport optimiser = new BalanceSimulator()
                 .runWithPolicy(seed, BalanceSimulator.Policy.OPTIMISER, 0, GameMode.STANDARD);
             naiveWaves += naive.waves().size();
             optimiserWaves += optimiser.waves().size();
@@ -137,8 +137,8 @@ final class NonOptimiserBandTest {
     @Test
     void theDefaultPolicyIsTheOptimiserBitForBit() {
         long seed = SEEDS[0];
-        BalanceSimulator.BalanceReport byDefault = new BalanceSimulator().runBrief(seed);
-        BalanceSimulator.BalanceReport byName =
+        BalanceReport byDefault = new BalanceSimulator().runBrief(seed);
+        BalanceReport byName =
             new BalanceSimulator().runBriefWithPolicy(seed, BalanceSimulator.Policy.OPTIMISER);
         assertTrue(byDefault.waves().size() == byName.waves().size(),
             "same run length: " + byDefault.waves().size() + " against " + byName.waves().size());
@@ -147,7 +147,7 @@ final class NonOptimiserBandTest {
                 == byName.waves().get(wave).damageFraction(),
                 "wave " + byDefault.waves().get(wave).wave() + " must play identically either way");
         }
-        BalanceSimulator.BalanceReport naive =
+        BalanceReport naive =
             new BalanceSimulator().runBriefWithPolicy(seed, BalanceSimulator.Policy.NAIVE);
         assertTrue(naive.waves().size() <= byDefault.waves().size(),
             "and the naive policy must not outlast the optimiser on this seed");
