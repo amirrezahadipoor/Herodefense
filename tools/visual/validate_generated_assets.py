@@ -55,6 +55,61 @@ PIVOT_EXPECTATIONS = {
 }
 
 
+# Honest bookkeeping: a "gate" only counts as measured when it inspects the produced artifact.
+# Checks that merely look for a string in the pipeline source are reported separately, because they
+# prove that a word exists, not that the pixels are right (see docs/ROADMAP_TO_1000.md R1.6).
+MEASURED_GATES: list[str] = []
+tier_divergence: set[str] = set()
+CONFIG_PRESENCE_CHECKS: list[str] = []
+
+
+def _measured(name: str) -> None:
+    if name not in MEASURED_GATES:
+        MEASURED_GATES.append(name)
+
+
+def _config_presence(name: str) -> None:
+    if name not in CONFIG_PRESENCE_CHECKS:
+        CONFIG_PRESENCE_CHECKS.append(name)
+
+
+# Rendered tiers of the reviewed baseline (`5374f2c^`). `hd_pipeline/config.py` currently asks for a
+# higher tier, but no re-render has been delivered since, so the higher number is a plan, not a fact.
+REVIEWED_TIERS = {
+    "character": (2, 28),
+    "boss": (3, 36),
+    "tree": (3, 36),
+    "item": (2, 28),
+    "environment": (2, 28),
+    "vfx": (2, 28),
+    "projectile": (2, 28),
+    "ui": (2, 28),
+}
+REVIEWED_TIER_OVERLAY = (2, 12)
+
+
+# Phase 54-55 raised the pipeline tiers (TOP_TIER 3/36 -> 4/48, mid tier 2/28 -> 3/32) but no
+# re-render was delivered under the higher numbers: the reviewed sheets were rendered with the older
+# settings. The map below says which reviewed tier corresponds to what the config now asks for.
+REVIEWED_TIER_FOR_CONFIGURED = {
+    (4, 48): (3, 36),
+    (3, 32): (2, 28),
+}
+
+
+def _reviewed_tier(frame_class: str, key: str) -> tuple[int, int]:
+    # Equipment is drawn as an overlay on the hero, so it was rendered at the overlay tier (2/12)
+    # even though its frame class is "character".
+    if key.startswith("equipment_") or frame_class == "equipment_overlay":
+        return REVIEWED_TIER_OVERLAY
+    try:
+        from hd_pipeline.config import render_tier as _rt
+        configured = _rt(key, frame_class)
+    except ImportError:
+        return REVIEWED_TIERS.get(frame_class, (2, 28))
+    return REVIEWED_TIER_FOR_CONFIGURED.get(configured, configured)
+
+
 def _check_pivot_stability(asset: dict) -> None:
     key = asset["key"]
     pivot = asset["pivot"]
@@ -318,19 +373,24 @@ def main() -> None:
 
     # global grade/silhouette alpha sanity
     _check_asset_ledger(root)
+    _measured("asset hash ledger")
     _check_grade_alpha()
-    # Config-presence regression checks (these read pipeline source strings, they do NOT
-    # measure rendered pixels; the pixel-level gates live further down)
+    _measured("grade alpha round-trip")
+    # Config-presence checks: they read the pipeline source and therefore say nothing about the
+    # rendered pixels. Reported separately from the measured gates on purpose.
     try:
         from pathlib import Path as _P
         _cfg = (_P(__file__).resolve().parents[1] / "blender" / "hd_pipeline" / "config.py").read_text()
         if "#2ECC71" not in _cfg or "#FFD700" not in _cfg:
-            raise ValueError("config gate: vibrant palette #2ECC71/#FFD700 missing from hd_pipeline/config.py")
+            raise ValueError("config presence: vibrant palette #2ECC71/#FFD700 missing from hd_pipeline/config.py")
+        _config_presence("vibrant palette strings in config.py")
         _scene = (_P(__file__).resolve().parents[1] / "blender" / "hd_pipeline" / "scene.py").read_text()
         if "use_bloom" not in _scene or "use_gtao" not in _scene:
-            raise ValueError("config gate: bloom and GTAO must stay enabled in hd_pipeline/scene.py")
+            raise ValueError("config presence: bloom and GTAO must stay enabled in hd_pipeline/scene.py")
+        _config_presence("bloom/GTAO flags in scene.py")
         if "OUTLINE_COLORS" not in _cfg:
-            raise ValueError("config gate: per-category OUTLINE_COLORS missing from hd_pipeline/config.py")
+            raise ValueError("config presence: per-category OUTLINE_COLORS missing from hd_pipeline/config.py")
+        _config_presence("per-category outline colours in config.py")
     except ValueError:
         raise
     except Exception:
@@ -348,25 +408,35 @@ def main() -> None:
             raise ValueError(f"{key}: pivot outside normalized frame")
         # new pivot stability per class
         _check_pivot_stability(asset)
-        # Phase 28.7 tier/engineVersion — enforced only after full re-render (28.7)
-        # Phase 73: relax for 33.0+ during HD transition — allow old and new tiers
-        if True:  # Phase 78: tier/engine checks apply to every committed manifest
+        _measured("pivot stability")
+        # Tier and engineVersion checks apply to every committed manifest: the manifest must describe
+        # art that exists, at a tier that was reviewed.
+        if True:
             if "renderSupersample" in asset and "renderSamples" in asset and "frameClass" in asset:
                 import sys
                 from pathlib import Path as _P
                 _blender_tools = _P(__file__).resolve().parents[1] / "blender"
                 if str(_blender_tools) not in sys.path:
                     sys.path.insert(0, str(_blender_tools))
+                # The manifest must record a tier the reviewed art was actually rendered at. The
+                # pipeline config was later raised (Phase 54-55: 2/28 -> 3/32, 3/36 -> 4/48) without a
+                # delivered re-render, so comparing against the live config would either fail the
+                # reviewed art or silently bless a claim the pixels do not support. Instead the
+                # reviewed tiers are pinned here and the divergence is reported out loud.
+                reviewed_tier = _reviewed_tier(asset["frameClass"], asset["key"])
+                if (asset["renderSupersample"], asset["renderSamples"]) != reviewed_tier:
+                    raise ValueError(
+                        f"{asset['key']}: manifest tier ({asset['renderSupersample']},"
+                        f"{asset['renderSamples']}) is not the reviewed tier {reviewed_tier} for "
+                        f"{asset['frameClass']}"
+                    )
                 try:
                     from hd_pipeline.config import render_tier as _rt
-                    if asset["key"].startswith("equipment_"):
-                        exp_ss, exp_sa = (2, 12)
-                    else:
-                        exp_ss, exp_sa = _rt(asset["key"], asset["frameClass"])
-                    # Phase 73: allow old 2/28,3/36 and new 3/32,4/48 during transition to 950+
-                    allowed_tiers = {(exp_ss, exp_sa), (2, 28), (3, 36), (3, 32), (4, 48), (2, 12)}
-                    if (asset["renderSupersample"], asset["renderSamples"]) not in allowed_tiers:
-                        raise ValueError(f"{asset['key']}: tier mismatch — manifest ({asset['renderSupersample']},{asset['renderSamples']}) vs config ({exp_ss},{exp_sa}) for {asset['frameClass']}")
+                    configured = _rt(asset["key"], asset["frameClass"])
+                    if configured != reviewed_tier:
+                        tier_divergence.add(
+                            f"{asset['frameClass']}: config {configured} vs reviewed {reviewed_tier}"
+                        )
                 except ImportError:
                     pass
             ev = asset.get("engineVersion") or manifest.get("engineVersion")
@@ -424,8 +494,11 @@ def main() -> None:
         # automated visual checks where PIL is available
         if HAS_PIL and pages_images:
             _check_edge_safety(asset, root, pages_images)
+            _measured("edge safety")
             _check_silhouette(asset, root, pages_images)
+            _measured("silhouette")
             _check_no_resampled_sheet(asset, root, pages_images)
+            _measured("no resampling signature")
 
         if "icon" in asset:
             icon = _inside(root, asset["icon"])
@@ -480,13 +553,19 @@ def main() -> None:
         f"Validated {len(manifest['assets'])} assets, {len(referenced)} RGBA PNGs, "
         f"{decoded_total} decoded bytes, max page {page_limit}px"
     )
-    if HAS_PIL:
+    if tier_divergence:
+        _measured("reviewed-tier pinning")
         print(
-            "Edge safety ✓  Pivot stability ✓  Silhouette ✓  Grade alpha ✓  "
-            "Asset ledger ✓ (PIL available)"
+            "Reviewed-tier divergence (config asks for more than the art was rendered at): "
+            + "; ".join(sorted(tier_divergence))
         )
-    else:
-        print("Pillow not available — skipped image-level checks (manifest-only mode)")
+    print(
+        f"Measured gates: {len(MEASURED_GATES)} ({', '.join(MEASURED_GATES) or 'none'}) | "
+        f"config-presence checks: {len(CONFIG_PRESENCE_CHECKS)} "
+        f"({', '.join(CONFIG_PRESENCE_CHECKS) or 'none'})"
+    )
+    if not HAS_PIL:
+        print("Pillow not available - image-level gates skipped (manifest-only mode)")
 
 
 def _inside(root: Path, relative: str) -> Path:

@@ -98,5 +98,24 @@ class LedgerGateTest(unittest.TestCase):
             )
 
 
+class ReviewedTierPinningTest(unittest.TestCase):
+    """The manifest must describe art that exists, at a tier that was reviewed (roadmap R1.6)."""
+
+    def test_equipment_overlays_are_pinned_to_the_overlay_tier(self) -> None:
+        self.assertEqual((2, 12), validator._reviewed_tier("character", "equipment_acorn_band"))  # type: ignore[attr-defined]
+
+    def test_top_tier_and_mid_tier_art_keep_their_rendered_settings(self) -> None:
+        self.assertEqual((3, 36), validator._reviewed_tier("boss", "ancient_golem"))  # type: ignore[attr-defined]
+        self.assertEqual((3, 36), validator._reviewed_tier("tree", "world_tree_healthy"))  # type: ignore[attr-defined]
+        self.assertEqual((2, 28), validator._reviewed_tier("character", "rootling"))  # type: ignore[attr-defined]
+
+    def test_raised_config_tiers_map_back_to_what_was_rendered(self) -> None:
+        self.assertEqual(
+            {(4, 48): (3, 36), (3, 32): (2, 28)},
+            validator.REVIEWED_TIER_FOR_CONFIGURED,  # type: ignore[attr-defined]
+            "the config was raised without a delivered re-render; keep the mapping explicit",
+        )
+
+
 if __name__ == "__main__":
     unittest.main()

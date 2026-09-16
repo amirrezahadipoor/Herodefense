@@ -32,7 +32,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 |---|---|---|---|
 | **78** | Integrity recovery: reviewed runtime tier restored, contract tests un-gutted, hash ledger + resampling/ledger gates | R1.1 · R1.2 · R1.3 · R1.4 · R1.8 | `[x]` |
 | **79** | Test-integrity meta-test: weakening a test fails the build | R1.5 | `[x]` |
-| **80** | Gates that measure output, not script text | R1.6 | `[ ]` |
+| **80** | Gates that measure output, not script text | R1.6 | `[x]` |
 | **81** | Emulator brightness contract restored honestly | R1.7 | `[ ]` |
 | **82** | Negative control for every gate (fixtures that must fail) | R1.9 | `[~]` |
 | **83** | Review coverage for the ten post-audit art ids | R1.11 | `[ ]` |
@@ -98,10 +98,14 @@ re-run on a finished round (Phase 97).
   The last two `relaxed` comments in the premium arena test were replaced by a real check against the
   hash ledger instead of being kept, and the emulator luma line now carries an explicit
   `integrity-exempt` pointing at R1.7.
-- [ ] **R1.6 Gates that measure output.** Every validator check that greps pipeline source for a string
-  is either replaced by a measurement of the produced image/metadata or relabelled `config-presence` and
-  removed from the "premium gates" count printed in CI logs.
-  *Acceptance:* `validate_generated_assets.py` prints measured/presence counts separately.
+- [x] **R1.6 Gates that measure output.** The validator now reports
+  `Measured gates: 7 (asset hash ledger, grade alpha round-trip, pivot stability, edge safety,
+  silhouette, no resampling signature, reviewed-tier pinning) | config-presence checks: 3 (palette
+  strings, bloom/GTAO flags, outline colours)`, so a string search is never counted as a quality gate.
+  The wildcard tier set was replaced by an exact reviewed-tier pin, and the divergence between
+  `config.py` (which Phase 54-55 raised to 3/32 and 4/48) and the art that was actually rendered is now
+  printed: *config asks for more than the art was rendered at*. Tests in
+  `tools/visual/tests/test_art_gates.py::ReviewedTierPinningTest` keep the mapping explicit.
 - [ ] **R1.7 Emulator brightness contract.** Either the vibrant grade is re-applied in the render
   pipeline so `AndroidTouchSmokeTest` returns to `MIN_MEAN_LUMA = 34` with `vfx-*` screenshots included,
   or the threshold is replaced by a per-screenshot reference fingerprint.
@@ -212,7 +216,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | 78 | R1.9 (partial) | gate negative controls (NEAREST 2×/3× rejected, honest sheet passes, drift detectable) | `b855e97` |
 | 2026-09-16 | 78 | CI failure | first push turned `Test core logic` red (numpy not installed); fixtures rewritten with Pillow only | `b855e97` |
 | 2026-09-16 | — | Phase plan | remaining work expressed as numbered English phases (79–97) | `492e057` |
-| 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | *(this commit)* |
+| 2026-09-16 | 79 | R1.5 | `TestIntegrityTest` ratchet + negative controls; arena test's last softened comments replaced by a ledger check | `71bab7d` |
+| 2026-09-16 | 80 | R1.6 | validator reports 7 measured gates vs 3 config-presence checks, exact reviewed-tier pin, config-vs-art divergence printed; 3 tests added | *(this commit)* |
 
 ## Definition of done
 
