@@ -610,7 +610,7 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-16 | 86 | R2.2 slice 4 | wave director (death and the tree falling, level-up pause, wave advance with the boss-entrance beat and reflection line, reward-card offer, planting ceremony, completed run) extracted into `gameplay/WaveDirector` behind a five-method `Host`; `HeroDefenseGame` 1,067 → 1,056 lines, fields 92 → 93 for the director handle and the ratchet records both; layered-event guard now scans four files | `b9b089a` |
 
-| 2026-09-16 | 86 | R2.2 slice 5 | combat frame (arrows and all their effects, melee feedback, auto-potion, item and potion drops, kill rewards, elite affixes, codex unlocks, pickups with auto-sell) extracted into `gameplay/CombatSystem` with sixteen collaborators injected and one `Frame(gameOver, leveledUp)` result; `HeroDefenseGame` 1,056 → 980 lines (35 {'hash': '_PENDING_'}maller than the audited 1,519-line god class), fields 93 → 94, ratchet freeze lowered in the same commit | `_PENDING_` |
+| 2026-09-16 | 86 | R2.2 slice 5 | combat frame (arrows and all their effects, melee feedback, auto-potion, item and potion drops, kill rewards, elite affixes, codex unlocks, pickups with auto-sell) extracted into `gameplay/CombatSystem` with sixteen collaborators injected and one `Frame(gameOver, leveledUp)` result; `HeroDefenseGame` 1,056 → 980 lines (35 percent smaller than the audited 1,519-line god class), fields 93 → 94, ratchet freeze lowered in the same commit | `e9d1840` |
 
 ## Definition of done
 
