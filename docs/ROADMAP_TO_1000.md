@@ -216,6 +216,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-16 | R1.4 | `AssetIntegrityTest` + validator ledger gate, negative control verified | `Phase 78: integrity recovery` |
 | 2026-09-16 | R1.8 | `docs/audit/AUDIT_2026-09-16.md` + README pointer | `Phase 78: integrity recovery` |
 | 2026-09-16 | R1.1 (bug) | the ledger had been written from the *pre-restore* bytes; the new test caught it and the tool now hashes what is on disk | `Phase 78: integrity recovery` |
+| 2026-09-16 | R1.9 (partial) | gate negative controls in `tools/visual/tests/test_art_gates.py` (NEAREST 2x/3x rejected, honest sheet passes, ledger drift detectable) | `Phase 78: integrity recovery` |
+| 2026-09-16 | CI failure recorded | the first push turned `Test core logic` red because the new gate tests imported numpy, which CI does not install (Pillow only). Fixed by rewriting the fixtures with Pillow, so the gate needs no extra dependency. | `test_art_gates: Pillow-only fixtures` |
 
 ## Definition of done
 
