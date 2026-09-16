@@ -54,6 +54,7 @@ FRINGE_ALPHA_FLOOR = 8
 RUNTIME_TIER_TOP = (3, 36)
 RUNTIME_PAGE_LIMIT = 2_048
 RUNTIME_ENGINE_VERSION = "33.0-studio-v3-3x36-full"
+RUNTIME_PIPELINE_VERSION = 3
 
 
 def halve(value: int, label: str) -> int:
@@ -323,6 +324,10 @@ def publish(master_dir: Path, runtime_dir: Path, reviewed_manifest_path: Path) -
     tiers = {(entry["renderSupersample"], entry["renderSamples"]) for entry in entries}
     if len(tiers) != 1:
         raise ValueError(f"runtime tier publishes one reviewed tier per batch, found {sorted(tiers)}")
+    # pipelineVersion follows the same convention as engineVersion: the committed catalog is fingerprinted at the
+    # reviewed line's pipeline 3 (PremiumAssetContractTest asserts it), while the render that produced this LOD is
+    # recorded in `masterRender` -- R3.4's master batch is pipeline 4.
+    runtime_manifest["pipelineVersion"] = RUNTIME_PIPELINE_VERSION
     runtime_manifest["renderSupersample"], runtime_manifest["opaqueRenderSamples"] = tiers.pop()
     runtime_manifest["renderTierTop"] = list(RUNTIME_TIER_TOP)
     runtime_manifest["maxAtlasPageSize"] = RUNTIME_PAGE_LIMIT

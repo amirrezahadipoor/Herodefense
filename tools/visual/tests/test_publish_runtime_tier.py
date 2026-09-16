@@ -126,6 +126,7 @@ class PublishRuntimeTierTest(unittest.TestCase):
             entry = manifest["assets"][0]
             # What ships is fingerprinted at the reviewed runtime tier, so the runtime manifest reads like the
             # other 103 committed assets and the promotion tools' fingerprint checks still mean something.
+            self.assertEqual(3, manifest["pipelineVersion"])
             self.assertEqual((2, 28), (manifest["renderSupersample"], manifest["opaqueRenderSamples"]))
             self.assertEqual([3, 36], manifest["renderTierTop"])
             self.assertEqual(2_048, manifest["maxAtlasPageSize"])

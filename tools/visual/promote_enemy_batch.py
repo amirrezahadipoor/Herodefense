@@ -62,9 +62,6 @@ def main() -> None:
     catalog_path = resolve_inside(destination, Path("asset_manifest.json"))
     catalog = read_json(catalog_path)
     by_key = {asset["key"]: asset for asset in catalog["assets"]}
-    missing = set(EXPECTED) - set(by_key)
-    if missing:
-        raise ValueError(f"Committed catalog is missing regular enemies: {sorted(missing)}")
 
     for relative in sorted(expected_payload):
         target = resolve_destination(destination, relative)
@@ -78,7 +75,9 @@ def main() -> None:
     }
     for key in sorted(EXPECTED):
         asset = candidate_by_key[key]
-        previous = by_key[key]
+        # A first render has no previous catalog entry (R3.4's four additions), so nothing to inherit and no
+        # pilot review to carry over; the merge inserts the key.
+        previous = by_key.get(key, {})
         if previous.get("pilotReviewDocument") == PILOT_REVIEW \
                 or previous.get("reviewDocument") == PILOT_REVIEW:
             asset["pilotReviewDocument"] = PILOT_REVIEW
@@ -290,16 +289,23 @@ def validate_review_evidence(
             if record.get(field) != expected:
                 raise ValueError(f"Regular-enemy audit provenance mismatch: {key} {field}")
         committed_sheet = destination / candidate["sheet"]
-        if not committed_sheet.is_file():
-            raise FileNotFoundError(committed_sheet)
-        committed_hash = sha256_file(committed_sheet)
-        expected_destination_hash = (
-            record["baselineSheetSha256"] if baseline_state
-            else record["candidateSheetSha256"]
-        )
-        if committed_hash != expected_destination_hash:
-            state = "reviewed baseline" if baseline_state else "already-promoted candidate"
-            raise ValueError(f"Committed {key} does not match the {state}")
+        if key not in destination_by_key:
+            # A first render (R3.4's four additions) has no committed predecessor to compare against: the
+            # audit records `predecessor: "none"` and its baseline hash is the candidate's own. What must hold
+            # instead is that the destination does not already ship a sheet under that key.
+            if committed_sheet.exists():
+                raise ValueError(f"{key}: first render, but the destination already ships a sheet")
+        else:
+            if not committed_sheet.is_file():
+                raise FileNotFoundError(committed_sheet)
+            committed_hash = sha256_file(committed_sheet)
+            expected_destination_hash = (
+                record["baselineSheetSha256"] if baseline_state
+                else record["candidateSheetSha256"]
+            )
+            if committed_hash != expected_destination_hash:
+                state = "reviewed baseline" if baseline_state else "already-promoted candidate"
+                raise ValueError(f"Committed {key} does not match the {state}")
         if not baseline_state:
             destination_asset = destination_by_key.get(key, {})
             category_review = destination_asset.get("categoryReview", {})
