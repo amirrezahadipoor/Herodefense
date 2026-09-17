@@ -735,9 +735,20 @@ sentence has to name the two scores and the commit they were measured on.
 ## R5 — Visual assets  `+68`
 
 - [x] **R5.1 The "HD" claim settled with measurements** (Phase 78 evidence above).
-- [ ] **R5.2 Compose a runtime tier from the genuine masters.** The 27 sheets with measured detail gain
-  become the runtime tier once (a) the new frame layout has its own accepted, hash-bound review and
-  (b) the memory budget allows 384-pixel frames.
+- [~] **R5.2 Compose a runtime tier from the genuine masters.** The cost of the promotion is now
+  measured instead of estimated, and it is the reason this row is not done. The 27 sheets the provenance
+  table classifies as independent renders (`docs/art_reviews/MASTER_TIER_PROVENANCE.md`) are genuine
+  higher-resolution renders, and composing the runtime tier out of them would add **134,418,432 bytes**
+  (128.2 MiB) of decoded sheet memory -- eight sprites alone cost 16.9 MiB each, because the render is
+  3840x1536 where the reviewed tier is 1920x768 (`perf:2026-09-17-runtime-tier-cost`). The committed catalog
+  budget has **5,127,552 bytes** of headroom, so the tier overshoots it by **129,290,880 bytes** (123.3 MiB)
+  -- which is not a number to absorb quietly: it is the same measurement that says the tier needs either a
+  layout that promotes only the sheets whose on-screen scale resolves the extra detail, or the compression
+  R8.1 is still working on (the whole catalog measures 96,218,112 bytes as ETC2, but no sheet clears the
+  encoder's quality bar yet). The other half of the item stands too: the promoted layout would need its own
+  accepted, hash-bound review before it could ship, because the art evidence in `docs/art_reviews/**` is
+  hash-bound to the tier that is in the repository today.
+
 - [x] **R5.3 Render-workflow reliability: resumable, deterministic, comparable.** A Blender batch was
   all-or-nothing inside a hundred-and-twenty-minute job: a timeout threw away every sheet it had packed, a
   re-run re-rendered byte-identical sheets, and nothing recorded what a render had produced.
@@ -787,7 +798,22 @@ sentence has to name the two scores and the commit they were measured on.
   is an error rather than a silent skip: a render nobody can review is not an accepted batch, and that failure belongs
   where the batch is named. Two tests hold both halves -- every named batch's generator exists on disk, and the
   workflow calls the tool with the batch it was actually asked to render.
-- [ ] **R5.7 VFX that exist at runtime**: rarity glow, impacts, trails, with evidence frames.
+- [x] **R5.7 VFX that exist at runtime**: rarity glow, impacts, trails, with evidence frames. The three
+  effects the item names are drawn by the game rather than promised by it, and each one is bound to a test.
+  **Rarity glow**: `VisualRarity` carries the aura per tier (RARE, LEGENDARY, MYTHIC and the three elite
+  auras each glow with their own colour and intensity, COMMON and UNCOMMON do not), `RarityGlowRenderer`
+  draws it through a real shader rather than by editing sprites, and `VisualRarityTest`,
+  `DropRarityVisualTest` and `ElitePresentationTest` assert the mapping the renderer reads. **Impacts**:
+  `ParticleSystem.emitHit` spawns a core, motes and -- on a crit -- a ring and four sparks, with the pool
+  bounded to 256 and emptied by its own update; `ParticleSystemTest`, `MuzzleFlashTest`, `StunShockwaveTest`,
+  `ChainLightningBranchTest` and `PremiumVfxRestraintTest` hold the emission, the bound and the restraint.
+  **Trails**: the weeping elite leaves `RotTrailSegment`s on a fixed interval and they expire on their own
+  lifetime (`EliteAffixSystemTest`), the arrow trail scales with progression (`CombatEntityRenderer`'s trail
+  heat) and the renderer draws both. **Evidence frames** are the emulator's own captures: `vfx-combat-0..5`,
+  `vfx-boss-entrance`, `vfx-tree-collapse` and the premium VFX captures are taken during live combat by
+  `AndroidTouchSmokeTest` and gated by the per-frame brightness contract (mean luma and lit fraction with
+  recorded tolerances), so the frames that show these effects on screen are also the frames that fail a run
+  when the screen goes dark or washes out.
 
 ## R6 — Audio  `+28`
 
@@ -1227,6 +1253,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 96 | R8.2 · R8.3 · R8.4 | the first green emulator run files the numbers three rows were waiting on: wave-50 residency 151,837 KiB PSS of a 409,600 KiB budget (source=debug.MemoryInfo), the cold start 882 ms of 6000 ms and the debug APK 20,872,599 bytes of 120,000,000 -- each a logged run the performance page regenerates from -- and the stale 95.9 MiB combat-set note is corrected to the gate's 99.3 MiB in the same commit | `8784207` |
 | 2026-09-17 | 96 | R8.1 (device) | the upload path stops being a promise: a 64x64 punchthrough container built by `tools/texture/make_device_fixture.py` from a real shipped sheet, committed with the encoder's own decode beside it, rebuilt by the unit job, and decoded on the device by `CompressedTextureDeviceTest` -- an EGL/GLES3 pbuffer because the game's own context is GLES2 -- which asserts the GPU matches the repository's decoder, that the real GL version string makes `DeviceTextureSupport` say ETC2 and `TexturePayloadPolicy` pick the container, and leaves no GL error | `bd4634a` |
 | 2026-09-17 | — | Roadmap | Table B (the phase index for the experience phases 98-145) is deleted at the owner's direction; the experience rubric and the R9-R16 items it points at stay, and the numbered phases now end at 97 | `PENDING` |
+| 2026-09-17 | 92 · 93 | R5.2 · R5.7 | R5.7 closes: the three runtime effects (rarity glow, impacts, trails) with the tests that bind each one to its state and the emulator captures that show them under the brightness contract; R5.2 gets the measurement it was missing -- composing the runtime tier from the 27 genuine masters adds 134,418,432 bytes against 5,127,552 bytes of headroom, so the item states its gap in bytes instead of in adjectives | `PENDING` |
 
 ## Definition of done
 
