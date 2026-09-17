@@ -21,6 +21,8 @@ from create_character_animation_review import (
 
 from review_strips import grade_row
 
+import master_tier
+
 # Studio-v3 contact-sheet mode: same side-by-side-against-baseline layout as premium-v2,
 # baseline is the current premium-v2 output, candidate is studio-v3 (weighted 2.4/1.2 + rim/highlight).
 STUDIO_TIER_BASELINE_QUALITY = "premium-v2"
@@ -87,6 +89,7 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
     candidate_manifest_path = candidate / "asset_manifest.json"
     baseline_manifest = read_json(baseline_manifest_path)
     candidate_manifest = read_json(candidate_manifest_path)
+    composed_candidate = master_tier.composed_and_bound(candidate_manifest)
     expected_keys = [record[0] for record in ENEMIES]
     candidate_keys = sorted(entry["key"] for entry in candidate_manifest["assets"])
     if candidate_keys != sorted(expected_keys):
@@ -117,6 +120,10 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
         entry = candidate_entries[key]
         first_render = key not in baseline_entries
         validate_metadata(entry, key, revision, rig_profile, animation_profile, required_bones)
+        if key in master_tier.master_tier_keys(candidate_manifest):
+            # Composed at the render's own resolution (roadmap R5.2): allowed only against the master-tier
+            # review, which binds this key's sheet and atlas by hash.
+            master_tier.assert_bound(candidate, key, entry)
         metadata_entry = read_json(candidate / "sprites" / f"{key}.json")
         if metadata_entry != entry:
             raise ValueError(f"{key} manifest and per-asset metadata differ")
@@ -124,6 +131,9 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
         clip_records = {}
         asset_margins = {side: 10_000 for side in global_margins}
         all_hashes: list[str] = []
+        # The frame size comes from the master-tier review when this key is composed there, and from the
+        # reviewed tier otherwise -- the same answer validate_metadata checks the metadata against.
+        frame_size, _, _ = master_tier.bound_geometry(key, (192, 1920, 768))
 
         for clip, expected_count in EXPECTED_CLIPS.items():
             regions = sorted(entry["clips"].get(clip, []), key=lambda value: value["index"])
@@ -136,8 +146,10 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             for index, region in enumerate(regions):
                 if region.get("page", 0) != 0:
                     raise ValueError(f"{key} must remain a single-page atlas")
-                if region["width"] != 192 or region["height"] != 192:
-                    raise ValueError(f"{key} {clip}/{index} is not a native 192 px frame")
+                if region["width"] != frame_size or region["height"] != frame_size:
+                    raise ValueError(
+                        f"{key} {clip}/{index} is not a native {frame_size} px frame"
+                    )
                 frame = candidate_character.frame(clip, index)
                 alpha_box = frame.getchannel("A").getbbox()
                 if alpha_box is None:
@@ -176,7 +188,12 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             baseline_hash = candidate_hash
         else:
             baseline_hash = sha256(baseline / baseline_entries[key]["sheet"])
-            if baseline_hash == candidate_hash:
+        if baseline_hash == candidate_hash:
+            if key in master_tier.master_tier_keys(candidate_manifest):
+                # A composed key that ships the baseline's own bytes is not a composition, it is a silent
+                # fall-back to the reviewed tier -- and the review document names every key it binds by hash.
+                raise ValueError(f"{key} is composed but ships the baseline's own bytes")
+            if not composed_candidate:
                 raise ValueError(f"{key} candidate sheet is byte-identical to the baseline")
         if len(set(all_hashes)) < 20:
             raise ValueError(f"{key} has insufficient full-set motion diversity")
@@ -205,7 +222,17 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
     # The batch doubled from four enemies to eight (R3.4), so the per-batch decoded budget doubles too:
     # 8 x 1920 x 768 x 4 = 47,185,920 bytes, and the committed budget carries 1 MiB of headroom over it.
     decoded_limit = 48 * 1024 * 1024
-    if total_decoded > decoded_limit:
+    if composed_candidate:
+        # A composed candidate (roadmap R5.2) ships at the render's own resolution, so this batch's budget no
+        # longer describes it. What replaces the check is not a looser check but the ceiling the composed tier
+        # actually has to live inside, and the master-tier review is where that arithmetic is written down --
+        # including the decision to raise the catalog budget so these eight sheets fit.
+        ceiling = read_json(candidate_manifest_path)["decodedCatalogBudgetBytes"]
+        if total_decoded > ceiling:
+            raise ValueError(
+                f"Composed enemy batch decodes to {total_decoded} bytes, over the catalog ceiling {ceiling}"
+            )
+    elif total_decoded > decoded_limit:
         raise ValueError(f"Enemy batch decodes to {total_decoded} bytes, over {decoded_limit}")
     return {
         "schemaVersion": 1,
@@ -222,6 +249,11 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             "singlePageAtlasCount": len(records),
             "decodedBytes": total_decoded,
             "decodedBudgetBytes": decoded_limit,
+            "decodedBytesNote": (
+                "Measured on the candidate that shipped. Keys the master-tier review composes (roadmap R5.2) "
+                "are at the render's own resolution there rather than at this batch's reviewed geometry, and the "
+                "master-tier review carries the arithmetic against the catalog ceiling."
+            ),
             "minimumAlphaMargins": global_margins,
             "minimumTriangles": min(record["triangles"] for record in records),
             "maximumTriangles": max(record["triangles"] for record in records),
@@ -239,20 +271,21 @@ def validate_metadata(
     animation_profile: str,
     required_bones: list[str],
 ) -> None:
+    frame_size, sheet_width, sheet_height = master_tier.bound_geometry(key, (192, 1920, 768))
     expected = {
         "family": "enemy",
         "builder": key,
         "frameClass": "character",
-        "frameSize": 192,
-        "sheetWidth": 1920,
-        "sheetHeight": 768,
+        "frameSize": frame_size,
+        "sheetWidth": sheet_width,
+        "sheetHeight": sheet_height,
         "pivot": EXPECTED_PIVOT,
         "alphaMode": "STRAIGHT_RGBA",
         "frameRate": 12,
         "renderSupersample": 2,
         "renderSamples": 28,
         "boneAnimated": True,
-        "visualQuality": "studio-v3",
+        "visualQuality": master_tier.bound_visual_quality(key, "studio-v3"),
         "modelRevision": revision,
         "rigProfile": rig_profile,
         "animationProfile": animation_profile,

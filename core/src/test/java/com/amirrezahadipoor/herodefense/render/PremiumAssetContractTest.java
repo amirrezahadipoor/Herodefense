@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.render;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
@@ -109,9 +110,7 @@ final class PremiumAssetContractTest {
         assertEquals("equipment_neutral", hero.getString("attachment_variant"));
         assertTrue(hero.getBoolean("boneAnimated"));
         assertTrue(hero.getInt("triangles") >= 1_500);
-        assertEquals(192, hero.getInt("frameSize"));
-        assertEquals(1_920, hero.getInt("sheetWidth"));
-        assertEquals(768, hero.getInt("sheetHeight"));
+        assertSheetGeometry(manifest, hero, "hero", masterTierSheets(manifest).contains("hero") ? 384 : 192);
         assertEquals(6, hero.get("clips").get("idle").size);
         assertEquals(8, hero.get("clips").get("attack").size);
         assertEquals(4, hero.get("clips").get("hit").size);
@@ -216,9 +215,7 @@ final class PremiumAssetContractTest {
             assertEquals("hero-socket-v2", asset.getString("rigProfile"), key);
             assertTrue(asset.getInt("renderSupersample") >= 2, key);
             assertTrue(asset.getInt("renderSamples") >= 8, key);
-            assertEquals(192, asset.getInt("frameSize"), key);
-            assertEquals(1_920, asset.getInt("sheetWidth"), key);
-            assertEquals(768, asset.getInt("sheetHeight"), key);
+            assertSheetGeometry(manifest, asset, key, 192);
             assertTrue(asset.getBoolean("boneAnimated"), key);
             assertEquals(requiredBones, jsonStringSet(asset.get("bones")), key);
             boolean expectedGlow = definition.tier() == ItemTier.RARE
@@ -318,7 +315,9 @@ final class PremiumAssetContractTest {
         assertTrue(manifest.getInt("overlayRenderSamples") >= 8);
         long catalogBudget = manifest.getLong("decodedCatalogBudgetBytes");
         long residencyBudget = manifest.getLong("decodedCombatResidencyBudgetBytes");
-        assertEquals(2048, maxPageSize);
+        // The ceiling is the pipeline's own atlas limit, and every page has to live inside it: the composed
+        // master tier put a 3840x1536 page in the catalog, so a 2048 ceiling would fail the catalog it ships.
+        assertEquals(4096, maxPageSize);
 
         Map<Path, ImageInfo> imageInfo = new HashMap<>();
         Set<Path> referencedPngs = new HashSet<>();
@@ -406,6 +405,39 @@ final class PremiumAssetContractTest {
     /** The document that is supposed to cover a given equipment art id. */
     private static String expectedEquipmentReview(String id) {
         return POST_AUDIT_ART_IDS.contains(id) ? POST_BATCH_CONTRACT : EQUIPMENT_REVIEW;
+    }
+
+    /** Page shape per frame tier, so a test names the tier instead of repeating three numbers. */
+    private static final Map<Integer, int[]> PAGE_SHAPES = Map.of(
+        384, new int[] {3840, 1536},
+        256, new int[] {2048, 1024},
+        192, new int[] {1920, 768});
+
+    /** The eight sheets roadmap R5.2 composed from the genuine master renders, straight out of the manifest. */
+    private static Set<String> masterTierSheets(JsonValue manifest) {
+        Set<String> keys = new HashSet<>();
+        for (JsonValue key = manifest.get("masterTier").get("sheets").child; key != null; key = key.next) {
+            keys.add(key.asString());
+        }
+        return keys;
+    }
+
+    /**
+     * Frame geometry of one sheet: the page is ten frames wide and four tall at the tier's own frame size, and
+     * the tier is a fact of the manifest rather than a number copied into a test -- a sheet is at 384 px frames
+     * exactly when the master tier names it, and the master tier is exactly the sheets it names.
+     */
+    private static void assertSheetGeometry(JsonValue manifest, JsonValue asset, String key,
+                                            int expectedFrameSize) {
+        int frameSize = asset.getInt("frameSize");
+        assertEquals(expectedFrameSize, frameSize, key);
+        int[] page = PAGE_SHAPES.get(frameSize);
+        assertNotNull(page, key + " frameSize=" + frameSize);
+        assertEquals(page[0], asset.getInt("sheetWidth"), key);
+        assertEquals(page[1], asset.getInt("sheetHeight"), key);
+        assertEquals(page[0] * page[1] * 4, asset.get("sheets").get(0).getInt("decodedBytes"), key);
+        assertEquals(masterTierSheets(manifest).contains(key), frameSize == 384,
+            key + ": the master tier is exactly the 384 px tier");
     }
 
     private static Map<String, JsonValue> assetsByKey(JsonValue manifest) {

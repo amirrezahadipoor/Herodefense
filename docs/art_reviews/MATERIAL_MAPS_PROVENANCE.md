@@ -10,18 +10,18 @@ in the repository, not tens of megabytes of near-empty channels in a measured AP
 
 | Entity | Family | Map | File | From master | Master SHA-256 | Map SHA-256 | Size |
 |---|---|---|---|---|---|---|---|
-| `hero` | hero | normal | `docs/materials/hero/hero_normal.png` | `android/assets/generated/sprites/hero.png` | `d6830b89d63ebe74...` | `0bad9873561e527f...` | 480x192 |
-| `hero` | hero | roughness | `docs/materials/hero/hero_roughness.png` | `android/assets/generated/sprites/hero.png` | `d6830b89d63ebe74...` | `d70737b86ae48afa...` | 480x192 |
-| `hero` | hero | ao | `docs/materials/hero/hero_ao.png` | `android/assets/generated/sprites/hero.png` | `d6830b89d63ebe74...` | `41dc5452f44e8b88...` | 480x192 |
-| `ancient_golem` | bosses | normal | `docs/materials/bosses/ancient_golem_normal.png` | `android/assets/generated/sprites/ancient_golem.png` | `fff64091e1222185...` | `07ff32303ba82297...` | 512x256 |
-| `ancient_golem` | bosses | roughness | `docs/materials/bosses/ancient_golem_roughness.png` | `android/assets/generated/sprites/ancient_golem.png` | `fff64091e1222185...` | `581d57edbdc95353...` | 512x256 |
-| `ancient_golem` | bosses | ao | `docs/materials/bosses/ancient_golem_ao.png` | `android/assets/generated/sprites/ancient_golem.png` | `fff64091e1222185...` | `5ed7cd34377fab39...` | 512x256 |
-| `ember_wyrm` | bosses | normal | `docs/materials/bosses/ember_wyrm_normal.png` | `android/assets/generated/sprites/ember_wyrm.png` | `e832173a5f7a7ff2...` | `352cfdea20f790ff...` | 512x256 |
-| `ember_wyrm` | bosses | roughness | `docs/materials/bosses/ember_wyrm_roughness.png` | `android/assets/generated/sprites/ember_wyrm.png` | `e832173a5f7a7ff2...` | `594dca96ad1ab045...` | 512x256 |
-| `ember_wyrm` | bosses | ao | `docs/materials/bosses/ember_wyrm_ao.png` | `android/assets/generated/sprites/ember_wyrm.png` | `e832173a5f7a7ff2...` | `6ba8678626bb1da4...` | 512x256 |
-| `thorn_matriarch` | bosses | normal | `docs/materials/bosses/thorn_matriarch_normal.png` | `android/assets/generated/sprites/thorn_matriarch.png` | `43cf4dcca13f6e28...` | `b971e6f38ae32cba...` | 512x256 |
-| `thorn_matriarch` | bosses | roughness | `docs/materials/bosses/thorn_matriarch_roughness.png` | `android/assets/generated/sprites/thorn_matriarch.png` | `43cf4dcca13f6e28...` | `01c97cf75aaf5ff4...` | 512x256 |
-| `thorn_matriarch` | bosses | ao | `docs/materials/bosses/thorn_matriarch_ao.png` | `android/assets/generated/sprites/thorn_matriarch.png` | `43cf4dcca13f6e28...` | `9181b973f43d5e89...` | 512x256 |
+| `hero` | hero | normal | `docs/materials/hero/hero_normal.png` | `android/assets/generated/sprites/hero.png` | `76fb204a1fdd1fa5...` | `57ade251adc78015...` | 960x384 |
+| `hero` | hero | roughness | `docs/materials/hero/hero_roughness.png` | `android/assets/generated/sprites/hero.png` | `76fb204a1fdd1fa5...` | `202e45b02881c8c3...` | 960x384 |
+| `hero` | hero | ao | `docs/materials/hero/hero_ao.png` | `android/assets/generated/sprites/hero.png` | `76fb204a1fdd1fa5...` | `6b3dca78897b6fb2...` | 960x384 |
+| `ancient_golem` | bosses | normal | `docs/materials/bosses/ancient_golem_normal.png` | `android/assets/generated/sprites/ancient_golem.png` | `7ba44bff83e7c186...` | `c90ecd6cc7d2ee0b...` | 960x384 |
+| `ancient_golem` | bosses | roughness | `docs/materials/bosses/ancient_golem_roughness.png` | `android/assets/generated/sprites/ancient_golem.png` | `7ba44bff83e7c186...` | `a1a51e3d43a5d08f...` | 960x384 |
+| `ancient_golem` | bosses | ao | `docs/materials/bosses/ancient_golem_ao.png` | `android/assets/generated/sprites/ancient_golem.png` | `7ba44bff83e7c186...` | `ad61f46236f0c38e...` | 960x384 |
+| `ember_wyrm` | bosses | normal | `docs/materials/bosses/ember_wyrm_normal.png` | `android/assets/generated/sprites/ember_wyrm.png` | `2e4bdfc5f9941351...` | `caf043b4cf2a73ac...` | 960x384 |
+| `ember_wyrm` | bosses | roughness | `docs/materials/bosses/ember_wyrm_roughness.png` | `android/assets/generated/sprites/ember_wyrm.png` | `2e4bdfc5f9941351...` | `3e70f05a14469df5...` | 960x384 |
+| `ember_wyrm` | bosses | ao | `docs/materials/bosses/ember_wyrm_ao.png` | `android/assets/generated/sprites/ember_wyrm.png` | `2e4bdfc5f9941351...` | `dbc24816e28671c4...` | 960x384 |
+| `thorn_matriarch` | bosses | normal | `docs/materials/bosses/thorn_matriarch_normal.png` | `android/assets/generated/sprites/thorn_matriarch.png` | `c35967f23e4ade32...` | `3f35eb77e097d282...` | 960x384 |
+| `thorn_matriarch` | bosses | roughness | `docs/materials/bosses/thorn_matriarch_roughness.png` | `android/assets/generated/sprites/thorn_matriarch.png` | `c35967f23e4ade32...` | `95fc44761c2044d8...` | 960x384 |
+| `thorn_matriarch` | bosses | ao | `docs/materials/bosses/thorn_matriarch_ao.png` | `android/assets/generated/sprites/thorn_matriarch.png` | `c35967f23e4ade32...` | `7027342b222c5e4e...` | 960x384 |
 | `void_knight` | bosses | normal | `docs/materials/bosses/void_knight_normal.png` | `android/assets/generated/sprites/void_knight.png` | `2089420152fadd85...` | `4641ac70242fbbfa...` | 512x256 |
 | `void_knight` | bosses | roughness | `docs/materials/bosses/void_knight_roughness.png` | `android/assets/generated/sprites/void_knight.png` | `2089420152fadd85...` | `1fce2ed89f36b597...` | 512x256 |
 | `void_knight` | bosses | ao | `docs/materials/bosses/void_knight_ao.png` | `android/assets/generated/sprites/void_knight.png` | `2089420152fadd85...` | `b5cf96cd49bb309e...` | 512x256 |
@@ -31,26 +31,26 @@ in the repository, not tens of megabytes of near-empty channels in a measured AP
 | `bramble_thrall` | creatures | normal | `docs/materials/creatures/bramble_thrall_normal.png` | `android/assets/generated/sprites/bramble_thrall.png` | `67734ff7dd0e687f...` | `718a601629d3ce8b...` | 480x192 |
 | `bramble_thrall` | creatures | roughness | `docs/materials/creatures/bramble_thrall_roughness.png` | `android/assets/generated/sprites/bramble_thrall.png` | `67734ff7dd0e687f...` | `2ef863c80d0bb984...` | 480x192 |
 | `bramble_thrall` | creatures | ao | `docs/materials/creatures/bramble_thrall_ao.png` | `android/assets/generated/sprites/bramble_thrall.png` | `67734ff7dd0e687f...` | `a935ed89584163dd...` | 480x192 |
-| `fungal_brute` | creatures | normal | `docs/materials/creatures/fungal_brute_normal.png` | `android/assets/generated/sprites/fungal_brute.png` | `97abeca9f92165aa...` | `238b7d88f2803e5d...` | 480x192 |
-| `fungal_brute` | creatures | roughness | `docs/materials/creatures/fungal_brute_roughness.png` | `android/assets/generated/sprites/fungal_brute.png` | `97abeca9f92165aa...` | `71c73cab1dafe88d...` | 480x192 |
-| `fungal_brute` | creatures | ao | `docs/materials/creatures/fungal_brute_ao.png` | `android/assets/generated/sprites/fungal_brute.png` | `97abeca9f92165aa...` | `fc41a5d7e11a6da5...` | 480x192 |
-| `gloom_wolf` | creatures | normal | `docs/materials/creatures/gloom_wolf_normal.png` | `android/assets/generated/sprites/gloom_wolf.png` | `14327ea943c3b373...` | `3f416553bd76b0a7...` | 480x192 |
-| `gloom_wolf` | creatures | roughness | `docs/materials/creatures/gloom_wolf_roughness.png` | `android/assets/generated/sprites/gloom_wolf.png` | `14327ea943c3b373...` | `b149fd11dcbf385e...` | 480x192 |
-| `gloom_wolf` | creatures | ao | `docs/materials/creatures/gloom_wolf_ao.png` | `android/assets/generated/sprites/gloom_wolf.png` | `14327ea943c3b373...` | `413a5172c224d94e...` | 480x192 |
+| `fungal_brute` | creatures | normal | `docs/materials/creatures/fungal_brute_normal.png` | `android/assets/generated/sprites/fungal_brute.png` | `31ffb9d1d77b26b1...` | `eeb57001bd4a33bc...` | 960x384 |
+| `fungal_brute` | creatures | roughness | `docs/materials/creatures/fungal_brute_roughness.png` | `android/assets/generated/sprites/fungal_brute.png` | `31ffb9d1d77b26b1...` | `620e75ce876182e9...` | 960x384 |
+| `fungal_brute` | creatures | ao | `docs/materials/creatures/fungal_brute_ao.png` | `android/assets/generated/sprites/fungal_brute.png` | `31ffb9d1d77b26b1...` | `2d788b7d8d30f705...` | 960x384 |
+| `gloom_wolf` | creatures | normal | `docs/materials/creatures/gloom_wolf_normal.png` | `android/assets/generated/sprites/gloom_wolf.png` | `2eb3d4b121a1c584...` | `60ea45c690f3509a...` | 960x384 |
+| `gloom_wolf` | creatures | roughness | `docs/materials/creatures/gloom_wolf_roughness.png` | `android/assets/generated/sprites/gloom_wolf.png` | `2eb3d4b121a1c584...` | `d76b1bd7924c606c...` | 960x384 |
+| `gloom_wolf` | creatures | ao | `docs/materials/creatures/gloom_wolf_ao.png` | `android/assets/generated/sprites/gloom_wolf.png` | `2eb3d4b121a1c584...` | `920dbf581248ddf9...` | 960x384 |
 | `husk_warden` | creatures | normal | `docs/materials/creatures/husk_warden_normal.png` | `android/assets/generated/sprites/husk_warden.png` | `e4f71a8995fcc2d0...` | `36af723f92a7c2c4...` | 480x192 |
 | `husk_warden` | creatures | roughness | `docs/materials/creatures/husk_warden_roughness.png` | `android/assets/generated/sprites/husk_warden.png` | `e4f71a8995fcc2d0...` | `38044c906ef495c4...` | 480x192 |
 | `husk_warden` | creatures | ao | `docs/materials/creatures/husk_warden_ao.png` | `android/assets/generated/sprites/husk_warden.png` | `e4f71a8995fcc2d0...` | `821503578c1b03a8...` | 480x192 |
-| `rootling` | creatures | normal | `docs/materials/creatures/rootling_normal.png` | `android/assets/generated/sprites/rootling.png` | `d2c0e18c9cba9d38...` | `fa23c5bb3d18a0c4...` | 480x192 |
-| `rootling` | creatures | roughness | `docs/materials/creatures/rootling_roughness.png` | `android/assets/generated/sprites/rootling.png` | `d2c0e18c9cba9d38...` | `26c65c7fad0fc71f...` | 480x192 |
-| `rootling` | creatures | ao | `docs/materials/creatures/rootling_ao.png` | `android/assets/generated/sprites/rootling.png` | `d2c0e18c9cba9d38...` | `2ed6828222661ecd...` | 480x192 |
+| `rootling` | creatures | normal | `docs/materials/creatures/rootling_normal.png` | `android/assets/generated/sprites/rootling.png` | `00071b2fd9291b18...` | `820a7cdae829b3dd...` | 960x384 |
+| `rootling` | creatures | roughness | `docs/materials/creatures/rootling_roughness.png` | `android/assets/generated/sprites/rootling.png` | `00071b2fd9291b18...` | `e3d644e47f019922...` | 960x384 |
+| `rootling` | creatures | ao | `docs/materials/creatures/rootling_ao.png` | `android/assets/generated/sprites/rootling.png` | `00071b2fd9291b18...` | `5a21a795397adc4b...` | 960x384 |
 | `sap_hound` | creatures | normal | `docs/materials/creatures/sap_hound_normal.png` | `android/assets/generated/sprites/sap_hound.png` | `85d684cdcd562d91...` | `47b72047bb38378b...` | 480x192 |
 | `sap_hound` | creatures | roughness | `docs/materials/creatures/sap_hound_roughness.png` | `android/assets/generated/sprites/sap_hound.png` | `85d684cdcd562d91...` | `7bea09165c716664...` | 480x192 |
 | `sap_hound` | creatures | ao | `docs/materials/creatures/sap_hound_ao.png` | `android/assets/generated/sprites/sap_hound.png` | `85d684cdcd562d91...` | `e7f30e272c830157...` | 480x192 |
-| `stonekin` | creatures | normal | `docs/materials/creatures/stonekin_normal.png` | `android/assets/generated/sprites/stonekin.png` | `a14626d083627e52...` | `2749d56dc9fe56ae...` | 480x192 |
-| `stonekin` | creatures | roughness | `docs/materials/creatures/stonekin_roughness.png` | `android/assets/generated/sprites/stonekin.png` | `a14626d083627e52...` | `493547ada3141f79...` | 480x192 |
-| `stonekin` | creatures | ao | `docs/materials/creatures/stonekin_ao.png` | `android/assets/generated/sprites/stonekin.png` | `a14626d083627e52...` | `2bfe952dfda05039...` | 480x192 |
+| `stonekin` | creatures | normal | `docs/materials/creatures/stonekin_normal.png` | `android/assets/generated/sprites/stonekin.png` | `ba9ff6720d0c78c0...` | `558057817fa09c08...` | 960x384 |
+| `stonekin` | creatures | roughness | `docs/materials/creatures/stonekin_roughness.png` | `android/assets/generated/sprites/stonekin.png` | `ba9ff6720d0c78c0...` | `b329aea215e88935...` | 960x384 |
+| `stonekin` | creatures | ao | `docs/materials/creatures/stonekin_ao.png` | `android/assets/generated/sprites/stonekin.png` | `ba9ff6720d0c78c0...` | `b3d5dc011556e3e2...` | 960x384 |
 
-39 maps, 1234804 bytes in total, under `docs/materials/` -- deliberately outside the shipped
+39 maps, 2456418 bytes in total, under `docs/materials/` -- deliberately outside the shipped
 asset tree, so the measured APK does not carry textures nothing reads yet.
 
 `tools/visual/validate_material_maps.py` re-derives every map from its master and fails if a committed

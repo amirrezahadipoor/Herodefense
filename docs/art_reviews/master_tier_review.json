@@ -1,0 +1,154 @@
+{
+ "budget": {
+  "catalogBudgetBytes": 525000000,
+  "catalogDecodedBytes": 518959104,
+  "catalogHeadroomBytes": 6040896,
+  "combatBudgetBytes": 209715200,
+  "liveCombatResidencyBytes": 207765504,
+  "residencyCommand": ":core:residencyReport"
+ },
+ "evidence": "docs/art_reviews/MASTER_TIER_PROVENANCE.md",
+ "frameSize": 384,
+ "generatedAt": "2026-09-17",
+ "masterCommit": "6449a6d",
+ "masterEngineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+ "schema": 1,
+ "sheets": {
+  "ancient_golem": {
+   "atlas": "sprites/ancient_golem.atlas",
+   "atlasSha256": "6d3f8cefe193a10c503522a8c2a6fc506f1a35fb824d2b585079e376046f6c72",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": null,
+    "detailRender": 22.632,
+    "detailReviewed": 12.337,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "2048\u00d71024"
+   },
+   "sheet": "sprites/ancient_golem.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "7ba44bff83e7c18680134e689af6962d5a1c14689bc578e6748fd0c845e05927",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  },
+  "ember_wyrm": {
+   "atlas": "sprites/ember_wyrm.atlas",
+   "atlasSha256": "cdc1d39d81dcbb23b0afef925e8c69a4c7ff6c639a4597045eddc9f267d05c96",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": null,
+    "detailRender": 20.892,
+    "detailReviewed": 12.296,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "2048\u00d71024"
+   },
+   "sheet": "sprites/ember_wyrm.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "2e4bdfc5f994135109b1e1c686809f3fa6930c47cbde016ad687f647b7c5aa36",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  },
+  "fungal_brute": {
+   "atlas": "sprites/fungal_brute.atlas",
+   "atlasSha256": "cb3d30b5ee11eb2a2e998f9a9bcc91ddf14405aa2925414e0a9af42f2ccb82a4",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": 0.8193,
+    "detailRender": 16.473,
+    "detailReviewed": 14.373,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "1920\u00d7768"
+   },
+   "sheet": "sprites/fungal_brute.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "31ffb9d1d77b26b186e0172a9d2901a96e0c5629ad8106daa0a10b8457c64da5",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  },
+  "gloom_wolf": {
+   "atlas": "sprites/gloom_wolf.atlas",
+   "atlasSha256": "94cccba59b0be782f5d1c4e99a4c39df7291518285faa2e1c12c97288fead233",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": 0.4953,
+    "detailRender": 19.784,
+    "detailReviewed": 11.322,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "1920\u00d7768"
+   },
+   "sheet": "sprites/gloom_wolf.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "2eb3d4b121a1c584d0d6b3d3e40c30799cc6dc688af090244de5d83bd90502b1",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  },
+  "hero": {
+   "atlas": "sprites/hero.atlas",
+   "atlasSha256": "c8d8298859d4a34004a33e49ea0553fef7eacb3a9816c06f6940a79be6722bc8",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": 0.8261,
+    "detailRender": 24.634,
+    "detailReviewed": 19.253,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "1920\u00d7768"
+   },
+   "sheet": "sprites/hero.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "76fb204a1fdd1fa5e751b95181611a1905437e2f9d1dc689a3965307fa479cd8",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  },
+  "rootling": {
+   "atlas": "sprites/rootling.atlas",
+   "atlasSha256": "93f7894790b0ac9fc1b62c772b6ad19f8fd376bd7787f463301c2fb2acc6704a",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": 0.7612,
+    "detailRender": 22.619,
+    "detailReviewed": 17.734,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "1920\u00d7768"
+   },
+   "sheet": "sprites/rootling.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "00071b2fd9291b18fab6b71ca1ae2bad7b542972848ffc9e6e91bf566abf955d",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  },
+  "stonekin": {
+   "atlas": "sprites/stonekin.atlas",
+   "atlasSha256": "479800d5fe19746ec96c952ab4c38c4c0e3660236dae9778479e3a87431b788f",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": 0.7414,
+    "detailRender": 22.231,
+    "detailReviewed": 15.891,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "1920\u00d7768"
+   },
+   "sheet": "sprites/stonekin.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "ba9ff6720d0c78c030a4943ae429c103dfd401a345249f181449fd6fccbec2f7",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  },
+  "thorn_matriarch": {
+   "atlas": "sprites/thorn_matriarch.atlas",
+   "atlasSha256": "d9e3d88a31c009290e3be36b92cab8726be478ad61951be566909c7cae9ebed3",
+   "frameSize": 384,
+   "measurement": {
+    "correlation": null,
+    "detailRender": 27.336,
+    "detailReviewed": 24.453,
+    "renderPx": "3840\u00d71536",
+    "reviewedPx": "2048\u00d71024"
+   },
+   "sheet": "sprites/thorn_matriarch.png",
+   "sheetHeight": 1536,
+   "sheetSha256": "c35967f23e4ade32699ae499560a8a3ab2d802fbbd535b52004fe28b510b8070",
+   "sheetWidth": 3840,
+   "visualQuality": "studio-v5-hd-pbr"
+  }
+ }
+}

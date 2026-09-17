@@ -42,233 +42,233 @@
       "clips": {
         "attack": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 0
+            "width": 384,
+            "x": 0,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 0
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 256
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 256
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 256
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 256
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 256
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 256
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 512
+            "width": 384,
+            "x": 0,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 512
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 512
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 512
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 1536,
-            "y": 512
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 512
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 768
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 768
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 768
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 768
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 256
+            "width": 384,
+            "x": 0,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 256
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 512
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 512
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 256,
+            "width": 384,
+            "x": 384,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 3,
-            "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 256,
-            "index": 4,
+            "height": 384,
+            "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 1024,
+            "width": 384,
+            "x": 1152,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 1280,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -277,8 +277,20 @@
       "family": "boss",
       "frameClass": "boss",
       "frameRate": 12,
-      "frameSize": 256,
+      "frameSize": 384,
       "key": "ancient_golem",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 9,
+        "meshParts": 64,
+        "renderSamples": 48,
+        "renderSupersample": 4,
+        "sheetHeight": 1536,
+        "sheetWidth": 3840
+      },
       "materialCount": 9,
       "meshParts": 64,
       "modelRevision": "heartstone-colossus-v2",
@@ -294,14 +306,14 @@
       "rigBoneCount": 25,
       "rigProfile": "premium-heavy-humanoid-v2",
       "sheet": "sprites/ancient_golem.png",
-      "sheetHeight": 1024,
-      "sheetWidth": 2048,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 8388608,
+          "decodedBytes": 23592960,
           "file": "sprites/ancient_golem.png",
-          "height": 1024,
-          "width": 2048
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouetteLandmarks": [
@@ -313,7 +325,7 @@
       "surfaceLanguage": "faceted basalt strata, restrained moss, cyan rune seams",
       "triangles": 3442,
       "unique_attack": "ground_slam",
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -1239,233 +1251,233 @@
       "clips": {
         "attack": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 0
+            "width": 384,
+            "x": 0,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 0
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 256
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 256
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 256
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 256
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 256
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 256
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 512
+            "width": 384,
+            "x": 0,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 512
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 512
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 512
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 1536,
-            "y": 512
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 512
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 768
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 768
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 768
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 768
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 256
+            "width": 384,
+            "x": 0,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 256
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 512
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 512
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 256,
+            "width": 384,
+            "x": 384,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 3,
-            "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 256,
-            "index": 4,
+            "height": 384,
+            "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 1024,
+            "width": 384,
+            "x": 1152,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 1280,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -1474,8 +1486,20 @@
       "family": "boss",
       "frameClass": "boss",
       "frameRate": 12,
-      "frameSize": 256,
+      "frameSize": 384,
       "key": "ember_wyrm",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 10,
+        "meshParts": 74,
+        "renderSamples": 48,
+        "renderSupersample": 4,
+        "sheetHeight": 1536,
+        "sheetWidth": 3840
+      },
       "materialCount": 10,
       "meshParts": 74,
       "modelRevision": "furnace-wyrm-v2",
@@ -1490,14 +1514,14 @@
       "rigBoneCount": 25,
       "rigProfile": "premium-winged-wyrm-mapped-v2",
       "sheet": "sprites/ember_wyrm.png",
-      "sheetHeight": 1024,
-      "sheetWidth": 2048,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 8388608,
+          "decodedBytes": 23592960,
           "file": "sprites/ember_wyrm.png",
-          "height": 1024,
-          "width": 2048
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouetteLandmarks": [
@@ -1509,7 +1533,7 @@
       "surfaceLanguage": "obsidian scales, crimson membranes, gold belly plates, restrained emissive flame",
       "triangles": 2324,
       "unique_attack": "flame_sweep",
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -15724,233 +15748,233 @@
       "clips": {
         "attack": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 192
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 192
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 192
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 192
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 192
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 192
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 192
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 192
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 576
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 576
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 576
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 576
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 576
+            "width": 384,
+            "x": 1536,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 576
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 576
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 576
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 192,
-            "x": 1536,
-            "y": 576
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 192,
-            "x": 1728,
-            "y": 576
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 384
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 384
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 384
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 384
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 2,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 384,
             "y": 0
           },
           {
-            "height": 192,
-            "index": 3,
+            "height": 384,
+            "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 4,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -15959,12 +15983,15 @@
       "family": "enemy",
       "frameClass": "character",
       "frameRate": 12,
-      "frameSize": 192,
+      "frameSize": 384,
       "key": "fungal_brute",
       "masterRender": {
         "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
         "frameSize": 384,
-        "lod": "lanczos-half onto the reviewed runtime grid",
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 8,
+        "meshParts": 54,
         "renderSamples": 32,
         "renderSupersample": 3,
         "sheetHeight": 1536,
@@ -15985,19 +16012,19 @@
       "rigBoneCount": 25,
       "rigProfile": "premium-heavy-humanoid-v2",
       "sheet": "sprites/fungal_brute.png",
-      "sheetHeight": 768,
-      "sheetWidth": 1920,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 5898240,
+          "decodedBytes": 23592960,
           "file": "sprites/fungal_brute.png",
-          "height": 768,
-          "width": 1920
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouette": "oversized layered cap, barrel stalk body, knotted arms, root feet, and asymmetric shoulder buds",
       "triangles": 1984,
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -16041,233 +16068,233 @@
       "clips": {
         "attack": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 192
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 192
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 192
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 192
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 192
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 192
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 192
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 192
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 576
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 576
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 576
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 576
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 576
+            "width": 384,
+            "x": 1536,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 576
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 576
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 576
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 192,
-            "x": 1536,
-            "y": 576
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 192,
-            "x": 1728,
-            "y": 576
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 384
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 384
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 384
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 384
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 2,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 384,
             "y": 0
           },
           {
-            "height": 192,
-            "index": 3,
+            "height": 384,
+            "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 4,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -16276,12 +16303,15 @@
       "family": "enemy",
       "frameClass": "character",
       "frameRate": 12,
-      "frameSize": 192,
+      "frameSize": 384,
       "key": "gloom_wolf",
       "masterRender": {
         "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
         "frameSize": 384,
-        "lod": "lanczos-half onto the reviewed runtime grid",
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 7,
+        "meshParts": 42,
         "renderSamples": 32,
         "renderSupersample": 3,
         "sheetHeight": 1536,
@@ -16302,19 +16332,19 @@
       "rigBoneCount": 25,
       "rigProfile": "premium-quadruped-mapped-v2",
       "sheet": "sprites/gloom_wolf.png",
-      "sheetHeight": 768,
-      "sheetWidth": 1920,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 5898240,
+          "decodedBytes": 23592960,
           "file": "sprites/gloom_wolf.png",
-          "height": 768,
-          "width": 1920
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouette": "low four-legged wedge, tall alert ears, deep neck ruff, and a long swept tail",
       "triangles": 1030,
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -16881,233 +16911,233 @@
       "clips": {
         "attack": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 192
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 192
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 192
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 192
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 192
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 192
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 192
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 192
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 576
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 576
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 576
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 576
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 576
+            "width": 384,
+            "x": 1536,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 576
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 576
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 576
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 192,
-            "x": 1536,
-            "y": 576
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 192,
-            "x": 1728,
-            "y": 576
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 384
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 384
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 384
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 384
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 2,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 384,
             "y": 0
           },
           {
-            "height": 192,
-            "index": 3,
+            "height": 384,
+            "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 4,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -17116,8 +17146,20 @@
       "family": "hero",
       "frameClass": "character",
       "frameRate": 12,
-      "frameSize": 192,
+      "frameSize": 384,
       "key": "hero",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 13,
+        "meshParts": 61,
+        "renderSamples": 48,
+        "renderSupersample": 4,
+        "sheetHeight": 1536,
+        "sheetWidth": 3840
+      },
       "modelRevision": "hero-premium-v2-final",
       "pivot": {
         "units": "normalized-bottom-left",
@@ -17129,19 +17171,19 @@
       "reviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
       "rigProfile": "premium-humanoid-v2",
       "sheet": "sprites/hero.png",
-      "sheetHeight": 768,
-      "sheetWidth": 1920,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 5898240,
+          "decodedBytes": 23592960,
           "file": "sprites/hero.png",
-          "height": 768,
-          "width": 1920
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouette": "premium_elf_archer",
       "triangles": 1508,
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -17815,233 +17857,233 @@
       "clips": {
         "attack": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 192
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 192
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 192
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 192
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 192
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 192
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 192
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 192
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 576
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 576
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 576
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 576
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 576
+            "width": 384,
+            "x": 1536,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 576
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 576
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 576
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 192,
-            "x": 1536,
-            "y": 576
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 192,
-            "x": 1728,
-            "y": 576
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 384
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 384
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 384
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 384
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 2,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 384,
             "y": 0
           },
           {
-            "height": 192,
-            "index": 3,
+            "height": 384,
+            "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 4,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -18050,12 +18092,15 @@
       "family": "enemy",
       "frameClass": "character",
       "frameRate": 12,
-      "frameSize": 192,
+      "frameSize": 384,
       "key": "rootling",
       "masterRender": {
         "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
         "frameSize": 384,
-        "lod": "lanczos-half onto the reviewed runtime grid",
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 7,
+        "meshParts": 37,
         "renderSamples": 32,
         "renderSupersample": 3,
         "sheetHeight": 1536,
@@ -18077,19 +18122,19 @@
       "rigBoneCount": 25,
       "rigProfile": "premium-humanoid-v2",
       "sheet": "sprites/rootling.png",
-      "sheetHeight": 768,
-      "sheetWidth": 1920,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 5898240,
+          "decodedBytes": 23592960,
           "file": "sprites/rootling.png",
-          "height": 768,
-          "width": 1920
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouette": "wiry thorn crown with asymmetric leaf mantle and rooted feet",
       "triangles": 1052,
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -18450,233 +18495,233 @@
       "clips": {
         "attack": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 192
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 192
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 192
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 192
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 192
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 192
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 192
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 192
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 576
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 576
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 576
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 576
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 192,
-            "x": 768,
-            "y": 576
+            "width": 384,
+            "x": 1536,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
-            "y": 576
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 192,
-            "x": 1152,
-            "y": 576
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 192,
-            "x": 1344,
-            "y": 576
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 192,
-            "x": 1536,
-            "y": 576
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 192,
-            "x": 1728,
-            "y": 576
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
-            "y": 384
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 384
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 384,
-            "y": 384
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 384
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 192,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 192,
-            "x": 192,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 2,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 384,
             "y": 0
           },
           {
-            "height": 192,
-            "index": 3,
+            "height": 384,
+            "index": 2,
             "page": 0,
-            "width": 192,
-            "x": 576,
-            "y": 0
-          },
-          {
-            "height": 192,
-            "index": 4,
-            "page": 0,
-            "width": 192,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 192,
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 192,
-            "x": 960,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -18685,12 +18730,15 @@
       "family": "enemy",
       "frameClass": "character",
       "frameRate": 12,
-      "frameSize": 192,
+      "frameSize": 384,
       "key": "stonekin",
       "masterRender": {
         "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
         "frameSize": 384,
-        "lod": "lanczos-half onto the reviewed runtime grid",
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 7,
+        "meshParts": 48,
         "renderSamples": 32,
         "renderSupersample": 3,
         "sheetHeight": 1536,
@@ -18711,19 +18759,19 @@
       "rigBoneCount": 25,
       "rigProfile": "premium-heavy-humanoid-v2",
       "sheet": "sprites/stonekin.png",
-      "sheetHeight": 768,
-      "sheetWidth": 1920,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 5898240,
+          "decodedBytes": 23592960,
           "file": "sprites/stonekin.png",
-          "height": 768,
-          "width": 1920
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouette": "broad asymmetrical crag shoulders, broken crown, massive fists, and slab feet",
       "triangles": 1800,
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -18767,233 +18815,233 @@
       "clips": {
         "attack": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 0
+            "width": 384,
+            "x": 0,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 0
+            "width": 384,
+            "x": 384,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 256
+            "width": 384,
+            "x": 768,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 256
+            "width": 384,
+            "x": 1152,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 256
+            "width": 384,
+            "x": 1536,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 256
+            "width": 384,
+            "x": 1920,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 256
+            "width": 384,
+            "x": 2304,
+            "y": 384
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 256
+            "width": 384,
+            "x": 2688,
+            "y": 384
           }
         ],
         "death": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 512
+            "width": 384,
+            "x": 0,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 512
+            "width": 384,
+            "x": 384,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 512
+            "width": 384,
+            "x": 768,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 512
+            "width": 384,
+            "x": 1152,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 4,
             "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 1536,
-            "y": 512
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 512
+            "width": 384,
+            "x": 1920,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 6,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 768
+            "width": 384,
+            "x": 2304,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 7,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 768
+            "width": 384,
+            "x": 2688,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 8,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 768
+            "width": 384,
+            "x": 3072,
+            "y": 1152
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 9,
             "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 768
+            "width": 384,
+            "x": 3456,
+            "y": 1152
           }
         ],
         "hit": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 256
+            "width": 384,
+            "x": 0,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 256
+            "width": 384,
+            "x": 384,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 512
+            "width": 384,
+            "x": 768,
+            "y": 768
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 512
+            "width": 384,
+            "x": 1152,
+            "y": 768
           }
         ],
         "idle": [
           {
-            "height": 256,
+            "height": 384,
             "index": 0,
             "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 0,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 1,
             "page": 0,
-            "width": 256,
-            "x": 256,
+            "width": 384,
+            "x": 384,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
             "index": 2,
             "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 3,
-            "page": 0,
-            "width": 256,
+            "width": 384,
             "x": 768,
             "y": 0
           },
           {
-            "height": 256,
-            "index": 4,
+            "height": 384,
+            "index": 3,
             "page": 0,
-            "width": 256,
-            "x": 1024,
+            "width": 384,
+            "x": 1152,
             "y": 0
           },
           {
-            "height": 256,
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
             "index": 5,
             "page": 0,
-            "width": 256,
-            "x": 1280,
+            "width": 384,
+            "x": 1920,
             "y": 0
           }
         ]
@@ -19002,8 +19050,20 @@
       "family": "boss",
       "frameClass": "boss",
       "frameRate": 12,
-      "frameSize": 256,
+      "frameSize": 384,
       "key": "thorn_matriarch",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 10,
+        "meshParts": 71,
+        "renderSamples": 48,
+        "renderSupersample": 4,
+        "sheetHeight": 1536,
+        "sheetWidth": 3840
+      },
       "materialCount": 10,
       "meshParts": 71,
       "modelRevision": "briar-sovereign-v2",
@@ -19018,14 +19078,14 @@
       "rigBoneCount": 25,
       "rigProfile": "premium-rooted-caster-v2",
       "sheet": "sprites/thorn_matriarch.png",
-      "sheetHeight": 1024,
-      "sheetWidth": 2048,
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
       "sheets": [
         {
-          "decodedBytes": 8388608,
+          "decodedBytes": 23592960,
           "file": "sprites/thorn_matriarch.png",
-          "height": 1024,
-          "width": 2048
+          "height": 1536,
+          "width": 3840
         }
       ],
       "silhouetteLandmarks": [
@@ -19037,7 +19097,7 @@
       "surfaceLanguage": "layered heartwood, emerald leaves, blood-petal crown, ivory thorns",
       "triangles": 2008,
       "unique_attack": "thorn_cage",
-      "visualQuality": "studio-v3"
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -22093,10 +22153,10 @@
     }
   ],
   "blenderVersion": "4.2.23",
-  "decodedBytes": 384872448,
+  "decodedBytes": 518959104,
   "decodedCatalogBudgetBytes": 525000000,
-  "decodedCombatResidencyBudgetBytes": 104857600,
-  "decodedCombatResidencyNote": "Combat residency = hero + every regular enemy that can share a wave (eight since R3.4) + one boss + six equipped sheets + arena art, computed by RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2). Target <=100 MiB.",
+  "decodedCombatResidencyBudgetBytes": 209715200,
+  "decodedCombatResidencyNote": "Combat residency = hero + every regular enemy that can share a wave (eight since R3.4) + one boss + six equipped sheets + arena art, computed by RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2). Raised from 104,857,600 to 209,715,200 bytes (200 MiB) on 2026-09-17 at the owner's direction, because the R5.2 composition ships eight genuine master renders at 384 px frames instead of halved copies and the live set now measures 207,765,504 bytes (`:core:residencyReport`). The eight are the sheets the provenance measurement calls independent renders; every other sheet keeps the reviewed tier. This is a budget, not a device limit: the phone's own budget is the measured wave-50 PSS, which the emulator job reports for this tier rather than assuming.",
   "engineVersion": "78.0-integrity-recovery-runtime-tier",
   "frameRate": 12,
   "generatedAt": "2026-09-16T00:00:00Z",
@@ -22235,7 +22295,24 @@
     "reason": "Phase 76 resized sheets with NEAREST instead of re-rendering them. A NEAREST resize adds no detail, quadruples decoded texture memory, and the renderer still draws every frame at the reviewed world size, so it was pure cost plus a false quality claim.",
     "upscaleCommit": "5374f2c"
   },
-  "maxAtlasPageSize": 2048,
+  "masterTier": {
+    "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+    "evidence": "docs/art_reviews/MASTER_TIER_PROVENANCE.md",
+    "frameSize": 384,
+    "masterCommit": "6449a6d",
+    "note": "Eight sprite sheets ship the render batch's own pixels at 384 px frames instead of a halved copy of them, because the provenance measurement classifies those eight as independent renders and everything else at that resolution as a resampled copy or inconclusive. The catalog ceiling and the combat residency budget are the manifest's business, not this tool's.",
+    "sheets": [
+      "ancient_golem",
+      "ember_wyrm",
+      "fungal_brute",
+      "gloom_wolf",
+      "hero",
+      "rootling",
+      "stonekin",
+      "thorn_matriarch"
+    ]
+  },
+  "maxAtlasPageSize": 4096,
   "opaqueRenderSamples": 28,
   "overlayRenderSamples": 12,
   "palette": {
@@ -22294,5 +22371,5 @@
   ],
   "styleGuide": "docs/VISUAL_STYLE_GUIDE.md",
   "visualQuality": "studio-v3",
-  "visualQualityNote": "mixed reviewed tiers per asset; the Phase 76 'studio-v5-hd-pbr' label was applied to NEAREST-resized copies and has been withdrawn"
+  "visualQualityNote": "Mixed tiers, and the label says which. Eight sprite sheets (the keys in masterTier.sheets) ship the render batch's own pixels at 384 px frames and carry the 'studio-v5-hd-pbr' line because their pixels are that batch's output; the Phase 76 label was withdrawn for the sheets it was falsely applied to, and docs/art_reviews/MASTER_TIER_PROVENANCE.md is the measurement that separates the two cases. Everything else ships the reviewed tier at its reviewed resolution."
 }

@@ -11,6 +11,12 @@ traced to the commit and the command that produced it.
 | `budgetBytes` | 120000000 | bytes | `2026-09-17-apk-size` (2026-09-17) | `7329f4b` | `CI Android job 105120923106 (run 35196492084): tools/perf/check_apk_budget.py android/build/outputs/apk/debug/android-debug.apk` |
 | `coldStartMillis` | 882.0 | ms | `2026-09-17-cold-start` (2026-09-17) | `7329f4b` | `CI Android job 105120923106 (run 35196492084): scripts/android-touch-test.sh am start -W, then tools/perf/parse_startup.py on the captured logcat` |
 | `budgetMillis` | 6000.0 | ms | `2026-09-17-cold-start` (2026-09-17) | `7329f4b` | `CI Android job 105120923106 (run 35196492084): scripts/android-touch-test.sh am start -W, then tools/perf/parse_startup.py on the captured logcat` |
+| `decodedCatalogBytes` | 518959104 | bytes | `2026-09-17-composed-tier-residency` (2026-09-17) | `4507792` | `./gradlew :core:residencyReport on the composed tree` |
+| `decodedCatalogBudgetBytes` | 525000000 | bytes | `2026-09-17-composed-tier-residency` (2026-09-17) | `4507792` | `./gradlew :core:residencyReport on the composed tree` |
+| `liveCombatResidencyBytes` | 207765504 | bytes | `2026-09-17-composed-tier-residency` (2026-09-17) | `4507792` | `./gradlew :core:residencyReport on the composed tree` |
+| `liveCombatResidencyMiB` | 198.1 | MiB | `2026-09-17-composed-tier-residency` (2026-09-17) | `4507792` | `./gradlew :core:residencyReport on the composed tree` |
+| `decodedCombatResidencyBudgetBytes` | 209715200 | bytes | `2026-09-17-composed-tier-residency` (2026-09-17) | `4507792` | `./gradlew :core:residencyReport on the composed tree` |
+| `atlasCapacityBytes` | 117440512 | bytes | `2026-09-17-composed-tier-residency` (2026-09-17) | `4507792` | `./gradlew :core:residencyReport on the composed tree` |
 | `catalogRgba8888Bytes` | 384872448 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
 | `catalogRgba8888WithMipsBytes` | 513163261 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
 | `catalogEtc2Rgba8Bytes` | 96218112 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
@@ -53,6 +59,7 @@ traced to the commit and the command that produced it.
 
 - `2026-09-17-apk-size` — 2026-09-17, `7329f4b`. the debug APK CI builds on every push, against the committed 120 MB ceiling
 - `2026-09-17-cold-start` — 2026-09-17, `7329f4b`. LaunchState COLD, TotalTime 882 ms against the committed 6000 ms budget
+- `2026-09-17-composed-tier-residency` — 2026-09-17, `4507792`. the composed tier's own numbers, measured on the tree that ships the eight genuine master renders at 384 px frames; the catalog counts every sheet plus every icon the manifest names, and the live combat set is the eight-animation harness
 - `2026-09-17-format-projection` — 2026-09-17, `8a2e05f`. The shipped catalog in every format this game could hold it in, computed from android/assets/generated/asset_manifest.json by TextureFormatPlan. A projection rather than a device measurement: the encoded containers are not in the APK yet (roadmap R8.1). The RGBA8888 base-level row reproduces the decoded catalog the residency gate already enforces, and a test asserts that equality, which is what makes the other rows worth reading.
 - `2026-09-17-generated-assets` — 2026-09-17, `cb457b8`. The shipped tree measured by the visual validator: what is on disk, what it decodes to, and the largest atlas page.
 - `2026-09-17-residency` — 2026-09-17, `cb457b8`. Decoded texture residency of the shipped catalog and of the live combat set, from RuntimeResidency: the same arithmetic RuntimeResidencyTest gates on.

@@ -32,6 +32,39 @@ final class PremiumBossAssetContractTest {
     private static final Path REVIEW_DIRECTORY =
         REPOSITORY.resolve("docs/art_reviews/bosses_premium_v2");
     private static final Path AUDIT = REVIEW_DIRECTORY.resolve("bosses_audit.json");
+    /** Page shape per frame tier, so a test names the tier instead of repeating three numbers. */
+    private static final Map<Integer, int[]> PAGE_SHAPES = Map.of(
+        384, new int[] {3840, 1536},
+        256, new int[] {2048, 1024},
+        192, new int[] {1920, 768});
+
+    /** The eight sheets roadmap R5.2 composed from the genuine master renders, straight out of the manifest. */
+    private static Set<String> masterTierSheets(JsonValue manifest) {
+        Set<String> keys = new HashSet<>();
+        for (JsonValue key = manifest.get("masterTier").get("sheets").child; key != null; key = key.next) {
+            keys.add(key.asString());
+        }
+        return keys;
+    }
+
+    /**
+     * Frame geometry of one sheet: the page is ten frames wide and four tall at the tier's own frame size, and
+     * the tier is a fact of the manifest rather than a number copied into a test -- a sheet is at 384 px frames
+     * exactly when the master tier names it, and the master tier is exactly the sheets it names.
+     */
+    private static void assertSheetGeometry(JsonValue manifest, JsonValue asset, String key,
+                                            int expectedFrameSize) {
+        int frameSize = asset.getInt("frameSize");
+        assertEquals(expectedFrameSize, frameSize, key);
+        int[] page = PAGE_SHAPES.get(frameSize);
+        assertNotNull(page, key + " frameSize=" + frameSize);
+        assertEquals(page[0], asset.getInt("sheetWidth"), key);
+        assertEquals(page[1], asset.getInt("sheetHeight"), key);
+        assertEquals(page[0] * page[1] * 4, asset.get("sheets").get(0).getInt("decodedBytes"), key);
+        assertEquals(masterTierSheets(manifest).contains(key), frameSize == 384,
+            key + ": the master tier is exactly the 384 px tier");
+    }
+
     private static final Map<String, String> MODEL_REVISIONS = Map.of(
         "ancient_golem", "heartstone-colossus-v2",
         "thorn_matriarch", "briar-sovereign-v2",
@@ -110,9 +143,8 @@ final class PremiumBossAssetContractTest {
             assertTrue(asset.getInt("renderSupersample") >= 2, key);
             assertTrue(asset.getInt("renderSamples") >= 8, key);
             assertEquals(12, asset.getInt("frameRate"), key);
-            assertTrue(asset.getInt("frameSize") >= 192, key);
-            assertEquals(2_048, asset.getInt("sheetWidth"), key);
-            assertEquals(1_024, asset.getInt("sheetHeight"), key);
+            assertSheetGeometry(manifest, asset, key,
+                masterTierSheets(manifest).contains(key) ? 384 : 256);
             assertEquals(1, asset.get("sheets").size, key);
             assertEquals(25, asset.getInt("rigBoneCount"), key);
             assertEquals(requiredBones, stringSet(asset.get("bones")), key);
@@ -185,8 +217,12 @@ final class PremiumBossAssetContractTest {
         assertEquals(4, summary.getInt("assetCount"));
         assertEquals(112, summary.getInt("frameCount"));
         assertEquals(4, summary.getInt("singlePageAtlasCount"));
-        assertEquals(33_554_432L, summary.getLong("decodedBytes"));
-        assertEquals(50_331_648L, summary.getLong("decodedBudgetBytes"));
+        // Roadmap R5.2 composed three of the four boss sheets out of the genuine master renders at 384 px
+        // frames on a 3840x1536 page; void_knight is not one of the batches the provenance measurement
+        // classifies as an independent render, so it stays on its reviewed 2048x1024 page.
+        assertEquals(79_167_488L, summary.getLong("decodedBytes"));
+        assertEquals(83_886_080L, summary.getLong("decodedBudgetBytes"),
+            "80 MiB: the batch's own budget grown by the composition, 4,718,592 above the measured sheets");
         assertTrue(summary.getInt("minimumTriangles") >= 1_200);
         assertTrue(summary.getInt("maximumTriangles") <= 6_000);
         assertTrue(summary.getInt("minimumMeshParts") >= 45);

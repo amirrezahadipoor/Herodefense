@@ -1,0 +1,39 @@
+{
+  "id": "2026-09-17-composed-tier-residency",
+  "date": "2026-09-17",
+  "commit": "4507792",
+  "command": "./gradlew :core:residencyReport on the composed tree",
+  "note": "the composed tier's own numbers, measured on the tree that ships the eight genuine master renders at 384 px frames; the catalog counts every sheet plus every icon the manifest names, and the live combat set is the eight-animation harness",
+  "metrics": [
+    {
+      "name": "decodedCatalogBytes",
+      "value": 518959104,
+      "unit": "bytes"
+    },
+    {
+      "name": "decodedCatalogBudgetBytes",
+      "value": 525000000,
+      "unit": "bytes"
+    },
+    {
+      "name": "liveCombatResidencyBytes",
+      "value": 207765504,
+      "unit": "bytes"
+    },
+    {
+      "name": "liveCombatResidencyMiB",
+      "value": 198.1,
+      "unit": "MiB"
+    },
+    {
+      "name": "decodedCombatResidencyBudgetBytes",
+      "value": 209715200,
+      "unit": "bytes"
+    },
+    {
+      "name": "atlasCapacityBytes",
+      "value": 117440512,
+      "unit": "bytes"
+    }
+  ]
+}

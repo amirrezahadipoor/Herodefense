@@ -43,10 +43,12 @@ FIXTURES = ROOT / "android" / "src" / "androidTest" / "assets" / "etc2"
 
 #: The sheet the crop comes from, and the square it takes: fixed so the committed bytes are reproducible.
 #: The window is the busiest 64x64 square of that sheet (1626 distinct colours, 94 % of it opaque), because a
-#: flat or empty crop would exercise the upload path without ever asking a GPU to decode anything.
+#: flat or empty crop would exercise the upload path without ever asking a GPU to decode anything. The offsets
+#: doubled with the sheet when roadmap R5.2 composed the genuine master render at 384 px frames, so the window
+#: still holds the same piece of the same sprite rather than an empty corner of a bigger page.
 SOURCE_KEY = "rootling"
-CROP_X = 640
-CROP_Y = 256
+CROP_X = 1280
+CROP_Y = 512
 SIZE = 64
 #: Punchthrough alpha: the mode whose alpha bit and whose transparent-pixel colour the GPU has to agree with.
 GL_INTERNAL_FORMAT = etc2.ETC2_RGB8_PUNCHTHROUGH_ALPHA1

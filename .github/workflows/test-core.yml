@@ -45,8 +45,13 @@ jobs:
 
       - name: Validate generated assets (edge safety, pivot stability, silhouette + grade — fail fast)
         run: python3 tools/visual/validate_generated_assets.py android/assets/generated
-      # R5.5: the material maps are re-derived from the masters that ship, so a map cannot drift away from
-      # the render it claims to describe.
+
+      # R5.2: the composed tier is re-derived from the master commit's own pixels and the review that binds it
+      # by hash is re-checked against the tree, so a composed sheet cannot drift away from what was accepted.
+      - name: Re-check the composed master tier and its review
+        run: |
+          python3 tools/visual/compose_master_tier.py --check
+          python3 tools/visual/create_master_tier_review.py --check
       - name: Re-derive the material maps from their masters
         run: python3 tools/visual/validate_material_maps.py
       - name: Test the ETC2 encoder and the KTX container it writes

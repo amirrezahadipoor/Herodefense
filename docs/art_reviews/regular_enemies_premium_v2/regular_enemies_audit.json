@@ -1,630 +1,647 @@
 {
-  "assets": [
-    {
-      "animationProfile": "rootling-skirmisher-v2",
-      "baselineSheetSha256": "c7eec3efce6a6fc9f4a64d854da6f2bf46b038c427b94992c573c52a413d331a",
-      "candidateAtlasSha256": "ff8b5a80d622b2d445676703dfbe8fb62f78bb0f2d6cb7802765cc4ad236739d",
-      "candidateMetadataSha256": "5f8d143e5fccbfa6e80ae1b03399112d69c063e7aa6865176004523c77fe92b7",
-      "candidateSheetSha256": "d2c0e18c9cba9d389031030ced02c535e3f6ccae0c945c904a4fc360a34bf1ce",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 8,
-            "left": 19,
-            "right": 33,
-            "top": 12
-          },
-          "uniqueVisibleFrames": 7
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 8,
-            "left": 43,
-            "right": 7,
-            "top": 12
-          },
-          "uniqueVisibleFrames": 9
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 11,
-            "left": 41,
-            "right": 25,
-            "top": 7
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 12,
-            "left": 44,
-            "right": 43,
-            "top": 12
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "rootling",
-      "label": "Rootling",
-      "materialCount": 7,
-      "meshParts": 37,
-      "minimumAlphaMargins": {
-        "bottom": 8,
-        "left": 19,
-        "right": 7,
-        "top": 7
-      },
-      "modelRevision": "rootling-thorn-scout-v2",
-      "predecessor": "premium-v2",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-humanoid-v2",
-      "triangles": 1052
+ "assets": [
+  {
+   "animationProfile": "rootling-skirmisher-v2",
+   "baselineAtlasSha256": "93f7894790b0ac9fc1b62c772b6ad19f8fd376bd7787f463301c2fb2acc6704a",
+   "baselineMetadataSha256": "2114dfb0f1859a4212a076224ef8ce4656f38d5a3a413eaa817d66fa03679ccc",
+   "baselineSheetSha256": "00071b2fd9291b18fab6b71ca1ae2bad7b542972848ffc9e6e91bf566abf955d",
+   "candidateAtlasSha256": "93f7894790b0ac9fc1b62c772b6ad19f8fd376bd7787f463301c2fb2acc6704a",
+   "candidateMetadataSha256": "2114dfb0f1859a4212a076224ef8ce4656f38d5a3a413eaa817d66fa03679ccc",
+   "candidateSheetSha256": "00071b2fd9291b18fab6b71ca1ae2bad7b542972848ffc9e6e91bf566abf955d",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 18,
+      "left": 38,
+      "right": 67,
+      "top": 24
+     },
+     "uniqueVisibleFrames": 7
     },
-    {
-      "animationProfile": "stonekin-juggernaut-v2",
-      "baselineSheetSha256": "114699439ad918a15d444e7e9e4e29666548bd7f3d31013cd94246499bcb644e",
-      "candidateAtlasSha256": "e247c8a9292d60c13249190aec0751b24a8dbb84da6b2817d2358a8c39d5ca46",
-      "candidateMetadataSha256": "6a34eae401149c6783c6f993c8a6616040c631e16edadf560b6eebc24a4966ab",
-      "candidateSheetSha256": "a14626d083627e525a09ca3ea34e83fa59c2b41005285bec5b659e54194db20d",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 10,
-            "left": 32,
-            "right": 29,
-            "top": 25
-          },
-          "uniqueVisibleFrames": 7
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 11,
-            "left": 39,
-            "right": 21,
-            "top": 26
-          },
-          "uniqueVisibleFrames": 9
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 11,
-            "left": 39,
-            "right": 34,
-            "top": 32
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 11,
-            "left": 40,
-            "right": 45,
-            "top": 35
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "stonekin",
-      "label": "Stonekin",
-      "materialCount": 7,
-      "meshParts": 48,
-      "minimumAlphaMargins": {
-        "bottom": 10,
-        "left": 32,
-        "right": 21,
-        "top": 25
-      },
-      "modelRevision": "stonekin-rune-bulwark-v2",
-      "predecessor": "premium-v2",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-heavy-humanoid-v2",
-      "triangles": 1800
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 17,
+      "left": 87,
+      "right": 15,
+      "top": 24
+     },
+     "uniqueVisibleFrames": 9
     },
-    {
-      "animationProfile": "gloom-wolf-pouncer-v2",
-      "baselineSheetSha256": "5c145d79ea6ae7aca45e62e6b097310a228ebd2512292045fbcad641ce5b90dc",
-      "candidateAtlasSha256": "575bffd5d09048a7269ae0ae93079b3fa54a9cc28b986efab427799149112d4f",
-      "candidateMetadataSha256": "54641395c5b33d1f28f15c11d02e08aaf70c4371c1b536bf055309ff97b83cb4",
-      "candidateSheetSha256": "14327ea943c3b373720a327f791ef6393e05faed4652a827746bf9c9170b559a",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 8,
-            "left": 19,
-            "right": 10,
-            "top": 27
-          },
-          "uniqueVisibleFrames": 7
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 23,
-            "right": 11,
-            "top": 28
-          },
-          "uniqueVisibleFrames": 9
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 12,
-            "left": 43,
-            "right": 17,
-            "top": 25
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 50,
-            "right": 23,
-            "top": 28
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "gloom_wolf",
-      "label": "Gloom Wolf",
-      "materialCount": 7,
-      "meshParts": 42,
-      "minimumAlphaMargins": {
-        "bottom": 8,
-        "left": 19,
-        "right": 10,
-        "top": 25
-      },
-      "modelRevision": "gloom-wolf-shadow-stalker-v2",
-      "predecessor": "premium-v2",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-quadruped-mapped-v2",
-      "triangles": 1030
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 23,
+      "left": 84,
+      "right": 50,
+      "top": 14
+     },
+     "uniqueVisibleFrames": 3
     },
-    {
-      "animationProfile": "fungal-brute-brawler-v2",
-      "baselineSheetSha256": "100d5c9ffa2341e8c7351f25b63fa02fa6d1fc78fb28cc77226c6e39595036ce",
-      "candidateAtlasSha256": "ba8623b0943bcbc20740769ddb728ca6ae3e75bbb5d0b41076dc4c152ff2b28e",
-      "candidateMetadataSha256": "828e155624974b6fbc99c3a914b163f5e7cbd451da82cda7e03148c09bf2a170",
-      "candidateSheetSha256": "97abeca9f92165aa4a3aefdadbf71cc1159cdd9dad2a92e2cd63a6061b4875fb",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 8,
-            "left": 17,
-            "right": 20,
-            "top": 3
-          },
-          "uniqueVisibleFrames": 7
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 11,
-            "left": 40,
-            "right": 9,
-            "top": 3
-          },
-          "uniqueVisibleFrames": 9
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 10,
-            "left": 39,
-            "right": 22,
-            "top": 16
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 10,
-            "left": 38,
-            "right": 39,
-            "top": 22
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "fungal_brute",
-      "label": "Fungal Brute",
-      "materialCount": 8,
-      "meshParts": 54,
-      "minimumAlphaMargins": {
-        "bottom": 8,
-        "left": 17,
-        "right": 9,
-        "top": 3
-      },
-      "modelRevision": "fungal-brute-spore-bruiser-v2",
-      "predecessor": "premium-v2",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-heavy-humanoid-v2",
-      "triangles": 1984
-    },
-    {
-      "animationProfile": "bark-stalker-lurker-v2",
-      "baselineSheetSha256": "3edc475f8dd4c7619e02d4f7a7184e5796e59736e75137d27cfc3424979afaa2",
-      "candidateAtlasSha256": "e27c03c618d31286f12486d28279aca437848383db2fc23b934a38d9666e00ea",
-      "candidateMetadataSha256": "581a64d8ab2288e9ec1863804a5ccdc23867165ecce80cf663cea58bd19a588f",
-      "candidateSheetSha256": "3edc475f8dd4c7619e02d4f7a7184e5796e59736e75137d27cfc3424979afaa2",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 12,
-            "left": 18,
-            "right": 47,
-            "top": 33
-          },
-          "uniqueVisibleFrames": 8
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 21,
-            "right": 30,
-            "top": 39
-          },
-          "uniqueVisibleFrames": 10
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 44,
-            "right": 21,
-            "top": 34
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 51,
-            "right": 39,
-            "top": 43
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "bark_stalker",
-      "label": "Bark Stalker",
-      "materialCount": 7,
-      "meshParts": 37,
-      "minimumAlphaMargins": {
-        "bottom": 12,
-        "left": 18,
-        "right": 21,
-        "top": 33
-      },
-      "modelRevision": "bark-stalker-moss-climber-v2",
-      "predecessor": "none",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-humanoid-v2",
-      "triangles": 1124
-    },
-    {
-      "animationProfile": "sap-hound-runner-v2",
-      "baselineSheetSha256": "85d684cdcd562d91f3359b6cc0eb14cae224f10f1137a2f967fdeb28555cf044",
-      "candidateAtlasSha256": "d456d95c5fc76166cdbfcee87014a2b1ca7b62b9d1260ca25dd40535aa794c96",
-      "candidateMetadataSha256": "7c1786a24f397b9632db3c503d710775818fc1cdcff6126329ba8ebc39a3fb02",
-      "candidateSheetSha256": "85d684cdcd562d91f3359b6cc0eb14cae224f10f1137a2f967fdeb28555cf044",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 3,
-            "left": 48,
-            "right": 48,
-            "top": 50
-          },
-          "uniqueVisibleFrames": 7
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 46,
-            "right": 5,
-            "top": 24
-          },
-          "uniqueVisibleFrames": 10
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 52,
-            "right": 42,
-            "top": 54
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 54,
-            "right": 48,
-            "top": 47
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "sap_hound",
-      "label": "Sap Hound",
-      "materialCount": 7,
-      "meshParts": 35,
-      "minimumAlphaMargins": {
-        "bottom": 3,
-        "left": 46,
-        "right": 5,
-        "top": 24
-      },
-      "modelRevision": "sap-hound-resin-runner-v2",
-      "predecessor": "none",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-quadruped-mapped-v2",
-      "triangles": 1132
-    },
-    {
-      "animationProfile": "husk-warden-bulwark-v2",
-      "baselineSheetSha256": "e4f71a8995fcc2d0050cec2167ed12eea96ee44182aadd528cced80c1b749250",
-      "candidateAtlasSha256": "39045fe40bd5acd763b8400fae3557d2c24f527bbff261b6dceb8423b1948924",
-      "candidateMetadataSha256": "d9350134eca4edbdb5f327e70fae897895c3f7a40da6c62e1401bae1be6c8f0a",
-      "candidateSheetSha256": "e4f71a8995fcc2d0050cec2167ed12eea96ee44182aadd528cced80c1b749250",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 10,
-            "left": 10,
-            "right": 47,
-            "top": 27
-          },
-          "uniqueVisibleFrames": 8
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 47,
-            "right": 21,
-            "top": 9
-          },
-          "uniqueVisibleFrames": 10
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 14,
-            "left": 47,
-            "right": 46,
-            "top": 16
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 13,
-            "left": 48,
-            "right": 40,
-            "top": 32
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "husk_warden",
-      "label": "Husk Warden",
-      "materialCount": 7,
-      "meshParts": 38,
-      "minimumAlphaMargins": {
-        "bottom": 10,
-        "left": 10,
-        "right": 21,
-        "top": 9
-      },
-      "modelRevision": "husk-warden-shield-bearer-v2",
-      "predecessor": "none",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-heavy-humanoid-v2",
-      "triangles": 1416
-    },
-    {
-      "animationProfile": "bramble-thrall-lumber-v2",
-      "baselineSheetSha256": "67734ff7dd0e687f498722310fc3c6111c04239cdb76c4cb3e5594984788a9c7",
-      "candidateAtlasSha256": "661cc96552fc71e420d83da0b9ed7664e124886502bb504634c95f9ac3f11b49",
-      "candidateMetadataSha256": "35f0fc9271b3cc6ecadb0ab5600134ca28573983444d186c920c7db9fe3e7615",
-      "candidateSheetSha256": "67734ff7dd0e687f498722310fc3c6111c04239cdb76c4cb3e5594984788a9c7",
-      "clips": {
-        "attack": {
-          "frameCount": 8,
-          "minimumAlphaMargins": {
-            "bottom": 2,
-            "left": 39,
-            "right": 48,
-            "top": 25
-          },
-          "uniqueVisibleFrames": 8
-        },
-        "death": {
-          "frameCount": 10,
-          "minimumAlphaMargins": {
-            "bottom": 12,
-            "left": 12,
-            "right": 31,
-            "top": 41
-          },
-          "uniqueVisibleFrames": 10
-        },
-        "hit": {
-          "frameCount": 4,
-          "minimumAlphaMargins": {
-            "bottom": 12,
-            "left": 37,
-            "right": 30,
-            "top": 31
-          },
-          "uniqueVisibleFrames": 3
-        },
-        "idle": {
-          "frameCount": 6,
-          "minimumAlphaMargins": {
-            "bottom": 11,
-            "left": 39,
-            "right": 42,
-            "top": 37
-          },
-          "uniqueVisibleFrames": 5
-        }
-      },
-      "key": "bramble_thrall",
-      "label": "Bramble Thrall",
-      "materialCount": 7,
-      "meshParts": 55,
-      "minimumAlphaMargins": {
-        "bottom": 2,
-        "left": 12,
-        "right": 30,
-        "top": 25
-      },
-      "modelRevision": "bramble-thrall-thorn-lumberer-v2",
-      "predecessor": "none",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-heavy-humanoid-v2",
-      "triangles": 1352
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 24,
+      "left": 89,
+      "right": 88,
+      "top": 24
+     },
+     "uniqueVisibleFrames": 5
     }
-  ],
-  "baselineManifestSha256": "222ecc6a4a67751f5ed4055c983f4c2fe627054da618c1b84b9ebb9db18ca0eb",
-  "batch": "regular-enemies-premium-v2",
-  "candidateManifestSha256": "fd69133a2dab53042fdf41d0e16ebfc387e5c4a7d07448e39366b452ac39abc5",
-  "expectedKeys": [
-    "rootling",
-    "stonekin",
-    "gloom_wolf",
-    "fungal_brute",
-    "bark_stalker",
-    "sap_hound",
-    "husk_warden",
-    "bramble_thrall"
-  ],
-  "frameContract": {
-    "attack": 8,
-    "death": 10,
-    "hit": 4,
-    "idle": 6
+   },
+   "key": "rootling",
+   "label": "Rootling",
+   "masterTier": "render-384",
+   "masterTierNote": "Roadmap R5.2 composed this sheet out of the genuine master render (`6449a6d`, engine 73.0-studio-v5-hd-pbr-4x48-pbr) at the resolution it was rendered at, because the provenance measurement classifies it as an independent render rather than a resampled copy. The candidate hashes below are the shipped 384 px sheet and its atlas; the previous shipped bytes are recorded as the baseline, and the review sheets above still show what the review looked at. The batch's own decoded budget grows with it, which the roadmap row states with its arithmetic.",
+   "materialCount": 7,
+   "meshParts": 37,
+   "minimumAlphaMargins": {
+    "bottom": 17,
+    "left": 38,
+    "right": 15,
+    "top": 14
+   },
+   "modelRevision": "rootling-thorn-scout-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-humanoid-v2",
+   "triangles": 1052
   },
-  "minimumUniqueVisibleFrames": {
-    "attack": 7,
-    "death": 9,
-    "hit": 3,
-    "idle": 5
-  },
-  "reviewSheetCount": 17,
-  "reviewSheets": {
-    "bark_stalker_full_motion.png": {
-      "bytes": 396779,
-      "sha256": "2d5292407d4249b01cad2e19deb3d77a8a4ae8d07a3092465b6f2469bc3644af"
+  {
+   "animationProfile": "stonekin-juggernaut-v2",
+   "baselineAtlasSha256": "479800d5fe19746ec96c952ab4c38c4c0e3660236dae9778479e3a87431b788f",
+   "baselineMetadataSha256": "4541dd350f4716ad9beafb706deb7591b6f8f4c8cd29df48716b242908c3e561",
+   "baselineSheetSha256": "ba9ff6720d0c78c030a4943ae429c103dfd401a345249f181449fd6fccbec2f7",
+   "candidateAtlasSha256": "479800d5fe19746ec96c952ab4c38c4c0e3660236dae9778479e3a87431b788f",
+   "candidateMetadataSha256": "4541dd350f4716ad9beafb706deb7591b6f8f4c8cd29df48716b242908c3e561",
+   "candidateSheetSha256": "ba9ff6720d0c78c030a4943ae429c103dfd401a345249f181449fd6fccbec2f7",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 21,
+      "left": 65,
+      "right": 59,
+      "top": 52
+     },
+     "uniqueVisibleFrames": 7
     },
-    "bark_stalker_readability.png": {
-      "bytes": 174942,
-      "sha256": "a1dbfa416573ac1eb93711ac2afe2269e4bb51b4c831b17471cbc2adf71787dc"
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 24,
+      "left": 79,
+      "right": 43,
+      "top": 54
+     },
+     "uniqueVisibleFrames": 9
     },
-    "bramble_thrall_full_motion.png": {
-      "bytes": 453495,
-      "sha256": "869e37320779c331eb2c0010b9d3a1cfd33913ed550e2d9af4b3483fc1e8b9a8"
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 23,
+      "left": 80,
+      "right": 70,
+      "top": 65
+     },
+     "uniqueVisibleFrames": 3
     },
-    "bramble_thrall_readability.png": {
-      "bytes": 197175,
-      "sha256": "8a2078dd8405470acf895923fb19f1ba24ea3f3ebafb31c934e5c8b9cfaf771f"
-    },
-    "fungal_brute_full_motion.png": {
-      "bytes": 526865,
-      "sha256": "6c83b4792b3cd6d5de58bf9c3e5618c8427963b06db0794d55cf881c4bd25479"
-    },
-    "fungal_brute_readability.png": {
-      "bytes": 241313,
-      "sha256": "8d8858d6a6590326263c0f70007c9f6a68208b47a17ae1b14007ec0adb165429"
-    },
-    "gloom_wolf_full_motion.png": {
-      "bytes": 447572,
-      "sha256": "454b7398ac8eaa6d28a99100cb9f39cc24e82c5b9dcf0db407f4a1ab35f4bb03"
-    },
-    "gloom_wolf_readability.png": {
-      "bytes": 209009,
-      "sha256": "c1b9fdf98a4af3d8cb2a1eca11b09fe9f10f67ce6babd54e46f052313d3c1dba"
-    },
-    "husk_warden_full_motion.png": {
-      "bytes": 405597,
-      "sha256": "69d281bc2715c6bcfb35e399ff1347e6f6059242ced8d0dc5c13b9529c91a968"
-    },
-    "husk_warden_readability.png": {
-      "bytes": 176852,
-      "sha256": "f953398ef8b7de968a1fbc7978e4af9d1b41c5176af17d913ca024ccd769cc0c"
-    },
-    "regular_enemies_lineup.png": {
-      "bytes": 471912,
-      "sha256": "a34ad98f430656024f72191b9585b1e613077ab90a5b7ce6b3dc9f65ef7836a2"
-    },
-    "rootling_full_motion.png": {
-      "bytes": 445639,
-      "sha256": "cb0f0167936907fc9ada37e3cf784ae1f231f74ea7234ccd81826134837bef70"
-    },
-    "rootling_readability.png": {
-      "bytes": 216253,
-      "sha256": "75e68ec94556eec5d58ef6db894985865a153f8ee092e494073b9985f9c52eac"
-    },
-    "sap_hound_full_motion.png": {
-      "bytes": 357575,
-      "sha256": "6fc14ba55e876d76b891dbf960b4b3780a6b82375deb6aaf30c9fe6fafe5a9f9"
-    },
-    "sap_hound_readability.png": {
-      "bytes": 162703,
-      "sha256": "42155fb31957041081e6fefd3b264af0601ca1d9a3cc32b49df77389df4b46b6"
-    },
-    "stonekin_full_motion.png": {
-      "bytes": 485209,
-      "sha256": "5d82343b55d7e13d7ddf5582d230cbd651c41769b4beb7d56690fbfe32d57188"
-    },
-    "stonekin_readability.png": {
-      "bytes": 221224,
-      "sha256": "7fad2b9816a757299618aecbb268b40ac759340b0db397273d6c9cc015e08189"
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 24,
+      "left": 82,
+      "right": 91,
+      "top": 71
+     },
+     "uniqueVisibleFrames": 5
     }
+   },
+   "key": "stonekin",
+   "label": "Stonekin",
+   "masterTier": "render-384",
+   "masterTierNote": "Roadmap R5.2 composed this sheet out of the genuine master render (`6449a6d`, engine 73.0-studio-v5-hd-pbr-4x48-pbr) at the resolution it was rendered at, because the provenance measurement classifies it as an independent render rather than a resampled copy. The candidate hashes below are the shipped 384 px sheet and its atlas; the previous shipped bytes are recorded as the baseline, and the review sheets above still show what the review looked at. The batch's own decoded budget grows with it, which the roadmap row states with its arithmetic.",
+   "materialCount": 7,
+   "meshParts": 48,
+   "minimumAlphaMargins": {
+    "bottom": 21,
+    "left": 65,
+    "right": 43,
+    "top": 52
+   },
+   "modelRevision": "stonekin-rune-bulwark-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-heavy-humanoid-v2",
+   "triangles": 1800
   },
-  "schemaVersion": 1,
-  "summary": {
-    "assetCount": 8,
-    "decodedBudgetBytes": 50331648,
-    "decodedBytes": 47185920,
-    "frameCount": 224,
-    "maximumTriangles": 1984,
-    "minimumAlphaMargins": {
-      "bottom": 2,
-      "left": 10,
+  {
+   "animationProfile": "gloom-wolf-pouncer-v2",
+   "baselineAtlasSha256": "94cccba59b0be782f5d1c4e99a4c39df7291518285faa2e1c12c97288fead233",
+   "baselineMetadataSha256": "a627699da319261943e25874a0a44623ff8176f07d0633cc1d5ac05e91e16d4e",
+   "baselineSheetSha256": "2eb3d4b121a1c584d0d6b3d3e40c30799cc6dc688af090244de5d83bd90502b1",
+   "candidateAtlasSha256": "94cccba59b0be782f5d1c4e99a4c39df7291518285faa2e1c12c97288fead233",
+   "candidateMetadataSha256": "a627699da319261943e25874a0a44623ff8176f07d0633cc1d5ac05e91e16d4e",
+   "candidateSheetSha256": "2eb3d4b121a1c584d0d6b3d3e40c30799cc6dc688af090244de5d83bd90502b1",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 16,
+      "left": 39,
+      "right": 22,
+      "top": 55
+     },
+     "uniqueVisibleFrames": 7
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 29,
+      "left": 47,
+      "right": 23,
+      "top": 57
+     },
+     "uniqueVisibleFrames": 9
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 24,
+      "left": 87,
+      "right": 34,
+      "top": 51
+     },
+     "uniqueVisibleFrames": 3
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 29,
+      "left": 101,
+      "right": 48,
+      "top": 57
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "gloom_wolf",
+   "label": "Gloom Wolf",
+   "masterTier": "render-384",
+   "masterTierNote": "Roadmap R5.2 composed this sheet out of the genuine master render (`6449a6d`, engine 73.0-studio-v5-hd-pbr-4x48-pbr) at the resolution it was rendered at, because the provenance measurement classifies it as an independent render rather than a resampled copy. The candidate hashes below are the shipped 384 px sheet and its atlas; the previous shipped bytes are recorded as the baseline, and the review sheets above still show what the review looked at. The batch's own decoded budget grows with it, which the roadmap row states with its arithmetic.",
+   "materialCount": 7,
+   "meshParts": 42,
+   "minimumAlphaMargins": {
+    "bottom": 16,
+    "left": 39,
+    "right": 22,
+    "top": 51
+   },
+   "modelRevision": "gloom-wolf-shadow-stalker-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-quadruped-mapped-v2",
+   "triangles": 1030
+  },
+  {
+   "animationProfile": "fungal-brute-brawler-v2",
+   "baselineAtlasSha256": "cb3d30b5ee11eb2a2e998f9a9bcc91ddf14405aa2925414e0a9af42f2ccb82a4",
+   "baselineMetadataSha256": "15ce20974db9bad18e3a32804d5c4079c7a92d3fd0cbe6c73e07de9bf271e0fa",
+   "baselineSheetSha256": "31ffb9d1d77b26b186e0172a9d2901a96e0c5629ad8106daa0a10b8457c64da5",
+   "candidateAtlasSha256": "cb3d30b5ee11eb2a2e998f9a9bcc91ddf14405aa2925414e0a9af42f2ccb82a4",
+   "candidateMetadataSha256": "15ce20974db9bad18e3a32804d5c4079c7a92d3fd0cbe6c73e07de9bf271e0fa",
+   "candidateSheetSha256": "31ffb9d1d77b26b186e0172a9d2901a96e0c5629ad8106daa0a10b8457c64da5",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 17,
+      "left": 36,
+      "right": 41,
+      "top": 7
+     },
+     "uniqueVisibleFrames": 7
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 23,
+      "left": 80,
+      "right": 20,
+      "top": 8
+     },
+     "uniqueVisibleFrames": 9
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 21,
+      "left": 79,
+      "right": 45,
+      "top": 34
+     },
+     "uniqueVisibleFrames": 3
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 22,
+      "left": 78,
+      "right": 79,
+      "top": 45
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "fungal_brute",
+   "label": "Fungal Brute",
+   "masterTier": "render-384",
+   "masterTierNote": "Roadmap R5.2 composed this sheet out of the genuine master render (`6449a6d`, engine 73.0-studio-v5-hd-pbr-4x48-pbr) at the resolution it was rendered at, because the provenance measurement classifies it as an independent render rather than a resampled copy. The candidate hashes below are the shipped 384 px sheet and its atlas; the previous shipped bytes are recorded as the baseline, and the review sheets above still show what the review looked at. The batch's own decoded budget grows with it, which the roadmap row states with its arithmetic.",
+   "materialCount": 8,
+   "meshParts": 54,
+   "minimumAlphaMargins": {
+    "bottom": 17,
+    "left": 36,
+    "right": 20,
+    "top": 7
+   },
+   "modelRevision": "fungal-brute-spore-bruiser-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-heavy-humanoid-v2",
+   "triangles": 1984
+  },
+  {
+   "animationProfile": "bark-stalker-lurker-v2",
+   "baselineSheetSha256": "3edc475f8dd4c7619e02d4f7a7184e5796e59736e75137d27cfc3424979afaa2",
+   "candidateAtlasSha256": "e27c03c618d31286f12486d28279aca437848383db2fc23b934a38d9666e00ea",
+   "candidateMetadataSha256": "eab111bfc1c2f1f7c3f9b92a78463fc2d132b98d02206dd7d44e9696371627a7",
+   "candidateSheetSha256": "3edc475f8dd4c7619e02d4f7a7184e5796e59736e75137d27cfc3424979afaa2",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 12,
+      "left": 18,
+      "right": 47,
+      "top": 33
+     },
+     "uniqueVisibleFrames": 8
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 21,
+      "right": 30,
+      "top": 39
+     },
+     "uniqueVisibleFrames": 10
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 44,
+      "right": 21,
+      "top": 34
+     },
+     "uniqueVisibleFrames": 3
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 51,
+      "right": 39,
+      "top": 43
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "bark_stalker",
+   "label": "Bark Stalker",
+   "materialCount": 7,
+   "meshParts": 37,
+   "minimumAlphaMargins": {
+    "bottom": 12,
+    "left": 18,
+    "right": 21,
+    "top": 33
+   },
+   "modelRevision": "bark-stalker-moss-climber-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-humanoid-v2",
+   "triangles": 1124
+  },
+  {
+   "animationProfile": "sap-hound-runner-v2",
+   "baselineSheetSha256": "85d684cdcd562d91f3359b6cc0eb14cae224f10f1137a2f967fdeb28555cf044",
+   "candidateAtlasSha256": "d456d95c5fc76166cdbfcee87014a2b1ca7b62b9d1260ca25dd40535aa794c96",
+   "candidateMetadataSha256": "17cf4996b2cc9bbb600deb9053e409aaa9abe73ab92908292e2dfee2389f8393",
+   "candidateSheetSha256": "85d684cdcd562d91f3359b6cc0eb14cae224f10f1137a2f967fdeb28555cf044",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 3,
+      "left": 48,
+      "right": 48,
+      "top": 50
+     },
+     "uniqueVisibleFrames": 7
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 46,
       "right": 5,
-      "top": 3
+      "top": 24
+     },
+     "uniqueVisibleFrames": 10
     },
-    "minimumMaterialCount": 7,
-    "minimumMeshParts": 35,
-    "minimumTriangles": 1030,
-    "singlePageAtlasCount": 8
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 52,
+      "right": 42,
+      "top": 54
+     },
+     "uniqueVisibleFrames": 3
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 54,
+      "right": 48,
+      "top": 47
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "sap_hound",
+   "label": "Sap Hound",
+   "materialCount": 7,
+   "meshParts": 35,
+   "minimumAlphaMargins": {
+    "bottom": 3,
+    "left": 46,
+    "right": 5,
+    "top": 24
+   },
+   "modelRevision": "sap-hound-resin-runner-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-quadruped-mapped-v2",
+   "triangles": 1132
+  },
+  {
+   "animationProfile": "husk-warden-bulwark-v2",
+   "baselineSheetSha256": "e4f71a8995fcc2d0050cec2167ed12eea96ee44182aadd528cced80c1b749250",
+   "candidateAtlasSha256": "39045fe40bd5acd763b8400fae3557d2c24f527bbff261b6dceb8423b1948924",
+   "candidateMetadataSha256": "285bcfe740559444407d3679090b4253d4a1f5276ff364a401152152903bf302",
+   "candidateSheetSha256": "e4f71a8995fcc2d0050cec2167ed12eea96ee44182aadd528cced80c1b749250",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 10,
+      "left": 10,
+      "right": 47,
+      "top": 27
+     },
+     "uniqueVisibleFrames": 8
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 47,
+      "right": 21,
+      "top": 9
+     },
+     "uniqueVisibleFrames": 10
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 14,
+      "left": 47,
+      "right": 46,
+      "top": 16
+     },
+     "uniqueVisibleFrames": 3
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 13,
+      "left": 48,
+      "right": 40,
+      "top": 32
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "husk_warden",
+   "label": "Husk Warden",
+   "materialCount": 7,
+   "meshParts": 38,
+   "minimumAlphaMargins": {
+    "bottom": 10,
+    "left": 10,
+    "right": 21,
+    "top": 9
+   },
+   "modelRevision": "husk-warden-shield-bearer-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-heavy-humanoid-v2",
+   "triangles": 1416
+  },
+  {
+   "animationProfile": "bramble-thrall-lumber-v2",
+   "baselineSheetSha256": "67734ff7dd0e687f498722310fc3c6111c04239cdb76c4cb3e5594984788a9c7",
+   "candidateAtlasSha256": "661cc96552fc71e420d83da0b9ed7664e124886502bb504634c95f9ac3f11b49",
+   "candidateMetadataSha256": "155f3b71a6df269fada082dd4a12145cff3da9028b1e7fddae085f66b5d21775",
+   "candidateSheetSha256": "67734ff7dd0e687f498722310fc3c6111c04239cdb76c4cb3e5594984788a9c7",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 2,
+      "left": 39,
+      "right": 48,
+      "top": 25
+     },
+     "uniqueVisibleFrames": 8
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 12,
+      "left": 12,
+      "right": 31,
+      "top": 41
+     },
+     "uniqueVisibleFrames": 10
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 12,
+      "left": 37,
+      "right": 30,
+      "top": 31
+     },
+     "uniqueVisibleFrames": 3
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 11,
+      "left": 39,
+      "right": 42,
+      "top": 37
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "bramble_thrall",
+   "label": "Bramble Thrall",
+   "materialCount": 7,
+   "meshParts": 55,
+   "minimumAlphaMargins": {
+    "bottom": 2,
+    "left": 12,
+    "right": 30,
+    "top": 25
+   },
+   "modelRevision": "bramble-thrall-thorn-lumberer-v2",
+   "predecessor": "premium-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-heavy-humanoid-v2",
+   "triangles": 1352
   }
+ ],
+ "baselineManifestSha256": "f15af2db4fa2ff49eaac231c01591d232ef68c99efa0bb1be2cc0945928ada9b",
+ "batch": "regular-enemies-premium-v2",
+ "candidateManifestSha256": "94cc21f7c9d693a4f323241a5224150aa3a23edae8a5cc32d8df8f3b966a9214",
+ "expectedKeys": [
+  "rootling",
+  "stonekin",
+  "gloom_wolf",
+  "fungal_brute",
+  "bark_stalker",
+  "sap_hound",
+  "husk_warden",
+  "bramble_thrall"
+ ],
+ "frameContract": {
+  "attack": 8,
+  "death": 10,
+  "hit": 4,
+  "idle": 6
+ },
+ "minimumUniqueVisibleFrames": {
+  "attack": 7,
+  "death": 9,
+  "hit": 3,
+  "idle": 5
+ },
+ "reviewSheetCount": 17,
+ "reviewSheets": {
+  "bark_stalker_full_motion.png": {
+   "bytes": 396779,
+   "sha256": "2d5292407d4249b01cad2e19deb3d77a8a4ae8d07a3092465b6f2469bc3644af"
+  },
+  "bark_stalker_readability.png": {
+   "bytes": 174942,
+   "sha256": "a1dbfa416573ac1eb93711ac2afe2269e4bb51b4c831b17471cbc2adf71787dc"
+  },
+  "bramble_thrall_full_motion.png": {
+   "bytes": 453495,
+   "sha256": "869e37320779c331eb2c0010b9d3a1cfd33913ed550e2d9af4b3483fc1e8b9a8"
+  },
+  "bramble_thrall_readability.png": {
+   "bytes": 197175,
+   "sha256": "8a2078dd8405470acf895923fb19f1ba24ea3f3ebafb31c934e5c8b9cfaf771f"
+  },
+  "fungal_brute_full_motion.png": {
+   "bytes": 963600,
+   "sha256": "63fbcb44ca7e8bfc41f8bb4ac0d739678c05db35c7d0a09027ddaa16250a44c5"
+  },
+  "fungal_brute_readability.png": {
+   "bytes": 240344,
+   "sha256": "7482c9ec8019a31fe576d1df6e05e59e10c021ff244010feda74d97b5ee51078"
+  },
+  "gloom_wolf_full_motion.png": {
+   "bytes": 791287,
+   "sha256": "4c7d36fb62f0a911d8894aed10bc419abdb5459e9107320e9c65f5663c14a6df"
+  },
+  "gloom_wolf_readability.png": {
+   "bytes": 207364,
+   "sha256": "4400480d4cdb1b55946b6c900470fadfaa853bb7baa22a2755b14a95ed0a3af4"
+  },
+  "husk_warden_full_motion.png": {
+   "bytes": 405597,
+   "sha256": "69d281bc2715c6bcfb35e399ff1347e6f6059242ced8d0dc5c13b9529c91a968"
+  },
+  "husk_warden_readability.png": {
+   "bytes": 176852,
+   "sha256": "f953398ef8b7de968a1fbc7978e4af9d1b41c5176af17d913ca024ccd769cc0c"
+  },
+  "regular_enemies_lineup.png": {
+   "bytes": 423981,
+   "sha256": "ca1b824c394c34911b4ab07a71f5f7a3c98c030b94a7efae85c4145ef41b583e"
+  },
+  "rootling_full_motion.png": {
+   "bytes": 800305,
+   "sha256": "112822b3ec5b72d81333c1ff9b7c9767d6bf672a9ccc1d06efae42370c712589"
+  },
+  "rootling_readability.png": {
+   "bytes": 208078,
+   "sha256": "c093f1f5d0e09174fa8f7afaf64f5ac906e5a32090b7bca0d8bbae7063e23a16"
+  },
+  "sap_hound_full_motion.png": {
+   "bytes": 357575,
+   "sha256": "6fc14ba55e876d76b891dbf960b4b3780a6b82375deb6aaf30c9fe6fafe5a9f9"
+  },
+  "sap_hound_readability.png": {
+   "bytes": 162703,
+   "sha256": "42155fb31957041081e6fefd3b264af0601ca1d9a3cc32b49df77389df4b46b6"
+  },
+  "stonekin_full_motion.png": {
+   "bytes": 908172,
+   "sha256": "2f22f525e1b0367184f2ed42d83099592e22d169452975a8e69ca4f4c3ea683b"
+  },
+  "stonekin_readability.png": {
+   "bytes": 223093,
+   "sha256": "4262a92c3c653909b960145b0828f133a9870669cb87cacd82341f7bd2bc8b44"
+  }
+ },
+ "schemaVersion": 1,
+ "summary": {
+  "assetCount": 8,
+  "decodedBudgetBytes": 125829120,
+  "decodedBytes": 117964800,
+  "decodedBytesNote": "Measured on the sheets that ship: roadmap R5.2 composed four of these eight out of the genuine master renders at 3840x1536 instead of 1920x768, so this figure is 117,964,800 = 4 x 23,592,960 + 4 x 5,898,240 and the batch budget is 120 MiB. The composition is why the number moved, and the arithmetic is here so a reader does not have to take it on trust.",
+  "frameCount": 224,
+  "maximumTriangles": 1984,
+  "minimumAlphaMargins": {
+   "bottom": 2,
+   "left": 10,
+   "right": 5,
+   "top": 7
+  },
+  "minimumMaterialCount": 7,
+  "minimumMeshParts": 35,
+  "minimumTriangles": 1030,
+  "singlePageAtlasCount": 8
+ }
 }

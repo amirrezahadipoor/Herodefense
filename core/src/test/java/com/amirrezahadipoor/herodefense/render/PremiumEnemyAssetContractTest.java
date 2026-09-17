@@ -32,6 +32,36 @@ final class PremiumEnemyAssetContractTest {
     private static final Path REVIEW_DIRECTORY =
         REPOSITORY.resolve("docs/art_reviews/regular_enemies_premium_v2");
     private static final Path AUDIT = REVIEW_DIRECTORY.resolve("regular_enemies_audit.json");
+    /** Page shape per frame tier, so a test names the tier instead of repeating three numbers there. */
+    private static final Map<Integer, int[]> PAGE_SHAPES = Map.of(
+        384, new int[] {3840, 1536},
+        256, new int[] {2048, 1024},
+        192, new int[] {1920, 768});
+
+    /** The eight sheets roadmap R5.2 composed from the genuine master renders, straight out of the manifest. */
+    private static Set<String> masterTierSheets(JsonValue manifest) {
+        Set<String> keys = new HashSet<>();
+        for (JsonValue key = manifest.get("masterTier").get("sheets").child; key != null; key = key.next) {
+            keys.add(key.asString());
+        }
+        return keys;
+    }
+
+    /**
+     * Frame geometry of one sheet: the page is ten frames wide and four tall at the tier's own frame size, and
+     * which tier that is comes from the manifest rather than from this test -- a sheet is at 384 px frames
+     * exactly when the master tier names it, so the composition cannot change geometry without saying so.
+     */
+    private static void assertSheetGeometry(JsonValue manifest, JsonValue asset, String key) {
+        int frameSize = asset.getInt("frameSize");
+        assertEquals(masterTierSheets(manifest).contains(key) ? 384 : 192, frameSize, key);
+        int[] page = PAGE_SHAPES.get(frameSize);
+        assertNotNull(page, key + " frameSize=" + frameSize);
+        assertEquals(page[0], asset.getInt("sheetWidth"), key);
+        assertEquals(page[1], asset.getInt("sheetHeight"), key);
+        assertEquals(page[0] * page[1] * 4, asset.get("sheets").get(0).getInt("decodedBytes"), key);
+    }
+
     private static final Map<String, String> MODEL_REVISIONS = Map.of(
         "rootling", "rootling-thorn-scout-v2",
         "stonekin", "stonekin-rune-bulwark-v2",
@@ -106,9 +136,7 @@ final class PremiumEnemyAssetContractTest {
             assertTrue(asset.getInt("renderSupersample") >= 2, key);
             assertTrue(asset.getInt("renderSamples") >= 8, key);
             assertEquals(12, asset.getInt("frameRate"), key);
-            assertEquals(192, asset.getInt("frameSize"), key);
-            assertEquals(1_920, asset.getInt("sheetWidth"), key);
-            assertEquals(768, asset.getInt("sheetHeight"), key);
+            assertSheetGeometry(manifest, asset, key);
             assertEquals(1, asset.get("sheets").size, key);
             assertEquals(25, asset.getInt("rigBoneCount"), key);
             assertEquals(requiredBones, stringSet(asset.get("bones")), key);
@@ -181,10 +209,12 @@ final class PremiumEnemyAssetContractTest {
         assertEquals(8, summary.getInt("assetCount"));
         assertEquals(224, summary.getInt("frameCount"));
         assertEquals(8, summary.getInt("singlePageAtlasCount"));
-        assertEquals(47_185_920L, summary.getLong("decodedBytes"),
-            "8 sheets x 1920 x 768 x 4 bytes");
-        assertEquals(50_331_648L, summary.getLong("decodedBudgetBytes"),
-            "48 MiB: the doubled batch's own budget, unchanged by R3.4");
+        assertEquals(117_964_800L, summary.getLong("decodedBytes"),
+            "four sheets at 3840 x 1536 x 4 bytes plus four at 1920 x 768 x 4: roadmap R5.2 composed the four "
+                + "genuine master renders at the resolution they were rendered at");
+        assertEquals(125_829_120L, summary.getLong("decodedBudgetBytes"),
+            "120 MiB: the doubled batch's own budget (48 MiB) grown by the composition, which is 117,964,800 "
+                + "bytes of measured sheets -- the note in the audit gives the arithmetic");
         assertTrue(summary.getInt("minimumTriangles") >= 900);
         assertTrue(summary.getInt("maximumTriangles") <= 4_000);
         assertTrue(summary.getInt("minimumMeshParts") >= 32);

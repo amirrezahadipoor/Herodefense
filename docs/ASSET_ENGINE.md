@@ -170,7 +170,7 @@ Checks (automatable where Pillow is available, manifest-only otherwise):
 | `alphaMode == STRAIGHT_RGBA`, `bit_depth==8`, `color_type==6` | Texture contract | image header |
 | Frame & page geometry, `decodedBytes`, page size ≤2048 | Atlas integrity | manifest + header |
 | Icon 96×96 RGBA | Equipment icons | manifest + header |
-| `decodedCatalog` within `decodedCatalogBudgetBytes` (525 MB in the shipped manifest, raised from 390 MB on 2026-09-17 at the owner's direction to make room for the 27 genuine-master sheets of R5.2: 384,872,448 + 134,418,432 = 519,290,880 bytes, 5,709,120 of headroom; measured `perf:2026-09-17-residency`, arithmetic in `code:main/java/com/amirrezahadipoor/herodefense/render/RuntimeResidency.java`) | Memory budget | manifest, enforced by core `RuntimeResidencyTest` |
+| `decodedCatalog` within `decodedCatalogBudgetBytes` (525,000,000 bytes in the shipped manifest, raised from 390,000,000 on 2026-09-17 at the owner's direction so the genuine master renders of R5.2 fit; the composed catalog measures **518,959,104 bytes** -- 6,040,896 of headroom -- in `perf:2026-09-17-composed-tier-residency`, and the same run measures the live combat set at 207,765,504 bytes against the raised `decodedCombatResidencyBudgetBytes` of 209,715,200; arithmetic in `code:main/java/com/amirrezahadipoor/herodefense/render/RuntimeResidency.java`) | Memory budget | manifest, enforced by core `RuntimeResidencyTest` |
 | No undeclared/missing PNGs | Manifest completeness | filesystem |
 
 If Pillow is not installed the validator runs in manifest-only mode and prints `Pillow not available — skipped image-level checks`.
