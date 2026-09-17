@@ -44,6 +44,27 @@ class DeviceFixtureTest(unittest.TestCase):
         self.assertLess(document["roundTripPsnr"], 99.0)
         self.assertGreater(document["roundTripPsnr"], 20.0)
 
+
+    def test_punchthrough_never_writes_the_differential_flag(self) -> None:
+        """The bug the device test caught first: a punchthrough block has no differential mode.
+
+        The layout the encoder used to write was self-consistent -- it set the differential flag and decoded it
+        the same way -- so every round trip in this suite passed while a GPU, which reads the punchthrough layout
+        as individual mode by definition, produced something else entirely. This case is the local guard for it:
+        no block of a punchthrough stream may carry the flag that only the individual layout is allowed to
+        leave cleared.
+        """
+        container = (make_device_fixture.FIXTURES / f"{make_device_fixture.NAME}.ktx").read_bytes()
+        payload = container[68:]
+        self.assertEqual(0, len(payload) % 8)
+        flagged = []
+        for offset in range(0, len(payload), 8):
+            high = ((payload[offset] << 24) | (payload[offset + 1] << 16)
+                    | (payload[offset + 2] << 8) | payload[offset + 3])
+            if high & 2:
+                flagged.append(offset // 8)
+        self.assertEqual([], flagged, "block(s) set the flag that means differential mode")
+
     def test_the_expectation_is_the_decode_of_the_container(self) -> None:
         container = (make_device_fixture.FIXTURES / f"{make_device_fixture.NAME}.ktx").read_bytes()
         expectation = (make_device_fixture.FIXTURES / f"{make_device_fixture.NAME}.rgba").read_bytes()

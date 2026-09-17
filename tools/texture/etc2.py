@@ -100,7 +100,11 @@ def decode_blocks(payload: bytes, width: int, height: int, punchthrough: bool) -
     low = (raw[:, 4] << 24) | (raw[:, 5] << 16) | (raw[:, 6] << 8) | raw[:, 7]
 
     flip = (high & 1).astype(bool)
-    differential = (high & 2).astype(bool)
+    # ETC2 punchthrough is individual-mode layout only: the bit that means "differential" in ETC1 is one of the
+    # sixteen index bits there, so a punchthrough decode must not read it as a mode flag. Reading it as one is
+    # consistent with an encoder that writes it the same wrong way, which is why the device test -- not the
+    # round trip -- is what caught this.
+    differential = (np.zeros_like(high, dtype=bool) if punchthrough else (high & 2).astype(bool))
     tables = np.stack([(high >> 5) & 7, (high >> 2) & 7], axis=1)
 
     # Individual mode: two independent four-bit colours, expanded by replication.
@@ -283,9 +287,10 @@ def encode_blocks(rgba: np.ndarray, gl_internal_format: int) -> bytes:
     """Encode an RGBA image into ETC2 blocks of the requested format.
 
     Both colour modes are searched per block and the cheaper one wins, the flip bit is chosen by measured error,
-    and the modifier table is chosen per half. The punchthrough format further constrains the index search: a
-    pixel that is opaque may not use the index that means "clear", so the encoder cannot improve a colour by
-    punching a hole in it.
+    and the modifier table is chosen per half. The punchthrough format constrains two things: a pixel that is
+    opaque may not use the index that means "clear", so the encoder cannot improve a colour by punching a hole
+    in it, and the block stays in individual mode -- the punchthrough layout has no differential mode, because
+    the bit that would carry the flag is one of the sixteen index bits.
     """
     if gl_internal_format not in (ETC2_RGB8, ETC2_RGB8_PUNCHTHROUGH_ALPHA1):
         raise ValueError(f"not an ETC2 format this module writes: {gl_internal_format:#x}")
@@ -324,7 +329,7 @@ def encode_blocks(rgba: np.ndarray, gl_internal_format: int) -> bytes:
         first_allowed = allowed_all[:, first_selector, :]
         second_allowed = allowed_all[:, second_selector, :]
 
-        for mode in (0, 1):
+        for mode in ((0,) if punchthrough else (0, 1)):
             if mode == 0:
                 first_cost, first_bases, first_table, first_indices = _individual_half(
                     first_colours, first_weight, first_allowed

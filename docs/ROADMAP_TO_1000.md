@@ -979,7 +979,12 @@ sentence has to name the two scores and the commit they were measured on.
   GLES3 pbuffer through `EGL14` (the game asks libGDX for a GLES2 context, which could never load an ETC2
   page), uploads a 64x64 punchthrough container built from a real shipped sheet by
   `tools/texture/make_device_fixture.py`, reads the frame back with `glReadPixels` and asserts the GPU agrees
-  channel by channel with this repository's own decode of the same bytes -- with the fixture rebuilt in the
+  channel by channel with this repository's own decode of the same bytes -- and that run earned its keep
+  immediately: the first emulator run reported a maximum channel difference of 247 and 2,448 of 4,096 pixels
+  outside tolerance, because the encoder was emitting differential-mode blocks inside a punchthrough stream,
+  where that layout does not exist. Every local round trip passed, since the decoder read the flag the same
+  wrong way; the fix is the mode search honouring the format (`ec2a0b7`), a local regression case that no
+  punchthrough block may carry the differential flag, and a rebuilt fixture -- with the fixture rebuilt in the
   unit job, so a device cannot be asked to decode bytes the encoder no longer produces. What that run has not
   done yet is happen: the row stays `[~]` until the emulator job reports it green.
 - [x] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
