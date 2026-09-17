@@ -722,13 +722,34 @@ sentence has to name the two scores and the commit they were measured on.
   gate's **4 m 47 s** running in parallel on the other job. `:core:check` depends on both, so the aggregate gate a
   contributor runs locally is still the complete one, and the fixed seeds every sweep uses are named in
   `docs/BALANCE.md`.
-- [ ] **R4.7 The ascension ladder is inverted for a non-optimiser.** Measured in the brief vigil over twelve seeds,
-  a player who ignores every system takes **0.0918** mean pressure at tier 0 and **0.0019** at tier 10 — a hundredfold
-  *easier* — and reaches 69.7 waves in the long vigil at tier 0 against 102.3 at tier 10. The tier's hero-side
-  bonuses (heartwood and root-network power, granted at run start) are flat and large while the per-tier enemy growth
-  is a 0.0004 health and 0.00025 damage bump compounding per wave, so the ladder pays out its reward and charges
-  almost nothing. Fix it without spending the spike headroom R4.6 is also looking for; the numbers and the policy
-  definitions are in `docs/BALANCE.md`.
+- [x] **R4.7 The ascension ladder is inverted for a non-optimiser — closed by charging every tier from its first
+  wave.** Measured for the player who takes the first card and then ignores every system, the ladder ran *backwards*:
+  0.0918 mean pressure in the brief vigil at tier 0 against **0.0019** at tier 10, and 69.7 waves of reach in the
+  long vigil against **102.3**. The cause was structural rather than numeric — a tier's reward (heartwood and root
+  power, +10 strength and +20 health and 500 coins at tier 10) is granted at run start, while its price was a growth
+  bump of 0.0004 health and 0.00025 damage per tier *per wave*, which is a fifth of a percent of a wave in the
+  opening and four percent of the run by wave 200. The reward landed on wave one and the charge landed on wave 150.
+  A tier now scales the enemy's **baseline** health (+22%) and damage (+30%) instead, fading linearly over 140
+  waves, so the charge lands in the waves where flat starting power is worth anything.
+  The search is part of the item. **Health is what the naive advantage is made of** — a damaging charge alone
+  cannot open the ladder at all, because the early waves die to one or two hits either way (damage-only, twelve
+  seeds: 0.0039 brief pressure at tier 10, still inverted) and a large damaging charge without health wrecks the
+  optimiser's late game (0.2128 average, final quarter 0.572). But **health is also what makes a wave take
+  longer**, and a tier pays its charge in seconds as well as in blood: the health-heavy mix (0.30 / 0.15 per tier)
+  held the same ladder numbers at a **63%** longer tier-10 session, against **35%** for the shipped 0.22 / 0.30.
+  The fade's span was measured the same way: 60 waves fixed the brief (0.0370) and left the long vigil inverted
+  (103.8 waves), because the reach is decided in the middle of the run rather than the opening.
+  Shipped, on six seeds per tier: tier-10 mean brief pressure **0.0507** against 0.0901 at tier 0 (56% of the
+  tier-0 value where the finding measured 2%), long-vigil reach **77.3** waves against 71.3, the optimiser finishes
+  every run with an average rising **0.1035 → 0.1750**, and the seven-second-per-wave ladder is gone. Two gates were
+  rewritten to price that honestly rather than to accommodate it: the average-pressure **ceiling** in
+  `AscensionGateTest` is tier-indexed (`0.15 + 0.02·tier`, the same slope the spike ceiling already used) because a
+  tier is a harder game chosen by a player who finished the last one, and the session-time rule became
+  `+20% + 4% per tier on the mean of the seeds` — the old `±20% of tier 0` was written when tiers cost nothing —
+  with the padding it was originally guarding against asserted directly instead: **the wave count is exactly 200 at
+  every tier**, so no tier can buy difficulty with length. The charge's arithmetic (tier 0 bit-identical, the fade
+  linear and monotone, the baseline the game reads) is pinned in `DifficultyCurveTest`; the tier-0 gates in the
+  repository are untouched because with tier 0 the charge is exactly `1.0`.
 - [x] **R4.6 The second half's shallow step — closed by splitting the half and paying for the split.** The defect
   was measured: waves 101-150 were only **4.7%** heavier than waves 51-100 against **71%** for the step before them,
   because the whole half ran at the curve's coolest rate (`1.023 / 1.008`). Two repairs were tried first and both
@@ -747,6 +768,20 @@ sentence has to name the two scores and the commit they were measured on.
   the full core suite green. Two caveats are written into `docs/BALANCE.md` rather than hidden: one sweep seed
   spends 4.9% of its 5% quarter-dip allowance, the reward-card matrix keeps 2.5% of headroom, and the purchase was
   **not** big enough for R4.3's pity rule (it needs ~0.06, R4.6 returned 0.01-0.03), which stays deferred.
+- [x] **R4.8 The ladder's elite escalation never reached tiers 6, 7 and 8.** The cadence tightens one wave per
+  three tiers, and the arithmetic step from seven landed on **five** — which is the boss lap, and a boss wave may
+  not carry elites — so those three tiers spawned **zero** elites in an entire two-hundred-wave run while this
+  ladder (and `docs/BALANCE.md`) claimed to escalate them. It was not an undiscovered bug, it was a *pinned* one:
+  `EnemyWaveSpawnerTest` asserted the absence wave by wave and the balance document recorded the collision as a
+  structural note, which is what a defect looks like when the test checks the arithmetic instead of the outcome.
+  R4.7 found it by accident — the new elite-charge contract asked for a tier-6 elite wave and there was none to
+  find — and the repair is the smallest one that changes the thing being measured rather than the numbers
+  around it: the cadence now steps `7 → 6 → 4`, skipping the interval that is the boss lap, and the assertion is
+  turned around so that **every tier from 0 to 10 has to find elites in a run**, with tier 0 keeping its shipped
+  seven-wave cadence (so every brief vigil and every tier-0 gate stays bit-identical). Tiers 6, 7 and 8 now have
+  elites, which makes them harder, so the gate was re-measured rather than assumed: the full `:core:balanceGate`
+  is green on the new schedule, tier 6's mean session drift is +0.245 against a 0.44 budget, and the generated
+  block in `docs/BALANCE.md` publishes the cadence itself so the claim cannot drift back.
 
 ## R5 — Visual assets  `+68`
 
@@ -1014,10 +1049,12 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 91 | R7.7 | the main menu's press states and the device journey's menu taps both still read the pre-R3.5 row table; both now derive from `MainMenuTouchLayout.rowBottom(row)`, and the journey finds a row by asking for its action -- the nine Android journeys that have been timing out behind a missed tap are verified green on the device by the Android job on `05d28cc` (run 35156565880, all eleven journeys) | `398e149` |
 | 2026-09-17 | 91 | R4.2 | the boss telegraph asserted as a contract: five promises over four identities x forty encounters x tiers 0/3/6/10 x both vigils, 6 cases in 0.06 s, with the roster table and the per-strike damage published | `67bdd26` |
 | 2026-09-17 | 91 | R4.3 | the drop economy's table generated from the code and drift-gated against `docs/BALANCE.md`, plus three measured pity rules recorded with the ceilings each one broke | `06b2676` |
-| 2026-09-17 | 91 | ratchet | `BalanceSimulator` stood at 715 lines against its 661 freeze after R4.1's policy switch; `WaveSample` and `BalanceReport` moved to their own files in the same package (a published shape with its own reason to exist), leaving the simulator at 660 and every balance gate green | `PENDING` |
+| 2026-09-17 | 91 | ratchet | `BalanceSimulator` stood at 715 lines against its 661 freeze after R4.1's policy switch; `WaveSample` and `BalanceReport` moved to their own files in the same package (a published shape with its own reason to exist), leaving the simulator at 660 and every balance gate green | `bfeff15` |
 | 2026-09-17 | 91 | balance | the second half was split into two spans and the second half's elite contact multiplier softened to 1.2, so the step into the second half rises from x1.047 to x1.158 and the late spikes land on a curve that paid for them; full core suite green | `50bde24` |
-| 2026-09-17 | 91 | ci | the balance sweeps became a tagged `:core:balanceGate` task and a second CI job with its own timeout and report (unit loop 31 s, gate 4 m 47 s, no suite running twice) | `PENDING` |
-| 2026-09-17 | 91 | docs | `docs/BALANCE.md`'s numbers became generated blocks with markers and a gate that names the block that drifted (`BalanceDocumentTest`, `:core:regenerateBalanceDoc`); the hand-typed checkpoints and the R4.6 table are both machine-checked now | `PENDING` |
+| 2026-09-17 | 91 | ci | the balance sweeps became a tagged `:core:balanceGate` task and a second CI job with its own timeout and report (unit loop 31 s, gate 4 m 47 s, no suite running twice) | `15804e1` |
+| 2026-09-17 | 91 | docs | `docs/BALANCE.md`'s numbers became generated blocks with markers and a gate that names the block that drifted (`BalanceDocumentTest`, `:core:regenerateBalanceDoc`); the hand-typed checkpoints and the R4.6 table are both machine-checked now | `6424fb1` |
+| 2026-09-17 | 91 | ladder | every tier now charges from its first wave: the enemy baseline carries the tier's health and damage charge, fading over 140 waves, so tier 10's brief pressure is 0.0507 against tier 0's 0.0901 and its reach 77.3 waves against 71.3, at the price of a 32% longer tier-10 session that the session gate now budgets for | `PENDING` |
+| 2026-09-17 | 91 | elites | the elite cadence skipped the boss lap, so tiers 6-8 had no elites at all in a 200-wave run and the test that pinned it checked the interval arithmetic rather than the outcome; the cadence is `7 → 6 → 4` and the assertion now requires elites at every tier | `PENDING` |
 
 ## Definition of done
 

@@ -55,26 +55,32 @@ public final class DifficultyCurve {
     // 0.0019 at tier 10, and 69.7 waves of average reach against 102.3 -- a tier's starting strength is three
     // times a first-wave bow's damage, so the player who never buys anything simply killed the opening faster.
     //
-    // These two constants scale the enemy's *baseline*, so the charge lands from the first wave. The frontier was
-    // searched rather than guessed, over the two ends the ladder has to satisfy at once: on six seeds per tier, the
-    // shipped values put the non-optimiser's brief pressure at 0.0525 at tier 10 against 0.0901 at tier 0 (7.8% ->
-    // 58% of the tier-0 value; the inversion reported by R4.7 is 48x) and its long-vigil reach at 77.0 waves
-    // against 71.3, while the optimiser's average rises 0.1035 -> 0.1643 and every run still finishes. Enemy
-    // *damage* alone was measured as a lever and rejected: it does not slow the opening (the naive player one-shots
-    // the early waves either way) and it wrecks the optimiser's late game (tier-10 average 0.1958 with quarter four
-    // at 0.375). Health is what the naive advantage is made of, which is why the charge is mostly health.
-    public static final float ASCENSION_BASE_HEALTH_BUMP_PER_TIER = 0.30f;
-    public static final float ASCENSION_BASE_DAMAGE_BUMP_PER_TIER = 0.15f;
-    public static final float ASCENSION_BASE_HEALTH_BUMP_PER_TIER = 0.30f;
-    public static final float ASCENSION_BASE_DAMAGE_BUMP_PER_TIER = 0.15f;
+    // These two constants scale the enemy's *baseline*, so the charge lands from the first wave. The size and the
+    // mix were searched, not guessed, and the search is the reason the numbers look the way they do. Health alone
+    // fixes the opening (it is what the naive advantage is made of -- the early waves cannot be made longer by
+    // damage, because they die to one or two hits either way) but health is also what makes a wave *take longer*,
+    // and the ladder pays for its reward in seconds as well as in blood: at 0.30 health / 0.15 damage the optimiser's
+    // tier-10 session grew 63%, against 35% for the shipped 0.22 / 0.30, for the same ladder numbers. Damage alone
+    // was measured and rejected twice -- on its own it cannot open the ladder at all (0.0039 brief pressure at tier
+    // 10, still inverted) and pushed without health it wrecks the optimiser's late game (0.2128 average, final
+    // quarter 0.572). So the charge is damage-heavy but not damage-only. The fade spans most of the run for the
+    // same reason the mix moved: a 60-wave fade fixed the brief (0.0370) and left the long vigil inverted (103.8
+    // waves against 71.3), because the reach is decided in the middle of the run, not the opening.
+    //
+    // Shipped, on six seeds per tier: brief pressure at tier 10 is 0.0507 against 0.0901 at tier 0 (56% of the
+    // tier-0 value where the finding measured 2%), long-vigil reach is 77.3 waves against 71.3, and the optimiser
+    // finishes every run with an average that rises 0.1035 -> 0.1750 -- the cost of a harder ladder, which is where
+    // the tier-indexed ceilings in AscensionGateTest come from.
+    public static final float ASCENSION_BASE_HEALTH_BUMP_PER_TIER = 0.22f;
+    public static final float ASCENSION_BASE_DAMAGE_BUMP_PER_TIER = 0.30f;
 
     /**
      * The ladder's charge is counter-cyclical on purpose: it is heaviest in the waves where the tier's flat reward
      * is worth the most. A tier hands the hero starting stats, and starting stats are a multiplier in the opening --
      * ten points of strength is three times the damage of a first-wave bow -- and a rounding error by wave 150. So
      * the base charge fades over the first {@link #ASCENSION_BASE_CHARGE_SPAN_WAVES} waves instead of scaling the
-     * whole run: a uniform health scale was measured too, and at a tenth of the size it drove the optimiser's
-     * tier-10 average to 0.384, because it lengthens every wave instead of the ones the reward distorts.
+     * whole run, and it is linear rather than a cliff so that no wave of the ramp is visibly the one where the tier
+     * stops charging.
      */
     public static final int ASCENSION_BASE_CHARGE_SPAN_WAVES = 140;
 

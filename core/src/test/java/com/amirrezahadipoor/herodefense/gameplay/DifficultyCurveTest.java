@@ -92,36 +92,45 @@ final class DifficultyCurveTest {
 
     /**
      * R4.7's charge, pinned as arithmetic rather than as a vibe: tier 0 is bit-identical (so every tier-0 gate in
-     * the repository keeps measuring the shipped game), the charge is heaviest on the first wave of the run and
-     * fades to nothing by the end of its span, and it lands on the baseline rather than on a growth rate -- which is
-     * what makes it pay for the tier's flat starting power in the waves where that power is worth the most.
+     * the repository keeps measuring the shipped game), the charge is heaviest on the first wave of the run and fades
+     * to nothing by the end of its span, and it lands on the baseline rather than on a growth rate -- which is what
+     * makes it pay for the tier's flat starting power in the waves where that power is worth the most.
      */
     @Test
     void theAscensionBaseChargeIsBitIdenticalAtTierZeroAndFadesAcrossItsSpan() {
         int span = DifficultyCurve.ASCENSION_BASE_CHARGE_SPAN_WAVES;
-        assertTrue(span > 0, "the charge has to have a span to fade across");
+        assertTrue(span > 1, "the charge has to have a span to fade across");
         for (int wave : new int[] {1, 25, span / 2, span, GameState.FINAL_WAVE}) {
             assertEquals(1f, DifficultyCurve.baseScaleForTier(wave, 0), 0.0f, "tier 0 pays no base charge");
             assertEquals(1f, DifficultyCurve.baseDamageScaleForTier(wave, 0), 0.0f);
         }
         assertEquals(1f + DifficultyCurve.ASCENSION_BASE_HEALTH_BUMP_PER_TIER * 10f,
             DifficultyCurve.baseScaleForTier(1, 10), 0.000001f, "tier 10 pays full price on wave one");
-        assertEquals(1f, DifficultyCurve.baseScaleForTier(span, 10), 0.0f, "and nothing by the end of the span");
+        assertEquals(1f + DifficultyCurve.ASCENSION_BASE_DAMAGE_BUMP_PER_TIER * 10f,
+            DifficultyCurve.baseDamageScaleForTier(1, 10), 0.000001f);
+        assertEquals(1f + DifficultyCurve.ASCENSION_BASE_HEALTH_BUMP_PER_TIER * 10f / span,
+            DifficultyCurve.baseScaleForTier(span, 10), 0.000001f,
+            "the fade is linear: the last wave of the span carries one span'th of the charge");
+        assertEquals(1f + DifficultyCurve.ASCENSION_BASE_DAMAGE_BUMP_PER_TIER * 10f / span,
+            DifficultyCurve.baseDamageScaleForTier(span, 10), 0.000001f);
+        assertEquals(1f, DifficultyCurve.baseScaleForTier(span + 1, 10), 0.0f, "and then it is gone exactly");
         assertEquals(1f, DifficultyCurve.baseScaleForTier(GameState.FINAL_WAVE, 10), 0.0f);
-        assertEquals(1f, DifficultyCurve.baseDamageScaleForTier(span, 10), 0.0f);
         float previous = Float.MAX_VALUE;
-        for (int wave = 1; wave <= span + 5; wave++) {
+        for (int wave = 1; wave <= GameState.FINAL_WAVE; wave++) {
             float scale = DifficultyCurve.baseScaleForTier(wave, 10);
             assertTrue(scale <= previous, "the fade is monotone: wave " + wave + " charged more than the last");
             previous = scale;
         }
-        assertTrue(new DifficultyCurve().baselineRegularHealth(1, 10)
-            > new DifficultyCurve().baselineRegularHealth(1, 0) * 3f,
-            "and it is on the baseline the game reads: tier 10 wave one is more than three times the tier-0 enemy");
-        assertEquals(new DifficultyCurve().baselineRegularHealth(GameState.FINAL_WAVE, 0),
-            DifficultyCurve.baseScaleForTier(GameState.FINAL_WAVE, 10)
-                * new DifficultyCurve().baselineRegularHealth(GameState.FINAL_WAVE, 0) / 1f, 0.000001f,
-            "no charge is left at the final wave");
+        DifficultyCurve curve = new DifficultyCurve();
+        float endRatio = curve.baselineRegularHealth(GameState.FINAL_WAVE, 10)
+            / curve.baselineRegularHealth(GameState.FINAL_WAVE, 0);
+        assertEquals((float) Math.pow(1f + DifficultyCurve.ASCENSION_HEALTH_BUMP_PER_TIER * 10f,
+                GameState.FINAL_WAVE), endRatio, 0.01f,
+            "the last wave keeps only the per-wave growth bump: the base charge has faded out entirely");
+        assertTrue(curve.baselineRegularHealth(1, 10) > curve.baselineRegularHealth(1, 0) * 3f,
+            "and the first wave is more than three times the tier-0 enemy -- the charge is on the baseline the game reads");
+        assertTrue(curve.baselineRegularDamage(1, 10) > curve.baselineRegularDamage(1, 0) * 2f,
+            "damage pays part of it too");
     }
 
     @Test

@@ -115,19 +115,30 @@ The step into the second half more than doubled, the wave-200 enemy is 9% lighte
 
 ## The ascension ladder in growth rates (Phase 91)
 
-Each tier multiplies every growth rate by its own bump, which is why the ladder's charge is invisible early and
-heavy late: a bump of `0.0004` per tier is a fifth of a percent of a wave in the opening and a multiple of it by
-wave 200. The ladder is an open roadmap item (R4.7) precisely because of that shape — it pays the hero a flat
-bonus at run start and charges them a compounding one, and the measurement of a player who ignores every system
-says the reward wins.
+A tier charges twice, and the two charges have deliberately different shapes. The **growth bump** multiplies every
+growth rate by its own factor — `0.0004` health and `0.00025` damage per tier — which is a fifth of a percent of a
+wave in the opening and a multiple of the run by wave 200: heavy exactly where the hero is already strong, and it is
+the reason a tier's charge used to be invisible. The **base charge** (R4.7) scales the enemy's baseline health by
+22% and damage by 30% per tier at wave 1 and fades linearly to nothing by wave 141: heaviest exactly where a tier's
+flat starting power is worth the most. That is what closed the inversion R4.7 measured — for a player who ignores
+every system, tier 10's mean brief-vigil pressure was `0.0019` against tier 0's `0.0918`, and its long-vigil reach
+was `102.3` waves against `69.7`; on the same six seeds it now measures `0.0507` and `77.3` waves. The cost is a
+slower run and it is priced rather than hidden: the optimiser's tier-10 session grows **32%** against the **60%** the
+session gate allows (tier 2 is the tightest, at 84% of its own budget), and the average-pressure ceiling in
+`AscensionGateTest` is tier-indexed, because a harder ladder is what a tier *is*. The search behind the two numbers,
+including the two mixes and one fade span that were measured and rejected, is in the R4.7 roadmap entry.
 
 <!-- balance:generated ascension-bumps -->
-| Tier | Health growth per wave | Damage growth per wave | Second-half entry | Final quarter |
-|---:|---:|---:|---:|---:|
-| 0 | 1.0370 | 1.00300 | 1.0260 | 1.0180 |
-| 3 | 1.0382 | 1.00375 | 1.0272 | 1.0192 |
-| 6 | 1.0395 | 1.00450 | 1.0285 | 1.0204 |
-| 10 | 1.0411 | 1.00551 | 1.0301 | 1.0221 |
+| Tier | Health growth per wave | Damage growth per wave | Base health charge at wave 1 | Base damage charge at wave 1 | Second-half entry | Final quarter |
+|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 1.0370 | 1.00300 | x1.00 | x1.00 | 1.0260 | 1.0180 |
+| 3 | 1.0382 | 1.00375 | x1.66 | x1.90 | 1.0272 | 1.0192 |
+| 6 | 1.0395 | 1.00450 | x2.32 | x2.80 | 1.0285 | 1.0204 |
+| 10 | 1.0411 | 1.00551 | x3.20 | x4.00 | 1.0301 | 1.0221 |
+
+The base charge (R4.7) is health `+22%` and damage `+30%` per tier at wave 1, fading linearly to `+0%` by wave 141.
+
+Elite waves arrive every 7 / 6 / 4 / 4 waves at tiers 0 / 3 / 6 / 10, and never on the 5-wave boss lap (R4.8: the cadence used to step through that lap and left tiers 6-8 with no elites at all).
 <!-- balance:end ascension-bumps -->
 
 ## How the balance gate runs (Phase 91, roadmap R4.5)
@@ -250,7 +261,9 @@ The shipped point is the only all-green baseline row, confirmed on three extra s
 but the single-wave max — one wave in 200, mostly boss-adjacent late waves — is seed
 noise (±7pp at t10: 32.9–46.2%) and breached 35% on 4/12 cells. Two structural notes:
 the elite interval `7 → 6 → 5 → 4` collides with boss waves at interval 5, so tiers 6–8
-spawn no elites (every multiple of 5 is a boss wave; test-locked); and elite loot
+spawn no elites (every multiple of 5 is a boss wave; test-locked at the time). R4.8 removed the collision — the
+cadence steps `7 → 6 → 4`, every tier has elites again, and the assertion was turned around so that it checks the
+outcome rather than the arithmetic; the note stays because it was correct when it was written, and elite loot
 overcompensates the stat bumps — at t10, forty elite waves' double coins plus talent
 materials snowball the hero, so difficulty is non-monotonic (baseline t10 avg 5.05% sits
 below t3's 6.41%). Flags for the 26.1 gate: the shipped t10 baseline average has only

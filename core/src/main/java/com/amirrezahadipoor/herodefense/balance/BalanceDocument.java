@@ -331,14 +331,31 @@ public final class BalanceDocument {
 
     private static String ascensionBumps() {
         List<String> lines = new ArrayList<>();
-        lines.add("| Tier | Health growth per wave | Damage growth per wave | Second-half entry | Final quarter |");
-        lines.add("|---:|---:|---:|---:|---:|");
+        lines.add("| Tier | Health growth per wave | Damage growth per wave | Base health charge at wave 1 |"
+            + " Base damage charge at wave 1 | Second-half entry | Final quarter |");
+        lines.add("|---:|---:|---:|---:|---:|---:|---:|");
         for (int tier : new int[] {0, 3, 6, 10}) {
-            lines.add(String.format(Locale.ROOT, "| %d | %.4f | %.5f | %.4f | %.4f |", tier,
+            lines.add(String.format(Locale.ROOT, "| %d | %.4f | %.5f | x%.2f | x%.2f | %.4f | %.4f |", tier,
                 DifficultyCurve.healthGrowthForTier(tier), DifficultyCurve.damageGrowthForTier(tier),
+                DifficultyCurve.baseScaleForTier(1, tier), DifficultyCurve.baseDamageScaleForTier(1, tier),
                 DifficultyCurve.secondHalfHealthGrowthForTier(tier),
                 DifficultyCurve.finalQuarterHealthGrowthForTier(tier)));
         }
+        lines.add("");
+        lines.add(String.format(Locale.ROOT,
+            "The base charge (R4.7) is health `+%.0f%%` and damage `+%.0f%%` per tier at wave 1, fading linearly"
+                + " to `+0%%` by wave %d.",
+            DifficultyCurve.ASCENSION_BASE_HEALTH_BUMP_PER_TIER * 100f,
+            DifficultyCurve.ASCENSION_BASE_DAMAGE_BUMP_PER_TIER * 100f,
+            DifficultyCurve.ASCENSION_BASE_CHARGE_SPAN_WAVES + 1));
+        lines.add("");
+        lines.add(String.format(Locale.ROOT,
+            "Elite waves arrive every %d / %d / %d / %d waves at tiers 0 / 3 / 6 / 10, and never on the"
+                + " %d-wave boss lap (R4.8: the cadence used to step through that lap and left tiers 6-8 with no"
+                + " elites at all).",
+            EnemyWaveSpawner.eliteWaveInterval(0), EnemyWaveSpawner.eliteWaveInterval(3),
+            EnemyWaveSpawner.eliteWaveInterval(6), EnemyWaveSpawner.eliteWaveInterval(10),
+            EnemyWaveSpawner.BOSS_WAVE_INTERVAL));
         return join(lines);
     }
 
