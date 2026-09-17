@@ -58,6 +58,11 @@ jobs:
           python3 tools/visual/create_master_tier_review.py --check
       - name: Re-derive the material maps from their masters
         run: python3 tools/visual/validate_material_maps.py
+      # Phase 97's re-audit cites a frozen fact sheet, and a fact sheet that can drift from the tree it claims to
+      # describe is worse than no fact sheet: these run the tool itself -- the sections it produces, the JUnit
+      # totals it parses, the missing-results case, and that it needs no network to produce a number.
+      - name: Test the audit's measuring tool
+        run: python3 -m unittest discover -s tools/audit/tests -v
       - name: Test the ETC2 encoder and the KTX container it writes
         run: python3 -m unittest discover -s tools/texture/tests -v
       # R8.1's device fixture: the container the on-device upload test hands to a GPU is rebuilt here, so the

@@ -206,12 +206,15 @@ public final class CompressedTextureDeviceTest {
     /**
      * The decoder's own pixels, uploaded uncompressed through the same draw.
      *
-     * This is the control that keeps the compressed comparison honest. An emulator's GLES stack is allowed to
-     * shift, flip or resample a textured draw, and on this one it does: the readback of the container came back
-     * one texel to the right of the decoder's pixels, which is the kind of difference that looks exactly like a
-     * broken decoder from the outside -- two hundred and nine levels of it. Uploading the same pixels
-     * uncompressed measures what the draw does to an image that no decoder was involved in, so the compressed
-     * comparison can be made at the alignment the *draw* has, and a real decoder difference still fails.
+     * This is the control that keeps the compressed comparison honest. An emulator's GLES stack may shift, flip
+     * or resample a textured draw, and a difference like that looks exactly like a broken decoder from the
+     * outside: the container once appeared to be decoded two hundred and nine levels away from the decoder's own
+     * pixels, and it was in fact this test's readback -- `ByteBuffer.array()` on a *direct* buffer hands back the
+     * allocation rather than the readback, seven bytes longer than the image and not starting at it. Uploading
+     * the decoder's own pixels uncompressed measures what the draw does to an image no decoder touched, so the
+     * compressed comparison is made at the alignment the draw has: pixel-exact on
+     * `OpenGL ES 3.0 SwiftShader 4.0.0.1` with this control reporting (0,0), and a real decoder difference
+     * still fails.
      */
     private static int uploadUncompressed(Header header, byte[] pixels) {
         int[] names = new int[1];

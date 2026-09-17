@@ -55,11 +55,11 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **90** | Human playtest protocol and recorded findings | R3.6 | `[x]` |
 | **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[~]` |
 | **92** | Runtime tier composed from the genuine master renders | R5.1 · R5.2 | `[x]` |
-| **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[~]` |
+| **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[x]` |
 | **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[x]` |
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[~]` |
 | **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[~]` |
-| **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[ ]` |
+| **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[x]` |
 
 *Removed 2026-09-17 at the owner's direction: **Table B**, the phase index that numbered the experience
 phases 98-145. The experience rubric in section 4 and the R9-R16 items it is measured by are still
@@ -1012,47 +1012,34 @@ sentence has to name the two scores and the commit they were measured on.
   against the reference encoder (or pinning that encoder and its licence), wiring containers into the
   atlas-page loading path, and the device evidence that a compressed palette uploads and renders on the
   emulator.
+  **What is closed here and what is not.** Closed: the per-format arithmetic and the projection, the
+  first-party encoder and container with their references, the per-device format choice and PNG fallback, and
+  the on-device decode of a container. Open, and neither of them is implied by the rest: every shipped sheet
+  still ships as a reviewed PNG because the encoder measures 28.88 dB against its own 32 dB bar, and the
+  containers are not wired into the atlas-page loading path, so a payload that did clear the bar would need
+  that work before it could ship.
   **The device half, measured rather than argued.** That test failed three runs in a row, by up to two hundred
-  and nine levels, and the pixels settled what no counter could: the test now logs the buffer it read back
-  (`tools/texture/decode_device_evidence.py` reassembles it from the logcat capture the workflow already keeps,
-  because the instrumentation run uninstalls both APKs when it returns, which is why the `run-as` pull it
-  replaced had collected zero-byte files). Rolled one texel to the right, the emulator's readback and the
-  repository's decode agree on **4095 of 4096 pixels** -- one pixel beyond tolerance and one alpha mismatch,
-  both sitting on the wrapped seam. So the container decodes on this emulator, and what the earlier failures
-  measured was the *draw*: on `OpenGL ES 3.0 SwiftShader 4.0.0.1` a textured frame comes back one texel to the
-  right. The test now measures that with a control -- the decoder's own pixels uploaded uncompressed through the
-  same draw -- and asserts the container at the alignment the control reports, so a decoder difference still
-  fails while a shift the emulator applies to every textured draw cannot be charged to the encoder. Two
-  findings on the way are fixed rather than noted: `ByteBuffer.array()` on a *direct* buffer hands back the
-  allocation rather than the readback (the logged buffer came out seven bytes longer than the image), and the
-  composed-tier CI check had been dying inside `git show` because the job checked out a single commit of
-  history. That evidence is now a test rather than a promise: `CompressedTextureDeviceTest` opens its own
-  GLES3 pbuffer through `EGL14` (the game asks libGDX for a GLES2 context, which could never load an ETC2
-  page), uploads a 64x64 punchthrough container built from a real shipped sheet by
-  `tools/texture/make_device_fixture.py`, reads the frame back with `glReadPixels` and asserts the GPU agrees
-  channel by channel with this repository's own decode of the same bytes -- and that run earned its keep immediately: the first emulator run reported a maximum channel difference of 247
-  with 2,448 of 4,096 pixels outside tolerance, and the run after a first correction did not move (247 on 2,507),
-  because that correction was the same mistake mirrored. Settling it took a driver's own decoder rather than
-  another round trip. In the punchthrough format the colour part is *always* the differential layout -- there is
-  no individual mode to select -- and the bit that selects between the two layouts in ETC2_RGB8 is the **opaque
-  bit** here: it decides which intensity-modifier table the decoder uses for the whole block (ETC1's when the
-  block is opaque, the specification's punchthrough table when it is not, whose first and third modifiers are
-  zero so that index `00` lands on the base colour exactly), and only a non-opaque block can carry a clear pixel
-  at all. The encoder was writing individual-layout colour pairs and reading that bit as a layout flag, and the
-  decoder read the flag the same wrong way, which is exactly why every round trip in this repository passed while
-  an emulator disagreed on an alpha-perfect picture -- and why `29e2bdb`, whose whole rule was that no
-  punchthrough block may carry the differential flag, made the stream no more correct than before it. Both halves
-  follow the driver now: the encoder searches the differential layout only, runs its colour search once per
-  modifier table and refuses the opaque answer to any block with a clear pixel in it, and clamps each channel's
-  step so that base plus step stays inside the five-bit range, because a sum that leaves it is read as a T, H or
-  planar block rather than a differential one; the decoder takes its table and its alpha from the opaque bit, and
-  decodes a clear pixel to black the way a driver does rather than to the colour the base and modifier would
-  produce. The evidence is not another round trip: `tools/texture/tests/driver_vectors.py` records Google's
-  `swiftshader` decoder -- `src/Device/ETC_Decoder.cpp` at commit `112faf4`, the GLES3 implementation an
-  emulator without a GPU decodes through -- reading two streams this encoder wrote, and the test decodes those
-  streams again and demands the same pixels, which it gets **exactly**, maximum channel difference 0, no pixel
-  differing and no alpha mismatch. That now includes the 64x64 container the device uploads. The row stays `[~]`
-  until an emulator run decodes it green.
+  and nine levels, and what it was measuring turned out to be its own readback. The test logs the buffer it
+  read back (`tools/texture/decode_device_evidence.py` reassembles it from the logcat capture the workflow
+  already keeps, because the instrumentation run uninstalls both APKs when it returns, which is why the `run-as`
+  pull it replaced had collected zero-byte files), and the logged buffer was seven bytes longer than the image:
+  `ByteBuffer.array()` on a *direct* buffer hands back the allocation, not the readback, so every comparison
+  this test had ever made was against a view that did not start at the picture. Copying the bytes out by hand
+  settled it in one run -- **run [`35213390481`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35213390481)**
+  (job `105176038768`) logs `maxDelta=0 exactFraction=1.000` for a 64x64 punchthrough container uploaded through
+  GLES3 on `OpenGL ES 3.0 SwiftShader 4.0.0.1`: the emulator decodes the encoder's own bytes **pixel for
+  pixel**, alpha included. The comparison keeps its control rather than its old looseness: the decoder's pixels
+  are uploaded uncompressed and rendered through the same draw, and that control reports `(0,0)` with zero
+  pixels beyond tolerance, so a decoder difference still fails while a draw an emulator shifts cannot be
+  charged to the encoder. One more defect on the way is fixed in the same commit: the composed-tier CI check had
+  been dying inside `git show` because the job checked out a single commit of history, and
+  `tools/visual/tests/test_ci_checkout.py` now fails if a job that runs a history-reading step goes back to a
+  one-commit checkout. The stream this test uploads was settled by a driver's decoder rather than by another
+  round trip, and that finding stands in the row's history: in the punchthrough format the colour part is always
+  the differential layout, the bit that selects a layout in ETC2_RGB8 is the *opaque* bit here, and only a
+  non-opaque block can carry a clear pixel -- which is why `tools/texture/tests/driver_vectors.py` records
+  Google's `swiftshader` decoder reading two streams this encoder wrote and the test demands the same pixels
+  back, exactly.
 - [x] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
   manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (**525,000,000
   bytes** since 2026-09-17, raised from 390,000,000 at the owner's direction so the genuine master renders R5.2
@@ -1349,6 +1336,8 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-17 | 96 · 93 | R8.1 (device) · R5.4 | the evidence channel worked and the pixels settled the device failure: rolled one texel to the right, the emulator's readback and the repository's decode agree on 4095 of 4096 pixels -- one beyond tolerance, one alpha mismatch, both on the wrapped seam -- so the container decodes on the device and what the failing runs were measuring was a draw the emulator shifts, which the test now measures with an uncompressed control through the same draw and asserts the container against, keeping a real decoder difference failing; the logged buffer is copied out of the direct buffer by hand (`array()` hands back the allocation, seven bytes longer than the image), the stage-grade pair passed on a green run (DAWN 24.974325/57.135735/43.47092 lit 0.6226, HOLLOW 24.274624/56.54204/43.507607 lit 0.6208, red down 0.70, bias up 0.736) and R5.4 closes on it, and the composed-tier check that had been dying inside `git show` now names a one-commit checkout as its cause with `fetch-depth: 0` behind it | `a455894` |
 
+| 2026-09-17 | 97 | Phase 97 | the re-audit is published with the method, the rubric and the numbers of the 2026-09-16 audit: `docs/audit/AUDIT_2026-09-17.md` scores **737 of 920 in scope** against the audited 505 in scope, from sub-item verdicts whose weights are printed, and it writes the gate's result as not met with the 183 missing points itemised in simple language; the figures are not typed -- `tools/audit/measure_round.py` reads the tree, a real `:core:test` run (179 classes, 720 tests, 0 failures, 36.8 s), the manifest, the hash ledger and the filed runs, and its output is frozen beside the audit as `docs/audit/MEASUREMENTS_2026-09-17.json` so the numbers can be re-taken and diffed. The same push closes R8.1's device half on run [`35213390481`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35213390481) (job `105176038768`): `maxDelta=0 exactFraction=1.000`, control `(0,0)`, and both workflows green | `12e4dc0` · this push |
+
 ## Definition of done
 
 Two gates, both measured with the granular method of the 2026-09-16 audit and both reproducible from the
@@ -1356,6 +1345,12 @@ repository:
 
 1. **Repo rubric (Phase 97):** the nine in-scope categories score **≥ 900 of 920** — the release category
    stays out of scope by owner direction — and every figure in this file is still reproducible.
+   **Measured at Phase 97: 737 of 920** (`docs/audit/AUDIT_2026-09-17.md`, commit `12e4dc0`). The gate is not
+   met, and the audit itemises the 183 missing points sub-item by sub-item: the largest are Persian and RTL
+   (25), the store screen (12), the immobile hero (17), the Back button (10), the load of accessibility work
+   (7), the run length against the session the design wants (9), the optimiser's remaining advantage (11), the
+   compression that does not ship (10) and the architecture that is smaller but not small (14). Every one of
+   them is an open item below rather than a surprise.
 2. **Experience rubric (R16.4):** **≥ 900 of 1,000**, with no category below 80 % of its weight.
 
 Only then may this repository describe the game as a "1000-level" title, and the sentence has to name both

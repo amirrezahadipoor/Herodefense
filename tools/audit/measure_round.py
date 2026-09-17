@@ -40,7 +40,13 @@ def count_tests(results: pathlib.Path) -> dict:
     """Totals from the JUnit XML a real `:core:test` run leaves behind, not from a count of annotations."""
     total = {"classes": 0, "tests": 0, "failures": 0, "errors": 0, "skipped": 0, "seconds": 0.0}
     if not results.is_dir():
-        return {"measured": False, "why": f"no results at {results.relative_to(ROOT)}"}
+        # A path outside the repository has no relative form, and a reader still needs to see which one was
+        # asked for -- the first version of this raised `ValueError` on exactly that.
+        try:
+            named = results.relative_to(ROOT)
+        except ValueError:
+            named = results
+        return {"measured": False, "why": f"no results at {named}"}
     for report in sorted(results.glob("TEST-*.xml")):
         root = ElementTree.parse(report).getroot()
         total["classes"] += 1
