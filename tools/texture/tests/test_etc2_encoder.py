@@ -15,6 +15,7 @@ back is not an encoder, and a gate that cannot fail is not a gate.
 from __future__ import annotations
 
 import sys
+import pathlib
 import unittest
 from pathlib import Path
 
@@ -28,6 +29,7 @@ sys.path.insert(0, str(TOOLS / "texture"))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 import driver_vectors  # noqa: E402
+import encode_textures  # noqa: E402
 import etc2  # noqa: E402
 import ktx  # noqa: E402
 
@@ -290,3 +292,23 @@ class EncodingGateTest(unittest.TestCase):
         self.assertEqual(record["encodedBytes"], 64 * 64 // 2)
         self.assertEqual(record["alphaAgreement"], 1.0)
         self.assertGreater(record["psnrDb"], 20.0)
+
+class ContainerPathTest(unittest.TestCase):
+    """The path the encoder writes and the path the runtime reads are one rule, not two."""
+
+    def test_a_container_lands_beside_the_sheet_the_runtime_looks_after(self) -> None:
+        self.assertEqual(
+            "android/assets/generated/sprites/compressed/etc2/rootling.ktx",
+            str(encode_textures.container_path("sprites/rootling.png").relative_to(encode_textures.ROOT)),
+        )
+        self.assertEqual(
+            "android/assets/generated/ui/compressed/etc2/ui_coin.ktx",
+            str(encode_textures.container_path("ui/ui_coin.png").relative_to(encode_textures.ROOT)),
+        )
+
+    def test_the_runtime_rule_is_the_same_string(self) -> None:
+        """The Java half of the rule, quoted here so a change to either side fails one of the two tests."""
+        source = (pathlib.Path(__file__).resolve().parents[3] / "core/src/main/java/com/amirrezahadipoor/"
+                  "herodefense/render/AtlasPageSource.java").read_text()
+        self.assertIn('CONTAINER_DIRECTORY = "compressed/etc2/"', source)
+        self.assertIn('page.parent().child(CONTAINER_DIRECTORY + stem + ".ktx")', source)

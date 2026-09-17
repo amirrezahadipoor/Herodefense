@@ -22,7 +22,7 @@ public final class HeroSpriteRenderer implements AutoCloseable {
         new EnumMap<>(HeroAnimationState.class);
 
     public HeroSpriteRenderer() {
-        atlas = new TextureAtlas(Gdx.files.internal(ATLAS_PATH));
+        atlas = SheetPayloads.atlas(Gdx.files.internal(ATLAS_PATH));
         register(HeroAnimationState.IDLE, "hero_idle", HeroAnimationController.IDLE_FRAMES);
         register(HeroAnimationState.ATTACK, "hero_attack", HeroAnimationController.ATTACK_FRAMES);
         register(HeroAnimationState.HIT, "hero_hit", HeroAnimationController.HIT_FRAMES);

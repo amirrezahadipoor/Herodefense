@@ -50,10 +50,10 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
             ground[index] = texture("generated/environment/ground_tile_" + index + ".png");
             crystals[index] = texture("generated/environment/crystal_prop_" + index + ".png");
         }
-        healthyTreeAtlas = new TextureAtlas(
+        healthyTreeAtlas = SheetPayloads.atlas(
             Gdx.files.internal("generated/sprites/world_tree_healthy.atlas")
         );
-        damagedTreeAtlas = new TextureAtlas(
+        damagedTreeAtlas = SheetPayloads.atlas(
             Gdx.files.internal("generated/sprites/world_tree_damaged.atlas")
         );
         healthyTreeFrames = requireFrames(
@@ -137,7 +137,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     }
 
     private static Texture texture(String path) {
-        Texture texture = new Texture(Gdx.files.internal(path));
+        Texture texture = SheetPayloads.texture(path);
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         return texture;
     }

@@ -42,7 +42,7 @@ public final class UiIconRenderer implements AutoCloseable {
     }
 
     private Texture load(String key) {
-        Texture texture = new Texture(Gdx.files.internal(assetPath(key)));
+        Texture texture = SheetPayloads.texture(assetPath(key));
         texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
         return texture;
     }

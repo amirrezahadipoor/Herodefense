@@ -11,7 +11,17 @@ bar it was given. Three numbers per sheet, all measured rather than assumed:
   punchthrough format, which costs the same and represents the mask exactly; a sheet with soft alpha is skipped,
   because punchthrough would harden its edges and ETC2_RGBA8's base-and-modifier alpha cannot represent a mask.
 * **quality** -- the PSNR of the decoded payload against the source, over the opaque pixels. This is the number
-  that decides shipping: the payload is written only when it clears `--min-psnr`.
+  that decides shipping: the payload is written only when it clears `--min-psnr`. The colour half is measured for
+  *every* sheet, whether or not it can ship, so the report answers "how good is this encoder" and not only "did
+  anything pass"; `--reference` adds a second opinion from another encoder's stream on the same pixels.
+
+The reference binary is not part of this repository: Google's `etc1` encoder is Apache-2.0, and the point of the
+comparison is to keep it at arm's length. To take the measurement, fetch it, build the two-line harness that calls
+`etc1_encode_image`, and pass the binary in:
+
+    curl -O https://raw.githubusercontent.com/google/etc1/master/etc1_utils.cpp
+    g++ -O2 -o etc1_reference enc_ref.cpp
+    python3 tools/texture/encode_textures.py --combat --reference ./etc1_reference --report-only
 
 Usage:
     python3 tools/texture/encode_textures.py --keys rootling stonekin     # encode and report
@@ -24,7 +34,9 @@ import argparse
 import hashlib
 import json
 import pathlib
+import subprocess
 import sys
+import tempfile
 
 import numpy as np
 from PIL import Image
@@ -37,15 +49,20 @@ import ktx  # noqa: E402
 
 ROOT = TOOLS.parent
 GENERATED = ROOT / "android" / "assets" / "generated"
-OUTPUT = GENERATED / "compressed" / "etc2"
 REPORT = ROOT / "docs" / "perf" / "runs" / "2026-09-17-texture-encoding.json"
 
 #: Below this share of binary alpha a sheet keeps its PNG: punchthrough would harden soft edges.
 MINIMUM_BINARY_ALPHA = 0.995
 #: And below this PSNR over the opaque pixels the payload is not written at all.
 DEFAULT_MINIMUM_PSNR = 32.0
-#: The reference encoder this project compares itself against, measured on the same sheets.
-REFERENCE_PSNR = 33.57
+#: The reference encoder this project compares itself against. It is not vendored: these are the coordinates a
+#: reader needs to reproduce the comparison, and the licence it may be used under.
+REFERENCE_NAME = "Google etc1 (etc1_utils.cpp, etc1_encode_image)"
+REFERENCE_SOURCE = "https://raw.githubusercontent.com/google/etc1/master/etc1_utils.cpp"
+REFERENCE_LICENCE = "Apache-2.0"
+#: What that encoder measured on the sheets this tool last filed, in decibels over the opaque pixels. It is the
+#: fallback for prose: when `--reference` is given, every sheet carries the number measured on the spot.
+REFERENCE_PSNR = 34.58
 
 
 def manifest() -> dict:
@@ -77,11 +94,49 @@ def peak_signal_to_noise(reference: np.ndarray, decoded: np.ndarray, mask: np.nd
     return float(10.0 * np.log10(255.0 ** 2 / mean_square))
 
 
-def encode_sheet(key: str, sheet: dict, minimum_psnr: float, root: pathlib.Path = GENERATED) -> dict:
+def colour_quality(image: np.ndarray) -> tuple[float, int]:
+    """The colour half on its own: what ETC2_RGB8 costs these pixels, and how many bytes it takes.
+
+    Measured for every sheet, including the ones that cannot ship: a sheet with soft alpha is still evidence about
+    the encoder, and the number this returns is the one the encoder's quality is judged on.
+    """
+    payload = etc2.encode_blocks(image, etc2.ETC2_RGB8)
+    decoded = etc2.decode_blocks(payload, image.shape[1], image.shape[0], punchthrough=False)
+    opaque = image[..., 3] >= etc2.OPAQUE_THRESHOLD
+    return peak_signal_to_noise(image[..., :3], decoded[..., :3], opaque), len(payload)
+
+
+def reference_quality(image: np.ndarray, binary: pathlib.Path) -> float:
+    """What another encoder leaves on the same pixels, decoded by this repository's decoder.
+
+    The binary takes a raw RGB file, the width, the height and an output path, and writes an ETC1 block stream --
+    see the module docstring for how to build one from Google's `etc1` sources.
+    """
+    with tempfile.TemporaryDirectory() as directory:
+        rgb = pathlib.Path(directory) / "sheet.rgb"
+        out = pathlib.Path(directory) / "sheet.etc1"
+        rgb.write_bytes(np.ascontiguousarray(image[..., :3]).tobytes())
+        completed = subprocess.run(
+            [str(binary), str(rgb), str(image.shape[1]), str(image.shape[0]), str(out)],
+            capture_output=True, text=True,
+        )
+        if completed.returncode != 0 or not out.is_file():
+            raise RuntimeError(f"{binary} failed: {completed.stderr.strip() or completed.stdout.strip()}")
+        stream = out.read_bytes()
+    decoded = etc2.decode_blocks(stream, image.shape[1], image.shape[0], punchthrough=False)
+    opaque = image[..., 3] >= etc2.OPAQUE_THRESHOLD
+    return peak_signal_to_noise(image[..., :3], decoded[..., :3], opaque)
+
+
+def encode_sheet(
+    key: str, sheet: dict, minimum_psnr: float, root: pathlib.Path = GENERATED,
+    reference: pathlib.Path | None = None,
+) -> dict:
     """Encode one sheet, measure it, and say whether it may ship."""
     source_path = root / sheet["file"]
     image = load_sheet(source_path)
     binary_alpha = etc2.binary_alpha_fraction(image)
+    colour_psnr, colour_bytes = colour_quality(image)
     record = {
         "key": key,
         "sheet": sheet["file"],
@@ -94,8 +149,13 @@ def encode_sheet(key: str, sheet: dict, minimum_psnr: float, root: pathlib.Path 
         "encodedBytes": 0,
         "psnrDb": None,
         "alphaAgreement": None,
+        "colourPsnrDb": round(colour_psnr, 2),
+        "colourEncodedBytes": colour_bytes,
+        "referencePsnrDb": None,
         "reason": "",
     }
+    if reference is not None:
+        record["referencePsnrDb"] = round(reference_quality(image, reference), 2)
     if binary_alpha < MINIMUM_BINARY_ALPHA:
         record["reason"] = (
             f"soft alpha ({binary_alpha:.4f} of pixels are 0 or 255): punchthrough would harden the edges and "
@@ -135,8 +195,19 @@ def encode_sheet(key: str, sheet: dict, minimum_psnr: float, root: pathlib.Path 
     return record
 
 
+def container_path(sheet: str) -> pathlib.Path:
+    """Where a sheet's container goes: beside it, same stem, under `compressed/etc2/`.
+
+    The runtime looks for exactly this path -- `TexturePayloadPolicy.containerPath` and
+    `AtlasPageSource.containerBeside` are the same rule in Java -- so a container written anywhere else is a
+    container no device will ever read. `tests/test_etc2_encoder.py` pins the two together by naming this path.
+    """
+    relative = pathlib.Path(sheet)
+    return GENERATED / relative.parent / "compressed" / "etc2" / (relative.stem + ".ktx")
+
+
 def write_payload(record: dict) -> pathlib.Path:
-    target = OUTPUT / (pathlib.Path(record["sheet"]).stem + ".ktx")
+    target = container_path(record["sheet"])
     target.parent.mkdir(parents=True, exist_ok=True)
     blob = ktx.write(
         ktx.Image(
@@ -159,6 +230,8 @@ def main() -> int:
     parser.add_argument("--report-only", action="store_true", help="measure and report, never write a container")
     parser.add_argument("--check", action="store_true", help="verify the committed containers against a re-encode")
     parser.add_argument("--report", type=pathlib.Path, default=REPORT)
+    parser.add_argument("--reference", type=pathlib.Path, default=None,
+                        help="another encoder's binary, measured on the same pixels (see the module docstring)")
     args = parser.parse_args()
 
     document = manifest()
@@ -174,7 +247,7 @@ def main() -> int:
         if sheet is None:
             records.append({"key": key, "encoded": False, "reason": "this asset has no sheet"})
             continue
-        records.append(encode_sheet(key, sheet, args.min_psnr))
+        records.append(encode_sheet(key, sheet, args.min_psnr, reference=args.reference))
 
     shipped = [record for record in records if record.get("encoded")]
     if not args.report_only:
@@ -188,7 +261,11 @@ def main() -> int:
                 "tool": "tools/texture/encode_textures.py",
                 "format": "ETC2",
                 "minimumPsnrDb": args.min_psnr,
+                "referenceEncoder": REFERENCE_NAME,
+                "referenceEncoderSource": REFERENCE_SOURCE,
+                "referenceEncoderLicence": REFERENCE_LICENCE,
                 "referenceEncoderPsnrDb": REFERENCE_PSNR,
+                "measuredReferenceOnThisRun": bool(args.reference),
                 "sheets": records,
             },
             indent=2,
@@ -202,7 +279,11 @@ def main() -> int:
             f"{record.get('psnrDb')} dB, {record.get('encodedBytes')} bytes vs "
             f"{record.get('decodedRgba8888Bytes')} decoded"
         )
-        print(f"{record['key']:18s} {state:9s} {detail}")
+        colour = f"colour {record.get('colourPsnrDb')} dB"
+        reference = record.get("referencePsnrDb")
+        if reference is not None:
+            colour += f", reference {reference} dB"
+        print(f"{record['key']:18s} {state:9s} {colour}  {detail}")
     print(
         f"{len(shipped)} of {len(records)} sheets pass the {args.min_psnr:.1f} dB bar; "
         f"{encoded_total} encoded bytes against {decoded_total} decoded bytes"

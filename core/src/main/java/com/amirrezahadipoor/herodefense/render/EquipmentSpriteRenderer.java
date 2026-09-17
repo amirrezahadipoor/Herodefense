@@ -44,7 +44,7 @@ public final class EquipmentSpriteRenderer implements AutoCloseable {
                 String atlasPath = item.visualKey == null || item.visualKey.isEmpty()
                     ? EquipmentVisualContract.atlasPath(item.id)
                     : item.visualKey;
-                atlas = new TextureAtlas(Gdx.files.internal(atlasPath));
+                atlas = SheetPayloads.atlas(Gdx.files.internal(atlasPath));
                 loadedAtlases.put(item.id, atlas);
             }
             String regionName = EquipmentVisualContract.regionName(item, state.hero.animationState);

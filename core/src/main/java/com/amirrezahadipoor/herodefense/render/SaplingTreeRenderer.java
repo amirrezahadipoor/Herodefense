@@ -24,7 +24,7 @@ public final class SaplingTreeRenderer implements AutoCloseable {
     private final Array<TextureAtlas.AtlasRegion> idleFrames;
 
     public SaplingTreeRenderer() {
-        atlas = new TextureAtlas(Gdx.files.internal(ATLAS_PATH));
+        atlas = SheetPayloads.atlas(Gdx.files.internal(ATLAS_PATH));
         growFrames = require("world_tree_sapling_grow", PlantingCeremony.GROW_FRAMES);
         idleFrames = require("world_tree_sapling_idle", IDLE_FRAMES);
     }

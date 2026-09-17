@@ -215,7 +215,7 @@ public final class MainMenuRenderer implements AutoCloseable {
 
     private Texture backdrop() {
         if (backdrop == null) {
-            backdrop = new Texture(Gdx.files.internal("generated/environment/arena_backdrop.png"));
+            backdrop = SheetPayloads.texture("generated/environment/arena_backdrop.png");
             backdrop.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         }
         return backdrop;

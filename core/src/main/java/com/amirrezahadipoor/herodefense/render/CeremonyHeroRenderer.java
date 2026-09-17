@@ -21,7 +21,7 @@ public final class CeremonyHeroRenderer implements AutoCloseable {
     private final Map<String, Array<TextureAtlas.AtlasRegion>> clips = new HashMap<>();
 
     public CeremonyHeroRenderer() {
-        atlas = new TextureAtlas(Gdx.files.internal(ATLAS_PATH));
+        atlas = SheetPayloads.atlas(Gdx.files.internal(ATLAS_PATH));
         register("walk", PlantingCeremony.WALK_FRAMES);
         register("plant", PlantingCeremony.PLANT_FRAMES);
         register("water", PlantingCeremony.WATER_FRAMES);

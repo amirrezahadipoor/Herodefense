@@ -446,7 +446,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         visibleIcons.add(item.id);
         Texture texture = icons.get(item.id);
         if (texture == null) {
-            texture = new Texture(Gdx.files.internal(item.iconKey));
+            texture = SheetPayloads.texture(item.iconKey);
             texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
             icons.put(item.id, texture);
         }

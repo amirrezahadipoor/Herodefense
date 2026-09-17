@@ -110,7 +110,7 @@ public final class UiFrameRenderer implements AutoCloseable {
             + kind.name().toLowerCase(Locale.ROOT)
             + "_"
             + state.name().toLowerCase(Locale.ROOT);
-        Texture texture = new Texture(Gdx.files.internal("generated/ui/" + key + ".png"));
+        Texture texture = SheetPayloads.texture("generated/ui/" + key + ".png");
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         return new NinePatch(texture, INSET, INSET, INSET, INSET);
     }

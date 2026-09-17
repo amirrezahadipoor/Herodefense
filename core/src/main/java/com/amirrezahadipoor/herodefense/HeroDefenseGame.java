@@ -2,7 +2,6 @@ package com.amirrezahadipoor.herodefense;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.utils.TimeUtils;
@@ -84,6 +83,7 @@ import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
 import com.amirrezahadipoor.herodefense.polish.TouchFeedbackSystem;
 import com.amirrezahadipoor.herodefense.render.RenderStack;
+import com.amirrezahadipoor.herodefense.render.SheetPayloads;
 import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
 import com.amirrezahadipoor.herodefense.render.CodexOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.IdleWhisperRenderer;
@@ -207,6 +207,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     @Override
     public void create() {
+        SheetPayloads.installForThisDevice();   // R8.1: what this device can decode, decided once
         flow = new GameFlowController();
         autoPotionSystem = new AutoPotionSystem(new HealthPotionSystem());
         HeroDamageSystem heroDamageSystem = new HeroDamageSystem();

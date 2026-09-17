@@ -17,10 +17,17 @@ import android.opengl.GLES20;
 import android.opengl.GLES30;
 import android.util.Log;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.backends.android.AndroidGL20;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Texture;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import com.amirrezahadipoor.herodefense.render.AtlasPageSource;
 import com.amirrezahadipoor.herodefense.render.DeviceTextureSupport;
+import com.amirrezahadipoor.herodefense.render.SheetPayloads;
 import com.amirrezahadipoor.herodefense.render.TexturePayloadPolicy;
 
 import org.junit.Test;
@@ -180,6 +187,7 @@ public final class CompressedTextureDeviceTest {
             0, decodeAlignment[2]);
         assertEquals("alpha must decode to the container's one-bit mask -- " + diagnosis,
             0, decodeAlignment[3]);
+        loadThroughTheRuntimeLoader(context, container, expected, header, program, support);
         assertEquals("no GL error for the whole upload and draw", GLES30.GL_NO_ERROR, GLES30.glGetError());
 
         GLES30.glDeleteTextures(1, new int[] {texture}, 0);
@@ -189,6 +197,61 @@ public final class CompressedTextureDeviceTest {
         EGL14.eglDestroySurface(display, surface);
         EGL14.eglDestroyContext(display, eglContext);
         EGL14.eglTerminate(display);
+    }
+
+    /**
+     * The path the game itself would take: the sheet beside its container, read through the loader, handed to
+     * libGDX's {@code KTXTextureData} and uploaded by that. The direct upload above proves the container decodes;
+     * this proves the code that will read it in the game does too, which is what "R8.1 is wired" has to mean.
+     *
+     * <p>libGDX reaches GL through {@code Gdx.gl}, which an instrumentation test does not get from a backend, so
+     * the test installs the one the Android backend would have installed and takes it out again afterwards. The
+     * sheet's PNG is written beside the container as well, unread: the loader is asked for a page, and a page that
+     * is not there would make the test prove the wrong thing.
+     */
+    private static void loadThroughTheRuntimeLoader(
+        Context context, byte[] container, byte[] expected, Header header, int program, DeviceTextureSupport support
+    ) throws IOException {
+        File sprites = new File(context.getCacheDir(), "sprites");
+        File beside = new File(sprites, "compressed/etc2/rootling.ktx");
+        assertTrue("could not make the loader's directory",
+            beside.getParentFile().mkdirs() || beside.getParentFile().isDirectory());
+        try (FileOutputStream stream = new FileOutputStream(beside)) {
+            stream.write(container);
+        }
+        File page = new File(sprites, "rootling.png");
+        try (FileOutputStream stream = new FileOutputStream(page)) {
+            stream.write(expected);
+        }
+
+        Gdx.gl = Gdx.gl20 = new AndroidGL20();
+        Texture uploaded = null;
+        try {
+            SheetPayloads.install(new AtlasPageSource(support));
+            AtlasPageSource.Payload chosen =
+                SheetPayloads.source().forPage(new FileHandle(page), header.width, header.height);
+            assertTrue("the runtime loader should prefer the container: " + chosen.describe(), chosen.compressed());
+            assertEquals("and it uploads it in the format the header names", header.glInternalFormat,
+                chosen.glInternalFormat());
+
+            uploaded = SheetPayloads.texture(new FileHandle(page));
+            byte[] loaded = render(uploaded.getTextureObjectHandle(), program, header.width, header.height);
+            Comparison direct = compare(loaded, expected, header, false);
+            Comparison flipped = compare(loaded, expected, header, true);
+            Comparison best = direct.maxDelta <= flipped.maxDelta ? direct : flipped;
+            Log.i("HERODEFENSE_TEXTURE", "HERODEFENSE_TEXTURE path=runtime-loader format="
+                + header.glInternalFormat + " maxDelta=" + best.maxDelta
+                + " exactFraction=" + best.exactFraction() + " sampledColors=" + best.distinctColours);
+            assertEquals("the loader's upload disagrees with the encoder's own decode on " + best.beyondTolerance
+                + " pixels, worst by " + best.maxDelta, 0, best.beyondTolerance);
+            assertEquals("alpha through the runtime loader", 0, best.alphaMismatches);
+        } finally {
+            if (uploaded != null) {
+                uploaded.dispose();
+            }
+            SheetPayloads.install(AtlasPageSource.pngOnly());
+            Gdx.gl = Gdx.gl20 = null;
+        }
     }
 
     private static byte[] read(AssetManager assets, String name) throws IOException {

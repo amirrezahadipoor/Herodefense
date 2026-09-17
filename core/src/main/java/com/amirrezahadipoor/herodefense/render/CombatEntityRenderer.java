@@ -527,7 +527,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     }
 
     private EntityClips load(String key) {
-        TextureAtlas atlas = new TextureAtlas(
+        TextureAtlas atlas = SheetPayloads.atlas(
             Gdx.files.internal("generated/sprites/" + key + ".atlas")
         );
         EntityClips clips = new EntityClips(

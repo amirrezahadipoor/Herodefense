@@ -49,7 +49,7 @@ final class DropTextureCache implements AutoCloseable {
     }
 
     private static Texture load(String path) {
-        Texture texture = new Texture(Gdx.files.internal(path));
+        Texture texture = SheetPayloads.texture(path);
         texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
         return texture;
     }
