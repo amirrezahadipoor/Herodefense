@@ -983,7 +983,7 @@ sentence has to name the two scores and the commit they were measured on.
   immediately: the first emulator run reported a maximum channel difference of 247 and 2,448 of 4,096 pixels
   outside tolerance, because the encoder was emitting differential-mode blocks inside a punchthrough stream,
   where that layout does not exist. Every local round trip passed, since the decoder read the flag the same
-  wrong way; the fix is the mode search honouring the format (`ec2a0b7`), a local regression case that no
+  wrong way; the fix is the mode search honouring the format (`29e2bdb`), a local regression case that no
   punchthrough block may carry the differential flag, and a rebuilt fixture -- with the fixture rebuilt in the
   unit job, so a device cannot be asked to decode bytes the encoder no longer produces. What that run has not
   done yet is happen: the row stays `[~]` until the emulator job reports it green.
