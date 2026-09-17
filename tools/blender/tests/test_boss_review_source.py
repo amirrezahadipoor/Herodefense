@@ -53,7 +53,12 @@ class BossReviewSourceTest(unittest.TestCase):
             isinstance(node, ast.FunctionDef) and node.name == "audit_batch"
             for node in tree.body
         ))
-        self.assertIn('region["width"] != 256', source)
+        # The generator still refuses a frame that is not the tier's native size, but the tier is no longer a
+        # literal: roadmap R5.2 composed three of the four boss sheets out of the genuine master renders at
+        # 384 px, so the size has to come from the reviewed tier the key belongs to.
+        self.assertIn('region["width"] != frame_size', source)
+        self.assertIn('master_tier.bound_geometry(key, (256, 2048, 1024))', source)
+        self.assertIn('master_tier.assert_bound(candidate, key, entry)', source)
         self.assertIn('"batch": "bosses-premium-v2"', source)
         self.assertIn('decoded_limit = 48 * 1024 * 1024', source)
 
