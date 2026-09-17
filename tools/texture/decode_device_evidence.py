@@ -30,7 +30,10 @@ def reassemble(text: str) -> dict[str, bytes]:
     for line in text.splitlines():
         if TAG not in line:
             continue
-        body = line.split(TAG, 1)[1].strip()
+        # logcat writes `I HERODEFENSE_TEXTURE_PIXELS: <body>`, so the tag is followed by a colon that the
+        # split leaves in front of the body -- and the base64 alphabet cannot contain one, so stripping it is
+        # safe for the chunk lines as well.
+        body = line.split(TAG, 1)[1].lstrip(": \t").strip()
         if not body:
             continue
         name, _, rest = body.partition(" ")
