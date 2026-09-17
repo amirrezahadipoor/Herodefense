@@ -38,8 +38,6 @@ ENVIRONMENT = PERF_DIR / "ENVIRONMENT.md"
 #: exemption that cannot be explained is a hole in the rule.
 EXEMPT = {
     "ROADMAP_TO_1000.md": "the plan and the work log: it quotes the audit and names target budgets",
-    "CRITICAL_REVIEW_2026-09-13.md": "the dated review whose numbers are the finding being fixed",
-    "audit/": "the 2026-09-16 audit: a dated record of what the repository measured that day, kept as found",
     "art_reviews/": "per-batch review records: dated summaries of one render batch, backed by that batch's "
                     "tools, its review sheet and docs/asset_hashes.json rather than by a run in docs/perf",
 }

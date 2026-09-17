@@ -2,7 +2,11 @@
 
 > **خلاصه فارسی (۳ خط):** امتیاز مرجع این مخزن ۵۵۰ از ۱۰۰۰ است. عدد اصلی گزارش، «نمرهٔ تجربهٔ بازی» است (بخش ۴): نه فقط کد، بلکه دارایی‌ها، حجم محتوا، زمان بازی، نوآوری، جذابیت، رمز و راز و روایت. کارِ انتشار/درآمدزایی بیرون از محدوده است. این فایل برنامه‌ی بستن کسرهاست؛ هر تیک فقط با شاهد قابل بازتولید زده می‌شود و هیچ تستی برای سبز شدن شل نمی‌شود. دسته‌ی «آماده‌سازی انتشار» بنابر نظر صاحب پروژه بیرون از محدوده است، پس سقف این نقشه راه **۹۲۰ از ۱۰۰۰** است (۸۰ امتیاز آن دسته). ریزمترها و معیار پذیرش هر فاز، پایین‌تر در بخش‌های `R1`–`R8` آمده است.
 
-**Repository:** `amirrezahadipoor/Herodefense` · **Baseline commit:** `49fa799` · **Audit:** [docs/audit/AUDIT_2026-09-16.md](audit/AUDIT_2026-09-16.md) (550/1000)
+**Repository:** `amirrezahadipoor/Herodefense` · **Baseline commit:** `49fa799` · **Audits:** the three audit
+documents this file was scored by (2026-09-16: 505/920, 2026-09-17: 731/920, 2026-09-18: 777/920) were
+deleted on 2026-09-18 at the owner's direction, to keep the repository small enough to migrate safely. Their
+scores are quoted where this file needs them, and every count behind them is still re-takable with
+`tools/audit/measure_round.py`.
 
 Everything below the Persian summary is in English on purpose: the roadmap is the repository's working
 document, and the repository's language is English.
@@ -156,12 +160,21 @@ sentence has to name the two scores and the commit they were measured on.
   minimum mean luma **34.17** (`opening-line-three`), maximum **48.30** (`vfx-combat-0`), minimum lit
   fraction **0.9141** (`tree-siege`). Those 28 values are the table; a new capture is reported as
   UNREFERENCED until its measurement is added in the same commit.
-- [x] **R1.8 Audit published inside the repository.** `docs/audit/AUDIT_2026-09-16.md` + README pointer.
+- [!] **R1.8 Audit published inside the repository.** Was `docs/audit/AUDIT_2026-09-16.md` + README pointer.
+  **No longer true of this tree:** the three audit documents and their frozen measurement sheets were deleted
+  on 2026-09-18 at the owner's direction (repository weight and migration safety). The item is marked `[!]`
+  rather than left ticked, because a ticked item whose artefact is gone is exactly the dishonesty R1.10 was
+  written to remove. What survives is the measurement tool, the perf runs, the ledger and the scores quoted
+  in this file.
 - [x] **R1.9 Negative control for every gate.** Fixtures that must fail exist for the resampling gate
   (NEAREST 2× and 3×), for hash-ledger drift, for the test-integrity scanner, and now for the residency
   budget (an over-budget set and a sheet that was quadrupled both throw). The review-coverage gate gets
   its control together with R1.11, when the gate exists.
-- [x] **R1.10 Documentation honesty sweep.** Withdrawn: `ASSET_SCORE_950.md`; correction banner:
+- [x] **R1.10 Documentation honesty sweep.** *(2026-09-18: four of the documents this sweep annotated --
+  `ASSET_SCORE_950.md`, `RELEASE_v0.5.0-vibrant-950.md`, `CRITICAL_REVIEW_2026-09-13.md` and the root
+  `ROADMAP.md` -- were deleted rather than kept annotated, at the owner's direction; the sweep's finding stands,
+  its artefacts do not. `docs/asset-reviews/`, which nothing referenced, went with them.)*
+  Withdrawn: `ASSET_SCORE_950.md`; correction banner:
   `RELEASE_v0.5.0-vibrant-950.md`; annotated: `ROADMAP.md` Phase 54–77 claims and the "Standing Rules
   for HD". Closed with:
   a status header on `CRITICAL_REVIEW_2026-09-13.md` that names the four numbers which changed and the
@@ -1350,6 +1363,12 @@ real-device testing: **+35 points, not planned here.**
 
 ## Progress log
 
+*Rows dated before 2026-09-18 cite `docs/audit/AUDIT_*.md`, `docs/ASSET_SCORE_950.md`,
+`docs/RELEASE_v0.5.0-vibrant-950.md`, `docs/CRITICAL_REVIEW_2026-09-13.md` and the root `ROADMAP.md`. Those
+documents were deleted on 2026-09-18 at the owner's direction; the rows are kept as written, because a log that
+is edited stops being a log, and the numbers each row reports are quoted inside it.*
+
+
 | Date | Phase | Item | Evidence | Commit |
 |---|---|---|---|---|
 | 2026-09-16 | 78 | R1.1 | 107 sheets restored to the reviewed tier, manifest `78.0-integrity-recovery-runtime-tier`, validator PASS, ledger 153 entries / 0 mismatches | `9d31f70` |
@@ -1476,12 +1495,12 @@ repository:
 
 1. **Repo rubric (Phase 97):** the nine in-scope categories score **≥ 900 of 920** — the release category
    stays out of scope by owner direction — and every figure in this file is still reproducible.
-   **Measured at Phase 97: 731 of 920** (`docs/audit/AUDIT_2026-09-17.md`, commit `12e4dc0`), and
-   **re-measured 2026-09-18: 777 of 920** (`docs/audit/AUDIT_2026-09-18.md`, commit `bf3776e`). The gate is not
-   met at either measurement. This file and the README both reported the first as 722 until the re-audit found
-   that the audit's own category rows sum to 731; the correction is in the 2026-09-18 log row rather than
-   silently edited into the old one. The 143 missing points are itemised sub-item by sub-item in the re-audit,
-   and the largest are gameplay depth (43, the immobile hero above all), the UI and localisation remainder (31:
+   **Measured at Phase 97: 731 of 920** (commit `12e4dc0`), and **re-measured 2026-09-18: 777 of 920** (commit
+   `bf3776e`). The gate is not met at either measurement. The two documents those numbers came from were
+   deleted on 2026-09-18 at the owner's direction, so the figures are quoted here rather than linked; this file
+   and the README both reported the first as 722 until the re-audit found that its own category rows sum to
+   731, and the correction is in the 2026-09-18 log row rather than silently edited into the old one. The 143
+   missing points were itemised sub-item by sub-item in that re-audit, and the largest are gameplay depth (43, the immobile hero above all), the UI and localisation remainder (31:
    17 files still draw English, the HUD does not mirror, no accessibility options, no store assets), the
    optimiser's remaining advantage over the human policy (15), the architecture of `HeroDefenseGame` (14),
    audio (10) and the visual texel audit (10). Every one of them is an open item below rather than a surprise.

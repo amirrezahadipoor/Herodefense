@@ -12,7 +12,7 @@ against:
     python3 tools/audit/measure_round.py --json out.json      # the same, as numbers
 
 What it deliberately does not do is score. A score is a judgement, and a tool that emitted one would be
-laundering a judgement as a measurement; the judgement lives in `docs/audit/AUDIT_2026-09-17.md` beside the
+laundering a judgement as a measurement; the judgement lived in the audit documents beside the
 figures, and each deduction there names the measurement it is about.
 """
 from __future__ import annotations
@@ -189,7 +189,6 @@ def docs_facts() -> dict:
         "roadmapDone": len(re.findall(r"^- \[x\]", roadmap, re.M)),
         "roadmapPartial": len(re.findall(r"^- \[~\]", roadmap, re.M)),
         "roadmapOpen": len(re.findall(r"^- \[ \]", roadmap, re.M)),
-        "audits": sorted(path.name for path in (ROOT / "docs/audit").glob("AUDIT_*.md")),
         "readmeLines": len(read(ROOT / "README.md").splitlines()),
     }
 

@@ -53,14 +53,28 @@ class FactSheetTest(unittest.TestCase):
             self.assertNotIn(f"import {import_name}", source,
                              "an audit figure that needs a network is not reproducible")
 
-    def test_the_frozen_sheet_beside_the_audit_is_this_tool_s_output_shape(self) -> None:
-        frozen = REPOSITORY / "docs/audit/MEASUREMENTS_2026-09-17.json"
-        self.assertTrue(frozen.is_file(), "the audit cites a frozen fact sheet")
-        import json
-        facts = json.loads(frozen.read_text())
-        for section in ("tree", "tests", "integrity", "manifest", "ledger", "performance",
-                        "content", "docs", "assets", "git"):
-            self.assertIn(section, facts)
+    def test_every_section_the_tool_reports_is_a_section_it_can_produce(self) -> None:
+        # The audits used to keep a frozen sheet beside them and this test read it back. Those documents were
+        # deleted on 2026-09-18 at the owner's direction, so the shape is now checked against the tool itself:
+        # a fact sheet nobody can regenerate is not evidence, and this one can be.
+        sections = {
+            "tree": measure_round.largest_classes,
+            "integrity": measure_round.integrity_scan,
+            "manifest": measure_round.manifest_facts,
+            "ledger": measure_round.ledger_facts,
+            "performance": measure_round.performance_runs,
+            "content": measure_round.content_flags,
+            "docs": measure_round.docs_facts,
+            "assets": measure_round.asset_inventory,
+            "git": measure_round.git_facts,
+        }
+        for name, builder in sections.items():
+            self.assertTrue(callable(builder), name)
+        facts = measure_round.docs_facts()
+        for key in ("documents", "roadmapLines", "roadmapDone", "roadmapOpen", "readmeLines"):
+            self.assertIn(key, facts)
+        self.assertNotIn("audits", facts,
+                         "the audit documents are gone, so the tool must not report a permanently empty list")
 
 
 if __name__ == "__main__":
