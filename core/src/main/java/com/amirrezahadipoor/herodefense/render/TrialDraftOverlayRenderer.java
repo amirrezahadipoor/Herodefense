@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.render;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.TrialStrings;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -24,6 +26,13 @@ public final class TrialDraftOverlayRenderer implements AutoCloseable {
     static final float FOOTER_PANEL_Y = 140f;
     static final float FOOTER_PANEL_HEIGHT = 104f;
     static final float ICON_SIZE = 84f;
+    /**
+     * A card's text starts this far in from its leading edge, clear of the 84f icon at 26f, and the corner
+     * word ends the same distance from its trailing edge. The header and footer panels are 600f wide at x=60f
+     * of a 720f screen, so each is its own mirror image and neither needs a call: 2 * 60f + 600f is 720f.
+     */
+    static final float CARD_TEXT_INSET = 130f;
+    static final float CARD_TEXT_INSET_RIGHT = 26f;
 
     private final ShapeRenderer shapes = new ShapeRenderer();
     private final OverlayText text = new OverlayText();
@@ -64,9 +73,9 @@ public final class TrialDraftOverlayRenderer implements AutoCloseable {
         frames.draw(batch, UiFrameRenderer.Kind.PANEL, HEADER_PANEL_X, FOOTER_PANEL_Y,
             HEADER_PANEL_WIDTH, FOOTER_PANEL_HEIGHT, true, false);
 
-        text.drawCentered(batch, "THE CONVERGENCE OFFERS", 360f, 1168f, 0.78f,
+        text.drawCentered(batch, GameLocale.text(TrialStrings.OFFER_TITLE), 360f, 1168f, 0.78f,
             OverlayText.GOLD);
-        text.drawCentered(batch, "CHOOSE TWO TRIALS", 360f, 1122f, 1.62f, OverlayText.GOLD);
+        text.drawCentered(batch, GameLocale.text(TrialStrings.CHOOSE_TWO), 360f, 1122f, 1.62f, OverlayText.GOLD);
         text.drawCentered(batch, picksLabel(state), 360f, 1066f, 0.74f,
             OverlayText.SUBTLE);
 
@@ -81,24 +90,25 @@ public final class TrialDraftOverlayRenderer implements AutoCloseable {
             float offset = MainMenuRenderer.pressedOffset(cardState);
             icons.draw(batch, trial.iconKey(), TrialDraftTouchLayout.CARD_X + 26f,
                 y + 40f + offset, ICON_SIZE, cardState);
-            text.draw(batch, trial.title().toUpperCase(Locale.ROOT),
-                TrialDraftTouchLayout.CARD_X + 130f, y + 126f + offset, 1.12f,
-                OverlayText.IVORY);
-            text.draw(batch, trial.reward(),
-                TrialDraftTouchLayout.CARD_X + 130f, y + 88f + offset, 0.92f,
-                OverlayText.POSITIVE);
-            text.draw(batch, trial.risk(),
-                TrialDraftTouchLayout.CARD_X + 130f, y + 52f + offset, 0.92f,
-                OverlayText.NEGATIVE);
-            text.drawRightAligned(batch, picked ? "CHOSEN" : "TRIAL",
-                TrialDraftTouchLayout.CARD_X + TrialDraftTouchLayout.CARD_WIDTH - 26f,
+            text.drawLeading(batch, trial.title().toUpperCase(Locale.ROOT),
+                TrialDraftTouchLayout.CARD_X, TrialDraftTouchLayout.CARD_WIDTH, CARD_TEXT_INSET,
+                y + 126f + offset, 1.12f, OverlayText.IVORY);
+            text.drawLeading(batch, trial.reward(),
+                TrialDraftTouchLayout.CARD_X, TrialDraftTouchLayout.CARD_WIDTH, CARD_TEXT_INSET,
+                y + 88f + offset, 0.92f, OverlayText.POSITIVE);
+            text.drawLeading(batch, trial.risk(),
+                TrialDraftTouchLayout.CARD_X, TrialDraftTouchLayout.CARD_WIDTH, CARD_TEXT_INSET,
+                y + 52f + offset, 0.92f, OverlayText.NEGATIVE);
+            text.drawTrailing(batch,
+                GameLocale.text(picked ? TrialStrings.CARD_CHOSEN : TrialStrings.CARD_TRIAL),
+                TrialDraftTouchLayout.CARD_X, TrialDraftTouchLayout.CARD_WIDTH, CARD_TEXT_INSET_RIGHT,
                 y + 126f + offset, 0.60f,
                 picked ? OverlayText.GOLD : OverlayText.SUBTLE);
         }
 
-        text.drawCentered(batch, "Two trials bind for this run only. Both bite and bless.",
+        text.drawCentered(batch, GameLocale.text(TrialStrings.BIND_NOTE),
             360f, FOOTER_PANEL_Y + 66f, 0.70f, OverlayText.IVORY);
-        text.drawCentered(batch, "Tap two cards to begin the descent",
+        text.drawCentered(batch, GameLocale.text(TrialStrings.TAP_HINT),
             360f, FOOTER_PANEL_Y + 34f, 0.62f, OverlayText.SUBTLE);
         batch.end();
     }
@@ -109,7 +119,10 @@ public final class TrialDraftOverlayRenderer implements AutoCloseable {
 
     static String picksLabel(GameState state) {
         int picks = state.trialDraftPicks == null ? 0 : state.trialDraftPicks.size();
-        return picks + " of " + TrialDraftSystem.PICK_COUNT + " bound  |  rewards green, costs red";
+        return GameLocale.text(
+            TrialStrings.PICK_STATUS,
+            GameLocale.number(picks),
+            GameLocale.number(TrialDraftSystem.PICK_COUNT));
     }
 
     private static boolean isPicked(GameState state, int index) {

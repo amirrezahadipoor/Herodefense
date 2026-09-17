@@ -136,8 +136,6 @@ final class DrawnStringProvenanceTest {
         "SkillId.java",
         "StatShopOverlayRenderer.java",
         "StatTooltips.java",
-        "TrialDraftOverlayRenderer.java",
-        "TrialId.java",
         "Trophy.java",
         "TrophyPresenter.java"
     );
