@@ -1,0 +1,215 @@
+{
+  "assets": {
+    "audioBytes": 1465056,
+    "audioFiles": 24,
+    "frag": {
+      "bytes": 3315,
+      "count": 1
+    },
+    "json": {
+      "bytes": 884587,
+      "count": 102
+    },
+    "ktx": {
+      "bytes": 11521088,
+      "count": 16
+    },
+    "ogg": {
+      "bytes": 1465056,
+      "count": 24
+    },
+    "png": {
+      "bytes": 18244462,
+      "count": 157
+    },
+    "totalBytes": 32605887,
+    "ttf": {
+      "bytes": 282332,
+      "count": 4
+    },
+    "vert": {
+      "bytes": 315,
+      "count": 1
+    }
+  },
+  "content": {
+    "accessibility": true,
+    "backButton": true,
+    "equipmentFiles": 7,
+    "haptics": true,
+    "onboardingFiles": 4,
+    "packages": [
+      "architecture",
+      "ascension",
+      "audio",
+      "balance",
+      "gameplay",
+      "i18n",
+      "input",
+      "items",
+      "model",
+      "onboarding",
+      "playtest",
+      "polish",
+      "potions",
+      "presentation",
+      "progression",
+      "render",
+      "rewards",
+      "save",
+      "settings",
+      "shop",
+      "skills",
+      "story",
+      "tooltips",
+      "trials"
+    ],
+    "persian": true,
+    "rightToLeft": true,
+    "storyFiles": 11
+  },
+  "docs": {
+    "audits": [
+      "AUDIT_2026-09-16.md",
+      "AUDIT_2026-09-17.md"
+    ],
+    "documents": 57,
+    "readmeLines": 36,
+    "roadmapDone": 48,
+    "roadmapLines": 1456,
+    "roadmapOpen": 54,
+    "roadmapPartial": 2
+  },
+  "git": {
+    "commits": "512",
+    "first": "2026-09-17",
+    "head": "bf3776e",
+    "last": "2026-09-17",
+    "trackedBytes": 583
+  },
+  "integrity": {
+    "disabled": 0,
+    "exemptions": 4,
+    "softened": 0,
+    "test_integrity_test": true,
+    "vacuous": 0,
+    "workflow_always_true": 3
+  },
+  "ledger": {
+    "entries": 157,
+    "ledgerPolicy": "Every committed PNG under android/assets/generated is listed here. AssetIntegrityTest fails when a sheet changes without regenerating this ledger, so art can no longer change silently.",
+    "materialMaps": 39
+  },
+  "manifest": {
+    "assetCount": 111,
+    "decodedBytes": 518959104,
+    "decodedCatalogBudgetBytes": 525000000,
+    "decodedCombatResidencyBudgetBytes": 209715200,
+    "engineVersion": "78.0-integrity-recovery-runtime-tier",
+    "maxAtlasPageSize": 4096,
+    "visualQuality": "studio-v3"
+  },
+  "performance": {
+    "apkSize": {
+      "commit": "7329f4b",
+      "id": "2026-09-17-apk-size",
+      "metrics": {
+        "apkBytes": 20872599,
+        "budgetBytes": 120000000
+      }
+    },
+    "coldStart": {
+      "commit": "7329f4b",
+      "id": "2026-09-17-cold-start",
+      "metrics": {
+        "budgetMillis": 6000.0,
+        "coldStartMillis": 882.0
+      }
+    },
+    "composedTier": {
+      "commit": "4507792",
+      "id": "2026-09-17-composed-tier-residency",
+      "metrics": {
+        "atlasCapacityBytes": 117440512,
+        "decodedCatalogBudgetBytes": 525000000,
+        "decodedCatalogBytes": 518959104,
+        "decodedCombatResidencyBudgetBytes": 209715200,
+        "liveCombatResidencyBytes": 207765504,
+        "liveCombatResidencyMiB": 198.1
+      }
+    },
+    "ids": [
+      "2026-09-17-apk-size",
+      "2026-09-17-cold-start",
+      "2026-09-17-composed-tier-residency",
+      "2026-09-17-format-projection",
+      "2026-09-17-generated-assets",
+      "2026-09-17-residency",
+      "2026-09-17-runtime-tier-cost",
+      "2026-09-17-texture-encoding-sweep",
+      "2026-09-17-wave50-residency"
+    ],
+    "runCount": 9,
+    "wave50": {
+      "commit": "7329f4b",
+      "id": "2026-09-17-wave50-residency",
+      "metrics": {
+        "budgetMiB": 400.0,
+        "graphicsMiB": 0.0,
+        "totalPssMiB": 148.3,
+        "totalRssMiB": 267.2
+      }
+    }
+  },
+  "tests": {
+    "classes": 193,
+    "errors": 0,
+    "failures": 0,
+    "measured": true,
+    "seconds": 27.913000000000018,
+    "skipped": 0,
+    "tests": 816
+  },
+  "tree": {
+    "androidFiles": 1,
+    "androidTestFiles": 4,
+    "blenderTools": 24,
+    "coreMainFiles": 257,
+    "coreMainLines": 27418,
+    "coreTestFiles": 199,
+    "coreTestLines": 21221,
+    "largestClasses": [
+      {
+        "fields": 59,
+        "lines": 771,
+        "methods": 33,
+        "name": "HeroDefenseGame.java"
+      },
+      {
+        "fields": 3,
+        "lines": 660,
+        "methods": 30,
+        "name": "BalanceSimulator.java"
+      },
+      {
+        "fields": 21,
+        "lines": 653,
+        "methods": 39,
+        "name": "CombatEntityRenderer.java"
+      },
+      {
+        "fields": 53,
+        "lines": 612,
+        "methods": 25,
+        "name": "GameState.java"
+      },
+      {
+        "fields": 0,
+        "lines": 543,
+        "methods": 22,
+        "name": "InventoryOverlayRenderer.java"
+      }
+    ],
+    "visualTools": 50
+  }
+}

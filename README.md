@@ -18,18 +18,32 @@ audit. There are two audits in this repository, and both are meant to be read to
 | audit | commit | score |
 |---|---|---|
 | [`AUDIT_2026-09-16.md`](docs/audit/AUDIT_2026-09-16.md) — what the project looked like before the roadmap | `49fa799` | 550 / 1000 |
-| [`AUDIT_2026-09-17.md`](docs/audit/AUDIT_2026-09-17.md) — the same rubric, re-measured at Phase 97 | `12e4dc0` | **722 / 920 in scope** (release preparation is not scored, so there is no 1,000-point figure) |
+| [`AUDIT_2026-09-17.md`](docs/audit/AUDIT_2026-09-17.md) — the same rubric, re-measured at Phase 97 | `12e4dc0` | 731 / 920 in scope (release preparation is not scored, so there is no 1,000-point figure) |
+| [`AUDIT_2026-09-18.md`](docs/audit/AUDIT_2026-09-18.md) — the same rubric again, after the Back button, the localisation layer and the compressed sheets | `bf3776e` | **777 / 920 in scope** |
 
-Since the 2026-09-17 audit was taken, the texture work it scored as "not shipped" has landed: 16 sheets now
-ship as ETC2 containers beside their PNGs, the encoder's colour half beats Google's `etc1` on all 111 sheets
-(33.01 dB median against 32.28 dB), and the loader reads a container on any device that decodes ETC2 -- see
-§7 of [`docs/ASSET_ENGINE.md`](docs/ASSET_ENGINE.md) and `perf:2026-09-17-texture-encoding-sweep`. The next
-audit is where that shows up as points; this paragraph is not a score.
+The 2026-09-17 audit's own category rows sum to 731; this file said 722 for it until the 2026-09-18 re-audit
+found the disagreement, which is recorded in that audit's category 10 rather than quietly corrected.
 
-The roadmap's Gate 1 asks for ≥ 900 of 920 at Phase 97 and the re-audit measures 722, so the gate is **not
-met** and no document here claims a finished score: the missing points are itemised sub-item by sub-item in
-the audit, and the numbers behind it are frozen beside it as `docs/audit/MEASUREMENTS_2026-09-17.json` and
-re-takable with `tools/audit/measure_round.py`.
+Since then: Android's Back button is handled on all thirteen screens and verified on an emulator; a Persian
+localisation layer ships — a shaping and bidi pipeline checked against 245 vectors that CI re-derives from two
+pinned libraries, Vazirmatn under the SIL OFL, 181 strings in 10 tables across ten screens, five screens
+mirrored, and a build gate that fails when a source draws its own words; and 16 sheets ship as ETC2 containers,
+which is where 5.6 MB of the APK went. What is still missing is itemised in the audit's §6: 17 files still draw
+English, the HUD does not mirror, and there are no accessibility options and no store assets.
+
+The roadmap's Gate 1 asks for ≥ 900 of 920 and the re-audit measures 777, so the gate is **not met** and no
+document here claims a finished score. The numbers behind it are frozen as
+`docs/audit/MEASUREMENTS_2026-09-18.json` and re-takable with `tools/audit/measure_round.py`.
+
+## Build and test
+
+```bash
+./scripts/gradle.sh :core:test :core:ciStaticAnalysis   # the platform-independent game and its analyzers
+python3 tools/audit/measure_round.py                    # every count the audits quote
+```
+
+The Android layer (`:android:assembleDebug`, the emulator journeys) builds in GitHub Actions; there is no
+desktop, iOS or browser target to run the game on a workstation.
 
 ## Build cache policy
 
