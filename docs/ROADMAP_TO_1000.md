@@ -773,8 +773,23 @@ sentence has to name the two scores and the commit they were measured on.
   a batch interrupted before its first manifest write renders from the start, because the manifest is what
   maps keys to files. Ten new tests run in the unit job (`tools/render/tests`), and the README documents the
   three commands with their real output.
-- [ ] **R5.4 Vibrant grade rendered, not filtered**, proven with before/after emulator screenshots
-  (unblocks R1.7).
+- [~] **R5.4 Vibrant grade rendered, not filtered**, proven with before/after emulator screenshots
+  (unblocks R1.7). The arc the review sheets have always printed is now a runtime decision: `StageGrade`
+  carries the four stops (DAWN 1.00/1.00/1.00, AMBER 1.02/0.98/0.92, TEAL 0.94/1.00/1.02, HOLLOW
+  0.86/0.90/1.00 with a 0.06 shadow lift), interpolates between them by wave so crossing a stage boundary
+  moves the colour rather than jumping it, and `ArenaEnvironmentRenderer` draws the ground *under* it -- the
+  grade multiplies the ambient tint at draw time, with no full-screen pass over a finished frame, which is
+  what "rendered, not filtered" means here. `StageGradeTest` holds the stops, the names the strips print and
+  the interpolation, and a test in `tools/visual/tests` reads `StageGrade.java` and `review_strips.py`
+  together and fails if the two recipes drift apart. One simplification is written down rather than implied:
+  the tooling lifts shadows per pixel from luma, a tint has no luma to read, so the lift is an ambient floor
+  toward the stage teal. **The before/after pair** is a new emulator case,
+  `theArenaIsRenderedUnderTheStageGrade`, which plays the same prepared run at wave 20 (DAWN -- the identity,
+  and therefore the "before") and at wave 175 (HOLLOW, the "after"), writes `grade-dawn-wave-20.png` and
+  `grade-hollow-wave-175.png` as artifacts, measures the ground band rather than the whole frame because the
+  HUD is not graded, and asserts the direction the arc states: the ground's red falls by at least two levels
+  and blue-minus-red rises by at least two. The row stays `[~]` until that pair has been measured on a green
+  emulator run and the two captures carry brightness references beside the others.
 - [x] **R5.5 PBR maps in the repository** (normal / roughness / AO) with material provenance. 39 maps -- normal,
   roughness and ambient occlusion for the hero, the four bosses and the eight creatures -- under `docs/materials/`,
   derived from the rendered masters that ship by a recipe that is in the repository rather than in somebody's

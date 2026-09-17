@@ -487,6 +487,94 @@ public final class AndroidTouchSmokeTest {
         }
     }
 
+    /**
+     * Roadmap R5.4: the arena is drawn *under* the stage's grade rather than filtered once the frame is
+     * finished, and the before/after pair the item asks for is these two captures -- the same prepared run,
+     * played once at wave 20 (DAWN, the identity grade) and once at wave 175 (HOLLOW, red 0.86 / blue 1.00 with
+     * a shadow lift). The assertion is the direction the arc itself states, measured on the ground band rather
+     * than on the whole frame, because the HUD is not graded and would dilute it.
+     */
+    @Test
+    public void theArenaIsRenderedUnderTheStageGrade() {
+        float[] dawn = captureGroundBandAtWave(20, "grade-dawn-wave-20.png");
+        float[] hollow = captureGroundBandAtWave(175, "grade-hollow-wave-175.png");
+        assertTrue(dawn[3] >= 0.80f, "the dawn arena is lit: " + dawn[3]);
+        assertTrue(hollow[3] >= 0.80f, "the hollow arena is lit: " + hollow[3]);
+        assertTrue(dawn[0] - hollow[0] >= 2f,
+            "HOLLOW multiplies red by 0.86 where DAWN multiplies by 1.00, so the ground's red has to fall:"
+                + " dawn=" + dawn[0] + " hollow=" + hollow[0]);
+        assertTrue((hollow[2] - hollow[0]) - (dawn[2] - dawn[0]) >= 2f,
+            "and the arc cools it: blue-minus-red dawn=" + (dawn[2] - dawn[0])
+                + " hollow=" + (hollow[2] - hollow[0]));
+        System.out.println("STAGE GRADE ground band dawn r/g/b/lit=" + dawn[0] + "/" + dawn[1] + "/" + dawn[2]
+            + "/" + dawn[3] + " hollow=" + hollow[0] + "/" + hollow[1] + "/" + hollow[2] + "/" + hollow[3]);
+    }
+
+    /** Plays one prepared run at {@code wave} and returns the ground band's mean red, green, blue and lit share. */
+    private static float[] captureGroundBandAtWave(int wave, String name) {
+        clearRunSave();
+        prepareWaveSave(wave);
+        try (ActivityScenario<AndroidLauncher> scenario = ActivityScenario.launch(AndroidLauncher.class)) {
+            HeroDefenseGame game = gameFrom(scenario);
+            View surface = gameSurfaceFrom(scenario);
+            long touchCount = game.handledTouchUpCount();
+            tapWorld(surface, MENU_X, menuActionY(MainMenuTouchLayout.Action.CONTINUE, true));
+            await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
+            await("the wave is playing", () -> game.screenState() == GameScreenState.PLAYING);
+            SystemClock.sleep(1_400L); // let the arena settle before the frame is taken
+            Bitmap screenshot = InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
+            assertNotNull(screenshot);
+            float[] brightness = measureBrightness(screenshot, name);
+            BRIGHTNESS.put(name, brightness);
+            assertBrightnessContract(name, brightness);
+            float[] band = measureGroundBand(screenshot);
+            writeScreenshot(screenshot, name);
+            screenshot.recycle();
+            return band;
+        }
+    }
+
+    /** Mean red, green and blue of the ground band (the lower third) and the share of it that is lit. */
+    private static float[] measureGroundBand(Bitmap screenshot) {
+        int width = screenshot.getWidth();
+        int top = Math.round(screenshot.getHeight() * 0.62f);
+        int bottom = Math.round(screenshot.getHeight() * 0.92f);
+        double red = 0d;
+        double green = 0d;
+        double blue = 0d;
+        int samples = 0;
+        int lit = 0;
+        for (int y = top; y < bottom; y += 6) {
+            for (int x = 0; x < width; x += 6) {
+                int pixel = screenshot.getPixel(x, y);
+                int r = (pixel >> 16) & 0xff;
+                int g = (pixel >> 8) & 0xff;
+                int b = pixel & 0xff;
+                red += r;
+                green += g;
+                blue += b;
+                samples++;
+                if (r + g + b >= 120) {
+                    lit++;
+                }
+            }
+        }
+        assertTrue(samples > 0, "the ground band sampled no pixels");
+        return new float[] {
+            (float) (red / samples), (float) (green / samples), (float) (blue / samples),
+            (float) lit / samples,
+        };
+    }
+
+    /** A run parked at the start of {@code wave}: Continue starts it, so the arena is on screen and graded. */
+    private static void prepareWaveSave(int wave) {
+        GameState state = GameState.newRun(887L);
+        state.waveNumber = wave;
+        state.heroLevel = 40;
+        state.waveActive = false;
+        writeSave(state);
+    }
+
     private static void prepareBossEntranceSave() {
         GameState state = GameState.newRun(886L);
         state.waveNumber = 5;
@@ -803,6 +891,12 @@ public final class AndroidTouchSmokeTest {
         float[] brightness = measureBrightness(screenshot, name);
         BRIGHTNESS.put(name, brightness);
         assertBrightnessContract(name, brightness);
+        writeScreenshot(screenshot, name);
+        screenshot.recycle();
+    }
+
+    /** Writes one captured frame into the instrumentation output directory the CI job uploads. */
+    private static void writeScreenshot(Bitmap screenshot, String name) {
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         File directory = new File(context.getExternalMediaDirs()[0], "additional_test_output");
         assertTrue(directory.isDirectory() || directory.mkdirs());
@@ -811,8 +905,6 @@ public final class AndroidTouchSmokeTest {
             assertTrue(screenshot.compress(Bitmap.CompressFormat.PNG, 100, output));
         } catch (IOException exception) {
             throw new AssertionError("Could not capture " + destination, exception);
-        } finally {
-            screenshot.recycle();
         }
         assertTrue(destination.isFile());
         assertTrue(destination.length() > 0L);

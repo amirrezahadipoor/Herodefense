@@ -80,16 +80,23 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         float presentationDeltaSeconds
     ) {
         ScreenEdges.drawCover(batch, backdrop);
-        drawGround(batch);
+        drawGround(batch, state.waveNumber);
         drawCrystals(batch);
         drawWorldTree(batch, state, runTimeSeconds, presentationDeltaSeconds);
     }
 
-    private void drawGround(SpriteBatch batch) {
+    /** R5.4: the ground is drawn *under* the stage's grade, not filtered after the frame is finished. */
+    private void drawGround(SpriteBatch batch, int wave) {
+        StageGrade grade = StageGrade.forWave(wave);
         float originalColor = batch.getPackedColor();
         for (float[] placement : GROUND_PLACEMENTS) {
             float shade = placement[5];
-            batch.setColor(shade * 0.96f, shade, shade * 0.97f, 0.96f);
+            batch.setColor(
+                grade.channel(shade * 0.96f, 0),
+                grade.channel(shade, 1),
+                grade.channel(shade * 0.97f, 2),
+                0.96f
+            );
             int variant = Math.round(placement[4]);
             batch.draw(
                 ground[variant], placement[0], placement[1], placement[2], placement[3]

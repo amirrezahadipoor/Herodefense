@@ -169,8 +169,9 @@ final class PremiumArenaAssetContractTest {
             "core/src/main/java/com/amirrezahadipoor/herodefense/render/ArenaEnvironmentRenderer.java"
         ));
         assertTrue(source.contains("generated/environment/arena_backdrop.png"));
+        // R5.4 gave drawGround the wave it is graded by, so the call site is what this ordering check reads.
         assertTrue(source.indexOf("ScreenEdges.drawCover(batch, backdrop)")
-            < source.indexOf("drawGround(batch)"));
+            < source.indexOf("drawGround(batch,"));
         assertTrue(source.contains("private static final float[][] GROUND_PLACEMENTS"));
         assertTrue(source.contains("private static final float[][] CRYSTAL_PLACEMENTS"));
         assertTrue(source.contains("for (float[] placement : GROUND_PLACEMENTS)"));
