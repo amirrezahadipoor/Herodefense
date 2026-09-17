@@ -965,9 +965,27 @@ sentence has to name the two scores and the commit they were measured on.
   projection at all: a test asserts it equals the decoded catalog the residency gate already enforces, which
   is what makes the compressed rows worth quoting. **The remaining half is the payload**: the encoded
   containers, the loader that picks a format per device with a PNG fallback, and the device evidence that
-  the fallback works. That needs an ETC2/ASTC encoder pinned into CI (the render pipeline is Blender and
-  cannot emit them) and an emulator run, and it is the next thing this item does rather than something it
-  claims.
+  the fallback works. A first-party ETC2 encoder now exists in this repository, so what is left is evidence
+  rather than tooling.
+  **The payload half is in the repository and measured, and nothing ships yet -- by the tool's own rule.** A
+  first-party ETC2 encoder (`tools/texture/etc2.py`) implements both colour modes against the published bit
+  layout and is held to Google's `etc1` implementation -- the encoder/decoder pair libGDX ships as JNI -- by
+  decoding four reference blocks (gradient, flat, hard edge, noisy) pixel for pixel in
+  `tools/texture/tests/test_etc2_encoder.py`; `tools/texture/ktx.py` writes and reads the KTX v1 containers
+  libGDX's `KTXTextureData` already knows how to upload, and `tools/texture/encode_textures.py` measures the
+  three numbers that decide a sheet: decoded bytes, the share of alpha that is already a mask, and the PSNR of
+  the round trip. Running it over the combat sheets answered the question rather than assuming it: the shipped
+  sheets are **not** masks (0.94-0.99 of their pixels are 0 or 255, so 0.6-6 % would be hardened by the
+  punchthrough format, and ETC2_RGBA8's base-and-modifier alpha cannot represent a mask at all), and the
+  encoder's colour quality measures **28.88 dB** against the **33.57 dB** the reference encoder reaches on the
+  same pixels -- below the 32 dB bar this item sets for itself, so the tool declines every sheet and the PNG
+  stays the shipped payload. The per-device half is in and tested (`DeviceTextureSupport` reads the format out of
+  the GL version, `TexturePayloadPolicy` chooses the container per sheet and falls back to the reviewed PNG,
+  six cases in `TexturePayloadPolicyTest`), so a payload that does clear the bar switches on without a second
+  decision at runtime. What is still open is written down rather than implied: closing the five-decibel gap
+  against the reference encoder (or pinning that encoder and its licence), wiring containers into the
+  atlas-page loading path, and the device evidence that a compressed palette uploads and renders on the
+  emulator.
 - [~] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
   manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (390 MB) and the
   live combat set against `decodedCombatResidencyBudgetBytes`, now a deliberate **100 MiB**
@@ -1240,6 +1258,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 96 | R8.4 | the cold start is measured after the instrumentation run: the script reinstalls the debug APK, resolves the launcher component and times `am start -W`, and `tools/perf/parse_startup.py` + `log_run.py` + `render_performance_doc.py` turn that into a filed run and a generated document | `6f90222` · `cb457b8` |
 | 2026-09-17 | 96 | CI | the first emulator run of the wave-50 test measured nothing (a single truncated shell read) and the cold start ran against an uninstalled package; both diagnosed from the job log, fixed in the script and the test, and a compile error CI found in the new stat helper fixed by parsing `MemoryInfo`'s string stats | `8a2e05f` · `3b7c580` |
 | 2026-09-17 | 93 | R5.5 · R5.6 | 39 material maps (normal / roughness / AO) derived from the shipped masters with a provenance table and a gate that re-derives every one of them, and a review-evidence step that regenerates a rendered batch's contact sheets and audit JSON from the batch itself | `05e2f79` |
+| 2026-09-17 | 96 | R8.1 (payload) | a first-party ETC2 encoder held to Google's reference implementation by four committed blocks, KTX v1 containers the runtime can already upload, a per-device source policy with six cases, and an encode tool that measures decoded bytes, mask share and round-trip PSNR; measured 28.88 dB against the reference encoder's 33.57 dB, below the 32 dB bar, so no sheet ships compressed yet and the PNGs stay the payload | `PENDING` |
 
 ## Definition of done
 
