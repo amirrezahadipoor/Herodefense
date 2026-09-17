@@ -24,6 +24,9 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 DEFAULT_BUDGET = ROOT / "docs" / "perf" / "wave50_memory_budget.json"
 MARKER = "HERODEFENSE_PERF"
+#: The instrumented test also logs a diagnostic line (`HERODEFENSE_PERF_DUMP ...`) that shares the prefix and
+#: carries no measurement; it must not be read as one.
+MARKER_LINE = re.compile(r"HERODEFENSE_PERF(?!_)")
 FIELD = re.compile(r"(\w+)=([\d,]+)")
 
 
@@ -31,7 +34,7 @@ def measurements(text: str) -> list[dict]:
     """Every measurement line in the capture, as dictionaries of integers."""
     found = []
     for line in text.splitlines():
-        if MARKER not in line:
+        if not MARKER_LINE.search(line):
             continue
         values = {name: int(number.replace(",", "")) for name, number in FIELD.findall(line)}
         if "totalPssKb" in values:

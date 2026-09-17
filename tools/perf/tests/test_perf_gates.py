@@ -203,6 +203,24 @@ class WaveFiftyMemoryTest(unittest.TestCase):
             "I/HERODEFENSE_PERF: entering wave\nI/other: totalPssKb=1\n"
         ))
 
+    def test_the_diagnostic_line_that_shares_the_prefix_is_not_read_as_a_measurement(self) -> None:
+        # The instrumented test logs `HERODEFENSE_PERF_DUMP ...` beside the measurement so the CI capture keeps
+        # the raw report as evidence. It contains numbers, and a gate that read it as a measurement would
+        # compare the wrong line -- which is exactly what the tightened marker prevents.
+        text = (
+            "I/HERODEFENSE_PERF: HERODEFENSE_PERF_DUMP shellPssKb=239100 shellBytes=8412 "
+            "head=Applications Memory Usage\n"
+        )
+        self.assertEqual([], check_wave50_memory.measurements(text))
+        text_with_both = (
+            "I/HERODEFENSE_PERF: HERODEFENSE_PERF_DUMP shellPssKb=1\n"
+            "I/HERODEFENSE_PERF: HERODEFENSE_PERF wave=50 totalPssKb=250000 graphicsKb=90000 "
+            "source=debug.MemoryInfo\n"
+        )
+        found = check_wave50_memory.measurements(text_with_both)
+        self.assertEqual(1, len(found))
+        self.assertEqual(250000, found[0]["totalPssKb"])
+
     def test_a_set_inside_the_budget_passes_and_an_oversized_one_fails_with_the_number(self) -> None:
         ok = {"totalPssKb": 300_000, "totalRssKb": 400_000, "graphicsKb": 100_000}
         self.assertEqual([], check_wave50_memory.problems(ok, self.BUDGET))

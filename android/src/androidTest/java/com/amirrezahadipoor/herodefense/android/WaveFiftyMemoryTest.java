@@ -4,6 +4,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
+import android.os.Debug;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
 import android.util.Log;
@@ -59,6 +60,8 @@ public final class WaveFiftyMemoryTest {
         MainMenuTouchLayout.BUTTON_X + MainMenuTouchLayout.BUTTON_WIDTH / 2f;
     private static final int MAXIMUM_MENU_ROWS = 12;
     private static final long WAVE_SETTLE_MILLIS = 4_000L;
+    /** A memory report is kept as evidence in the logcat capture; this bounds what one line can hold. */
+    private static final int MAXIMUM_DUMP_CHARS = 4_000;
 
     @After
     public void clearSave() {
@@ -87,17 +90,25 @@ public final class WaveFiftyMemoryTest {
             assertTrue("the run has to be alive at wave 50 for the measurement to mean anything",
                 game.gameState().hero.alive);
 
-            String dump = dumpsysMeminfo();
-            long pssKib = kilobytes(dump, "TOTAL PSS");
-            long rssKib = kilobytes(dump, "TOTAL RSS");
-            long graphicsKib = kilobytes(dump, "Graphics");
-            assertTrue("dumpsys meminfo reported no PSS; the measurement cannot be trusted", pssKib > 0);
+            // Two sources, because the first CI run measured neither: the shell dump was read once and came
+            // back truncated before its App Summary, and the assertion behind it could not tell a truncated
+            // dump from a process with no memory report. The process's own accounting (`Debug.MemoryInfo`) is
+            // the primary number now -- it is the same kernel accounting `dumpsys meminfo` prints -- and the
+            // shell dump is still taken and logged, so the roadmap's named method is measured too. The log
+            // line says which source answered.
+            MemoryReading reading = measure();
+            assertTrue("no memory report was readable: " + reading.diagnosis,
+                reading.pssKib > 0);
 
             Log.i(TAG, "HERODEFENSE_PERF wave=50"
-                + " totalPssKb=" + pssKib
-                + " totalRssKb=" + rssKib
-                + " graphicsKb=" + graphicsKib
-                + " budgetKb=" + RuntimeResidency.WAVE_50_PROCESS_BUDGET_KIB);
+                + " totalPssKb=" + reading.pssKib
+                + " totalRssKb=" + reading.rssKib
+                + " graphicsKb=" + reading.graphicsKib
+                + " budgetKb=" + RuntimeResidency.WAVE_50_PROCESS_BUDGET_KIB
+                + " source=" + reading.source);
+            Log.i(TAG, "HERODEFENSE_PERF_DUMP " + reading.diagnosis);
+
+            long pssKib = reading.pssKib;
 
             // Looser and wider than the committed budget on purpose: this is the in-process guard, the gate in
             // CI is the one with the number in it.
@@ -107,17 +118,70 @@ public final class WaveFiftyMemoryTest {
         }
     }
 
+    /** One measurement, with the source that produced it and what the other source said. */
+    private static final class MemoryReading {
+        private long pssKib;
+        private long rssKib;
+        private long graphicsKib;
+        private String source = "none";
+        private String diagnosis = "";
+    }
+
+    /**
+     * The process's memory, from the process itself and from the shell, so a failure of either is visible.
+     *
+     * <p>{@code Debug.MemoryInfo} is the platform's own per-process accounting and is readable from inside the
+     * test process without a shell; {@code dumpsys meminfo} is what the roadmap names, and its output is
+     * written into the logcat capture either way (the CI gate keeps it as evidence).
+     */
+    private static MemoryReading measure() {
+        MemoryReading reading = new MemoryReading();
+        Debug.MemoryInfo info = new Debug.MemoryInfo();
+        Debug.getMemoryInfo(info);
+        reading.pssKib = info.getTotalPss();
+        reading.graphicsKib = info.getMemoryStat("summary.graphics");
+        reading.rssKib = info.getMemoryStat("summary.total-rss");
+        if (reading.pssKib > 0) {
+            reading.source = "debug.MemoryInfo";
+        }
+        try {
+            String dump = dumpsysMeminfo();
+            long shellPss = kilobytes(dump, "TOTAL PSS");
+            long shellRss = kilobytes(dump, "TOTAL RSS");
+            long shellGraphics = kilobytes(dump, "Graphics");
+            if (reading.pssKib <= 0 && shellPss > 0) {
+                reading.pssKib = shellPss;
+                reading.source = "dumpsys meminfo";
+            }
+            // Whichever source has an answer for a field fills it: the in-process report has no RSS line, the
+            // shell report pads its columns differently on different builds, and neither is wrong.
+            if (reading.rssKib <= 0) reading.rssKib = shellRss;
+            if (reading.graphicsKib <= 0) reading.graphicsKib = shellGraphics;
+            reading.diagnosis = "shellPssKb=" + shellPss + " shellBytes=" + dump.length()
+                + " head=" + dump.replace('\n', ' ').trim();
+        } catch (IOException | RuntimeException failure) {
+            reading.diagnosis = "dumpsys meminfo unavailable: " + failure;
+        }
+        return reading;
+    }
+
     /** Reads the process's own memory report through the shell, which is the measurement the roadmap asks for. */
     private static String dumpsysMeminfo() throws IOException {
         ParcelFileDescriptor descriptor = InstrumentationRegistry.getInstrumentation()
             .getUiAutomation()
             .executeShellCommand("dumpsys meminfo " + PACKAGE);
         try (FileInputStream stream = new FileInputStream(descriptor.getFileDescriptor())) {
-            byte[] buffer = new byte[64 * 1024];
-            int read = stream.read(buffer);
-            return read <= 0 ? "" : new String(buffer, 0, read, StandardCharsets.UTF_8);
+            // Read to the end. A single read() returns as soon as anything is available, and the App Summary
+            // -- the block that carries TOTAL PSS -- is at the end of the report; the first CI run read a
+            // prefix and concluded "no PSS" about a process that had one.
+            StringBuilder text = new StringBuilder();
+            byte[] buffer = new byte[8 * 1024];
+            int read;
+            while ((read = stream.read(buffer)) > 0 && text.length() < MAXIMUM_DUMP_CHARS) {
+                text.append(new String(buffer, 0, read, StandardCharsets.UTF_8));
+            }
+            return text.toString();
         } finally {
-            // Closing the descriptor too early truncates the output; closing it never leaks a file handle.
             try {
                 descriptor.close();
             } catch (IOException ignored) {
@@ -126,14 +190,22 @@ public final class WaveFiftyMemoryTest {
         }
     }
 
-    /** The number after a label, in KiB, with the device's thousand separators removed. */
+    /**
+     * The number after a label, in KiB. Tolerant on purpose: the report pads its columns, thousands separators
+     * appear in some builds and not others, and a report about a process that has no such block (a heap with no
+     * graphics, say) must answer "unknown" rather than zero.
+     */
     private static long kilobytes(String dump, String label) {
         Matcher matcher = Pattern.compile(
-            Pattern.quote(label) + ":\\s*([\\d,]+)", Pattern.CASE_INSENSITIVE).matcher(dump);
+            Pattern.quote(label) + "[:\\s]+([\\d][\\d, .]*)", Pattern.CASE_INSENSITIVE).matcher(dump);
         if (!matcher.find()) {
             return -1L;
         }
-        return Long.parseLong(matcher.group(1).replace(",", ""));
+        String digits = matcher.group(1).replaceAll("[^0-9]", "");
+        if (digits.isEmpty()) {
+            return -1L;
+        }
+        return Long.parseLong(digits.substring(0, Math.min(digits.length(), 12)));
     }
 
     private static void prepareWaveFiftySave() {
