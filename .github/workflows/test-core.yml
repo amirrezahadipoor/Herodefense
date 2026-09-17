@@ -112,6 +112,15 @@ jobs:
       # tables the Java shaper reads out of those same two libraries. Either one drifting means `PersianShaperTest`
       # would be checking the shaper against stale evidence, which is worse than not checking it. The versions are
       # pinned here and asserted again inside both scripts, so a wheel that quietly changes the answers fails.
+      # The vectors' header names the interpreter that produced them, so this check has to run on that
+      # interpreter and not on whatever the runner image happens to carry (3.12 on ubuntu-24.04, which is why
+      # four pushes in a row went red on a comment line while every vector matched). It is pinned here, after
+      # every other python gate in this job, so no other step's interpreter changes.
+      - name: Use the interpreter the golden vectors were made with (roadmap R7.3)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
       - name: Install the Persian shaping references (roadmap R7.3)
         run: python3 -m pip install --break-system-packages arabic-reshaper==3.0.1 python-bidi==0.6.11
 
