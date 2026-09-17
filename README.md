@@ -34,6 +34,21 @@ python3 tools/audit/measure_round.py                    # every count the audits
 The Android layer (`:android:assembleDebug`, the emulator journeys) builds in GitHub Actions; there is no
 desktop, iOS or browser target to run the game on a workstation.
 
+## What is heavy here, and how to copy this repository safely
+
+Three directories hold almost all of the weight, and only one of them is the game:
+
+| Path | Size | What it is | The rule |
+|---|---|---|---|
+| `android/assets/generated/` | 31 MB | the shipped sprites, atlases, KTX containers and `asset_manifest.json` | This is what goes in the APK. `docs/asset_hashes.json` and `AssetIntegrityTest` bind it; regenerate it only with the tools in `tools/visual/`, never by hand |
+| `docs/art_reviews/` | 29 MB | 99 device-review images with 26 review records and 15 `surface_audit.json` files beside them | **Read-only evidence.** Twelve tests hash every image (sha256, byte size, width, height) against its own `surface_audit.json`, and 224 references to the review documents are baked into the shipped manifest. Do not move, rename, resize, re-encode or "tidy" anything here -- any of those breaks the build. Copy it verbatim or not at all |
+| `docs/materials/` | 2.5 MB | the 39 material maps, re-derivable from their masters | Bound by `tools/visual/validate_material_maps.py`. Regenerate with `generate_material_maps.py`, do not edit |
+
+Everything else in the repository -- all the source, all the tests, all the tools and all the documents -- is
+under 6 MB together. When a copy or a migration of this repository goes wrong, it is nearly always one of these
+three directories being partially copied, renamed or re-encoded, so they are named here rather than left to be
+discovered.
+
 ## Build cache policy
 
 Use `./scripts/gradle.sh <task>` for all local/CI Gradle invocations. The script keeps the wrapper distribution, dependency cache, and project cache under `${TMPDIR:-/tmp}` rather than in the repository. GitHub Actions sets the same locations explicitly.
