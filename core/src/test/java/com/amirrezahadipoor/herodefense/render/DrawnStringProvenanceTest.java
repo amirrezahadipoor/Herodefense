@@ -25,9 +25,14 @@ import org.junit.jupiter.api.Test;
  * arguments, no duplicates. That is the untranslated half, and alone it is worth nothing, because a screen can
  * ignore a perfect table and draw NEW GAME itself. This is the other half.
  *
- * <p>The scope is this package and does not have to be wider: {@link OverlayText} is package-private, so no
- * class outside {@code render} can put a string on screen. Scanning this directory scans the game's visible
- * words.
+ * <p>The scope is every main source in the game, and it has to be: {@link OverlayText} is package-private, so
+ * only {@code render} can turn a string into pixels, but the string it is handed is often written somewhere
+ * else. The onboarding coach lines live in {@code onboarding/OnboardingStep}, the boss taglines in
+ * {@code story/BossTitleCards}, the stat suffixes in {@code tooltips/StatTooltips}, and a gate that stopped at
+ * the render package would have passed all of them while a Persian player read them in English. One package is
+ * excluded and it is excluded for a reason that can be checked: {@code balance} writes {@code docs/BALANCE.md},
+ * which is a document a developer reads and {@code BalanceDocumentTest} already gates, not a sentence the game
+ * draws.
  *
  * <p>Which literals are user-facing is decided by where they sit, because a renderer holds four other kinds of
  * literal that must not be reported. Icon keys, asset paths and colour hexes are easy: none of them is a
@@ -63,9 +68,15 @@ import org.junit.jupiter.api.Test;
  */
 final class DrawnStringProvenanceTest {
 
-    private static final Path RENDER = Path
-        .of("..", "core", "src", "main", "java", "com", "amirrezahadipoor", "herodefense", "render")
+    private static final Path SOURCES = Path
+        .of("..", "core", "src", "main", "java", "com", "amirrezahadipoor", "herodefense")
         .normalize();
+
+    /**
+     * Packages whose strings are written into a document rather than drawn. {@code balance} generates
+     * {@code docs/BALANCE.md} out of a sweep, and its own test fails when the document and the code disagree.
+     */
+    private static final String DOCUMENT_PACKAGES = "/balance/";
 
     /** A string literal, quoted, with escape pairs kept whole so an escaped quote cannot end the match early. */
     private static final Pattern LITERAL = Pattern.compile("\"((?:[^\"\\\\]|\\\\.)*)\"");
@@ -77,11 +88,29 @@ final class DrawnStringProvenanceTest {
     private static final Pattern WORD_METHOD = Pattern.compile(
         "(?i)\\b\\w*(?:label|text|title|subtitle|caption|hint|summary|name|lines?)\\w*\\s*\\(");
 
+    /**
+     * An enum constant with arguments, at the start of its line: {@code WALK("walk", "Tap empty ground...")}.
+     * This is where the game's content vocabulary lives -- onboarding steps, wave omens, boss cards, item
+     * passives -- and none of it passes through a {@code draw} call in its own file, so a scan that only followed
+     * calls would have missed every word a player reads about the thing they are looking at.
+     */
+    private static final Pattern ENUM_CONSTANT = Pattern.compile("(?m)^[ \\t]*[A-Z][A-Z0-9_]*[ \\t]*\\(");
+
+    /** The tables' own package, where literals in enum constants are the point rather than the offence. */
+    private static final String TABLE_PACKAGE = "/i18n/";
+
     /** A sentence assembled out of pieces instead of held in one table entry. */
     private static final Pattern FORMATTER = Pattern.compile("\\bString\\s*\\.\\s*(?:format|join)\\s*\\(");
 
     /** A format specifier on its own -- {@code "%.1f"} -- is syntax, not a sentence. */
     private static final Pattern FORMAT_SPECIFIER = Pattern.compile("%[-#+ 0,(]*\\d*(?:\\.\\d+)?[a-zA-Z]");
+
+    /**
+     * An all-capitals key with an underscore in it -- {@code ANCIENT_GOLEM}, {@code STRAIGHT_RGBA} -- which is an
+     * identifier a lookup table is keyed by, not a sentence. A single capital word is still treated as a sentence,
+     * because {@code ON}, {@code OFF}, {@code MAX} and {@code ITEM} are drawn and {@code ANCIENT_GOLEM} is not.
+     */
+    private static final Pattern IDENTIFIER = Pattern.compile("[A-Z][A-Z0-9]*(?:_[A-Z0-9]+)+");
 
     private static final Pattern ASSET_PATH = Pattern.compile("[^\"\\s]*/[^\"\\s]*");
     private static final Pattern COLOUR_HEX = Pattern.compile("[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?");
@@ -91,15 +120,33 @@ final class DrawnStringProvenanceTest {
      * read the report, and every name in it belongs here until that screen speaks through a table.
      */
     private static final Set<String> NOT_YET_MIGRATED = Set.of(
+        "AffixId.java",
+        "BossTitleCards.java",
+        "CeremonyLines.java",
         "CodexOverlayRenderer.java",
+        "Epilogue.java",
+        "EquipmentSetBonus.java",
         "FloatingCoinTextRenderer.java",
+        "GameMode.java",
         "InventoryOverlayRenderer.java",
+        "ItemForgeSystem.java",
         "LevelUpOverlayRenderer.java",
+        "MythicEffects.java",
         "OnboardingOverlayRenderer.java",
+        "OnboardingStep.java",
+        "ReflectionLines.java",
+        "RewardCardId.java",
         "RewardCardOverlayRenderer.java",
         "RootNetworkOverlayRenderer.java",
+        "SkillEvolution.java",
+        "SkillId.java",
         "StatShopOverlayRenderer.java",
-        "TrialDraftOverlayRenderer.java"
+        "StatTooltips.java",
+        "TrialDraftOverlayRenderer.java",
+        "TrialId.java",
+        "Trophy.java",
+        "TrophyPresenter.java",
+        "WaveModifier.java"
     );
 
     @Test
@@ -107,7 +154,7 @@ final class DrawnStringProvenanceTest {
         List<String> problems = new ArrayList<>();
         for (Path path : sources()) {
             String name = fileName(path);
-            List<String> found = drawnLiterals(read(path));
+            List<String> found = drawnLiterals(path, read(path));
             if (found.isEmpty() || NOT_YET_MIGRATED.contains(name)) {
                 continue;
             }
@@ -115,12 +162,12 @@ final class DrawnStringProvenanceTest {
                 + ": " + String.join(", ", found.subList(0, Math.min(6, found.size())))
                 + (found.size() > 6 ? ", ..." : ""));
         }
-        assertTrue(problems.isEmpty(), () -> problems.size() + " renderers bypass the string tables:%n"
+        assertTrue(problems.isEmpty(), () -> problems.size() + " files bypass the string tables:%n"
             + String.join("%n", problems) + "%n%n"
             + "Each of these words is drawn in one language only. Move it into the screen's table in "
             + "core/src/main/java/com/amirrezahadipoor/herodefense/i18n, list that table in GameStrings so the "
             + "font derives its glyphs and TranslationTableTest checks both languages, and draw it through "
-            + "GameLocale.text. A renderer that cannot be migrated yet goes in NOT_YET_MIGRATED above, which is a "
+            + "GameLocale.text. A file that cannot be migrated yet goes in NOT_YET_MIGRATED above, which is a "
             + "ratchet: nothingIsListedThatHasAlreadyMoved fails once its name can come off.");
     }
 
@@ -129,7 +176,7 @@ final class DrawnStringProvenanceTest {
         List<String> stale = new ArrayList<>();
         for (Path path : sources()) {
             String name = fileName(path);
-            if (NOT_YET_MIGRATED.contains(name) && drawnLiterals(read(path)).isEmpty()) {
+            if (NOT_YET_MIGRATED.contains(name) && drawnLiterals(path, read(path)).isEmpty()) {
                 stale.add(name);
             }
         }
@@ -142,13 +189,16 @@ final class DrawnStringProvenanceTest {
      * Every user-facing literal in the source, in file order and without duplicates: one literal can sit in two
      * spans at once, as a {@code String.format} inside a {@code draw} call does, and it is one string either way.
      */
-    private static List<String> drawnLiterals(String source) {
+    private static List<String> drawnLiterals(Path path, String source) {
         String code = withoutComments(source);
         SortedMap<Integer, String> hits = new TreeMap<>();
         for (Pattern call : List.of(DRAW_CALL, FORMATTER)) {
             collectCallArguments(code, call, hits);
         }
         collectWordMethodBodies(code, hits);
+        if (!isTable(path)) {
+            collectCallArguments(code, ENUM_CONSTANT, hits);
+        }
         return new ArrayList<>(hits.values());
     }
 
@@ -193,8 +243,13 @@ final class DrawnStringProvenanceTest {
         }
     }
 
+    private static boolean isTable(Path path) {
+        return path.toString().replace('\\', '/').contains(TABLE_PACKAGE);
+    }
+
     private static boolean isDrawnSentence(String value) {
-        if (value.isEmpty() || ASSET_PATH.matcher(value).matches() || COLOUR_HEX.matcher(value).matches()) {
+        if (value.isEmpty() || ASSET_PATH.matcher(value).matches() || COLOUR_HEX.matcher(value).matches()
+            || IDENTIFIER.matcher(value).matches()) {
             return false;
         }
         // What is left once the specifiers are taken out is the part a player reads: "%.1f" leaves nothing and is
@@ -329,10 +384,14 @@ final class DrawnStringProvenanceTest {
     }
 
     private static List<Path> sources() {
-        try (Stream<Path> files = Files.list(RENDER)) {
-            return files.filter(path -> path.toString().endsWith(".java")).sorted().toList();
+        try (Stream<Path> files = Files.walk(SOURCES)) {
+            return files
+                .filter(path -> path.toString().endsWith(".java"))
+                .filter(path -> !path.toString().replace('\\', '/').contains(DOCUMENT_PACKAGES))
+                .sorted()
+                .toList();
         } catch (IOException e) {
-            throw new UncheckedIOException("cannot list " + RENDER.toAbsolutePath(), e);
+            throw new UncheckedIOException("cannot list " + SOURCES.toAbsolutePath(), e);
         }
     }
 
