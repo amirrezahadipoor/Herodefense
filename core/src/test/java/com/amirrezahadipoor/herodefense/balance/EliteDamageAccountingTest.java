@@ -67,35 +67,61 @@ final class EliteDamageAccountingTest {
     void theSecondHalfPaysASofterEliteContactMultiplier() {
         assertTrue(EnemyWaveSpawner.ELITE_SECOND_HALF_DAMAGE_MULT < EnemyWaveSpawner.ELITE_DAMAGE_MULT,
             "the second half's elite contact multiplier has to be the softer of the two");
-        int firstHalf = firstEliteWave(1, GameState.PLANTING_WAVE);
-        int secondHalf = firstEliteWave(GameState.PLANTING_WAVE + 1, GameState.FINAL_WAVE);
+        int firstHalf = firstEliteWave(1, GameState.PLANTING_WAVE, 0);
+        int secondHalf = firstEliteWave(GameState.PLANTING_WAVE + 1, GameState.FINAL_WAVE, 0);
         assertEquals(
             EnemyWaveSpawner.ELITE_DAMAGE_MULT,
-            eliteDamageMultiplierAt(firstHalf),
+            eliteDamageMultiplierAt(firstHalf, 0),
             0.000001f,
             "wave " + firstHalf + " is a first-half elite wave, so it keeps the shipped multiplier"
         );
         assertEquals(
             EnemyWaveSpawner.ELITE_SECOND_HALF_DAMAGE_MULT,
-            eliteDamageMultiplierAt(secondHalf),
+            eliteDamageMultiplierAt(secondHalf, 0),
             0.000001f,
             "wave " + secondHalf + " is a second-half elite wave, so it pays the softer multiplier"
         );
         int lastElite = lastEliteWave(GameState.PLANTING_WAVE + 1, GameState.FINAL_WAVE - 1);
         assertEquals(
             EnemyWaveSpawner.ELITE_SECOND_HALF_DAMAGE_MULT,
-            eliteDamageMultiplierAt(lastElite),
+            eliteDamageMultiplierAt(lastElite, 0),
             0.000001f,
             "and the multiplier holds to wave " + lastElite + ", the run's last elite wave"
         );
     }
 
-    /** The ship's own elite schedule decides which waves this contract is checked on, not a copied interval. */
-    private static int firstEliteWave(int from, int to) {
-        for (int wave = from; wave <= to; wave++) {
-            if (EnemyWaveSpawner.isEliteWave(wave, 0)) return wave;
+    /**
+     * R4.7's interaction, measured rather than assumed: a second-half elite's contact is the position rule (1.2
+     * times the regular it stands among) at *every* tier, which means the ladder's base damage charge has landed on
+     * it exactly once, through the baseline, and not twice. That is also why the ladder's spike ceiling is
+     * tier-indexed in `AscensionGateTest` rather than flat: the charge reaches the elites, and the gate prices it.
+     */
+    @Test
+    void theLadderChargesAnEliteExactlyLikeTheRegularItStandsAmong() {
+        for (int tier : new int[] {0, 3, 6, 10}) {
+            int wave = firstEliteWave(GameState.PLANTING_WAVE + 1, GameState.FINAL_WAVE - 1, tier);
+            assertEquals(
+                EnemyWaveSpawner.eliteDamageMultiplier(wave),
+                eliteDamageMultiplierAt(wave, tier),
+                0.000001f,
+                "tier " + tier + " wave " + wave + ": the elite's contact multiplier is the position rule alone"
+            );
         }
-        throw new AssertionError("no elite wave between " + from + " and " + to);
+        int firstHalfElite = firstEliteWave(1, GameState.PLANTING_WAVE, 10);
+        assertEquals(
+            EnemyWaveSpawner.ELITE_DAMAGE_MULT,
+            eliteDamageMultiplierAt(firstHalfElite, 10),
+            0.000001f,
+            "wave " + firstHalfElite + " is the first half, which keeps the shipped multiplier at tier 10 too"
+        );
+    }
+
+    /** The ship's own elite schedule decides which waves this contract is checked on, not a copied interval. */
+    private static int firstEliteWave(int from, int to, int ascensionTier) {
+        for (int wave = from; wave <= to; wave++) {
+            if (EnemyWaveSpawner.isEliteWave(wave, ascensionTier)) return wave;
+        }
+        throw new AssertionError("no elite wave for tier " + ascensionTier + " between " + from + " and " + to);
     }
 
     private static int lastEliteWave(int from, int to) {
@@ -105,13 +131,17 @@ final class EliteDamageAccountingTest {
         throw new AssertionError("no elite wave between " + from + " and " + to);
     }
 
-    /** How much harder an elite of the first archetype hits than the same spawn would as a regular. */
-    private static float eliteDamageMultiplierAt(int wave) {
+    /**
+     * How much harder an elite of the first archetype hits than the same spawn would as a regular, at that tier:
+     * the baseline is the tier's own, so this is the multiplier the ladder actually leaves in place.
+     */
+    private static float eliteDamageMultiplierAt(int wave, int ascensionTier) {
         GameState state = GameState.newRun(0x4845524F444546L);
+        state.ascensionTier = ascensionTier;
         new EnemyWaveSpawner(new EnemyFactory()).spawnRegularEnemies(state, wave, 8);
         for (Enemy enemy : state.aliveEnemies) {
             if (enemy.eliteAffix != null && !enemy.eliteAffix.isEmpty()) {
-                float baseline = new DifficultyCurve().regularDamage(enemy.type(), wave);
+                float baseline = new DifficultyCurve().regularDamage(enemy.type(), wave, ascensionTier);
                 return enemy.damage / baseline;
             }
         }

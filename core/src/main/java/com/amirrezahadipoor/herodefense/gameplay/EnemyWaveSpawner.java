@@ -32,6 +32,19 @@ public final class EnemyWaveSpawner {
      * vigil and every tier-0 gate stays bit-identical.
      */
     public static final float ELITE_SECOND_HALF_DAMAGE_MULT = 1.2f;
+
+    /**
+     * The elite contact multiplier a wave pays (roadmap R4.7 measured this interaction). Position decides it, and
+     * only position: the first half keeps the shipped 1.5 and the second half pays the softer 1.2. The ascension
+     * ladder's base damage charge multiplies that too, deliberately, because the charge multiplies every enemy's
+     * baseline and an elite is an enemy -- which is why the ladder's spike ceiling is tier-indexed in
+     * `AscensionGateTest` (0.40 + 0.02 per tier) rather than flat: an elite's contact is the sharpest the charge
+     * gets, it is the one hit of theirs a player cannot walk away from, and the gate prices it instead of pretending
+     * it is not there.
+     */
+    public static float eliteDamageMultiplier(int waveNumber) {
+        return waveNumber > GameState.PLANTING_WAVE ? ELITE_SECOND_HALF_DAMAGE_MULT : ELITE_DAMAGE_MULT;
+    }
     private static final long ELITE_SALT = 0xE11E7AFF1E57A1E5L;
     /** Tree-line box where Silent Rootling watchers stand and never leave. */
     static final float TREE_LINE_MIN_X = 90f;
@@ -75,15 +88,26 @@ public final class EnemyWaveSpawner {
     /** Coprime with the eight-role roster, so one block still holds every archetype exactly once. */
     static final int DEEP_ROSTER_STRIDE = 3;
 
-    /** Elite cadence tightens one wave every three tiers, floored at every 4th wave. */
+    /**
+     * Elite cadence tightens one wave every three tiers, floored at every 4th wave -- and never five waves, because
+     * every fifth wave of this game is a boss wave and {@link #isEliteWave} excludes those. A cadence of five is
+     * therefore not a cadence at all: it lands on the boss lap every time, and tiers 6 through 8 spawned **zero**
+     * elites in an entire run (measured while pinning R4.7's elite interaction: `theLadderChargesAnElite...` asked
+     * for a tier-6 elite wave and there was none to find between waves 101 and 199, or anywhere else). The ladder
+     * therefore steps 7 -> 6 -> 4, and `EnemyWaveSpawnerTest` asserts that every tier actually gets elites.
+     */
     public static int eliteWaveInterval(int ascensionTier) {
-        return Math.max(4, 7 - Math.max(0, ascensionTier) / 3);
+        int interval = Math.max(4, 7 - Math.max(0, ascensionTier) / 3);
+        return interval == BOSS_WAVE_INTERVAL ? interval - 1 : interval;
     }
+
+    /** Boss waves: every fifth one, which is why an elite cadence may never be five. */
+    public static final int BOSS_WAVE_INTERVAL = 5;
 
     public static boolean isEliteWave(int waveNumber, int ascensionTier) {
         return waveNumber > 0
             && waveNumber % eliteWaveInterval(ascensionTier) == 0
-            && waveNumber % 5 != 0;
+            && waveNumber % BOSS_WAVE_INTERVAL != 0;
     }
 
     /** A regular wave's body count including the SWARM omen, still capped by the arena's own ceiling. */
@@ -163,11 +187,9 @@ public final class EnemyWaveSpawner {
                 elite.affixTimerSeconds = EliteAffixSystem.ROOTWARD_SHIELD_PERIOD
                     - EliteAffixSystem.ROOTWARD_FIRST_SHIELD_DELAY;
             }
-            float eliteDamage = waveNumber > GameState.PLANTING_WAVE
-                ? ELITE_SECOND_HALF_DAMAGE_MULT : ELITE_DAMAGE_MULT;
             elite.health *= ELITE_HEALTH_MULT;
             elite.maxHealth *= ELITE_HEALTH_MULT;
-            elite.damage *= eliteDamage;
+            elite.damage *= eliteDamageMultiplier(waveNumber);
         }
     }
 

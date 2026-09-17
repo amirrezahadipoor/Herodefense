@@ -46,15 +46,17 @@ final class EnemyWaveSpawnerTest {
     }
 
     @Test
-    void eliteIntervalTightensOneWaveEveryThreeTiersFlooredAtFour() {
+    void eliteIntervalTightensOneWaveEveryThreeTiersAndNeverLandsOnTheBossLap() {
         assertEquals(7, EnemyWaveSpawner.eliteWaveInterval(-3));
         assertEquals(7, EnemyWaveSpawner.eliteWaveInterval(0));
         assertEquals(7, EnemyWaveSpawner.eliteWaveInterval(1));
         assertEquals(7, EnemyWaveSpawner.eliteWaveInterval(2));
         assertEquals(6, EnemyWaveSpawner.eliteWaveInterval(3));
         assertEquals(6, EnemyWaveSpawner.eliteWaveInterval(5));
-        assertEquals(5, EnemyWaveSpawner.eliteWaveInterval(6));
-        assertEquals(5, EnemyWaveSpawner.eliteWaveInterval(8));
+        // Roadmap R4.8: the arithmetic step here used to be five, and five waves is the boss lap, so tiers 6-8
+        // spawned no elites at all. The cadence steps over it instead.
+        assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(6));
+        assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(8));
         assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(9));
         assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(10));
         assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(99));
@@ -70,11 +72,18 @@ final class EnemyWaveSpawnerTest {
         assertTrue(EnemyWaveSpawner.isEliteWave(8, 10));
         assertFalse(EnemyWaveSpawner.isEliteWave(7, 10));
         assertFalse(EnemyWaveSpawner.isEliteWave(20, 10));
-        // Interval 5 (tiers 6-8) collides with boss waves: every multiple of 5 is a
-        // boss wave, so those tiers spawn no elites (documented in BALANCE.md).
+        // Roadmap R4.8: tiers 6-8 used to run at a cadence of five waves, which is the boss lap, so they spawned
+        // no elites in a whole run while the ladder claimed to escalate them. They now run at four.
+        assertTrue(EnemyWaveSpawner.isEliteWave(4, 6));
+        assertTrue(EnemyWaveSpawner.isEliteWave(8, 6));
+        assertTrue(EnemyWaveSpawner.isEliteWave(4, 8));
+        assertTrue(EnemyWaveSpawner.isEliteWave(8, 8));
+        assertTrue(EnemyWaveSpawner.isEliteWave(196, 6), "and the last elite wave of a run is an elite wave");
         for (int wave = 1; wave <= 200; wave++) {
-            assertFalse(EnemyWaveSpawner.isEliteWave(wave, 6), "wave " + wave);
-            assertFalse(EnemyWaveSpawner.isEliteWave(wave, 8), "wave " + wave);
+            if (wave % 5 == 0) {
+                assertFalse(EnemyWaveSpawner.isEliteWave(wave, 6), "wave " + wave + " is a boss wave");
+                assertFalse(EnemyWaveSpawner.isEliteWave(wave, 8), "wave " + wave + " is a boss wave");
+            }
         }
     }
 
@@ -235,5 +244,37 @@ final class EnemyWaveSpawnerTest {
                 second.aliveEnemies.get(index).silentWatcher
             );
         }
+    }
+
+    /**
+     * Roadmap R4.7: the ladder's elite cadence has to actually produce elites at every tier. It did not. The
+     * cadence tightens one wave per three tiers, and the step from seven to five landed the cadence exactly on the
+     * boss lap -- every fifth wave is a boss wave and a boss wave may not carry elites -- so tiers 6 through 8
+     * spawned no elites at all, in an entire two-hundred-wave run, while the ladder claimed to escalate them. The
+     * cadence now steps 7 -> 6 -> 4 and this test is what keeps it honest: every tier from 0 to 10 has to find an
+     * elite in a run of this length, and no tier's cadence may be the boss interval.
+     */
+    @Test
+    void everyTierFindsElitesOnItsOwnCadence() {
+        for (int tier = 0; tier <= 10; tier++) {
+            int interval = EnemyWaveSpawner.eliteWaveInterval(tier);
+            assertTrue(
+                interval < EnemyWaveSpawner.BOSS_WAVE_INTERVAL || interval % EnemyWaveSpawner.BOSS_WAVE_INTERVAL != 0,
+                "tier " + tier + " would put every elite wave on the boss lap: " + interval
+            );
+            int elites = 0;
+            for (int wave = 1; wave <= GameState.FINAL_WAVE; wave++) {
+                if (EnemyWaveSpawner.isEliteWave(wave, tier)) {
+                    elites++;
+                }
+            }
+            int floor = GameState.FINAL_WAVE / interval - GameState.FINAL_WAVE / (interval * 5) - 1;
+            assertTrue(elites >= floor, "tier " + tier + " found only " + elites + " elite waves in a run of "
+                + GameState.FINAL_WAVE + ", against a cadence of one per " + interval + " waves");
+        }
+        assertEquals(7, EnemyWaveSpawner.eliteWaveInterval(0), "tier 0 keeps the shipped cadence");
+        assertEquals(6, EnemyWaveSpawner.eliteWaveInterval(3));
+        assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(6));
+        assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(10));
     }
 }
