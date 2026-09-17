@@ -119,3 +119,69 @@ class ReviewedTierPinningTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BatchReviewRegenerationTest(unittest.TestCase):
+    """Roadmap R5.6: every batch the render workflow accepts has a review generator, and the workflow runs it."""
+
+    def test_every_batch_has_a_generator_that_exists(self) -> None:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "regenerate_batch_review", TOOLS / "regenerate_batch_review.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        self.assertGreaterEqual(len(module.BATCH_REVIEWS), 8)
+        for batch, generator in module.BATCH_REVIEWS.items():
+            self.assertTrue(
+                (TOOLS / generator).is_file(),
+                f"{batch} names {generator}, which does not exist",
+            )
+
+    def test_the_render_workflow_regenerates_the_review_for_its_batch(self) -> None:
+        workflow = (TOOLS.parents[1] / ".github" / "workflows" / "generate-visual-assets.yml").read_text()
+        self.assertIn("regenerate_batch_review.py", workflow)
+        self.assertIn("${{ inputs.batch }}", workflow)
+
+
+class MaterialMapGateTest(unittest.TestCase):
+    """Roadmap R5.5: the material maps are re-derived, not trusted, and a drifted map is caught."""
+
+    def test_the_shipped_material_maps_re_derive_from_their_masters(self) -> None:
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location(
+            "validate_material_maps", TOOLS / "validate_material_maps.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        sys.modules["validate_material_maps"] = module
+        spec.loader.exec_module(module)
+        self.assertGreaterEqual(len(module.provenance_rows()), 12)
+        self.assertEqual(module.main(), 0)
+
+    def test_a_changed_map_is_a_failure_not_a_pass(self) -> None:
+        """Negative control: the gate must be able to fail. A one-pixel edit has to be caught."""
+        import importlib.util
+        import shutil
+
+        spec = importlib.util.spec_from_file_location(
+            "validate_material_maps_negative", TOOLS / "validate_material_maps.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        row = module.provenance_rows()[0]
+        original = module.ROOT / row["path"]
+        with tempfile.TemporaryDirectory() as directory:
+            backup = Path(directory) / "map.png"
+            shutil.copyfile(original, backup)
+            try:
+                with Image.open(original) as image:
+                    edited = image.convert("RGBA")
+                edited.putpixel((0, 0), (1, 2, 3, 255))
+                edited.save(original)
+                self.assertEqual(module.main(), 1, "an edited map must fail the gate")
+            finally:
+                shutil.copyfile(backup, original)
+        self.assertEqual(module.main(), 0, "restoring the map must restore the gate")

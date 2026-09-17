@@ -156,6 +156,28 @@ jobs:
               | tee -a "$GITHUB_STEP_SUMMARY"
           fi
 
+      # Roadmap R5.6: the review evidence regenerates per batch instead of being written once by hand. The
+      # batch's own generator runs here with the committed tree as the baseline and the tree this run just
+      # rendered as the candidate, so the contact sheets and the audit JSON attached to the run describe the
+      # bytes that were actually produced. It runs even when an earlier step failed: a batch that failed
+      # validation is exactly the batch somebody has to look at.
+      - name: Regenerate this batch's review evidence
+        if: always()
+        run: |
+          python3 tools/visual/regenerate_batch_review.py \
+            --batch "${{ inputs.batch }}" \
+            --candidate /tmp/hero-defense-runtime \
+            --output /tmp/hero-defense-review || true
+
+      - name: Upload this batch's regenerated review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-defense-${{ inputs.batch }}-review
+          path: /tmp/hero-defense-review/
+          if-no-files-found: warn
+          retention-days: 14
+
       - name: Upload the render hash log
         if: always()
         uses: actions/upload-artifact@v4

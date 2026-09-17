@@ -38,13 +38,17 @@ jobs:
         run: python3 -m unittest discover -s tools/blender/tests -v
 
       - name: Install Pillow for review-strip tests
-        run: python3 -m pip install --break-system-packages pillow
+        run: python3 -m pip install --break-system-packages pillow numpy
 
       - name: Test review-strip helpers
         run: python3 -m unittest discover -s tools/visual/tests -v
 
       - name: Validate generated assets (edge safety, pivot stability, silhouette + grade — fail fast)
         run: python3 tools/visual/validate_generated_assets.py android/assets/generated
+      # R5.5: the material maps are re-derived from the masters that ship, so a map cannot drift away from
+      # the render it claims to describe.
+      - name: Re-derive the material maps from their masters
+        run: python3 tools/visual/validate_material_maps.py
 
       - name: Test the render hash log (roadmap R5.3 -- resumable, comparable renders)
         run: python3 -m unittest discover -s tools/render/tests -v

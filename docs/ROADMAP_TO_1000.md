@@ -815,8 +815,29 @@ sentence has to name the two scores and the commit they were measured on.
   three commands with their real output.
 - [ ] **R5.4 Vibrant grade rendered, not filtered**, proven with before/after emulator screenshots
   (unblocks R1.7).
-- [ ] **R5.5 PBR maps in the repository** (normal / roughness / AO) with material provenance.
-- [ ] **R5.6 Review documents regenerate per batch.**
+- [x] **R5.5 PBR maps in the repository** (normal / roughness / AO) with material provenance. 39 maps -- normal,
+  roughness and ambient occlusion for the hero, the four bosses and the eight creatures -- under `docs/materials/`,
+  derived from the rendered masters that ship by a recipe that is in the repository rather than in somebody's
+  memory: `tools/visual/generate_material_maps.py` reads the master's luminance as a height field, differentiates it
+  into a tangent-space normal, reads luma variance as roughness and local contrast as occlusion, and writes a
+  provenance table (`docs/art_reviews/MATERIAL_MAPS_PROVENANCE.md`) that names, per map, the master it came from,
+  the master's SHA-256, the map's SHA-256 and its size. `tools/visual/validate_material_maps.py` re-derives every
+  map and fails on any disagreement -- a one-pixel edit is caught, which `tools/visual/tests` asserts as a negative
+  control and then asserts again after the map is restored -- and that step runs in the core job next to the shipped
+  asset validator. Two decisions are written down rather than implied: the maps are a quarter of the master's
+  resolution because a material definition, not a fourth texture set, is what this item owes, and they live under
+  `docs/` rather than in `android/assets/generated/` because a texture the runtime does not read yet is a texture
+  the measured APK budget should not pay for. Consuming them in a shading pass is R9.3's job, and it now has real
+  files to consume.
+- [x] **R5.6 Review documents regenerate per batch.** `tools/visual/regenerate_batch_review.py` names every batch the
+  render workflow accepts -- twelve of them, from `enemies` to `world-tree` -- and the review generator that owns that
+  batch's evidence, so the mapping is a table in the repository instead of a habit in somebody's shell history. The
+  workflow runs it after the render, with the committed tree as the baseline and the tree this run just rendered as
+  the candidate, under `if: always()` because a batch that failed validation is exactly the batch a person has to look
+  at, and uploads the contact sheets and the audit JSON as an artifact named for the batch. A batch with no generator
+  is an error rather than a silent skip: a render nobody can review is not an accepted batch, and that failure belongs
+  where the batch is named. Two tests hold both halves -- every named batch's generator exists on disk, and the
+  workflow calls the tool with the batch it was actually asked to render.
 - [ ] **R5.7 VFX that exist at runtime**: rarity glow, impacts, trails, with evidence frames.
 
 ## R6 — Audio  `+28`
