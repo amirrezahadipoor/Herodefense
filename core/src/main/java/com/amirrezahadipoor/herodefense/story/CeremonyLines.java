@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.story;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
 
 /**
@@ -17,11 +19,11 @@ public final class CeremonyLines {
             return null;
         }
         return switch (phase) {
-            case WALK_OUT -> "One root should not hold this alone.";
-            case PLANT -> "Then another one. Grow angry if you must.";
-            case WATER -> "I will hold the line. That is my job.";
-            case GROW -> "The grove remembers your gift.";
-            case WALK_BACK -> "Now hold the grove.";
+            case WALK_OUT -> GameLocale.text(StoryStrings.CEREMONY_WALK_OUT);
+            case PLANT -> GameLocale.text(StoryStrings.CEREMONY_PLANT);
+            case WATER -> GameLocale.text(StoryStrings.CEREMONY_WATER);
+            case GROW -> GameLocale.text(StoryStrings.CEREMONY_GROW);
+            case WALK_BACK -> GameLocale.text(StoryStrings.CEREMONY_WALK_BACK);
             default -> null;
         };
     }

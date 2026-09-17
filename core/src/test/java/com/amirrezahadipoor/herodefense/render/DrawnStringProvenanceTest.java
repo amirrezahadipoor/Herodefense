@@ -122,22 +122,18 @@ final class DrawnStringProvenanceTest {
      */
     private static final Set<String> NOT_YET_MIGRATED = Set.of(
         "AffixId.java",
-        "BossTitleCards.java",
-        "CeremonyLines.java",
         "CodexOverlayRenderer.java",
         "Epilogue.java",
         "InventoryOverlayRenderer.java",
         "LevelUpOverlayRenderer.java",
         "MythicEffects.java",
-        "ReflectionLines.java",
         "RewardCardId.java",
         "RewardCardOverlayRenderer.java",
         "SkillEvolution.java",
         "SkillId.java",
         "StatShopOverlayRenderer.java",
         "StatTooltips.java",
-        "Trophy.java",
-        "TrophyPresenter.java"
+        "Trophy.java"
     );
 
     @Test

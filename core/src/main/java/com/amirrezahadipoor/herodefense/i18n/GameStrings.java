@@ -29,6 +29,7 @@ public final class GameStrings {
         ItemStrings.values(),
         RootNetworkStrings.values(),
         TrialStrings.values(),
+        StoryStrings.values(),
         SettingsStrings.values());
 
     private GameStrings() {

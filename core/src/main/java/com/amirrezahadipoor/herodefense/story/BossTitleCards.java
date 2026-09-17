@@ -3,6 +3,8 @@ package com.amirrezahadipoor.herodefense.story;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.LinkedHashMap;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import java.util.List;
 
 /** First-encounter boss title cards, verbatim (§2.1): one white line per identity, once ever. */
@@ -16,10 +18,10 @@ public final class BossTitleCards {
             return null;
         }
         return switch (bossType) {
-            case "ANCIENT_GOLEM" -> "ANCIENT GOLEM — old guard who still stands.";
-            case "THORN_MATRIARCH" -> "THORN MATRIARCH — she grew half your foes.";
-            case "EMBER_WYRM" -> "EMBER WYRM — a fire that never went out.";
-            case "VOID_KNIGHT" -> "VOID KNIGHT — he fell and forgot the rest.";
+            case "ANCIENT_GOLEM" -> GameLocale.text(StoryStrings.BOSS_ANCIENT_GOLEM);
+            case "THORN_MATRIARCH" -> GameLocale.text(StoryStrings.BOSS_THORN_MATRIARCH);
+            case "EMBER_WYRM" -> GameLocale.text(StoryStrings.BOSS_EMBER_WYRM);
+            case "VOID_KNIGHT" -> GameLocale.text(StoryStrings.BOSS_VOID_KNIGHT);
             default -> null;
         };
     }

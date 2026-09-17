@@ -4,6 +4,8 @@ import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.input.HapticFeedback;
 import java.util.List;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import java.util.function.Consumer;
 
 /**
@@ -47,16 +49,22 @@ public final class TrophyPresenter {
         }
     }
 
-    /** "Trophy - Steady Hand and Gardener", or just the chime when there are too many to read at once. */
+    /**
+     * "Trophy - Steady Hand and Gardener", or just the chime when there are too many to read at once.
+     *
+     * <p>The join word comes from the table rather than from an appended literal, because "and" is the one part
+     * of this line whose position in the sentence the two languages disagree about: {@code TROPHY_NAMES} holds
+     * the whole line as a pattern, so a language that would put the count before the word "Trophy" can.
+     */
     static String lineFor(List<Trophy> earned) {
         if (earned.size() > NAMES_PER_LINE) {
-            return "Trophy - " + earned.size() + " earned";
+            return GameLocale.text(StoryStrings.TROPHY_COUNT, GameLocale.number(earned.size()));
         }
-        StringBuilder line = new StringBuilder("Trophy - ");
+        String[] names = new String[earned.size()];
         for (int index = 0; index < earned.size(); index++) {
-            if (index > 0) line.append(" and ");
-            line.append(earned.get(index).title());
+            names[index] = earned.get(index).title();
         }
-        return line.toString();
+        return GameLocale.text(
+            StoryStrings.TROPHY_NAMES, String.join(GameLocale.text(StoryStrings.TROPHY_AND), names));
     }
 }
