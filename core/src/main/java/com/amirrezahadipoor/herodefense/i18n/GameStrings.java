@@ -22,6 +22,7 @@ public final class GameStrings {
     private static final List<Translated[]> TABLES = List.of(
         MenuStrings.values(),
         RunStrings.values(),
+        OnboardingStrings.values(),
         PauseStrings.values(),
         GameOverStrings.values(),
         HudStrings.values(),

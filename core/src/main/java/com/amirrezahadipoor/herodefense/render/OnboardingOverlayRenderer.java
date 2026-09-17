@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.OnboardingStrings;
 import com.amirrezahadipoor.herodefense.input.OnboardingTouchLayout;
 import com.amirrezahadipoor.herodefense.onboarding.OnboardingStep;
 import com.amirrezahadipoor.herodefense.onboarding.OnboardingSystem;
@@ -69,14 +71,15 @@ public final class OnboardingOverlayRenderer implements AutoCloseable {
             OnboardingTouchLayout.skipX(), OnboardingTouchLayout.skipY(),
             OnboardingTouchLayout.SKIP_WIDTH, OnboardingTouchLayout.SKIP_HEIGHT, true, false
         );
-        text.draw(batch, "YOUR FIRST VIGIL", x + PIP_X, y + PIP_Y_INSET + 14f, TITLE_SCALE, new Color(
+        text.drawLeading(batch, GameLocale.text(OnboardingStrings.TITLE), x, width, PIP_X,
+            y + PIP_Y_INSET + 14f, TITLE_SCALE, new Color(
             OverlayText.GOLD.r, OverlayText.GOLD.g, OverlayText.GOLD.b, reveal));
-        text.draw(batch, step.line(), x + LINE_X, y + LINE_Y_INSET, LINE_SCALE, new Color(
+        text.drawLeading(batch, step.line(), x, width, LINE_X, y + LINE_Y_INSET, LINE_SCALE, new Color(
             OverlayText.IVORY.r, OverlayText.IVORY.g, OverlayText.IVORY.b, reveal));
-        text.draw(batch, step.hint(), x + LINE_X, y + HINT_Y_INSET, HINT_SCALE, new Color(
+        text.drawLeading(batch, step.hint(), x, width, LINE_X, y + HINT_Y_INSET, HINT_SCALE, new Color(
             OverlayText.SUBTLE.r, OverlayText.SUBTLE.g, OverlayText.SUBTLE.b, reveal));
         text.drawCentered(
-            batch, "SKIP",
+            batch, GameLocale.text(OnboardingStrings.SKIP),
             OnboardingTouchLayout.skipX() + OnboardingTouchLayout.SKIP_WIDTH * 0.5f,
             OnboardingTouchLayout.skipY() + 58f,
             0.94f, new Color(OverlayText.IVORY.r, OverlayText.IVORY.g, OverlayText.IVORY.b, reveal)

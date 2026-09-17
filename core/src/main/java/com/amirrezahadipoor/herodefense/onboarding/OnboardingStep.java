@@ -1,5 +1,8 @@
 package com.amirrezahadipoor.herodefense.onboarding;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.OnboardingStrings;
+
 /**
  * The first-run vigil's coaching steps, in order (roadmap R7.1).
  *
@@ -10,53 +13,62 @@ package com.amirrezahadipoor.herodefense.onboarding;
  * sequence's total a hard sixty seconds. And a step only ever completes on <em>its</em> action: taking a
  * card early does not tick off the walk lesson.
  *
- * <p>The texts are constants rather than literals at the call site so the upcoming locale work (R7.3) has
- * one place to read them from.
+ * <p>The words are {@link OnboardingStrings} entries rather than fields of this enum, which is where the
+ * locale work (R7.3) said they would end up: the action and the budget are gameplay data and stay here, while
+ * the line and the hint are a language and live where both of them exist and {@code GameFonts} can see the
+ * glyphs they need. The stable {@link #id()} is untouched, so nothing that logs or tests a step depends on
+ * display text.
  */
 public enum OnboardingStep {
     WALK(
         "walk",
-        "Tap empty ground and the Hero walks there",
-        "the arena floor",
+        OnboardingStrings.WALK_LINE,
+        OnboardingStrings.WALK_HINT,
         OnboardingAction.TAP_GROUND,
         12f
     ),
     FIRE(
         "fire",
-        "Hold and drag to aim - the bow fires while you hold",
-        "anywhere on the arena",
+        OnboardingStrings.FIRE_LINE,
+        OnboardingStrings.FIRE_HINT,
         OnboardingAction.DRAG_FIRE,
         12f
     ),
     LOOT(
         "loot",
-        "Coins and drops come to you when you walk near them",
-        "a drop on the ground",
+        OnboardingStrings.LOOT_LINE,
+        OnboardingStrings.LOOT_HINT,
         OnboardingAction.PICKUP_COLLECTED,
         10f
     ),
     CARD(
         "card",
-        "Every level-up offers cards: tap the one you want",
-        "the level-up screen",
+        OnboardingStrings.CARD_LINE,
+        OnboardingStrings.CARD_HINT,
         OnboardingAction.CARD_TAKEN,
         14f
     ),
     SHOP(
         "shop",
-        "Between waves, spend coins in the shop",
-        "the shop button, bottom left",
+        OnboardingStrings.SHOP_LINE,
+        OnboardingStrings.SHOP_HINT,
         OnboardingAction.SHOP_OPENED,
         12f
     );
 
     private final String id;
-    private final String line;
-    private final String hint;
+    private final OnboardingStrings line;
+    private final OnboardingStrings hint;
     private final OnboardingAction action;
     private final float budgetSeconds;
 
-    OnboardingStep(String id, String line, String hint, OnboardingAction action, float budgetSeconds) {
+    OnboardingStep(
+        String id,
+        OnboardingStrings line,
+        OnboardingStrings hint,
+        OnboardingAction action,
+        float budgetSeconds
+    ) {
         this.id = id;
         this.line = line;
         this.hint = hint;
@@ -69,14 +81,14 @@ public enum OnboardingStep {
         return id;
     }
 
-    /** The coached line, shown on the banner. */
+    /** The coached line in the language in force, shown on the banner. */
     public String line() {
-        return line;
+        return GameLocale.text(line);
     }
 
-    /** Where the player is expected to look, shown under the line. */
+    /** Where the player is expected to look, in the language in force, shown under the line. */
     public String hint() {
-        return hint;
+        return GameLocale.text(hint);
     }
 
     /** The action that completes this step. */

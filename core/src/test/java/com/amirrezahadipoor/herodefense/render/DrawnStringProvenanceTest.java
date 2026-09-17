@@ -132,8 +132,6 @@ final class DrawnStringProvenanceTest {
         "ItemForgeSystem.java",
         "LevelUpOverlayRenderer.java",
         "MythicEffects.java",
-        "OnboardingOverlayRenderer.java",
-        "OnboardingStep.java",
         "ReflectionLines.java",
         "RewardCardId.java",
         "RewardCardOverlayRenderer.java",
