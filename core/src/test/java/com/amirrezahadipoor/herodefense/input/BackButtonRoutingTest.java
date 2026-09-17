@@ -6,33 +6,38 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
+import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
+import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.model.GameState;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
+import com.amirrezahadipoor.herodefense.polish.TouchFeedbackSystem;
+import com.amirrezahadipoor.herodefense.render.UiFrameRenderer;
+import com.amirrezahadipoor.herodefense.settings.GameSettings;
+import com.amirrezahadipoor.herodefense.settings.LocalSettingsRepository;
+import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
+import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
+import com.amirrezahadipoor.herodefense.story.CodexSystem;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 
 /**
  * What a Back press does to the real screen chain (roadmap R7.4).
  *
- * <p>{@link BackNavigationTest} holds the decision table; this holds its application. The port under test is
- * the one the router builds, driven through {@link ScreenTouchRouter#systemBack()}, so a press and the Close
- * button it stands in for are asserted to make the same calls: the same cue, the same controller, the same
+ * <p>{@link BackNavigationTest} holds the decision table; this holds its application. The press is driven
+ * through {@link ScreenTouchRouter#systemBack()}, over the real controllers and a real flow, and what is
+ * asserted is that a press makes *the calls its button makes*: the same cue, the same controller, the same
  * save. That is the drift R7.7 was written about, and the Back button is the newest reader of these screens.
  *
- * <p>The {@code Host} is forty-six methods wide and a press touches nine of them, so it is answered by a
- * recording proxy instead of a hand-written fake: the proxy cannot quietly stop being what the game passes
- * in, because it is built from the interface itself.
+ * <p>The host below answers the ten things a press may reach and refuses the other thirty-six. The refusals
+ * are the point, not padding: they say what the Back button is allowed to touch, and a press that ever
+ * reached for the shop system or the wave director would fail here with the name of the thing it reached.
  */
 final class BackButtonRoutingTest {
 
@@ -40,113 +45,120 @@ final class BackButtonRoutingTest {
      *  the way out and roadmap R13.5 asks that a session survive the process. */
     @Test
     void aLiveRunPausesAndSavesInsteadOfClosingTheGame() {
-        Fixture fixture = new Fixture();
-        fixture.flow.transitionTo(GameScreenState.PLAYING);
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.flow.transitionTo(GameScreenState.PLAYING);
 
-        assertTrue(fixture.router.systemBack(), "the game consumed the press");
-        assertEquals(GameScreenState.PAUSED, fixture.flow.state());
-        assertTrue(fixture.calls.contains("saveNow"), "the run is written when Back pauses it");
-        assertFalse(fixture.calls.contains("exitApplication"), "a run in progress is not the end of the stack");
+        assertTrue(router.systemBack(), "the game consumed the press");
+        assertEquals(GameScreenState.PAUSED, host.flow.state());
+        assertEquals(List.of("saveNow"), host.calls, "the run is written when Back pauses it");
     }
 
     /** The pause overlay's Resume button and Back are the same move. */
     @Test
     void aPausedRunResumes() {
-        Fixture fixture = new Fixture();
-        fixture.flow.transitionTo(GameScreenState.PLAYING);
-        fixture.flow.transitionTo(GameScreenState.PAUSED);
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.flow.transitionTo(GameScreenState.PLAYING);
+        host.flow.transitionTo(GameScreenState.PAUSED);
 
-        assertTrue(fixture.router.systemBack());
-        assertEquals(GameScreenState.PLAYING, fixture.flow.state());
+        assertTrue(router.systemBack());
+        assertEquals(GameScreenState.PLAYING, host.flow.state());
+        assertEquals(List.of(), host.calls, "resuming does not write the save again");
     }
 
     /** The menu is the end of the stack: the press belongs to the platform, which is the only caller that can
      *  finish an activity. */
     @Test
     void theMainMenuHandsThePressToThePlatform() {
-        Fixture fixture = new Fixture();
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
 
-        assertFalse(fixture.router.systemBack(), "nothing is left to go back to");
-        assertEquals(List.of("exitApplication"), fixture.platformCalls);
-        assertEquals(GameScreenState.MENU, fixture.flow.state(), "the game does not move the screen itself");
+        assertFalse(router.systemBack(), "nothing is left to go back to");
+        assertEquals(List.of("exitApplication"), host.calls);
+        assertEquals(GameScreenState.MENU, host.flow.state(), "the game does not move the screen itself");
     }
 
-    /** The Codex closes the entry being read before it closes the shelf, and both presses play no cue until
-     *  the screen itself closes — the same order the Close button uses. */
+    /** The Codex closes the entry being read before it closes the shelf, and only the second press plays the
+     *  cue the Close button plays. */
     @Test
     void theCodexClosesItsEntryBeforeItsShelf() {
-        Fixture fixture = new Fixture();
-        fixture.flow.transitionTo(GameScreenState.PLAYING);
-        fixture.flow.transitionTo(GameScreenState.PAUSED);
-        fixture.flow.transitionTo(GameScreenState.CODEX);
-        fixture.codex.open();
-        assertEquals(CodexTouchController.Action.SELECTED, fixture.codex.tap(fixture.state, 360f, 973f));
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.flow.transitionTo(GameScreenState.PLAYING);
+        host.flow.transitionTo(GameScreenState.PAUSED);
+        host.flow.transitionTo(GameScreenState.CODEX);
+        host.codex.open();
+        assertEquals(CodexTouchController.Action.SELECTED, host.codex.tap(host.state, 360f, 973f));
 
-        assertTrue(fixture.router.systemBack(), "the entry is the deepest thing on screen");
-        assertEquals(-1, fixture.codex.selectedIndex(), "the entry closed");
-        assertTrue(fixture.codex.isOpen(), "and the shelf stayed open");
-        assertEquals(GameScreenState.CODEX, fixture.flow.state());
-        assertTrue(fixture.cues.isEmpty(), "closing a panel is not closing a screen");
+        assertTrue(router.systemBack(), "the entry is the deepest thing on screen");
+        assertEquals(-1, host.codex.selectedIndex(), "the entry closed");
+        assertTrue(host.codex.isOpen(), "and the shelf stayed open");
+        assertEquals(GameScreenState.CODEX, host.flow.state());
+        assertEquals(List.of(), host.calls, "closing a panel is not closing a screen");
+        assertEquals(List.of(), host.cues);
 
-        assertTrue(fixture.router.systemBack());
-        assertFalse(fixture.codex.isOpen(), "the second press closes the shelf, as the Close button does");
-        assertEquals(GameScreenState.PAUSED, fixture.flow.state(), "back to the screen the Codex was opened from");
-        assertEquals(List.of(AudioCue.UI_CLOSE), fixture.cues);
-        assertTrue(fixture.calls.contains("saveNow"));
+        assertTrue(router.systemBack());
+        assertFalse(host.codex.isOpen(), "the second press closes the shelf, as the Close button does");
+        assertEquals(GameScreenState.PAUSED, host.flow.state(), "back to the screen the Codex was opened from");
+        assertEquals(List.of(AudioCue.UI_CLOSE), host.cues);
+        assertEquals(List.of("saveNow"), host.calls);
     }
 
     /** The backpack behaves the same way, and a press on the way out cannot sell or equip by accident. */
     @Test
     void theBackpackClosesTheItemBeforeTheScreen() {
-        Fixture fixture = new Fixture();
-        fixture.state.inventory.add(EquipmentCatalog.byId("leather_cap").createItem());
-        fixture.flow.transitionTo(GameScreenState.PLAYING);
-        fixture.flow.transitionTo(GameScreenState.INVENTORY);
-        fixture.inventory.open();
-        assertEquals(InventoryTouchController.Action.SELECTED, fixture.inventory.tap(fixture.state, 200f, 600f));
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.state.inventory.add(EquipmentCatalog.byId("leather_cap").createItem());
+        host.flow.transitionTo(GameScreenState.PLAYING);
+        host.flow.transitionTo(GameScreenState.INVENTORY);
+        host.inventory.open();
+        assertEquals(InventoryTouchController.Action.SELECTED, host.inventory.tap(host.state, 200f, 600f));
 
-        assertTrue(fixture.router.systemBack());
-        assertEquals(-1, fixture.inventory.selectedIndex(), "the details panel closed");
-        assertTrue(fixture.inventory.isOpen(), "the backpack stayed open");
-        assertEquals(GameScreenState.INVENTORY, fixture.flow.state());
+        assertTrue(router.systemBack());
+        assertEquals(-1, host.inventory.selectedIndex(), "the details panel closed");
+        assertTrue(host.inventory.isOpen(), "the backpack stayed open");
+        assertEquals(GameScreenState.INVENTORY, host.flow.state());
 
-        assertTrue(fixture.router.systemBack());
-        assertEquals(GameScreenState.PLAYING, fixture.flow.state());
-        assertTrue(fixture.calls.contains("saveNow"));
+        assertTrue(router.systemBack());
+        assertEquals(GameScreenState.PLAYING, host.flow.state());
+        assertEquals(List.of("saveNow"), host.calls);
     }
 
     /** Settings close onto the menu with the cue the settings Close button plays. */
     @Test
     void settingsCloseOntoTheMenu() {
-        Fixture fixture = new Fixture();
-        fixture.flow.transitionTo(GameScreenState.SETTINGS);
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.flow.transitionTo(GameScreenState.SETTINGS);
 
-        assertTrue(fixture.router.systemBack());
-        assertEquals(GameScreenState.MENU, fixture.flow.state());
-        assertEquals(List.of(AudioCue.UI_CLOSE), fixture.cues);
+        assertTrue(router.systemBack());
+        assertEquals(GameScreenState.MENU, host.flow.state());
+        assertEquals(List.of(AudioCue.UI_CLOSE), host.cues);
     }
 
     /** A ceremony advances the way a tap on it does, and the opening is the ceremony that is playing. */
     @Test
     void aCeremonySkipsTheWayATapDoes() {
-        Fixture fixture = new Fixture();
-        fixture.flow.transitionTo(GameScreenState.PLAYING);
-        fixture.flow.transitionTo(GameScreenState.CINEMATIC);
-        fixture.opening.begin(1);
-        assertTrue(fixture.opening.isActive());
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.flow.transitionTo(GameScreenState.PLAYING);
+        host.flow.transitionTo(GameScreenState.CINEMATIC);
+        host.opening.begin(1);
 
-        assertTrue(fixture.router.systemBack());
-        // `skip()` parks the timeline at its end and the ceremony's own next update reports completion, which
-        // is exactly what a tap does: the key advances the ceremony, it does not finish the frame for it.
-        assertEquals(OpeningCinematic.Phase.DONE, fixture.opening.phase(), "the opening skipped to its end");
-        assertEquals(GameScreenState.CINEMATIC, fixture.flow.state(),
+        assertTrue(router.systemBack());
+        // `skip()` parks the timeline at its end; the ceremony's own next update reports completion and hands
+        // the wave over. The key does not finish that frame for it, exactly as a tap does not.
+        assertEquals(OpeningCinematic.Phase.DONE, host.opening.phase(), "the opening skipped to its end");
+        assertEquals(GameScreenState.CINEMATIC, host.flow.state(),
             "the hand-off to the wave belongs to the ceremony, not to the key");
+        assertTrue(host.opening.update(0.016f), "and the update after a skip is the one that ends it");
+        assertFalse(host.opening.isActive());
 
-        fixture.opening.update(1f);
-        assertFalse(fixture.opening.isActive(), "and the update after a skip is the one that ends it");
-        fixture.planting.begin();
-        assertTrue(fixture.router.systemBack());
-        assertEquals(PlantingCeremony.Phase.DONE, fixture.planting.phase(),
+        host.planting.begin();
+        assertTrue(router.systemBack());
+        assertEquals(PlantingCeremony.Phase.DONE, host.planting.phase(),
             "with no opening running, the planting ceremony is the one that skips");
     }
 
@@ -154,18 +166,19 @@ final class BackButtonRoutingTest {
      *  was written when the run ended, not when the player is allowed to leave the screen. */
     @Test
     void theEndScreenHoldsBackUntilItsPresentationIsOver() {
-        Fixture fixture = new Fixture();
-        fixture.flow.transitionTo(GameScreenState.PLAYING);
-        fixture.flow.transitionTo(GameScreenState.GAME_OVER);
-        fixture.answer("gameOverPresentationSeconds", 0f);
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.flow.transitionTo(GameScreenState.PLAYING);
+        host.flow.transitionTo(GameScreenState.GAME_OVER);
 
-        assertTrue(fixture.router.systemBack(), "the press is still swallowed");
-        assertEquals(GameScreenState.GAME_OVER, fixture.flow.state(), "and it changes nothing yet");
+        assertTrue(router.systemBack(), "the press is still swallowed");
+        assertEquals(GameScreenState.GAME_OVER, host.flow.state(), "and it changes nothing yet");
+        assertEquals(List.of(), host.calls);
 
-        fixture.state.runComplete = true;
-        assertTrue(fixture.router.systemBack());
-        assertEquals(GameScreenState.MENU, fixture.flow.state());
-        assertTrue(fixture.calls.contains("saveNow"));
+        host.state.runComplete = true;
+        assertTrue(router.systemBack());
+        assertEquals(GameScreenState.MENU, host.flow.state());
+        assertEquals(List.of("saveNow"), host.calls);
     }
 
     /** The three screens that are a decision the player owes the game hold the press: nothing is discarded,
@@ -174,36 +187,44 @@ final class BackButtonRoutingTest {
     void aChoiceThePlayerOwesTheGameIsHeld() {
         for (GameScreenState screen : List.of(GameScreenState.LEVEL_UP, GameScreenState.CARD_CHOICE,
                 GameScreenState.TRIAL_DRAFT)) {
-            Fixture fixture = new Fixture();
-            fixture.flow.transitionTo(GameScreenState.PLAYING);
+            FakeHost host = new FakeHost();
+            ScreenTouchRouter router = new ScreenTouchRouter(host);
+            host.flow.transitionTo(GameScreenState.PLAYING);
             if (screen == GameScreenState.TRIAL_DRAFT) {
-                fixture.flow.transitionTo(GameScreenState.MENU);
+                host.flow.transitionTo(GameScreenState.MENU);
             }
-            fixture.flow.transitionTo(screen);
-            int callsBefore = fixture.calls.size();
+            host.flow.transitionTo(screen);
 
-            assertTrue(fixture.router.systemBack(), screen + " swallows the press");
-            assertEquals(screen, fixture.flow.state(), screen + " keeps the decision on screen");
-            assertEquals(callsBefore, fixture.calls.size(), screen + " does nothing at all");
+            assertTrue(router.systemBack(), screen + " swallows the press");
+            assertEquals(screen, host.flow.state(), screen + " keeps the decision on screen");
+            assertEquals(List.of(), host.calls, screen + " does nothing at all");
+            assertEquals(List.of(), host.cues, screen + " makes no sound");
         }
     }
 
-    /** The shop and the root network have no details panel, so one press closes the screen. */
+    /** The shop and the root network have no details panel, so one press closes the screen and saves. */
     @Test
     void theShopAndTheRootNetworkCloseInOnePress() {
         for (GameScreenState screen : List.of(GameScreenState.SHOP, GameScreenState.ROOT_NETWORK)) {
-            Fixture fixture = new Fixture();
-            fixture.flow.transitionTo(GameScreenState.PLAYING);
-            fixture.flow.transitionTo(screen);
+            FakeHost host = new FakeHost();
+            ScreenTouchRouter router = new ScreenTouchRouter(host);
+            host.flow.transitionTo(GameScreenState.PLAYING);
+            host.flow.transitionTo(screen);
 
-            assertTrue(fixture.router.systemBack());
-            assertEquals(GameScreenState.PLAYING, fixture.flow.state(), screen + " returned to the run");
-            assertTrue(fixture.calls.contains("saveNow"), screen + " saved on the way out, as its button does");
+            assertTrue(router.systemBack());
+            assertEquals(GameScreenState.PLAYING, host.flow.state(), screen + " returned to the run");
+            assertEquals(List.of("saveNow"), host.calls, screen + " saved on the way out, as its button does");
         }
     }
 
-    /** One fixture per case: real controllers and a real flow, a recording proxy for the rest of the port. */
-    private static final class Fixture {
+    /**
+     * The game as a Back press sees it: real objects for the ten calls the policy may make, and a refusal for
+     * the other thirty-six so the button's reach stays a stated fact instead of an accident.
+     */
+    private static final class FakeHost implements ScreenTouchRouter.Host {
+        private final List<AudioCue> cues = new ArrayList<>();
+        private final List<String> calls = new ArrayList<>();
+        private final AudioPlayback audio = cues::add;
         private final GameFlowController flow = new GameFlowController();
         private final GameState state = GameState.newRun(7L);
         private final CodexTouchController codex = new CodexTouchController();
@@ -211,51 +232,199 @@ final class BackButtonRoutingTest {
             new InventoryTouchController(new InventoryEquipmentSystem());
         private final OpeningCinematic opening = new OpeningCinematic();
         private final PlantingCeremony planting = new PlantingCeremony();
-        private final List<AudioCue> cues = new ArrayList<>();
-        private final List<String> calls = new ArrayList<>();
-        private final List<String> platformCalls = new ArrayList<>();
-        private final Map<String, Object> answers = new HashMap<>();
-        private final ScreenTouchRouter router;
 
-        Fixture() {
-            AudioPlayback audio = cues::add;
-            answers.put("flow", flow);
-            answers.put("gameState", state);
-            answers.put("codexTouchController", codex);
-            answers.put("inventoryTouchController", inventory);
-            answers.put("openingCinematic", opening);
-            answers.put("plantingCeremony", planting);
-            answers.put("audioManager", audio);
-            answers.put("gameOverPresentationSeconds", 0f);
-            router = new ScreenTouchRouter((ScreenTouchRouter.Host) Proxy.newProxyInstance(
-                ScreenTouchRouter.Host.class.getClassLoader(),
-                new Class<?>[] {ScreenTouchRouter.Host.class},
-                this::answer));
+        /**
+         * The end screen's presentation clock, held at zero on purpose: with no seconds elapsed the only way
+         * the screen becomes interactive is a completed run, which is what the end-screen case then flips.
+         */
+        private static final float GAME_OVER_PRESENTATION_SECONDS = 0f;
+
+        private static AssertionError refused(String what) {
+            return new AssertionError("a Back press has no business reaching " + what);
         }
 
-        void answer(String method, Object value) {
-            answers.put(method, value);
+        @Override public AudioPlayback audioManager() {
+            return audio;
         }
 
-        private Object answer(Object proxy, Method method, Object[] args) {
-            String name = method.getName();
-            if ("saveNow".equals(name) || "exitApplication".equals(name)) {
-                calls.add(name);
-                if ("exitApplication".equals(name)) {
-                    platformCalls.add(name);
-                }
-                return null;
-            }
-            if (answers.containsKey(name)) {
-                return answers.get(name);
-            }
-            Class<?> type = method.getReturnType();
-            if (type == boolean.class) return false;
-            if (type == int.class) return 0;
-            if (type == long.class) return 0L;
-            if (type == float.class) return 0f;
-            if (type == double.class) return 0d;
-            return null;
+        @Override public CodexSystem codexSystem() {
+            throw refused("codexSystem");
+        }
+
+        @Override public CodexTouchController codexTouchController() {
+            return codex;
+        }
+
+        @Override public boolean continueAvailable() {
+            throw refused("continueAvailable");
+        }
+
+        @Override public GameFlowController flow() {
+            return flow;
+        }
+
+        @Override public float gameOverPresentationSeconds() {
+            return GAME_OVER_PRESENTATION_SECONDS;
+        }
+
+        @Override public GameState gameState() {
+            return state;
+        }
+
+        @Override public HapticFeedback hapticFeedback() {
+            throw refused("hapticFeedback");
+        }
+
+        @Override public HeroProgressionSystem heroProgressionSystem() {
+            throw refused("heroProgressionSystem");
+        }
+
+        @Override public InventoryTouchController inventoryTouchController() {
+            return inventory;
+        }
+
+        @Override public OpeningCinematic openingCinematic() {
+            return opening;
+        }
+
+        @Override public PauseTouchController pauseTouchController() {
+            throw refused("pauseTouchController");
+        }
+
+        @Override public PlantingCeremony plantingCeremony() {
+            return planting;
+        }
+
+        @Override public RewardCardTouchController rewardCardTouchController() {
+            throw refused("rewardCardTouchController");
+        }
+
+        @Override public RootNetworkSystem rootNetworkSystem() {
+            throw refused("rootNetworkSystem");
+        }
+
+        @Override public RootNetworkTouchController rootNetworkTouchController() {
+            throw refused("rootNetworkTouchController");
+        }
+
+        @Override public GameSettings settings() {
+            throw refused("settings");
+        }
+
+        @Override public LocalSettingsRepository settingsRepository() {
+            throw refused("settingsRepository");
+        }
+
+        @Override public SettingsTouchController settingsTouchController() {
+            throw refused("settingsTouchController");
+        }
+
+        @Override public SimulationSpeedTouchController simulationSpeedTouchController() {
+            throw refused("simulationSpeedTouchController");
+        }
+
+        @Override public SkillShopSystem skillShopSystem() {
+            throw refused("skillShopSystem");
+        }
+
+        @Override public StatShopSystem statShopSystem() {
+            throw refused("statShopSystem");
+        }
+
+        @Override public StatShopTouchLayout.Tab shopTab() {
+            throw refused("shopTab");
+        }
+
+        @Override public String storyBeatLine() {
+            throw refused("storyBeatLine");
+        }
+
+        @Override public String whisperLine() {
+            throw refused("whisperLine");
+        }
+
+        @Override public TouchFeedbackSystem touchFeedbackSystem() {
+            throw refused("touchFeedbackSystem");
+        }
+
+        @Override public TrialDraftTouchController trialDraftTouchController() {
+            throw refused("trialDraftTouchController");
+        }
+
+        @Override public UiFrameRenderer uiFrameRenderer() {
+            throw refused("uiFrameRenderer");
+        }
+
+        @Override public WaveLifecycleSystem waveLifecycleSystem() {
+            throw refused("waveLifecycleSystem");
+        }
+
+        @Override public void setShopTab(StatShopTouchLayout.Tab tab) {
+            throw refused("setShopTab");
+        }
+
+        @Override public void setStoryBeatLine(String line) {
+            throw refused("setStoryBeatLine");
+        }
+
+        @Override public void setWhisperLine(String line) {
+            throw refused("setWhisperLine");
+        }
+
+        @Override public void setLastTouchWorldX(float x) {
+            throw refused("setLastTouchWorldX");
+        }
+
+        @Override public void setLastTouchWorldY(float y) {
+            throw refused("setLastTouchWorldY");
+        }
+
+        @Override public void countHandledTouchUp() {
+            throw refused("countHandledTouchUp");
+        }
+
+        @Override public void saveNow() {
+            calls.add("saveNow");
+        }
+
+        @Override public void recordRunEnd() {
+            throw refused("recordRunEnd");
+        }
+
+        @Override public void startNewRunSameTier() {
+            throw refused("startNewRunSameTier");
+        }
+
+        @Override public void startBriefRun() {
+            throw refused("startBriefRun");
+        }
+
+        @Override public void ascendRun() {
+            throw refused("ascendRun");
+        }
+
+        @Override public void continueRun() {
+            throw refused("continueRun");
+        }
+
+        @Override public void beginOpening() {
+            throw refused("beginOpening");
+        }
+
+        @Override public void fireUltimate() {
+            throw refused("fireUltimate");
+        }
+
+        @Override public void beginPlantingCeremony() {
+            throw refused("beginPlantingCeremony");
+        }
+
+        @Override public void focusFireAt(float worldX, float worldY) {
+            throw refused("focusFireAt");
+        }
+
+        @Override public void exitApplication() {
+            calls.add("exitApplication");
         }
     }
 }

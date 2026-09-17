@@ -12,6 +12,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.lifecycle.Lifecycle;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
@@ -68,14 +69,16 @@ public final class BackButtonNavigationTest {
             await("codex touch dispatch", () -> game.handledTouchUpCount() > touches);
             float[] correction = touchCorrection(game, MENU_X, codexY);
             await("codex opens", () -> game.screenState() == GameScreenState.CODEX);
+            touches = game.handledTouchUpCount();
             tapWorld(surface, 360f + correction[0], 973f + correction[1]); // first lore row
-            await("codex entry opens", 3_000L, () -> !game.screenState().equals(GameScreenState.MENU));
+            await("codex row tap dispatch", () -> game.handledTouchUpCount() > touches);
             SystemClock.sleep(400L);
 
+            // The selection is not readable from here, and it does not need to be: with an entry open the
+            // shelf survives one press, and without one it does not. That difference is the panel-first rule.
             pressBack();
-            await("the entry closes and the shelf stays", () -> game.screenState() == GameScreenState.CODEX);
-            SystemClock.sleep(400L);
-            assertEquals(GameScreenState.CODEX, game.screenState());
+            SystemClock.sleep(800L);
+            assertEquals(GameScreenState.CODEX, game.screenState(), "the entry closed and the shelf stayed");
 
             pressBack();
             await("the shelf closes onto the menu", () -> game.screenState() == GameScreenState.MENU);
@@ -96,12 +99,12 @@ public final class BackButtonNavigationTest {
             await("settings open", () -> game.screenState() == GameScreenState.SETTINGS);
             pressBack();
             await("settings close onto the menu", () -> game.screenState() == GameScreenState.MENU);
-            assertEquals(ActivityScenario.State.RESUMED, scenario.getState());
+            assertEquals(Lifecycle.State.RESUMED, scenario.getState());
 
             // --- the menu is the end of the stack, so this press is the platform's
             pressBack();
             await("the application leaves", 10_000L,
-                () -> scenario.getState() == ActivityScenario.State.DESTROYED);
+                () -> scenario.getState() == Lifecycle.State.DESTROYED);
         }
     }
 
@@ -127,7 +130,7 @@ public final class BackButtonNavigationTest {
             SystemClock.sleep(600L);
             assertEquals(GameScreenState.TRIAL_DRAFT, game.screenState());
             assertTrue(game.gameState().trialDraftPicks.isEmpty());
-            assertEquals(ActivityScenario.State.RESUMED, scenario.getState());
+            assertEquals(Lifecycle.State.RESUMED, scenario.getState());
 
             tapWorld(surface, 360f + correction[0], 887.5f + correction[1]); // first trial card
             await("first trial pick", () -> game.gameState().trialDraftPicks.size() == 1);
@@ -144,7 +147,7 @@ public final class BackButtonNavigationTest {
             // The point of the whole item: a run in progress pauses. It does not end, and it is written down.
             pressBack();
             await("the run pauses", () -> game.screenState() == GameScreenState.PAUSED);
-            assertEquals(ActivityScenario.State.RESUMED, scenario.getState());
+            assertEquals(Lifecycle.State.RESUMED, scenario.getState());
             pressBack();
             await("the run resumes", () -> game.screenState() == GameScreenState.PLAYING);
             assertTrue(game.gameState().waveActive || game.gameState().waveNumber >= 1);
@@ -160,7 +163,7 @@ public final class BackButtonNavigationTest {
             await("the backpack closes onto the pause", () -> game.screenState() == GameScreenState.PAUSED);
             pressBack();
             await("and the pause resumes the run", () -> game.screenState() == GameScreenState.PLAYING);
-            assertFalse(scenario.getState() == ActivityScenario.State.DESTROYED);
+            assertFalse(scenario.getState() == Lifecycle.State.DESTROYED);
         }
     }
 
