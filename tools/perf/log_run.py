@@ -25,9 +25,29 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 RUNS = ROOT / "docs" / "perf" / "runs"
 COMMIT = re.compile(r"^[0-9a-f]{7,40}$")
 NAME = re.compile(r"^[a-z][A-Za-z0-9]*$")
-#: The units a metric may carry. `dB` is here for the texture encoder, whose quality is a signal-to-noise
-#: ratio in decibels; everything else is a size, a duration, a rate, a ratio or a plain count.
-UNITS = ("bytes", "MiB", "MB", "ms", "s", "fps", "MB/s", "count", "percent", "dB")
+#: The units a metric may carry, each with the quantity it measures. A unit nobody can name the quantity of
+#: is a unit that hides a category error, so the table is the rule and `UNITS` below is derived from it.
+#: This module is the single source of truth: the gate in `tools/perf/tests/test_perf_gates.py` reads the
+#: table rather than keeping its own copy, which is how the two came apart on 2026-09-17 when `dB` was added
+#: here for the texture encoder and the run files that carried it turned `Test core logic` red.
+UNIT_TABLE = {
+    "bytes": "size",       # a byte count, integral
+    "MiB": "size",         # 1024*1024 bytes
+    "MB": "size",          # 1000*1000 bytes
+    "ms": "duration",
+    "s": "duration",
+    "fps": "rate",         # frames per second
+    "MB/s": "rate",        # megabytes per second
+    "count": "count",      # a number of things, integral
+    "percent": "ratio",
+    "dB": "level",         # a log ratio: the encoder's PSNR against a reference, roadmap R8.1
+}
+
+#: The units a metric may carry, in the order the table declares them.
+UNITS = tuple(UNIT_TABLE)
+
+#: Units whose value is a whole number of things; anything else is parsed as a float.
+INTEGER_UNITS = ("bytes", "count")
 
 
 def parse_metric(text: str) -> dict:
@@ -38,10 +58,11 @@ def parse_metric(text: str) -> dict:
     value_text, unit = rest.rsplit(":", 1)
     if not NAME.match(name):
         raise argparse.ArgumentTypeError(f"metric name must be camelCase letters and digits: {name!r}")
-    if unit not in UNITS:
-        raise argparse.ArgumentTypeError(f"unit must be one of {', '.join(UNITS)}: {unit!r}")
+    if unit not in UNIT_TABLE:
+        raise argparse.ArgumentTypeError(
+            f"unit must be one of {', '.join(UNITS)} (a quantity nobody can name is not a unit): {unit!r}")
     try:
-        value = int(value_text) if unit in ("bytes", "count") else float(value_text)
+        value = int(value_text) if unit in INTEGER_UNITS else float(value_text)
     except ValueError as error:
         raise argparse.ArgumentTypeError(f"value is not a number: {value_text!r}") from error
     return {"name": name, "value": value, "unit": unit}

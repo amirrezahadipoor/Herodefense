@@ -5,6 +5,7 @@ whose failing case has never been exercised is a gate nobody knows is working.
 """
 from __future__ import annotations
 
+import argparse
 import json
 import pathlib
 import random
@@ -18,6 +19,7 @@ sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 import check_apk_budget  # noqa: E402
 import check_wave50_memory  # noqa: E402
+import log_run  # noqa: E402
 import parse_startup  # noqa: E402
 import render_performance_doc  # noqa: E402
 
@@ -273,8 +275,15 @@ class PerformancePageTest(unittest.TestCase):
             self.assertTrue(run["command"].strip())
             self.assertTrue(run["metrics"], f"{run['id']} logs no metrics")
             for metric in run["metrics"]:
-                self.assertIn(metric["unit"], ("bytes", "MiB", "MB", "ms", "s", "fps", "MB/s",
-                                               "count", "percent"))
+                # The allow-list is `log_run`'s own table rather than a second copy of it here: a unit
+                # declared for a new measurement is then accepted by the writer and the reader together,
+                # and a unit nobody declared fails both. The copy this line used to carry went stale on
+                # 2026-09-17 when `dB` was added for the encoder sweep, and the runs that carried it
+                # turned the whole `Test core logic` job red.
+                self.assertIn(metric["unit"], log_run.UNITS,
+                              f"{run['id']}/{metric['name']} carries a unit log_run.py does not declare")
+                self.assertTrue(log_run.UNIT_TABLE[metric["unit"]].strip(),
+                                f"{run['id']}/{metric['name']}: unit {metric['unit']!r} names no quantity")
         expected = render_performance_doc.render(runs, render_performance_doc.load_budgets())
         committed = (ROOT / "docs/perf/PERFORMANCE.md").read_text()
         self.assertEqual(expected, committed,
@@ -288,6 +297,43 @@ class PerformancePageTest(unittest.TestCase):
         tampered = page.replace(str(runs[0]["metrics"][0]["value"]), "1", 1)
         self.assertNotEqual(page, tampered)
         self.assertNotEqual(tampered, (ROOT / "docs/perf/PERFORMANCE.md").read_text())
+
+
+class LogRunUnitTest(unittest.TestCase):
+    """The unit table is the rule, so the rule has to bite (roadmap R8.5).
+
+    A unit list that only ever accepts is a list nobody can trust: these are the failing cases for it.
+    """
+
+    def test_every_declared_unit_names_the_quantity_it_measures(self) -> None:
+        self.assertTrue(log_run.UNITS, "a writer that accepts no unit logs nothing")
+        self.assertEqual(log_run.UNITS, tuple(log_run.UNIT_TABLE),
+                         "UNITS has to be the table's keys, not a second list that can drift")
+        for unit, quantity in log_run.UNIT_TABLE.items():
+            self.assertTrue(quantity.strip(), f"unit {unit!r} declares no quantity")
+
+    def test_an_undeclared_unit_is_rejected_and_the_message_lists_what_is_allowed(self) -> None:
+        with self.assertRaises(argparse.ArgumentTypeError) as caught:
+            log_run.parse_metric("mystery=12:furlongs")
+        message = str(caught.exception)
+        self.assertIn("furlongs", message, "the rejection has to name the unit it refused")
+        for unit in log_run.UNITS:
+            self.assertIn(unit, message, "the rejection has to list the table it broke")
+
+    def test_a_declared_unit_is_parsed_to_the_type_its_quantity_has(self) -> None:
+        # `dB` is the unit the encoder sweep logs its PSNR in; it is a level, so it stays a float.
+        self.assertEqual({"name": "medianColourPsnr", "value": 33.01, "unit": "dB"},
+                         log_run.parse_metric("medianColourPsnr=33.01:dB"))
+        self.assertIsInstance(log_run.parse_metric("apkBytes=26489934:bytes")["value"], int)
+        self.assertIsInstance(log_run.parse_metric("sheetsClearingTheBar=16:count")["value"], int)
+
+    def test_the_shipped_runs_only_carry_units_the_writer_declares(self) -> None:
+        """The failing case that was missed on 2026-09-17, checked from the writer's side."""
+        runs = render_performance_doc.load_runs()
+        used = {metric["unit"] for run in runs for metric in run["metrics"]}
+        self.assertTrue(used)
+        self.assertEqual(set(), used - set(log_run.UNITS),
+                         "a run file carries a unit log_run.py would have refused to write")
 
 
 if __name__ == "__main__":
