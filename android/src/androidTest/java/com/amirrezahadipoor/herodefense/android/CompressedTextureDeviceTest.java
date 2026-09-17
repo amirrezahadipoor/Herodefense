@@ -138,6 +138,15 @@ public final class CompressedTextureDeviceTest {
         assertTrue("the GPU produced too few colours to be a decode: " + best.distinctColours,
             best.distinctColours >= MINIMUM_DISTINCT_COLOURS);
         String diagnosis = diagnose(rendered, expected, header, container, best == flipped, best);
+        // What the draw does to an image nobody decoded, so the container is judged at the same alignment.
+        int control = uploadUncompressed(header, expected);
+        byte[] controlPixels = render(control, program, header.width, header.height);
+        int[] controlAlignment = alignment(controlPixels, expected, header, 0);
+        int[] decodeAlignment = alignment(rendered, expected, header, CHANNEL_TOLERANCE);
+        Log.i("HERODEFENSE_TEXTURE", "HERODEFENSE_TEXTURE controlShift=(" + controlAlignment[0] + ","
+            + controlAlignment[1] + ") controlBeyond=" + controlAlignment[2]
+            + " controlAlpha=" + controlAlignment[3]
+            + " decodeShift=(" + decodeAlignment[0] + "," + decodeAlignment[1] + ")");
         // The evidence a failing run cannot otherwise show: the two pictures and the one-line account of how
         // they differ. Written before the assertions so that a failure still leaves them behind, and pulled by
         // the Android workflow out of the app's own files directory with `run-as`, which is why they live there
@@ -151,14 +160,30 @@ public final class CompressedTextureDeviceTest {
         // capture the smoke script already keeps, and a buffer whose sha256 does not match is thrown away
         // there rather than believed.
         logPixels("texture-rendered", rendered);
+        assertEquals("the uncompressed control has to come back pixel for pixel, or the draw is what the "
+                + "compressed comparison is measuring -- controlShift=(" + controlAlignment[0] + ","
+                + controlAlignment[1] + ") controlBeyond=" + controlAlignment[2],
+            0, controlAlignment[2]);
+        assertEquals("the uncompressed control's alpha has to come back unchanged -- controlShift=("
+                + controlAlignment[0] + "," + controlAlignment[1] + ") controlAlpha=" + controlAlignment[3],
+            0, controlAlignment[3]);
+        assertEquals("the container has to decode at the alignment the control renders at, or the decoder is "
+                + "being blamed for the draw -- controlShift=(" + controlAlignment[0] + ","
+                + controlAlignment[1] + ") decodeShift=(" + decodeAlignment[0] + "," + decodeAlignment[1] + ")",
+            controlAlignment[0], decodeAlignment[0]);
+        assertEquals("the container has to decode at the alignment the control renders at, or the decoder is "
+                + "being blamed for the draw -- controlShift=(" + controlAlignment[0] + ","
+                + controlAlignment[1] + ") decodeShift=(" + decodeAlignment[0] + "," + decodeAlignment[1] + ")",
+            controlAlignment[1], decodeAlignment[1]);
         assertEquals("the GPU's decode disagrees with the encoder's own decode by more than "
-                + CHANNEL_TOLERANCE + " -- " + diagnosis,
-            0, best.beyondTolerance);
-        assertTrue("alpha must decode to the container's one-bit mask -- " + diagnosis,
-            best.alphaMismatches == 0);
+                + CHANNEL_TOLERANCE + " at the draw's own alignment -- " + diagnosis,
+            0, decodeAlignment[2]);
+        assertEquals("alpha must decode to the container's one-bit mask -- " + diagnosis,
+            0, decodeAlignment[3]);
         assertEquals("no GL error for the whole upload and draw", GLES30.GL_NO_ERROR, GLES30.glGetError());
 
         GLES30.glDeleteTextures(1, new int[] {texture}, 0);
+        GLES30.glDeleteTextures(1, new int[] {control}, 0);
         GLES30.glDeleteProgram(program);
         EGL14.eglMakeCurrent(display, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_SURFACE, EGL14.EGL_NO_CONTEXT);
         EGL14.eglDestroySurface(display, surface);
@@ -176,6 +201,74 @@ public final class CompressedTextureDeviceTest {
             }
             return blob.toByteArray();
         }
+    }
+
+    /**
+     * The decoder's own pixels, uploaded uncompressed through the same draw.
+     *
+     * This is the control that keeps the compressed comparison honest. An emulator's GLES stack is allowed to
+     * shift, flip or resample a textured draw, and on this one it does: the readback of the container came back
+     * one texel to the right of the decoder's pixels, which is the kind of difference that looks exactly like a
+     * broken decoder from the outside -- two hundred and nine levels of it. Uploading the same pixels
+     * uncompressed measures what the draw does to an image that no decoder was involved in, so the compressed
+     * comparison can be made at the alignment the *draw* has, and a real decoder difference still fails.
+     */
+    private static int uploadUncompressed(Header header, byte[] pixels) {
+        int[] names = new int[1];
+        GLES30.glGenTextures(1, names, 0);
+        GLES30.glBindTexture(GLES30.GL_TEXTURE_2D, names[0]);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MIN_FILTER, GLES30.GL_NEAREST);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_MAG_FILTER, GLES30.GL_NEAREST);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_S, GLES30.GL_CLAMP_TO_EDGE);
+        GLES30.glTexParameteri(GLES30.GL_TEXTURE_2D, GLES30.GL_TEXTURE_WRAP_T, GLES30.GL_CLAMP_TO_EDGE);
+        ByteBuffer payload = ByteBuffer.allocateDirect(pixels.length).order(ByteOrder.nativeOrder());
+        payload.put(pixels).position(0);
+        GLES30.glTexImage2D(GLES30.GL_TEXTURE_2D, 0, GLES30.GL_RGBA, header.width, header.height, 0,
+            GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, payload);
+        return names[0];
+    }
+
+    /**
+     * Where a readback sits relative to the decoder's pixels: {dx, dy, pixelsBeyondTolerance, alphaMismatches}
+     * at the best of the twenty-five shifts within two texels, wrapping at the edges the way the readback does.
+     */
+    private static int[] alignment(byte[] rendered, byte[] expected, Header header, int tolerance) {
+        int bestDx = 0;
+        int bestDy = 0;
+        int bestBeyond = Integer.MAX_VALUE;
+        int bestAlpha = Integer.MAX_VALUE;
+        for (int dy = -2; dy <= 2; dy++) {
+            for (int dx = -2; dx <= 2; dx++) {
+                int beyond = 0;
+                int alpha = 0;
+                for (int y = 0; y < header.height; y++) {
+                    int sourceY = Math.floorMod(y - dy, header.height);
+                    for (int x = 0; x < header.width; x++) {
+                        int sourceX = Math.floorMod(x - dx, header.width);
+                        int a = (y * header.width + x) * 4;
+                        int b = (sourceY * header.width + sourceX) * 4;
+                        int worst = 0;
+                        for (int channel = 0; channel < 3; channel++) {
+                            worst = Math.max(worst, Math.abs((rendered[a + channel] & 0xff)
+                                - (expected[b + channel] & 0xff)));
+                        }
+                        if (worst > tolerance) {
+                            beyond++;
+                        }
+                        if ((rendered[a + 3] & 0xff) != (expected[b + 3] & 0xff)) {
+                            alpha++;
+                        }
+                    }
+                }
+                if (beyond < bestBeyond || (beyond == bestBeyond && alpha < bestAlpha)) {
+                    bestBeyond = beyond;
+                    bestAlpha = alpha;
+                    bestDx = dx;
+                    bestDy = dy;
+                }
+            }
+        }
+        return new int[] {bestDx, bestDy, bestBeyond, bestAlpha};
     }
 
     private static int upload(Header header, byte[] container) {
@@ -260,7 +353,12 @@ public final class CompressedTextureDeviceTest {
         GLES30.glFinish();
         ByteBuffer pixels = ByteBuffer.allocateDirect(width * height * 4).order(ByteOrder.nativeOrder());
         GLES30.glReadPixels(0, 0, width, height, GLES30.GL_RGBA, GLES30.GL_UNSIGNED_BYTE, pixels);
-        return pixels.array();
+        // `array()` on a direct buffer hands back the allocation, not the readback: the logged buffer came out
+        // seven bytes longer than the image on the first run that used it. The bytes are copied out by hand.
+        byte[] readback = new byte[width * height * 4];
+        pixels.position(0);
+        pixels.get(readback);
+        return readback;
     }
 
     /**

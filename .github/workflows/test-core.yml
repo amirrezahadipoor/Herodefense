@@ -24,6 +24,10 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@v4
+        with:
+          # The composed-tier check reads the asset manifest as the render batch committed it, so it needs the
+          # commit that manifest lives in; a one-commit checkout is what broke it in CI on 2026-09-17.
+          fetch-depth: 0
 
       - name: Set up Java 17
         uses: actions/setup-java@v4

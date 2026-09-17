@@ -70,9 +70,24 @@ COMPOSED_ON = "2026-09-17"
 
 
 def _run(*args: str) -> bytes:
-    return subprocess.run(
-        ["git", *args], cwd=REPOSITORY, capture_output=True, check=True
-    ).stdout
+    """Read a blob out of the repository's history, and say why if this clone cannot reach it.
+
+    The composition is defined against the render batch's own manifest -- "the master render's geometry" is a
+    fact about a commit, not about today's tree -- so this check needs the history that commit lives in. CI
+    checked out one commit and the check died inside `subprocess` with nothing a reader could act on, so the
+    failure is named here: a shallow checkout is the one thing that breaks this, and `fetch-depth: 0` is the
+    fix.
+    """
+    result = subprocess.run(["git", *args], cwd=REPOSITORY, capture_output=True, check=False)
+    if result.returncode != 0:
+        detail = result.stderr.decode("utf-8", "ignore").strip().splitlines()
+        raise SystemExit(
+            "git " + " ".join(args) + " failed -- " + (detail[-1] if detail else "no output")
+            + ". This tool reads the manifest as the render batch committed it (" + MASTER_COMMIT + "), so"
+              " the clone has to carry that commit: a shallow checkout is not enough. In a workflow that means"
+              " `actions/checkout` with `fetch-depth: 0`."
+        )
+    return result.stdout
 
 
 def master_manifest() -> dict:
