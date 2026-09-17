@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.settings;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.badlogic.gdx.Preferences;
 
 /** Persists main-menu settings immediately in device-local preferences. */
@@ -13,6 +15,7 @@ public final class LocalSettingsRepository {
     private static final String TUTORIAL_SEEN_KEY = "onboarding.tutorialSeen";
     private static final String MUSIC_VOLUME_KEY = "audio.musicVolume";
     private static final String SOUND_VOLUME_KEY = "audio.soundVolume";
+    private static final String LANGUAGE_KEY = "display.language";
     private final Preferences preferences;
 
     public LocalSettingsRepository(Preferences preferences) {
@@ -33,6 +36,11 @@ public final class LocalSettingsRepository {
         // A preference file can be edited by hand or written by an older build; the screen only knows the
         // three named steps, so anything else is snapped to the closest one here rather than at draw time.
         settings.normalizeVolumes();
+        // The same argument, for the same reason, in the same place: a code this build does not know becomes
+        // English here rather than at draw time. Loading the device's preferences is what makes the game speak
+        // them, and this is the only place it happens other than the settings row that changes it.
+        settings.language = GameLanguage.fromCode(preferences.getString(LANGUAGE_KEY, settings.language.code()));
+        GameLocale.use(settings.language);
         return settings;
     }
 
@@ -46,6 +54,7 @@ public final class LocalSettingsRepository {
         preferences.putBoolean(TUTORIAL_SEEN_KEY, settings.tutorialSeen);
         preferences.putFloat(MUSIC_VOLUME_KEY, settings.musicVolume);
         preferences.putFloat(SOUND_VOLUME_KEY, settings.soundVolume);
+        preferences.putString(LANGUAGE_KEY, settings.language.code());
         preferences.flush();
     }
 }

@@ -1,5 +1,8 @@
 package com.amirrezahadipoor.herodefense.settings;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.SettingsStrings;
 import com.amirrezahadipoor.herodefense.model.ItemTier;
 
 /** Device-local accessibility/audio/inventory preferences independent from a run save. */
@@ -18,12 +21,27 @@ public final class GameSettings {
     public boolean tutorialSeen;
 
     /**
+     * The language the game speaks (roadmap R7.3). It is a device-local preference like the volumes rather than
+     * part of a run save: a player who switches to Persian halfway through a wave keeps Persian in the next run,
+     * and a save file copied to another device does not carry a language with it.
+     */
+    public GameLanguage language = GameLanguage.ENGLISH;
+
+    /**
      * Effect and music level, as one of three named steps (roadmap R6.4). Three taps cycle them because the
      * settings surface is touch-only with no drag handles; the numbers are here so the audio layer has one
      * source for "how loud is loud" and the screen has one source for the label.
      */
     private static final float[] LEVELS = {0.45f, 0.75f, 1.0f};
-    private static final String[] LEVEL_LABELS = {"QUIET", "NORMAL", "FULL"};
+
+    /**
+     * The three steps' names, in the string table rather than beside the values they label: the settings screen
+     * draws these words, so a second copy of them here would be a second thing to translate and a way for the
+     * screen and the setting to disagree.
+     */
+    private static final SettingsStrings[] LEVEL_LABELS = {
+        SettingsStrings.LEVEL_QUIET, SettingsStrings.LEVEL_NORMAL, SettingsStrings.LEVEL_FULL
+    };
 
     public float musicVolume = LEVELS[LEVELS.length - 1];
     public float soundVolume = LEVELS[LEVELS.length - 1];
@@ -38,8 +56,8 @@ public final class GameSettings {
     }
 
     public static String levelLabel(int index) {
-        if (index < 0) return LEVEL_LABELS[0];
-        return LEVEL_LABELS[Math.min(index, LEVEL_LABELS.length - 1)];
+        if (index < 0) return GameLocale.text(LEVEL_LABELS[0]);
+        return GameLocale.text(LEVEL_LABELS[Math.min(index, LEVEL_LABELS.length - 1)]);
     }
 
     /** The stored value's step, or the closest one, so a hand-edited preference cannot break the screen. */
@@ -65,6 +83,12 @@ public final class GameSettings {
     public String cycleSoundVolume() {
         soundVolume = LEVELS[(levelIndex(soundVolume) + 1) % LEVELS.length];
         return levelLabel(levelIndex(soundVolume));
+    }
+
+    /** Cycles the language and returns the new one, the way the volume rows return their new label. */
+    public GameLanguage cycleLanguage() {
+        language = language.next();
+        return language;
     }
 
     /** Keeps persisted values inside the named steps after a load. */

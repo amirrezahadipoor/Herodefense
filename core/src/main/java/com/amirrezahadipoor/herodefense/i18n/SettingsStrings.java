@@ -32,6 +32,7 @@ public enum SettingsStrings implements Translated {
     TAP_TO_ENABLE("tap to enable", "برای فعال‌سازی لمس کنید"),
     TAP_TO_MUTE("tap to mute", "برای بی‌صدا کردن لمس کنید"),
     TAP_TO_STEP("tap to step", "برای پله لمس کنید"),
+    TAP_TO_SWITCH("tap to switch", "برای تغییر لمس کنید"),
 
     /** The three named volume steps, which lived beside the values they label in GameSettings. */
     LEVEL_QUIET("QUIET", "آرام"),

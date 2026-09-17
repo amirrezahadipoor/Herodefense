@@ -1,9 +1,12 @@
 package com.amirrezahadipoor.herodefense.input;
 
-/** Tap-only settings bounds shared with the renderer (roadmap R6.4 added the two level rows). */
+/**
+ * Tap-only settings bounds shared with the renderer (roadmap R6.4 added the two level rows, R7.3 the language
+ * row, which is why the footer note moved down to make room for a fifth).
+ */
 public final class SettingsTouchLayout {
     public enum Action {
-        NONE, TOGGLE_SOUND, TOGGLE_MUSIC, CYCLE_SOUND_LEVEL, CYCLE_MUSIC_LEVEL, CLOSE
+        NONE, TOGGLE_SOUND, TOGGLE_MUSIC, CYCLE_SOUND_LEVEL, CYCLE_MUSIC_LEVEL, CYCLE_LANGUAGE, CLOSE
     }
 
     public static final float ROW_X = 100f;
@@ -14,6 +17,7 @@ public final class SettingsTouchLayout {
     public static final float MUSIC_ROW_Y = 750f;
     public static final float SOUND_LEVEL_ROW_Y = 600f;
     public static final float MUSIC_LEVEL_ROW_Y = 450f;
+    public static final float LANGUAGE_ROW_Y = 300f;
     public static final float CLOSE_X = 570f;
     public static final float CLOSE_Y = 1120f;
     public static final float CLOSE_SIZE = 100f;
@@ -30,6 +34,7 @@ public final class SettingsTouchLayout {
         if (inRow(y, MUSIC_ROW_Y)) return Action.TOGGLE_MUSIC;
         if (inRow(y, SOUND_LEVEL_ROW_Y)) return Action.CYCLE_SOUND_LEVEL;
         if (inRow(y, MUSIC_LEVEL_ROW_Y)) return Action.CYCLE_MUSIC_LEVEL;
+        if (inRow(y, LANGUAGE_ROW_Y)) return Action.CYCLE_LANGUAGE;
         return Action.NONE;
     }
 

@@ -87,10 +87,11 @@ final class MainMenuAndSettingsTouchTest {
             SettingsTouchLayout.SOUND_ROW_Y,
             SettingsTouchLayout.MUSIC_ROW_Y,
             SettingsTouchLayout.SOUND_LEVEL_ROW_Y,
-            SettingsTouchLayout.MUSIC_LEVEL_ROW_Y
+            SettingsTouchLayout.MUSIC_LEVEL_ROW_Y,
+            SettingsTouchLayout.LANGUAGE_ROW_Y
         };
         for (int index = 0; index < rows.length; index++) {
-            assertTrue(rows[index] > 200f, "a row must clear the footer note");
+            assertTrue(rows[index] > 260f, "a row must clear the footer note panel");
             if (index > 0) {
                 assertTrue(rows[index - 1] - rows[index] >= SettingsTouchLayout.ROW_HEIGHT,
                     "rows must not overlap");
