@@ -61,61 +61,9 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[~]` |
 | **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[ ]` |
 
-**Table B — experience phases (added 2026-09-16 at the owner's direction: assets, content, playtime,
-human-feel innovation, engagement, secrets, narrative, and a 2026 benchmark).** These phases start from the
-premise that a 1000-level game is not a codebase with a high score; it is a game that a person wants to keep
-playing, and every item below has to end in something measurable.
-
-| Phase | Title | Roadmap items | Status |
-|---|---|---|---|
-| **98** | Asset quality audit: every asset's texel density, contrast and framing measured | R9.1 | `[ ]` |
-| **99** | Art upgrade batches for every category, delivered by real renders and reviewed per batch | R9.2 | `[ ]` |
-| **100** | Shading pass: normal/roughness/AO maps for hero, bosses and creatures | R9.3 | `[ ]` |
-| **101** | Palette, value range and gameplay-contrast pass with measured ratios | R9.4 | `[ ]` |
-| **102** | Animation pass: real clip counts and frame coverage per entity | R9.5 | `[ ]` |
-| **103** | Content register: machine-readable inventory of every game asset with an owner phase | R10.1 | `[ ]` |
-| **104** | Creature families: new enemy archetypes with distinct mechanics and telegraphs | R10.2 | `[ ]` |
-| **105** | Boss roster and elite variants across the act structure | R10.3 | `[ ]` |
-| **106** | Biomes and arenas: four visually and mechanically distinct theatres | R10.4 | `[ ]` |
-| **107** | Equipment, consumables, affixes and set bonuses | R10.5 | `[ ]` |
-| **108** | Authored VFX library replacing shape primitives | R10.6 | `[ ]` |
-| **109** | Playtime model: target sessions, measured against automated play | R11.1 | `[ ]` |
-| **110** | Act structure: three acts of twelve waves with intermissions and mini-bosses | R11.2 | `[ ]` |
-| **111** | Mirror/endless mode with scaling modifiers and local records | R11.3 | `[ ]` |
-| **112** | Seeded daily trial, offline and deterministic | R11.4 | `[ ]` |
-| **113** | Achievements and bounties (60+) that unlock cosmetics and codex pages | R11.5 | `[ ]` |
-| **114** | Ascension tiers / new-game-plus modifiers | R11.6 | `[ ]` |
-| **115** | Living arena: allies, critters, weather and a day/night cycle that changes waves | R12.1 | `[ ]` |
-| **116** | Physicality: weight, knockback, hit-stop measured in milliseconds | R12.2 | `[ ]` |
-| **117** | Expressive hero: mood state, contextual lines, near-death presentation | R12.3 | `[ ]` |
-| **118** | Scripted beats: hand-authored moments inside runs | R12.4 | `[ ]` |
-| **119** | Adaptive pressure with a documented policy and a visible indicator | R12.5 | `[ ]` |
-| **120** | Accessibility and comfort: one-hand mode, palettes, text scaling, reduced flash | R12.6 | `[ ]` |
-| **121** | Touch feel: haptic vocabulary, precision assist, mis-tap forgiveness | R12.7 | `[ ]` |
-| **122** | The 30-second loop: input-to-feedback latency budget on the emulator | R13.1 | `[ ]` |
-| **123** | Reward cadence: unlocks and drops per minute, verified by the simulator | R13.2 | `[ ]` |
-| **124** | One-more-run hooks: visible seeds, personal bests, streaks | R13.3 | `[ ]` |
-| **125** | Mastery curve and measurable skill gap | R13.4 | `[ ]` |
-| **126** | Session boundaries: save anywhere, resume and first-wave budgets | R13.5 | `[ ]` |
-| **127** | No dark patterns: checklist enforced by a test | R13.6 | `[ ]` |
-| **128** | Secret registry: data-driven mysteries with deterministic triggers | R14.1 | `[ ]` |
-| **129** | Environmental mysteries inside the arenas | R14.2 | `[ ]` |
-| **130** | Lore fragments and a connected codex graph | R14.3 | `[ ]` |
-| **131** | Rare run anomalies with seeds a test can replay | R14.4 | `[ ]` |
-| **132** | A meta-mystery that spans save files | R14.5 | `[ ]` |
-| **133** | Spoiler discipline: hidden content stays hidden outside the game | R14.6 | `[ ]` |
-| **134** | Narrative bible, beat sheet and delivery map | R15.1 | `[ ]` |
-| **135** | Cinematic timeline runtime (camera, letterbox, typewriter, skippable) | R15.2 | `[ ]` |
-| **136** | Opening prologue animation | R15.3 | `[ ]` |
-| **137** | Interludes for act transitions and boss beats | R15.4 | `[ ]` |
-| **138** | Dialogue system with portraits and localisation-ready text | R15.5 | `[ ]` |
-| **139** | In-world storytelling: props, epitaphs, arena state that changes | R15.6 | `[ ]` |
-| **140** | Narrator stingers and per-act audio motifs | R15.7 | `[ ]` |
-| **141** | 2026 benchmark rubric: reference titles and comparable criteria | R16.1 | `[ ]` |
-| **142** | `docs/audit/BENCHMARK_2026.md` measured on our build | R16.2 | `[ ]` |
-| **143** | Close the benchmark gaps, or record them as accepted trade-offs | R16.3 | `[ ]` |
-| **144** | Experience re-audit with the granular method, both scores published | R16.4 | `[ ]` |
-| **145** | Final claim gate: both rubrics at target, no open `[!]` | R16.5 | `[ ]` |
+*Removed 2026-09-17 at the owner's direction: **Table B**, the phase index that numbered the experience
+phases 98-145. The experience rubric in section 4 and the R9-R16 items it is measured by are still
+defined; what is gone is their phase numbering, so the numbered phases of this file now end at 97.*
 
 ## 3. Baseline: where the 450 missing points are
 
@@ -157,7 +105,7 @@ pass on prose.
 | 9 | Presentation feel | 90 | audio identity, UI that reads at a glance, haptics, transitions and ceremony that feel authored | audio asset register with licences, screenshot set with brightness contract, haptic vocabulary list |
 
 **Gate 1 (repo rubric):** ≥ 900 of 920 in-scope points at Phase 97.
-**Gate 2 (experience rubric):** ≥ 900 of 1,000 at Phase 144, with no category below 80 % of its weight.
+**Gate 2 (experience rubric):** ≥ 900 of 1,000 at the experience re-audit (R16.4), with no category below 80 % of its weight.
 **Claim rule:** only when both gates pass may this repository describe the game as "1000-level", and the
 sentence has to name the two scores and the commit they were measured on.
 
@@ -1278,6 +1226,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 96 | R8.1 (payload) | a first-party ETC2 encoder held to Google's reference implementation by four committed blocks, KTX v1 containers the runtime can already upload, a per-device source policy with six cases, and an encode tool that measures decoded bytes, mask share and round-trip PSNR; measured 28.88 dB against the reference encoder's 33.57 dB, below the 32 dB bar, so no sheet ships compressed yet and the PNGs stay the payload | `bd598a9` |
 | 2026-09-17 | 96 | R8.2 · R8.3 · R8.4 | the first green emulator run files the numbers three rows were waiting on: wave-50 residency 151,837 KiB PSS of a 409,600 KiB budget (source=debug.MemoryInfo), the cold start 882 ms of 6000 ms and the debug APK 20,872,599 bytes of 120,000,000 -- each a logged run the performance page regenerates from -- and the stale 95.9 MiB combat-set note is corrected to the gate's 99.3 MiB in the same commit | `8784207` |
 | 2026-09-17 | 96 | R8.1 (device) | the upload path stops being a promise: a 64x64 punchthrough container built by `tools/texture/make_device_fixture.py` from a real shipped sheet, committed with the encoder's own decode beside it, rebuilt by the unit job, and decoded on the device by `CompressedTextureDeviceTest` -- an EGL/GLES3 pbuffer because the game's own context is GLES2 -- which asserts the GPU matches the repository's decoder, that the real GL version string makes `DeviceTextureSupport` say ETC2 and `TexturePayloadPolicy` pick the container, and leaves no GL error | `bd4634a` |
+| 2026-09-17 | — | Roadmap | Table B (the phase index for the experience phases 98-145) is deleted at the owner's direction; the experience rubric and the R9-R16 items it points at stay, and the numbered phases now end at 97 | `PENDING` |
 
 ## Definition of done
 
@@ -1286,7 +1235,7 @@ repository:
 
 1. **Repo rubric (Phase 97):** the nine in-scope categories score **≥ 900 of 920** — the release category
    stays out of scope by owner direction — and every figure in this file is still reproducible.
-2. **Experience rubric (Phase 144):** **≥ 900 of 1,000**, with no category below 80 % of its weight.
+2. **Experience rubric (R16.4):** **≥ 900 of 1,000**, with no category below 80 % of its weight.
 
 Only then may this repository describe the game as a "1000-level" title, and the sentence has to name both
 scores and the commit they were measured on. Until then every claim stays per-item, with its evidence, and
