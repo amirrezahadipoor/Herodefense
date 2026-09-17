@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import json
 import pathlib
+import random
 import subprocess
 import sys
 import tempfile
@@ -22,13 +23,22 @@ import render_performance_doc  # noqa: E402
 ROOT = pathlib.Path(__file__).resolve().parents[3]
 
 
+def body(size: int) -> bytes:
+    """Incompressible bytes, so a fixture of N bytes stays about N bytes inside the zip.
+
+    A fixture of repeated characters compresses to nothing, which would make a budget test pass for the
+    wrong reason: the measurement would never reach the threshold being tested. Seeded, so runs are stable.
+    """
+    return random.Random(7).randbytes(size)
+
+
 def make_apk(path: pathlib.Path, assets_bytes: int, natives: dict[str, int]) -> pathlib.Path:
-    """A zip shaped like an APK: assets and one .so per ABI, all compressible."""
+    """A zip shaped like an APK: an assets payload and one native library per ABI."""
     with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
-        archive.writestr("assets/generated/hero.png", b"a" * assets_bytes)
-        archive.writestr("classes.dex", b"d" * 1024)
+        archive.writestr("assets/generated/hero.png", body(assets_bytes))
+        archive.writestr("classes.dex", body(1024))
         for abi, size in natives.items():
-            archive.writestr(f"lib/{abi}/libgdx.so", b"n" * size)
+            archive.writestr(f"lib/{abi}/libgdx.so", body(size))
     return path
 
 

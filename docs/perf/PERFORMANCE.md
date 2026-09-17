@@ -7,14 +7,14 @@ traced to the commit and the command that produced it.
 
 | Metric | Value | Unit | Run | Commit | Measured by |
 |---|---:|---|---|---|---|
-| `validatedAssets` | 111 | count | `2026-09-17-generated-assets` (2026-09-17) | `PENDING_COMMIT` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
-| `rgbaPngs` | 157 | count | `2026-09-17-generated-assets` (2026-09-17) | `PENDING_COMMIT` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
-| `decodedBytes` | 384872448 | bytes | `2026-09-17-generated-assets` (2026-09-17) | `PENDING_COMMIT` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
-| `maxPagePixels` | 2048 | count | `2026-09-17-generated-assets` (2026-09-17) | `PENDING_COMMIT` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
-| `assetsInManifest` | 111 | count | `2026-09-17-residency` (2026-09-17) | `PENDING_COMMIT` | `./gradlew :core:residencyReport` |
-| `decodedCatalogBytes` | 384872448 | bytes | `2026-09-17-residency` (2026-09-17) | `PENDING_COMMIT` | `./gradlew :core:residencyReport` |
-| `decodedCatalogBudgetBytes` | 390000000 | bytes | `2026-09-17-residency` (2026-09-17) | `PENDING_COMMIT` | `./gradlew :core:residencyReport` |
-| `liveCombatResidencyBytes` | 104087552 | bytes | `2026-09-17-residency` (2026-09-17) | `PENDING_COMMIT` | `./gradlew :core:residencyReport` |
+| `validatedAssets` | 111 | count | `2026-09-17-generated-assets` (2026-09-17) | `cb457b8` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
+| `rgbaPngs` | 157 | count | `2026-09-17-generated-assets` (2026-09-17) | `cb457b8` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
+| `decodedBytes` | 384872448 | bytes | `2026-09-17-generated-assets` (2026-09-17) | `cb457b8` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
+| `maxPagePixels` | 2048 | count | `2026-09-17-generated-assets` (2026-09-17) | `cb457b8` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
+| `assetsInManifest` | 111 | count | `2026-09-17-residency` (2026-09-17) | `cb457b8` | `./gradlew :core:residencyReport` |
+| `decodedCatalogBytes` | 384872448 | bytes | `2026-09-17-residency` (2026-09-17) | `cb457b8` | `./gradlew :core:residencyReport` |
+| `decodedCatalogBudgetBytes` | 390000000 | bytes | `2026-09-17-residency` (2026-09-17) | `cb457b8` | `./gradlew :core:residencyReport` |
+| `liveCombatResidencyBytes` | 104087552 | bytes | `2026-09-17-residency` (2026-09-17) | `cb457b8` | `./gradlew :core:residencyReport` |
 
 ## Budgets the build enforces
 
@@ -28,5 +28,5 @@ traced to the commit and the command that produced it.
 
 ## Runs
 
-- `2026-09-17-generated-assets` — 2026-09-17, `PENDING_COMMIT`. The shipped tree measured by the visual validator: what is on disk, what it decodes to, and the largest atlas page.
-- `2026-09-17-residency` — 2026-09-17, `PENDING_COMMIT`. Decoded texture residency of the shipped catalog and of the live combat set, from RuntimeResidency: the same arithmetic RuntimeResidencyTest gates on.
+- `2026-09-17-generated-assets` — 2026-09-17, `cb457b8`. The shipped tree measured by the visual validator: what is on disk, what it decodes to, and the largest atlas page.
+- `2026-09-17-residency` — 2026-09-17, `cb457b8`. Decoded texture residency of the shipped catalog and of the live combat set, from RuntimeResidency: the same arithmetic RuntimeResidencyTest gates on.

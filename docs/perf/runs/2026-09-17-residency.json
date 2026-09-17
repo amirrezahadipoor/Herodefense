@@ -1,7 +1,7 @@
 {
   "id": "2026-09-17-residency",
   "date": "2026-09-17",
-  "commit": "PENDING_COMMIT",
+  "commit": "cb457b8",
   "command": "./gradlew :core:residencyReport",
   "note": "Decoded texture residency of the shipped catalog and of the live combat set, from RuntimeResidency: the same arithmetic RuntimeResidencyTest gates on.",
   "metrics": [
