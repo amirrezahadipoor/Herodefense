@@ -127,6 +127,23 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
+      # The device test writes the decode it produced, the decode it expected and a one-line account of the
+      # difference. They are pulled here, into the directory the reports artifact already carries, because a
+      # device failure that says only "max delta 196" is a failure nobody can act on.
+      - name: Pull the decode evidence the device test wrote
+        if: always()
+        run: |
+          set +e
+          directory=android/build/reports/androidTests/device-evidence
+          mkdir -p "$directory"
+          package=$(adb shell pm list packages | sed 's/package://' | tr -d '\r' | grep herodefense | head -1)
+          echo "package=$package"
+          for name in texture-rendered.png texture-expected.png texture-comparison.txt; do
+            adb exec-out run-as "$package" cat "files/$name" > "$directory/$name" 2>/dev/null
+            ls -l "$directory/$name" 2>/dev/null
+          done
+          cat "$directory/texture-comparison.txt" 2>/dev/null
+
       - name: Upload instrumentation reports
         if: always()
         uses: actions/upload-artifact@v4

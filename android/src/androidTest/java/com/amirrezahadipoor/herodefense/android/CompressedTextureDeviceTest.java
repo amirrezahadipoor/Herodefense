@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.content.res.AssetManager;
+import android.graphics.Bitmap;
 import android.opengl.EGL14;
 import android.opengl.EGLConfig;
 import android.opengl.EGLContext;
@@ -26,10 +27,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,6 +61,8 @@ public final class CompressedTextureDeviceTest {
     private static final String SHEET = "generated/sprites/rootling.png";
     /** EGL_OPENGL_ES3_BIT, spelled out because EGL14 does not name it. */
     private static final int EGL_OPENGL_ES3_BIT = 0x0040;
+    /** The KTX v1 header, before the four-byte image size and the level data. */
+    private static final int HEADER_BYTES = 64;
     /** How far one channel may sit from the decoder's own value: drivers are allowed to round, not to invent. */
     private static final int CHANNEL_TOLERANCE = 8;
     /** A decode that produced one flat colour would pass a tolerance test; this catches that. */
@@ -131,10 +137,18 @@ public final class CompressedTextureDeviceTest {
             + " sampledColors=" + best.distinctColours);
         assertTrue("the GPU produced too few colours to be a decode: " + best.distinctColours,
             best.distinctColours >= MINIMUM_DISTINCT_COLOURS);
+        String diagnosis = diagnose(rendered, expected, header, container, best == flipped, best);
+        // The evidence a failing run cannot otherwise show: the two pictures and the one-line account of how
+        // they differ. Written before the assertions so that a failure still leaves them behind, and pulled by
+        // the Android workflow out of the app's own files directory with `run-as`, which is why they live there
+        // rather than on the shared card -- a scoped-storage device would not hand them over.
+        writePixels("texture-rendered.png", rendered, header.width, header.height);
+        writePixels("texture-expected.png", expected, header.width, header.height);
+        writeText("texture-comparison.txt", diagnosis + "\n" + glLine(glVersion, header));
         assertEquals("the GPU's decode disagrees with the encoder's own decode by more than "
-                + CHANNEL_TOLERANCE + " (max delta " + best.maxDelta + ")",
+                + CHANNEL_TOLERANCE + " -- " + diagnosis,
             0, best.beyondTolerance);
-        assertTrue("alpha must decode to the container's one-bit mask",
+        assertTrue("alpha must decode to the container's one-bit mask -- " + diagnosis,
             best.alphaMismatches == 0);
         assertEquals("no GL error for the whole upload and draw", GLES30.GL_NO_ERROR, GLES30.glGetError());
 
@@ -248,6 +262,106 @@ public final class CompressedTextureDeviceTest {
      * conventions have to agree for the comparison to mean anything and the readback's is the device's to
      * state: whichever orientation matches better is reported in the evidence line.
      */
+    /**
+     * What a mismatch looks like, in one line: a failing run on a device nobody can attach a debugger to still
+     * has to say which rule the driver implemented. The interesting split is the opaque bit -- a driver that
+     * reads a punchthrough block's colour part as the individual layout, or that ignores the bit's choice of
+     * intensity-modifier table, gets the non-opaque blocks wrong and the opaque ones right, and that shows up
+     * here as mismatches in one column and not the other.
+     */
+    private static String diagnose(
+        byte[] rendered, byte[] expected, Header header, byte[] container, boolean flipped, Comparison best) {
+        int firstX = -1;
+        int firstY = -1;
+        int firstExpected = 0;
+        int firstRendered = 0;
+        int inOpaqueBlocks = 0;
+        int inNonOpaqueBlocks = 0;
+        int expectedClear = 0;
+        for (int y = 0; y < header.height; y++) {
+            int sourceRow = (flipped ? header.height - 1 - y : y) * header.width * 4;
+            int renderedRow = y * header.width * 4;
+            for (int x = 0; x < header.width; x++) {
+                int a = renderedRow + x * 4;
+                int b = sourceRow + x * 4;
+                int worst = 0;
+                for (int channel = 0; channel < 3; channel++) {
+                    worst = Math.max(worst,
+                        Math.abs((rendered[a + channel] & 0xff) - (expected[b + channel] & 0xff)));
+                }
+                if (worst > CHANNEL_TOLERANCE) {
+                    if (opaqueBit(container, header, x, y)) {
+                        inOpaqueBlocks++;
+                    } else {
+                        inNonOpaqueBlocks++;
+                    }
+                    if (firstX < 0) {
+                        firstX = x;
+                        firstY = y;
+                        firstExpected = rgbAt(expected, b);
+                        firstRendered = rgbAt(rendered, a);
+                    }
+                }
+                if ((expected[b + 3] & 0xff) == 0) {
+                    expectedClear++;
+                }
+            }
+        }
+        return "orientation=" + (flipped ? "bottom-up" : "top-down")
+            + " maxDelta=" + best.maxDelta + " beyondTolerance=" + best.beyondTolerance
+            + " alphaMismatches=" + best.alphaMismatches + " exact=" + best.exact
+            + " distinctColours=" + best.distinctColours
+            + " mismatchesInOpaqueBlocks=" + inOpaqueBlocks
+            + " mismatchesInNonOpaqueBlocks=" + inNonOpaqueBlocks
+            + " expectedClearPixels=" + expectedClear
+            + " firstMismatch=(x=" + firstX + ",y=" + firstY
+            + " expected=0x" + String.format("%06x", firstExpected)
+            + " rendered=0x" + String.format("%06x", firstRendered) + ")";
+    }
+
+    /** The opaque bit of the block a texel belongs to, read out of the container the device uploaded. */
+    private static boolean opaqueBit(byte[] container, Header header, int x, int y) {
+        int blocksPerRow = (header.width + 3) / 4;
+        int block = (y / 4) * blocksPerRow + (x / 4);
+        int offset = HEADER_BYTES + 4 + block * 8;
+        int high = ((container[offset] & 0xff) << 24) | ((container[offset + 1] & 0xff) << 16)
+            | ((container[offset + 2] & 0xff) << 8) | (container[offset + 3] & 0xff);
+        return ((high >> 1) & 1) == 1;
+    }
+
+    private static String glLine(String glVersion, Header header) {
+        return "glVersion=" + glVersion + " format=" + header.glInternalFormat
+            + " size=" + header.width + "x" + header.height;
+    }
+
+    /** One pixel buffer as a PNG in the app's own files directory, where the workflow can pull it. */
+    private static void writePixels(String name, byte[] pixels, int width, int height) throws IOException {
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        int[] argb = new int[width * height];
+        for (int i = 0; i < argb.length; i++) {
+            int offset = i * 4;
+            argb[i] = ((pixels[offset + 3] & 0xff) << 24) | ((pixels[offset] & 0xff) << 16)
+                | ((pixels[offset + 1] & 0xff) << 8) | (pixels[offset + 2] & 0xff);
+        }
+        bitmap.setPixels(argb, 0, width, 0, 0, width, height);
+        File directory = InstrumentationRegistry.getInstrumentation().getTargetContext().getFilesDir();
+        try (FileOutputStream stream = new FileOutputStream(new File(directory, name))) {
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        }
+        bitmap.recycle();
+    }
+
+    private static void writeText(String name, String text) throws IOException {
+        File directory = InstrumentationRegistry.getInstrumentation().getTargetContext().getFilesDir();
+        try (FileOutputStream stream = new FileOutputStream(new File(directory, name))) {
+            stream.write(text.getBytes(StandardCharsets.UTF_8));
+        }
+    }
+
+    private static int rgbAt(byte[] pixels, int offset) {
+        return ((pixels[offset] & 0xff) << 16) | ((pixels[offset + 1] & 0xff) << 8) | (pixels[offset + 2] & 0xff);
+    }
+
     private static Comparison compare(byte[] rendered, byte[] expected, Header header, boolean flipped) {
         Comparison comparison = new Comparison();
         Set<Integer> colours = new HashSet<>();
