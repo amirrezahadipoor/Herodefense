@@ -498,14 +498,13 @@ public final class AndroidTouchSmokeTest {
     public void theArenaIsRenderedUnderTheStageGrade() {
         float[] dawn = captureGroundBandAtWave(20, "grade-dawn-wave-20.png");
         float[] hollow = captureGroundBandAtWave(175, "grade-hollow-wave-175.png");
-        assertTrue(dawn[3] >= 0.80f, "the dawn arena is lit: " + dawn[3]);
-        assertTrue(hollow[3] >= 0.80f, "the hollow arena is lit: " + hollow[3]);
-        assertTrue(dawn[0] - hollow[0] >= 2f,
-            "HOLLOW multiplies red by 0.86 where DAWN multiplies by 1.00, so the ground's red has to fall:"
-                + " dawn=" + dawn[0] + " hollow=" + hollow[0]);
-        assertTrue((hollow[2] - hollow[0]) - (dawn[2] - dawn[0]) >= 2f,
-            "and the arc cools it: blue-minus-red dawn=" + (dawn[2] - dawn[0])
-                + " hollow=" + (hollow[2] - hollow[0]));
+        assertTrue("the dawn arena is lit: " + dawn[3], dawn[3] >= 0.80f);
+        assertTrue("the hollow arena is lit: " + hollow[3], hollow[3] >= 0.80f);
+        assertTrue("HOLLOW multiplies red by 0.86 where DAWN multiplies by 1.00, so the ground's red has to fall:"
+                + " dawn=" + dawn[0] + " hollow=" + hollow[0], dawn[0] - hollow[0] >= 2f);
+        assertTrue("and the arc cools it: blue-minus-red dawn=" + (dawn[2] - dawn[0])
+                + " hollow=" + (hollow[2] - hollow[0]),
+            (hollow[2] - hollow[0]) - (dawn[2] - dawn[0]) >= 2f);
         System.out.println("STAGE GRADE ground band dawn r/g/b/lit=" + dawn[0] + "/" + dawn[1] + "/" + dawn[2]
             + "/" + dawn[3] + " hollow=" + hollow[0] + "/" + hollow[1] + "/" + hollow[2] + "/" + hollow[3]);
     }
@@ -559,7 +558,7 @@ public final class AndroidTouchSmokeTest {
                 }
             }
         }
-        assertTrue(samples > 0, "the ground band sampled no pixels");
+        assertTrue("the ground band sampled no pixels", samples > 0);
         return new float[] {
             (float) (red / samples), (float) (green / samples), (float) (blue / samples),
             (float) lit / samples,
