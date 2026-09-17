@@ -85,6 +85,38 @@ final class OverlayText implements AutoCloseable {
             UiMirror.leading(containerX, containerWidth, inset, width(text, scale)), y, scale, color);
     }
 
+    /** {@link #drawLeading} with the alpha a reveal or a disabled state asks for. */
+    void drawLeading(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color,
+        float alpha
+    ) {
+        draw(batch, text,
+            UiMirror.leading(containerX, containerWidth, inset, width(text, scale)), y, scale, color, alpha);
+    }
+
+    /** {@link #drawTrailing} with the alpha a reveal or a disabled state asks for. */
+    void drawTrailing(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color,
+        float alpha
+    ) {
+        draw(batch, text,
+            UiMirror.trailing(containerX, containerWidth, inset, width(text, scale)), y, scale, color, alpha);
+    }
+
     /** The same on the container's trailing edge, where a row's value and its hint go. */
     void drawTrailing(
         SpriteBatch batch,

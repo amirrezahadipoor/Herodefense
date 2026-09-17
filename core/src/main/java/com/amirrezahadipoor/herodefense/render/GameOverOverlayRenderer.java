@@ -132,42 +132,48 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
         }
 
         float offset = MainMenuRenderer.pressedOffset(restartState);
-        icons.draw(batch, "restart", 152f, GameOverTouchLayout.RESTART_Y + 24f + offset, 64f,
-            restartState);
-        text.draw(batch,
+        icons.draw(batch, "restart", UiMirror.leadingOnScreen(152f, 64f),
+            GameOverTouchLayout.RESTART_Y + 24f + offset, 64f, restartState);
+        text.drawLeading(batch,
             victory
                 ? GameLocale.text(GameOverStrings.DEFEND_AGAIN)
                 : GameLocale.text(GameOverStrings.RESTART_AT_WAVE_ONE),
-            228f,
+            0f, UiMirror.SCREEN_WIDTH, 228f,
             GameOverTouchLayout.RESTART_Y + 68f + offset, 1.08f,
             interactive ? OverlayText.IVORY : OverlayText.MUTED, reveal);
-        text.draw(batch, GameLocale.text(GameOverStrings.DEFEND_AGAIN_SUBTITLE), 228f,
+        text.drawLeading(batch, GameLocale.text(GameOverStrings.DEFEND_AGAIN_SUBTITLE),
+            0f, UiMirror.SCREEN_WIDTH, 228f,
             GameOverTouchLayout.RESTART_Y + 34f + offset, 0.62f, OverlayText.SUBTLE, reveal);
 
         float ascOffset = MainMenuRenderer.pressedOffset(ascendState);
-        icons.draw(batch, "general_power", 152f, GameOverTouchLayout.ASCEND_Y + 20f + ascOffset, 56f,
-            ascendState);
+        icons.draw(batch, "general_power", UiMirror.leadingOnScreen(152f, 56f),
+            GameOverTouchLayout.ASCEND_Y + 20f + ascOffset, 56f, ascendState);
         int heartwoodPreview = Math.round(GameState.calculateHeartwoodReward(state.peakWaveReached, state.ascensionTier, !state.heroDiedThisRun)
             * TrialEffects.heartwoodMultiplier(state.activeTrials));
-        text.draw(batch, GameLocale.text(GameOverStrings.ASCEND, GameLocale.number(heartwoodPreview)), 228f,
+        text.drawLeading(batch,
+            GameLocale.text(GameOverStrings.ASCEND, GameLocale.number(heartwoodPreview)),
+            0f, UiMirror.SCREEN_WIDTH, 228f,
             GameOverTouchLayout.ASCEND_Y + 60f + ascOffset, 1.0f,
             interactive ? OverlayText.GOLD : OverlayText.MUTED, reveal);
-        text.draw(
+        text.drawLeading(
             batch,
             GameLocale.text(
                 GameOverStrings.TIER_PROGRESS,
                 GameLocale.number(state.ascensionTier), GameLocale.number(state.ascensionTier + 1)
             ),
-            228f,
+            0f, UiMirror.SCREEN_WIDTH, 228f,
             GameOverTouchLayout.ASCEND_Y + 30f + ascOffset, 0.58f, OverlayText.SUBTLE, reveal);
 
         float rootOffset = MainMenuRenderer.pressedOffset(rootState);
-        icons.draw(batch, "health", 152f, GameOverTouchLayout.ROOT_Y + 20f + rootOffset, 56f,
-            rootState);
-        text.draw(batch, GameLocale.text(GameOverStrings.ROOT_NETWORK, GameLocale.number(state.heartwood)), 228f,
+        icons.draw(batch, "health", UiMirror.leadingOnScreen(152f, 56f),
+            GameOverTouchLayout.ROOT_Y + 20f + rootOffset, 56f, rootState);
+        text.drawLeading(batch,
+            GameLocale.text(GameOverStrings.ROOT_NETWORK, GameLocale.number(state.heartwood)),
+            0f, UiMirror.SCREEN_WIDTH, 228f,
             GameOverTouchLayout.ROOT_Y + 60f + rootOffset, 1.0f,
             interactive ? OverlayText.IVORY : OverlayText.MUTED, reveal);
-        text.draw(batch, GameLocale.text(GameOverStrings.ROOT_NETWORK_SUBTITLE), 228f,
+        text.drawLeading(batch, GameLocale.text(GameOverStrings.ROOT_NETWORK_SUBTITLE),
+            0f, UiMirror.SCREEN_WIDTH, 228f,
             GameOverTouchLayout.ROOT_Y + 30f + rootOffset, 0.58f, OverlayText.SUBTLE, reveal);
 
         batch.end();
@@ -191,9 +197,12 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
         float alpha
     ) {
         float y = summaryRowY(row);
-        if (icon != null) icons.draw(batch, icon, 96f, y - 20f, 56f);
-        text.draw(batch, label, 172f, y + 18f, 0.92f, OverlayText.IVORY, alpha);
-        text.drawRightAligned(batch, value, 612f, y + 20f, 1.06f, OverlayText.GOLD, alpha);
+        // The summary panel is centred on the screen, so mirroring about the screen's centre is mirroring about
+        // the panel's: 612f from the left is 108f from the right, and the row reads label-then-value in both
+        // languages rather than value-then-label in one of them.
+        if (icon != null) icons.draw(batch, icon, UiMirror.leadingOnScreen(96f, 56f), y - 20f, 56f);
+        text.drawLeading(batch, label, 0f, UiMirror.SCREEN_WIDTH, 172f, y + 18f, 0.92f, OverlayText.IVORY, alpha);
+        text.drawTrailing(batch, value, 0f, UiMirror.SCREEN_WIDTH, 108f, y + 20f, 1.06f, OverlayText.GOLD, alpha);
     }
 
     static float summaryRowY(int row) {

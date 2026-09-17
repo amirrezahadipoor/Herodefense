@@ -89,6 +89,18 @@ final class UiMirrorTest {
     }
 
     @Test
+    void aCentredElementMirrorsAboutItsOwnContainerAndNotAboutTheScreen() {
+        GameLocale.use(GameLanguage.ENGLISH);
+        assertEquals(611f, UiMirror.centre(500f, 176f, 611f));
+
+        GameLocale.use(GameLanguage.PERSIAN);
+        assertEquals(565f, UiMirror.centre(500f, 176f, 611f),
+            "mirrored about the panel's own centre at 588f, so the badge stays inside the panel it is drawn on");
+        assertEquals(360f, UiMirror.centre(0f, UiMirror.SCREEN_WIDTH, 360f),
+            "and an element centred on a centred container does not move at all");
+    }
+
+    @Test
     void aBoxWiderThanItsContainerStillMirrorsByTheSameRule() {
         GameLocale.use(GameLanguage.PERSIAN);
         assertEquals(-30f, UiMirror.leading(0f, 100f, 10f, 120f),

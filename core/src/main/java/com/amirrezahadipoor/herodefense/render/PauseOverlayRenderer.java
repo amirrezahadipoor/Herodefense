@@ -101,10 +101,11 @@ public final class PauseOverlayRenderer implements AutoCloseable {
             true, false
         );
 
-        icons.draw(batch, "pause", 84f, 1122f, 76f);
-        text.draw(batch, GameLocale.text(PauseStrings.TITLE), 180f, 1196f, 1.36f, OverlayText.GOLD);
-        text.draw(batch, GameLocale.text(PauseStrings.SUBTITLE), 180f, 1150f, 0.74f,
-            OverlayText.SUBTLE);
+        icons.draw(batch, "pause", UiMirror.leadingOnScreen(84f, 76f), 1122f, 76f);
+        text.drawLeading(batch, GameLocale.text(PauseStrings.TITLE), 0f, UiMirror.SCREEN_WIDTH,
+            180f, 1196f, 1.36f, OverlayText.GOLD);
+        text.drawLeading(batch, GameLocale.text(PauseStrings.SUBTITLE), 0f, UiMirror.SCREEN_WIDTH,
+            180f, 1150f, 0.74f, OverlayText.SUBTLE);
 
         drawAction(
             batch, icons, "shop", GameLocale.text(PauseStrings.STAT_SHOP),
@@ -127,28 +128,29 @@ public final class PauseOverlayRenderer implements AutoCloseable {
             PauseTouchLayout.CODEX_Y, PauseTouchLayout.SECONDARY_HEIGHT, codexState
         );
         float resumeOffset = MainMenuRenderer.pressedOffset(resumeState);
-        icons.draw(batch, "continue", 132f, PauseTouchLayout.RESUME_Y + 62f + resumeOffset, 116f,
-            resumeState);
-        text.draw(batch, GameLocale.text(PauseStrings.RESUME), 274f,
-            PauseTouchLayout.RESUME_Y + 158f + resumeOffset, 1.62f,
-            OverlayText.GOLD);
-        text.draw(batch, GameLocale.text(PauseStrings.RESUME_SUBTITLE), 274f,
-            PauseTouchLayout.RESUME_Y + 104f + resumeOffset, 0.80f, OverlayText.IVORY);
+        icons.draw(batch, "continue", UiMirror.leadingOnScreen(132f, 116f),
+            PauseTouchLayout.RESUME_Y + 62f + resumeOffset, 116f, resumeState);
+        text.drawLeading(batch, GameLocale.text(PauseStrings.RESUME), 0f, UiMirror.SCREEN_WIDTH,
+            274f, PauseTouchLayout.RESUME_Y + 158f + resumeOffset, 1.62f, OverlayText.GOLD);
+        text.drawLeading(batch, GameLocale.text(PauseStrings.RESUME_SUBTITLE), 0f, UiMirror.SCREEN_WIDTH,
+            274f, PauseTouchLayout.RESUME_Y + 104f + resumeOffset, 0.80f, OverlayText.IVORY);
 
-        icons.draw(batch, "wave", 84f, 272f, 62f);
-        text.draw(batch, waveLabel(state), 160f, 328f, 0.66f, OverlayText.GOLD);
-        text.draw(
+        icons.draw(batch, "wave", UiMirror.leadingOnScreen(84f, 62f), 272f, 62f);
+        text.drawLeading(batch, waveLabel(state), 0f, UiMirror.SCREEN_WIDTH, 160f, 328f, 0.66f,
+            OverlayText.GOLD);
+        text.drawLeading(
             batch,
             GameLocale.text(
                 PauseStrings.WAVE_VALUE,
                 GameLocale.number(state.waveNumber), GameLocale.number(GameState.FINAL_WAVE)
             ),
-            160f, 294f, 0.96f, OverlayText.IVORY
+            0f, UiMirror.SCREEN_WIDTH, 160f, 294f, 0.96f, OverlayText.IVORY
         );
-        icons.draw(batch, "coin", 392f, 272f, 62f);
-        text.draw(batch, GameLocale.text(PauseStrings.COINS), 468f, 328f, 0.66f, OverlayText.GOLD);
-        text.draw(batch, MainMenuRenderer.coinTotalLabel(state.coins), 468f, 294f, 0.96f,
-            OverlayText.IVORY);
+        icons.draw(batch, "coin", UiMirror.leadingOnScreen(392f, 62f), 272f, 62f);
+        text.drawLeading(batch, GameLocale.text(PauseStrings.COINS), 0f, UiMirror.SCREEN_WIDTH, 468f,
+            328f, 0.66f, OverlayText.GOLD);
+        text.drawLeading(batch, MainMenuRenderer.coinTotalLabel(state.coins), 0f, UiMirror.SCREEN_WIDTH,
+            468f, 294f, 0.96f, OverlayText.IVORY);
         batch.end();
     }
 
@@ -163,9 +165,12 @@ public final class PauseOverlayRenderer implements AutoCloseable {
         UiFrameRenderer.State state
     ) {
         float offset = MainMenuRenderer.pressedOffset(state);
-        icons.draw(batch, icon, 132f, y + (height - 84f) * 0.5f + offset, 84f, state);
-        text.draw(batch, title, 246f, y + height - 40f + offset, 1.16f, OverlayText.IVORY);
-        text.draw(batch, subtitle, 246f, y + 44f + offset, 0.72f, OverlayText.SUBTLE);
+        icons.draw(batch, icon, UiMirror.leadingOnScreen(132f, 84f), y + (height - 84f) * 0.5f + offset,
+            84f, state);
+        text.drawLeading(batch, title, 0f, UiMirror.SCREEN_WIDTH, 246f, y + height - 40f + offset,
+            1.16f, OverlayText.IVORY);
+        text.drawLeading(batch, subtitle, 0f, UiMirror.SCREEN_WIDTH, 246f, y + 44f + offset,
+            0.72f, OverlayText.SUBTLE);
     }
 
     /**

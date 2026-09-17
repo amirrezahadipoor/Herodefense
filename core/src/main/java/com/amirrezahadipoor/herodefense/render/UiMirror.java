@@ -67,6 +67,18 @@ public final class UiMirror {
         return leading(0f, SCREEN_WIDTH, inset, width);
     }
 
+    /**
+     * The centre of an element that is centred at {@code centreX} inside the container, mirrored about the
+     * container's own centre rather than the screen's: a coin badge in a panel that is not itself centred on the
+     * screen has to stay inside that panel when the screen mirrors.
+     */
+    public static float centre(float containerX, float containerWidth, float centreX) {
+        if (!GameLocale.rightToLeft()) {
+            return centreX;
+        }
+        return 2f * (containerX + containerWidth * 0.5f) - centreX;
+    }
+
     /** {@link #trailing(float, float, float, float)} with the screen as the container. */
     public static float trailingOnScreen(float inset, float width) {
         return trailing(0f, SCREEN_WIDTH, inset, width);

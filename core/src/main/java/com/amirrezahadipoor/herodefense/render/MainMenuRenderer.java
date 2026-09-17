@@ -21,6 +21,9 @@ public final class MainMenuRenderer implements AutoCloseable {
     static final float COIN_PANEL_Y = 1192f;
     static final float COIN_PANEL_WIDTH = 176f;
     static final float COIN_PANEL_HEIGHT = 64f;
+    /** The coin icon's inset inside its own panel: 508f - 500f. The panel is not centred on the screen, so its
+     *  contents mirror about the panel and not about the screen. */
+    static final float COIN_ICON_INSET = 8f;
 
     private static final Color GOLD = Color.valueOf("F2D58A");
     private static final Color IVORY = Color.valueOf("F3E4BC");
@@ -125,7 +128,8 @@ public final class MainMenuRenderer implements AutoCloseable {
         );
         frames.draw(
             batch, UiFrameRenderer.Kind.PANEL,
-            COIN_PANEL_X, COIN_PANEL_Y, COIN_PANEL_WIDTH, COIN_PANEL_HEIGHT,
+            UiMirror.leadingOnScreen(COIN_PANEL_X, COIN_PANEL_WIDTH), COIN_PANEL_Y,
+            COIN_PANEL_WIDTH, COIN_PANEL_HEIGHT,
             true, false
         );
         drawButton(batch, frames, MainMenuTouchLayout.rowBottom(0), true);
@@ -135,8 +139,10 @@ public final class MainMenuRenderer implements AutoCloseable {
         drawButton(batch, frames, MainMenuTouchLayout.rowBottom(4), true);
         drawButton(batch, frames, MainMenuTouchLayout.rowBottom(5), true);
 
-        icons.draw(batch, "coin", 508f, 1201f, 46f);
-        drawShadowedCentered(batch, coinTotalLabel(coins), 611f, 1232f, 1.05f, GOLD);
+        icons.draw(batch, "coin",
+            UiMirror.leading(COIN_PANEL_X, COIN_PANEL_WIDTH, COIN_ICON_INSET, 46f), 1201f, 46f);
+        drawShadowedCentered(batch, coinTotalLabel(coins),
+            UiMirror.centre(COIN_PANEL_X, COIN_PANEL_WIDTH, 611f), 1232f, 1.05f, GOLD);
         drawShadowedCentered(batch, GameLocale.text(MenuStrings.TAGLINE), 360f, 1120f, 0.86f, GOLD);
         drawShadowedCentered(batch, GameLocale.text(MenuStrings.TITLE), 360f, 1058f, 2.28f, GOLD);
         drawShadowedCentered(
@@ -210,7 +216,7 @@ public final class MainMenuRenderer implements AutoCloseable {
         float offset = pressedOffset(state);
         Color primary = enabled ? IVORY : MUTED;
         Color secondary = enabled ? SUBTLE : MUTED;
-        icons.draw(batch, icon, 146f, y + 27f + offset, 82f, state);
+        icons.draw(batch, icon, UiMirror.leadingOnScreen(146f, 82f), y + 27f + offset, 82f, state);
         drawShadowed(batch, title, 258f, y + 92f + offset, 1.34f, primary);
         drawShadowed(batch, subtitle, 258f, y + 49f + offset, 0.78f, secondary);
     }
@@ -221,10 +227,15 @@ public final class MainMenuRenderer implements AutoCloseable {
         text.drawCentered(batch, label, centerX, y, scale, color);
     }
 
+    /**
+     * A run that starts {@code inset} from the screen's leading edge. Both callers are the two lines of a menu
+     * row, and the row's button spans 120f..600f of a 720f screen, so mirroring about the screen's centre keeps
+     * both lines inside the button they belong to.
+     */
     private void drawShadowed(
-        SpriteBatch batch, String label, float x, float y, float scale, Color color
+        SpriteBatch batch, String label, float inset, float y, float scale, Color color
     ) {
-        text.draw(batch, label, x, y, scale, color);
+        text.drawLeading(batch, label, 0f, UiMirror.SCREEN_WIDTH, inset, y, scale, color);
     }
 
     private Texture backdrop() {
