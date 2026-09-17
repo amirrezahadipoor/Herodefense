@@ -1,0 +1,23 @@
+{
+  "container": "rootling-64.ktx",
+  "containerSha256": "f928858b1877c45191eb8b1d6be66619c689410374767589e891f696c91f5616",
+  "crop": {
+    "height": 64,
+    "width": 64,
+    "x": 640,
+    "y": 256
+  },
+  "expectation": "rootling-64.rgba",
+  "expectationSha256": "64b911537a2d66f5e2d71853cb21e64c44f6c5a18a6b68a3959856020f83f9fa",
+  "glInternalFormat": 37494,
+  "name": "rootling-64",
+  "purpose": "device evidence for R8.1: the upload and decode path, not a payload the game reads",
+  "roundTripPsnr": 26.61,
+  "sourceKey": "rootling",
+  "sourceSheet": "android/assets/generated/sprites/rootling.png",
+  "sourceSheetSha256": "d2c0e18c9cba9d389031030ced02c535e3f6ccae0c945c904a4fc360a34bf1ce",
+  "sourceSheetSize": [
+    1920,
+    768
+  ]
+}

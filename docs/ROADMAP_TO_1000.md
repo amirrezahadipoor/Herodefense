@@ -986,7 +986,13 @@ sentence has to name the two scores and the commit they were measured on.
   decision at runtime. What is still open is written down rather than implied: closing the five-decibel gap
   against the reference encoder (or pinning that encoder and its licence), wiring containers into the
   atlas-page loading path, and the device evidence that a compressed palette uploads and renders on the
-  emulator.
+  emulator. That evidence is now a test rather than a promise: `CompressedTextureDeviceTest` opens its own
+  GLES3 pbuffer through `EGL14` (the game asks libGDX for a GLES2 context, which could never load an ETC2
+  page), uploads a 64x64 punchthrough container built from a real shipped sheet by
+  `tools/texture/make_device_fixture.py`, reads the frame back with `glReadPixels` and asserts the GPU agrees
+  channel by channel with this repository's own decode of the same bytes -- with the fixture rebuilt in the
+  unit job, so a device cannot be asked to decode bytes the encoder no longer produces. What that run has not
+  done yet is happen: the row stays `[~]` until the emulator job reports it green.
 - [x] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
   manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (390 MB) and the
   live combat set against `decodedCombatResidencyBudgetBytes`, a deliberate **100 MiB** (was 150 MB), and the

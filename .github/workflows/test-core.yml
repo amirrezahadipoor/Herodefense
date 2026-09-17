@@ -51,6 +51,10 @@ jobs:
         run: python3 tools/visual/validate_material_maps.py
       - name: Test the ETC2 encoder and the KTX container it writes
         run: python3 -m unittest discover -s tools/texture/tests -v
+      # R8.1's device fixture: the container the on-device upload test hands to a GPU is rebuilt here, so the
+      # bytes a device decodes cannot drift away from the encoder that claims to have written them.
+      - name: Rebuild the device fixture the upload test reads
+        run: python3 tools/texture/make_device_fixture.py --check
       # R8.1's payload half, measured in CI on a representative slice of the live combat set. Report-only on
       # purpose: the tool writes a container only when a sheet clears its quality bar, so this step's job is to
       # keep the numbers current and to fail loudly if the tool itself breaks -- not to ship a payload nobody
