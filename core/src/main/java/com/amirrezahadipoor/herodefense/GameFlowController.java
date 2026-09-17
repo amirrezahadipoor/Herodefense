@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense;
 
 import java.util.EnumMap;
 import java.util.EnumSet;
+import com.amirrezahadipoor.herodefense.onboarding.OnboardingSystem;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -12,6 +13,15 @@ public final class GameFlowController {
 
     private volatile GameScreenState state = GameScreenState.MENU;
     private GameScreenState returnState = GameScreenState.PLAYING;
+    // The first vigil (roadmap R7.1) belongs to the flow: it begins when a run begins and ends when its own
+    // budget runs out. It is looked up here rather than stored on the game object because the touch host and
+    // the frame composer are the two sides that need it, and both already reach the flow controller.
+    private final OnboardingSystem onboarding = new OnboardingSystem();
+
+    /** The run's first-vigil coach, shared by the touch host and the frame composer. */
+    public OnboardingSystem onboarding() {
+        return onboarding;
+    }
 
     public GameScreenState state() {
         return state;

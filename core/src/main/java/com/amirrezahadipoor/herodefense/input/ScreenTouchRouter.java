@@ -29,6 +29,7 @@ import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout;
 import com.amirrezahadipoor.herodefense.input.TouchInputController;
 import com.amirrezahadipoor.herodefense.input.TrialDraftTouchController;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.onboarding.OnboardingAction;
 import com.amirrezahadipoor.herodefense.model.HeroStat;
 import com.amirrezahadipoor.herodefense.polish.TouchFeedbackSystem;
 import com.amirrezahadipoor.herodefense.render.GameOverOverlayRenderer;
@@ -169,6 +170,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             int pointer
         ) {
             host.uiFrameRenderer().movePress(worldX, worldY);
+            if (host.flow().state() == GameScreenState.PLAYING) {
+                host.flow().onboarding().notify(OnboardingAction.DRAG_FIRE);
+            }
             if (host.flow().state() == GameScreenState.INVENTORY
                 && host.inventoryTouchController().isOpen()) {
                 host.inventoryTouchController().drag(host.gameState(), deltaY);
@@ -224,6 +228,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             }
             if (host.flow().state() == GameScreenState.CARD_CHOICE) {
                 if (host.rewardCardTouchController().tap(host.gameState(), worldX, worldY)) {
+                    host.flow().onboarding().notify(OnboardingAction.CARD_TAKEN);
                     host.touchFeedbackSystem().triggerCardSelection(worldX, worldY);
                     host.hapticFeedback().cardSelection();
                     WaveCompletion result = host.waveLifecycleSystem().continueAfterBossReward(host.gameState());
@@ -320,9 +325,16 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 MainMenuTouchLayout.Action action = MainMenuTouchLayout.actionAt(
                     worldX, worldY, host.continueAvailable()
                 );
+                // The first vigil (roadmap R7.1) is offered to a new run and never to a Continue: the player
+                // who is resuming a session has already met the game, and a lesson about tapping the ground is
+                // exactly the wrong thing to open with on the way back into wave 40.
                 if (action == MainMenuTouchLayout.Action.NEW_GAME) {
+                    host.flow().onboarding().attach(host.settings(), host.settingsRepository());
+                    host.flow().onboarding().beginIfUnseen(false);
                     host.startNewRunSameTier();
                 } else if (action == MainMenuTouchLayout.Action.BRIEF_RUN) {
+                    host.flow().onboarding().attach(host.settings(), host.settingsRepository());
+                    host.flow().onboarding().beginIfUnseen(false);
                     host.startBriefRun();
                 } else if (action == MainMenuTouchLayout.Action.CONTINUE) {
                     host.continueRun();
@@ -367,6 +379,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             }
             if (host.flow().state() == GameScreenState.PLAYING
                 && HudTouchLayout.shopAt(worldX, worldY)) {
+                host.flow().onboarding().notify(OnboardingAction.SHOP_OPENED);
                 host.flow().transitionTo(GameScreenState.SHOP);
                 host.saveNow();
                 return true;
@@ -389,9 +402,18 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 host.saveNow();
                 return true;
             }
+            // The first-run coach gets first refusal on a tap (roadmap R7.1): its Skip button is the one
+            // target that must never double as a play input, or skipping the lesson would also send the Hero
+            // walking into the wave it was warning about.
+            if (host.flow().state() == GameScreenState.PLAYING
+                && host.flow().onboarding().handleTap(worldX, worldY)) {
+                host.saveNow();
+                return true;
+            }
             // Anything still unclaimed inside a running wave is a tap on the arena: mark the enemy under the
             // finger so the bow focuses it, or release the mark when the tap lands on empty ground (R3.1).
             if (host.flow().state() == GameScreenState.PLAYING) {
+                host.flow().onboarding().notify(OnboardingAction.TAP_GROUND);
                 host.focusFireAt(worldX, worldY);
                 return true;
             }

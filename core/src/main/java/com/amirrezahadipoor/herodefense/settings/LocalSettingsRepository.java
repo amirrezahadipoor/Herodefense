@@ -10,6 +10,7 @@ public final class LocalSettingsRepository {
     private static final String AUTO_SELL_COMMON_KEY = "inventory.autoSell.common";
     private static final String AUTO_SELL_UNCOMMON_KEY = "inventory.autoSell.uncommon";
     private static final String AUTO_SELL_RARE_KEY = "inventory.autoSell.rare";
+    private static final String TUTORIAL_SEEN_KEY = "onboarding.tutorialSeen";
     private final Preferences preferences;
 
     public LocalSettingsRepository(Preferences preferences) {
@@ -24,6 +25,7 @@ public final class LocalSettingsRepository {
         settings.autoSellCommon = preferences.getBoolean(AUTO_SELL_COMMON_KEY, false);
         settings.autoSellUncommon = preferences.getBoolean(AUTO_SELL_UNCOMMON_KEY, false);
         settings.autoSellRare = preferences.getBoolean(AUTO_SELL_RARE_KEY, false);
+        settings.tutorialSeen = preferences.getBoolean(TUTORIAL_SEEN_KEY, false);
         return settings;
     }
 
@@ -34,6 +36,7 @@ public final class LocalSettingsRepository {
         preferences.putBoolean(AUTO_SELL_COMMON_KEY, settings.autoSellCommon);
         preferences.putBoolean(AUTO_SELL_UNCOMMON_KEY, settings.autoSellUncommon);
         preferences.putBoolean(AUTO_SELL_RARE_KEY, settings.autoSellRare);
+        preferences.putBoolean(TUTORIAL_SEEN_KEY, settings.tutorialSeen);
         preferences.flush();
     }
 }

@@ -829,7 +829,33 @@ sentence has to name the two scores and the commit they were measured on.
 
 ## R7 — UI, onboarding and localisation  `+52`
 
-- [ ] **R7.1 A 60-second onboarding**, skippable, touch-only, tested to appear exactly once.
+- [x] **R7.1 A sixty-second onboarding, skippable, touch-only, and shown exactly once.** The 2026-09-13 review's
+  sharpest onboarding line was a measurement: *"grep for tutorial/hint/onboard in `core/src/main`: zero
+  hits"*. There is now a first vigil — five coached steps, one minute, each waiting for the thing it
+  describes rather than for a timer. The player is taught by doing: tap empty ground and the Hero walks,
+  hold and drag to aim and fire, loot homes to you, a level-up offers cards, coins buy things in the shop.
+  Two rules make it safe to ship, and both are pinned by tests rather than by hope. **A step ends on its own
+  action or on its own budget**: `OnboardingCoachTest` performs every step's action *and* every other action
+  as well, and asserts that the wrong ones change nothing — a player who taps the ground early does not tick
+  off the card lesson — while a step whose budget runs out is left behind, so a player who ignores the coach
+  entirely is never trapped by it and the whole lesson still ends inside its own sixty seconds
+  (`OnboardingStep.totalSeconds() == 60.0`, budgeted 12 / 12 / 10 / 14 / 12). **Exactly once is a property of
+  the save file**: finishing *or* skipping writes `onboarding.tutorialSeen` through
+  `LocalSettingsRepository`, and the test walks the whole path — first run teaches, a second run in the same
+  session is silent, the reloaded settings are silent, the run after that is silent. A Continue never opens
+  the lesson, because the player resuming a session at wave 40 is the last person who needs to be told to tap
+  the ground. The banner is anchored above the utility row and its **Skip target is a 150-by-100 world-unit
+  button**, the same minimum every other phone-HUD target uses; `OnboardingTouchLayoutTest` asserts the
+  geometry that matters (the banner never covers the utility row or the status row, never reaches the arena
+  floor or the Hero, every point of the Skip target is drawn inside the banner) and
+  `OnboardingSystemTest` asserts that Skip swallows its tap — the one target that must never double as play
+  input — while a tap one button-width to the left still walks the Hero. Touch-only by construction, which
+  `TouchOnlyInputPolicyTest` enforces for the whole repository: every completion action is something a finger
+  produces, and the vocabulary has no orphans (each action in `OnboardingAction` is taught by exactly one
+  step). The one lesson the touch layer cannot see — loot arriving — is read from the run's own books
+  (`OnboardingSystem.observe`: coins arriving or items entering the backpack), which is why the coach is ticked
+  once a frame by the composer instead of by the input layer. 21 new tests; the step texts are constants so
+  the locale work of R7.3 has one place to read them from.
 - [ ] **R7.2 Stat tooltips** for every displayed stat, with a coverage test.
 - [ ] **R7.3 Persian + RTL**: locale-aware string table, mirrored layout, and a test that fails on
   hard-coded or untranslated user-facing strings.
@@ -1079,6 +1105,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 91 | ladder | every tier now charges from its first wave: the enemy baseline carries the tier's health and damage charge, fading over 140 waves, so tier 10's brief pressure is 0.0507 against tier 0's 0.0901 and its reach 77.3 waves against 71.3, at the price of a 32% longer tier-10 session that the session gate now budgets for | `af70976` |
 | 2026-09-17 | 91 | elites | the elite cadence skipped the boss lap, so tiers 6-8 had no elites at all in a 200-wave run and the test that pinned it checked the interval arithmetic rather than the outcome; the cadence is `7 → 6 → 4` and the assertion now requires elites at every tier | `75e932b` |
 | 2026-09-17 | 91 | render | the render pipeline became resumable, comparable and deterministic to compare: a hash log of every sheet, atlas and descriptor it writes (no timestamps, no commits, no absolute paths, so two logs of the same bytes are equal), a diff that classifies added / changed / removed with `--fail-on-change` for promotion, and a resume list the workflow feeds straight back into the generator's `--only`; 321 files across 111 assets on the shipped tree, ten new tests in the unit job | `57e21ac` |
+| 2026-09-17 | 95 | R7.1 | the first vigil: five coached steps in one minute, each waiting for its own touch action or its own budget, skippable through a 150-by-100 HUD-sized target that swallows the tap, and taught exactly once per device through the settings the run already writes; 21 tests cover the rules, the geometry and the seen-once path | `PENDING` |
 
 ## Definition of done
 

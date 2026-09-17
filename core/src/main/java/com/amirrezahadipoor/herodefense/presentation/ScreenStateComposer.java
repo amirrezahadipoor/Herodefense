@@ -10,6 +10,7 @@ import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.onboarding.OnboardingSystem;
 import com.amirrezahadipoor.herodefense.polish.FloatingCoinTextSystem;
 import com.amirrezahadipoor.herodefense.polish.FloatingDamageTextSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
@@ -29,6 +30,7 @@ import com.amirrezahadipoor.herodefense.render.IdleWhisperRenderer;
 import com.amirrezahadipoor.herodefense.render.InventoryOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.LevelUpOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.MainMenuRenderer;
+import com.amirrezahadipoor.herodefense.render.OnboardingOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.OpeningCinematicRenderer;
 import com.amirrezahadipoor.herodefense.render.ParticleRenderer;
 import com.amirrezahadipoor.herodefense.render.PauseOverlayRenderer;
@@ -67,6 +69,12 @@ public final class ScreenStateComposer {
     private final OrthographicCamera camera;
 
     private final SpriteBatch spriteBatch;
+    /**
+     * The first vigil's banner (roadmap R7.1). The one thing this composer owns, because the alternative was
+     * a field on the game object the architecture ratchet will not let grow: it is created on first use and
+     * is stateless between frames.
+     */
+    private OnboardingOverlayRenderer onboardingOverlayRenderer;
 
     public ScreenStateComposer(Host host, OrthographicCamera camera, SpriteBatch spriteBatch) {
         this.host = host;
@@ -181,6 +189,14 @@ public final class ScreenStateComposer {
 
     /** Builds one frame for the state the flow is currently in. */
     public void draw(float presentationDeltaSeconds) {
+        // The first vigil (roadmap R7.1) runs on the frame clock, and it watches the run's own books for the
+        // one lesson the touch layer cannot see: loot arriving. Both are no-ops once the lesson is over.
+        OnboardingSystem onboarding = host.flow().onboarding();
+        onboarding.attach(host.settings(), null);
+        onboarding.update(presentationDeltaSeconds);
+        if (host.flow().state() == GameScreenState.PLAYING) {
+            onboarding.observe(host.gameState());
+        }
 float tint = switch (host.flow().state()) {
     case MENU -> 0.14f;
     case SETTINGS -> 0.13f;
@@ -283,6 +299,12 @@ if (host.flow().state() == GameScreenState.PLAYING
         spriteBatch, camera.combined, host.gameState(), host.uiIconRenderer(), host.uiFrameRenderer(),
         presentationDeltaSeconds
     );
+}
+if (host.flow().state() == GameScreenState.PLAYING && onboarding.active()) {
+    if (onboardingOverlayRenderer == null) {
+        onboardingOverlayRenderer = new OnboardingOverlayRenderer();
+    }
+    onboardingOverlayRenderer.draw(spriteBatch, camera.combined, onboarding, host.uiFrameRenderer());
 }
 if (host.flow().state() == GameScreenState.MENU) {
     host.mainMenuRenderer().draw(

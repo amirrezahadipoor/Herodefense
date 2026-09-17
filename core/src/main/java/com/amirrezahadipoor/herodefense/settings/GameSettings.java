@@ -10,6 +10,12 @@ public final class GameSettings {
     public boolean autoSellCommon;
     public boolean autoSellUncommon;
     public boolean autoSellRare;
+    /**
+     * The first-run coaching sequence (roadmap R7.1) is shown once per device: a run that starts after it
+     * has been finished or skipped does not show it again. It lives with the other device-local preferences
+     * rather than in a run save, because it is about the player and not about the run.
+     */
+    public boolean tutorialSeen;
 
     /** Legendary and Mythic items are never auto-sold; the toggle simply does not exist for them. */
     public boolean autoSells(ItemTier tier) {
