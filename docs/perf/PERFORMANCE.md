@@ -7,6 +7,16 @@ traced to the commit and the command that produced it.
 
 | Metric | Value | Unit | Run | Commit | Measured by |
 |---|---:|---|---|---|---|
+| `catalogRgba8888Bytes` | 384872448 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `catalogRgba8888WithMipsBytes` | 513163261 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `catalogEtc2Rgba8Bytes` | 96218112 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `catalogEtc2Rgba8WithMipsBytes` | 128290813 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `catalogAstc6x6Bytes` | 42763608 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `catalogAstc6x6WithMipsBytes` | 57018092 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `liveCombatRgba8888Bytes` | 80740352 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `liveCombatEtc2Rgba8Bytes` | 20185088 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `liveCombatAstc6x6Bytes` | 8971152 | bytes | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
+| `decodedCatalogMbSavedByEtc2` | 288.7 | MB | `2026-09-17-format-projection` (2026-09-17) | `8a2e05f` | `./gradlew :core:residencyReport` |
 | `validatedAssets` | 111 | count | `2026-09-17-generated-assets` (2026-09-17) | `cb457b8` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
 | `rgbaPngs` | 157 | count | `2026-09-17-generated-assets` (2026-09-17) | `cb457b8` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
 | `decodedBytes` | 384872448 | bytes | `2026-09-17-generated-assets` (2026-09-17) | `cb457b8` | `python3 tools/visual/validate_generated_assets.py android/assets/generated` |
@@ -30,5 +40,6 @@ traced to the commit and the command that produced it.
 
 ## Runs
 
+- `2026-09-17-format-projection` — 2026-09-17, `8a2e05f`. The shipped catalog in every format this game could hold it in, computed from android/assets/generated/asset_manifest.json by TextureFormatPlan. A projection rather than a device measurement: the encoded containers are not in the APK yet (roadmap R8.1). The RGBA8888 base-level row reproduces the decoded catalog the residency gate already enforces, and a test asserts that equality, which is what makes the other rows worth reading.
 - `2026-09-17-generated-assets` — 2026-09-17, `cb457b8`. The shipped tree measured by the visual validator: what is on disk, what it decodes to, and the largest atlas page.
 - `2026-09-17-residency` — 2026-09-17, `cb457b8`. Decoded texture residency of the shipped catalog and of the live combat set, from RuntimeResidency: the same arithmetic RuntimeResidencyTest gates on.

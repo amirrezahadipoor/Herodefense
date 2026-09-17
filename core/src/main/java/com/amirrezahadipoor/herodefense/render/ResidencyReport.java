@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -47,7 +48,8 @@ public final class ResidencyReport {
             throw new IOException("no manifest at " + manifestPath);
         }
         JsonValue manifest = new JsonReader().parse(Files.readString(manifestPath));
-        long catalog = RuntimeResidency.catalogBytes(manifest, icons(root));
+        RuntimeResidency.IconSizes iconSizes = icons(root);
+        long catalog = RuntimeResidency.catalogBytes(manifest, iconSizes);
         long combat = RuntimeResidency.combatBytes(manifest);
         int assets = 0;
         for (JsonValue asset = manifest.get("assets").child; asset != null; asset = asset.next) {
@@ -66,7 +68,34 @@ public final class ResidencyReport {
             "  atlasCapacityBytes: " + RuntimeResidency.ATLAS_CAPACITY_BYTES,
             "  catalogMatchesManifest: " + (catalog == manifest.getLong("decodedBytes"))
         );
+        return String.join("\n", lines) + "\n" + projection(manifest, iconSizes);
+    }
+
+    /**
+     * The same catalog in the formats the device could hold it in (roadmap R8.1). A projection, not a
+     * measurement: the encoded containers are not in the APK, so what is computed here is the manifest's own
+     * page dimensions in each format's bytes per pixel, mip chain included. The first row reproduces the decoded
+     * number above, which is what makes the other rows worth reading.
+     */
+    private static String projection(JsonValue manifest, RuntimeResidency.IconSizes iconSizes) {
+        List<String> lines = new ArrayList<>();
+        lines.add("format projection for the same manifest (base level + mip chain, alpha sheets counted):");
+        for (TextureFormatPlan.Row row : TextureFormatPlan.project(manifest, iconSizes)) {
+            lines.add("  " + pad(row.format().name(), 12)
+                + " catalog " + row.catalogBytes() + " bytes ("
+                + String.format(Locale.ROOT, "%.1f", row.catalogMiB()) + " MiB)"
+                + ", with mip chain " + row.catalogWithMipsBytes() + " bytes"
+                + ", live combat " + row.combatBytes() + " bytes");
+        }
         return String.join("\n", lines) + "\n";
+    }
+
+    private static String pad(String text, int width) {
+        StringBuilder padded = new StringBuilder(text);
+        while (padded.length() < width) {
+            padded.append(' ');
+        }
+        return padded.toString();
     }
 
     /** Reads icon dimensions straight from the PNG header (IHDR); no image library needed. */

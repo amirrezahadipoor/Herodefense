@@ -58,7 +58,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[~]` |
 | **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[x]` |
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[~]` |
-| **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[ ]` |
+| **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[~]` |
 | **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[ ]` |
 
 **Table B — experience phases (added 2026-09-16 at the owner's direction: assets, content, playtime,
@@ -933,7 +933,20 @@ sentence has to name the two scores and the commit they were measured on.
 
 ## R8 — Performance, memory and size  `+40`
 
-- [ ] **R8.1 Texture compression** (ETC2/ASTC + fallback) and mipmaps with a measured comparison.
+- [~] **R8.1 Texture compression** (ETC2/ASTC + fallback) and mipmaps with a measured comparison. The
+  measured half is in: `TextureFormat` carries each format's real arithmetic (ETC1 half a byte per pixel
+  *and no alpha*, so an alpha page needs a companion sheet and the plan is charged for it; ETC2 one byte;
+  ASTC 6x6 sixteen bytes per thirty-six pixels; RGBA8888 the four the device decodes to today) and the mip
+  chain costs the third that `1 + 1/4 + 1/16 ...` says it costs. `:core:residencyReport` now prints the
+  shipped catalog in every one of those formats -- 384,872,448 bytes decoded, 96,218,112 as ETC2, 42,763,608
+  as ASTC 6x6, and the live combat set 80,740,352 -> 20,185,088 -> 8,971,152 -- and the whole projection is
+  a logged run (`perf:2026-09-17-format-projection`), not a typed table. The RGBA8888 row is not a
+  projection at all: a test asserts it equals the decoded catalog the residency gate already enforces, which
+  is what makes the compressed rows worth quoting. **The remaining half is the payload**: the encoded
+  containers, the loader that picks a format per device with a PNG fallback, and the device evidence that
+  the fallback works. That needs an ETC2/ASTC encoder pinned into CI (the render pipeline is Blender and
+  cannot emit them) and an emulator run, and it is the next thing this item does rather than something it
+  claims.
 - [~] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
   manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (390 MB) and the
   live combat set against `decodedCombatResidencyBudgetBytes`, now a deliberate **100 MiB**
