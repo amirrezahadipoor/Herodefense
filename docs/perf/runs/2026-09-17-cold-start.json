@@ -1,0 +1,19 @@
+{
+  "id": "2026-09-17-cold-start",
+  "date": "2026-09-17",
+  "commit": "7329f4b",
+  "command": "CI Android job 105120923106 (run 35196492084): scripts/android-touch-test.sh am start -W, then tools/perf/parse_startup.py on the captured logcat",
+  "note": "LaunchState COLD, TotalTime 882 ms against the committed 6000 ms budget",
+  "metrics": [
+    {
+      "name": "coldStartMillis",
+      "value": 882.0,
+      "unit": "ms"
+    },
+    {
+      "name": "budgetMillis",
+      "value": 6000.0,
+      "unit": "ms"
+    }
+  ]
+}

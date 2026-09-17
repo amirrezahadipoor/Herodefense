@@ -596,8 +596,9 @@ sentence has to name the two scores and the commit they were measured on.
   *Evidence, not summaries:* the accepted run is `35137859000` / artifact `10463764236`, the audit
   `docs/art_reviews/regular_enemies_premium_v2/regular_enemies_audit.json` hashes all 17 review sheets, 224 frames,
   every candidate sheet/atlas/metadata and the baseline state, and `docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md`
-  carries the addendum with the per-frame border measurements. Measured cost: the combat set is 95.9 MiB of the
-  100 MiB budget and the catalog 384,872,448 bytes of a 390,000,000 budget — both raised deliberately and in the same
+  carries the addendum with the per-frame border measurements. Measured cost: the combat set is 104,087,552
+  bytes -- 99.3 MiB of the 100 MiB budget (`perf:2026-09-17-residency`; the 95.9 MiB this paragraph first
+  carried was the pre-alignment arithmetic) -- and the catalog 384,872,448 bytes of a 390,000,000 budget — both raised deliberately and in the same
   commit as the content, with `RuntimeResidencyTest`, `PremiumAssetContractTest` and the asset validator agreeing on
   one definition of the live set.
   **Shipped: item-pool diversity.** See the pool paragraph above.
@@ -986,15 +987,19 @@ sentence has to name the two scores and the commit they were measured on.
   against the reference encoder (or pinning that encoder and its licence), wiring containers into the
   atlas-page loading path, and the device evidence that a compressed palette uploads and renders on the
   emulator.
-- [~] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
+- [x] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
   manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (390 MB) and the
-  live combat set against `decodedCombatResidencyBudgetBytes`, now a deliberate **100 MiB**
-  (was 150 MB). Measured after the R3.4 roster doubled: catalog 384,872,448 bytes of the 390 MB budget and the
-  live combat set **95.9 MiB** of 100 MiB — inside budget, and the test fails if that changes. `PremiumAssetContractTest`
-  now measures the same set through the same arithmetic instead of its own wider superset, so the two cannot drift
-  apart. Remaining: compression (R8.1) to bring the catalog itself down — with one enemy-sized sheet of headroom
-  left, a ninth enemy needs smaller frames or a shared page rather than a quiet budget bump.
-- [~] **R8.3 Residency at wave 50** measured with `adb shell dumpsys meminfo` during a scripted run,
+  live combat set against `decodedCombatResidencyBudgetBytes`, a deliberate **100 MiB** (was 150 MB), and the
+  measured values are a logged run rather than a sentence: `perf:2026-09-17-residency` records the catalog at
+  384,872,448 bytes of the 390,000,000 budget and the live combat set at 104,087,552 bytes -- **99.3 MiB** of
+  the 100 MiB budget. (This row used to say 95.9 MiB; that was the pre-alignment arithmetic, and the logged
+  run is what the file says now.) The test fails if either number moves, and `PremiumAssetContractTest`
+  measures the same set through the same arithmetic instead of its own wider superset, so the two cannot
+  drift apart. The device half of the same budget is filed too: `perf:2026-09-17-wave50-residency` measures
+  148.3 MiB of the 400 MiB wave-50 ceiling on the CI emulator. What the budget does *not* leave is room for a
+  ninth enemy at the current frame size: with roughly one enemy-sized sheet of headroom, a ninth role needs
+  smaller frames, a shared page, or the compression R8.1 is still working on.
+- [x] **R8.3 Residency at wave 50** measured with `adb shell dumpsys meminfo` during a scripted run,
   logged in the repository, with streaming/release of atlases. Two of the three halves are in and the third is
   only waiting on a green emulator job. **Streaming/release**: `AtlasResidencyPolicy` (`b32ad6e`) makes residency a
   rule rather than a hope -- a page is released when its sheet family has been off screen for a stated interval and
@@ -1009,17 +1014,23 @@ sentence has to name the two scores and the commit they were measured on.
   and came back truncated before its App Summary -- and the fix (`8a2e05f`, plus a compile error CI caught and
   `3b7c580` fixed) makes the process's own `Debug.MemoryInfo` the primary source, merges the shell dump field by
   field, reads it to the end, and keeps it in the logcat as evidence. **What is still missing is the number**:
-  until an emulator job goes green there is no wave-50 reading filed under `docs/perf/runs/`, and this item does not
-  claim a measurement it does not have -- the gate is wired, the run is next.
-- [~] **R8.4 Startup and APK budget** measured in CI against a committed threshold. The instruments are in and
+  **The number is in.** CI run `35196492084` (commit `7329f4b`, Android job `105120923106`) went green on
+  2026-09-17 and filed the measurement as `perf:2026-09-17-wave50-residency`: **148.3 MiB total PSS
+  (151,837 KiB) of the 409,600 KiB budget**, 267.2 MiB RSS. The graphics field reads 0 because neither the
+  process's own `Debug.MemoryInfo` nor the shell dump's App Summary exposes a GL heap on the software stack
+  this emulator runs, and that is written into the logged run rather than papered over: the budget the gate
+  enforces is the total, and the per-field evidence stays in the logcat the job uploads.
+- [x] **R8.4 Startup and APK budget** measured in CI against a committed threshold. The instruments are in and
   the ordering bug the first run found is fixed. `scripts/android-touch-test.sh` now installs the debug APK after
   the instrumentation run uninstalls it, resolves the launcher component, and measures the cold start with
   `am start -W` (`6f90222`); `tools/perf/parse_startup.py` turns that line into a number, `tools/perf/log_run.py`
   files it as a logged run and `tools/perf/render_performance_doc.py` regenerates `docs/perf/PERFORMANCE.md` from
   those runs; the APK-size and cold-start budgets are committed thresholds that the Android job compares against
   and the numbers only count when the job is green. That sentence was written the same day the ordering bug was
-  found, which is the reason this row still reads *in progress*: the budget exists, the capture exists, and the
-  first green emulator job is what turns them into a filed measurement.
+  **Both budgets have their number.** The same green run files `perf:2026-09-17-cold-start` -- `LaunchState
+  COLD`, `TotalTime 882` ms against the committed 6000 ms threshold -- and `perf:2026-09-17-apk-size`, the
+  20,872,599-byte debug APK against the 120,000,000-byte ceiling. `docs/perf/PERFORMANCE.md` regenerates from
+  those runs, so the page and the CI job quote one number rather than two.
 - [x] **R8.5 Every performance number in `docs/**` comes from a logged run.** `docs/perf/` is the home: `runs/*.json`
   are the logged runs (command, commit, date, metrics), `PERFORMANCE.md` is *generated* from them, and
   `tools/perf/check_perf_provenance.py` fails the build on any number in the documentation with no run behind
@@ -1259,6 +1270,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 96 | CI | the first emulator run of the wave-50 test measured nothing (a single truncated shell read) and the cold start ran against an uninstalled package; both diagnosed from the job log, fixed in the script and the test, and a compile error CI found in the new stat helper fixed by parsing `MemoryInfo`'s string stats | `8a2e05f` · `3b7c580` |
 | 2026-09-17 | 93 | R5.5 · R5.6 | 39 material maps (normal / roughness / AO) derived from the shipped masters with a provenance table and a gate that re-derives every one of them, and a review-evidence step that regenerates a rendered batch's contact sheets and audit JSON from the batch itself | `05e2f79` |
 | 2026-09-17 | 96 | R8.1 (payload) | a first-party ETC2 encoder held to Google's reference implementation by four committed blocks, KTX v1 containers the runtime can already upload, a per-device source policy with six cases, and an encode tool that measures decoded bytes, mask share and round-trip PSNR; measured 28.88 dB against the reference encoder's 33.57 dB, below the 32 dB bar, so no sheet ships compressed yet and the PNGs stay the payload | `bd598a9` |
+| 2026-09-17 | 96 | R8.2 · R8.3 · R8.4 | the first green emulator run files the numbers three rows were waiting on: wave-50 residency 151,837 KiB PSS of a 409,600 KiB budget (source=debug.MemoryInfo), the cold start 882 ms of 6000 ms and the debug APK 20,872,599 bytes of 120,000,000 -- each a logged run the performance page regenerates from -- and the stale 95.9 MiB combat-set note is corrected to the gate's 99.3 MiB in the same commit | `PENDING` |
 
 ## Definition of done
 

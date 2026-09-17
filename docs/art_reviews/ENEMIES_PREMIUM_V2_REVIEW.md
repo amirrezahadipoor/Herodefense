@@ -190,13 +190,15 @@ future review: it applies only where the baseline manifest has no entry for the 
 
 ### Runtime cost, measured
 
-- **Combat residency:** the live set is worth 95.9 MiB of the documented 100 MiB budget once all eight
+- **Combat residency:** the live set is worth **99.3 MiB** (104,087,552 bytes) of the documented 100 MiB budget once all eight
   regular enemies are counted (each enemy sheet is 5,898,240 decoded bytes). That leaves about one more
   enemy-sized sheet of headroom; a ninth role needs smaller frames or a shared page rather than a quiet
-  budget bump. Asserted by `RuntimeResidencyTest`.
+  budget bump. Asserted by `RuntimeResidencyTest`. *Corrected 2026-09-17:* this section first said 95.9 MiB,
+  which was the pre-alignment arithmetic; 99.3 MiB is what the gate measures and what the logged run
+  `perf:2026-09-17-residency` records.
 - **One definition of that set:** `PremiumAssetContractTest` used to approximate the combat peak with a
   superset — every enemy, world-tree, environment and UI sheet resident at once — which crossed the 100 MiB
-  budget the moment the roster doubled (118.1 MiB) while the live set stayed at 95.9 MiB. The test now measures
+  budget the moment the roster doubled (118.1 MiB) while the live set stayed at 99.3 MiB. The test now measures
   `RuntimeResidency.combatBytes`, the same arithmetic `RuntimeResidencyTest` gates, and keeps both the budget
   and a floor that the enemy sheets are all counted, so the two tests cannot drift apart and the roster cannot
   buy headroom by shrinking its own list. The catalog budget still has to hold every PNG that ships.
