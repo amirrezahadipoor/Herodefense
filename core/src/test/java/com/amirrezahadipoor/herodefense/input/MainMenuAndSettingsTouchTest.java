@@ -4,6 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.render.UiMirror;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import org.junit.jupiter.api.Test;
 
@@ -99,5 +102,36 @@ final class MainMenuAndSettingsTouchTest {
         }
         assertTrue(rows[0] + SettingsTouchLayout.ROW_HEIGHT < SettingsTouchLayout.CLOSE_Y,
             "the first row must clear the close button");
+    }
+
+    @Test
+    void theCloseButtonMovesWithTheLanguageAndItsTapTargetMovesWithIt() {
+        GameLanguage before = GameLocale.current();
+        try {
+            GameLocale.use(GameLanguage.ENGLISH);
+            assertEquals(SettingsTouchLayout.CLOSE_X, SettingsTouchLayout.closeX());
+            assertEquals(SettingsTouchLayout.Action.CLOSE,
+                SettingsTouchLayout.actionAt(SettingsTouchLayout.CLOSE_X + 40f,
+                    SettingsTouchLayout.CLOSE_Y + 40f));
+
+            GameLocale.use(GameLanguage.PERSIAN);
+            assertEquals(50f, SettingsTouchLayout.closeX(),
+                "the box sits 50f in from the screen's trailing edge, whichever edge that is");
+            assertEquals(SettingsTouchLayout.Action.CLOSE,
+                SettingsTouchLayout.actionAt(90f, SettingsTouchLayout.CLOSE_Y + 40f));
+            assertEquals(SettingsTouchLayout.Action.NONE,
+                SettingsTouchLayout.actionAt(SettingsTouchLayout.CLOSE_X + 40f,
+                    SettingsTouchLayout.CLOSE_Y + 40f),
+                "the tap target left with the drawing: a button seen on one side and pressed on the other is a bug");
+            assertTrue(UiMirror.trailingOnScreen(68f, 64f) < UiMirror.SCREEN_WIDTH * 0.5f,
+                "and the icon the renderer draws at a 68f inset is on that same side");
+
+            assertEquals(SettingsTouchLayout.Action.CYCLE_LANGUAGE,
+                SettingsTouchLayout.actionAt(SettingsTouchLayout.ROW_X + 260f,
+                    SettingsTouchLayout.LANGUAGE_ROW_Y + 40f),
+                "the five rows span 100f..620f of a 720f screen, so equal margins leave their taps where they were");
+        } finally {
+            GameLocale.use(before);
+        }
     }
 }

@@ -65,6 +65,41 @@ final class OverlayText implements AutoCloseable {
         font.draw(batch, visual, x, y);
     }
 
+    /**
+     * Draws {@code text} on the container's leading edge, {@code inset} in from it: the left edge in English, the
+     * right one in Persian. The run is measured shaped, because the advance of a joined Persian word is not the
+     * sum of its letters' advances and mirroring with the unshaped width would leave the last word hanging off
+     * the edge it was measured against.
+     */
+    void drawLeading(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color
+    ) {
+        draw(batch, text,
+            UiMirror.leading(containerX, containerWidth, inset, width(text, scale)), y, scale, color);
+    }
+
+    /** The same on the container's trailing edge, where a row's value and its hint go. */
+    void drawTrailing(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color
+    ) {
+        draw(batch, text,
+            UiMirror.trailing(containerX, containerWidth, inset, width(text, scale)), y, scale, color);
+    }
+
     void drawCentered(
         SpriteBatch batch, String text, float centerX, float y, float scale, Color color
     ) {
