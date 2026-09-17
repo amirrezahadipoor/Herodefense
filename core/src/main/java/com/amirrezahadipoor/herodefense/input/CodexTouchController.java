@@ -46,6 +46,23 @@ public final class CodexTouchController {
         return selectedIndex;
     }
 
+    /**
+     * Closes the entry being read and keeps the shelf open (roadmap R7.4).
+     *
+     * <p>Back closes the deepest thing on screen first, which on this shelf is the selected entry: a player
+     * reading a lore page who presses Back expects the page, not the Codex. A tap on the same row selects
+     * again, so nothing is lost by the press.
+     *
+     * @return true when an entry was open and is now closed
+     */
+    public boolean clearSelection() {
+        if (selectedIndex < 0) {
+            return false;
+        }
+        selectedIndex = -1;
+        return true;
+    }
+
     /** How many rows the visible shelf has. */
     public int rowCount() {
         return tab == CodexTouchLayout.Tab.TROPHIES ? Trophy.values().length : LoreCatalog.all().size();

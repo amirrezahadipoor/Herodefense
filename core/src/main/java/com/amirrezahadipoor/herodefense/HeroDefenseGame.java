@@ -1,6 +1,8 @@
 package com.amirrezahadipoor.herodefense;
 
 import com.badlogic.gdx.ApplicationAdapter;
+import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -45,6 +47,7 @@ import com.amirrezahadipoor.herodefense.gameplay.UltimateResult;
 import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.ScreenTouchRouter;
+import com.amirrezahadipoor.herodefense.input.SystemBackKeyHandler;
 import com.amirrezahadipoor.herodefense.presentation.FrameDriver;
 import com.amirrezahadipoor.herodefense.progression.TrophyBook;
 import com.amirrezahadipoor.herodefense.progression.TrophyPresenter;
@@ -454,8 +457,12 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     private void installTouchInput() {
+        ScreenTouchRouter router = new ScreenTouchRouter(new TouchHost());
+        // R7.4: catching Back is what stops the platform finishing the activity on every press. What a press
+        // then does is decided in the core, where it can be tested without a device.
+        Gdx.input.setCatchKey(Keys.BACK, true);
         Gdx.input.setInputProcessor(
-            new TouchInputController(viewport, new ScreenTouchRouter(new TouchHost()))
+            new InputMultiplexer(new SystemBackKeyHandler(router), new TouchInputController(viewport, router))
         );
     }
 
@@ -509,16 +516,13 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void focusFireAt(float worldX, float worldY) {
             HeroDefenseGame.this.focusFireAt(worldX, worldY);
         }
+
+        @Override public void exitApplication() { Gdx.app.exit(); }
     }
 
     /** Snapshots the run's opening tier, then plays that tier's lines. */
     private void beginOpening() {
         cinematicFlow.beginOpening();
-    }
-
-    /** Tier whose opening lines a save replays: the snapshot, else the live tier. */
-    static int openingTierFor(GameState state) {
-        return SessionController.openingTierFor(state);
     }
 
     /**
@@ -596,10 +600,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         simulationSeconds += simulationDelta;
     }
 
-    private void drawCurrentState(float presentationDeltaSeconds) {
-        screenStateComposer.draw(presentationDeltaSeconds);
-    }
-
     /** Adapter for the frame composer; one line per member, like the touch host. */
     /** What the frame needs from the game: its state, saving, the two update paths and the draw call. */
     private final class FrameHost implements FrameDriver.Host {
@@ -625,7 +625,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
         @Override
         public void draw(float presentationDeltaSeconds) {
-            drawCurrentState(presentationDeltaSeconds);
+            screenStateComposer.draw(presentationDeltaSeconds);
         }
     }
 

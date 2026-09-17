@@ -963,7 +963,44 @@ sentence has to name the two scores and the commit they were measured on.
   state the cap the code enforces, the luck tooltip the multiplier the code applies.
 - [ ] **R7.3 Persian + RTL**: locale-aware string table, mirrored layout, and a test that fails on
   hard-coded or untranslated user-facing strings.
-- [ ] **R7.4 Back button** handled in game and menus, with an instrumentation test.
+- [x] **R7.4 Back button** handled in game and menus, with an instrumentation test. The re-audit scored this
+  0 of 10 for one measurable reason: nothing in the repository handled the key, so a press on *any* screen
+  finished the activity -- on the menu that is what a player wants, halfway into wave 140 it loses the run.
+  The policy is a decision table (`input/BackNavigation`) over all thirteen `GameScreenState` values, written
+  as a switch with no `default` so a screen added without a decision fails to compile: the menu leaves the
+  application; settings, shop, root network, codex and inventory close onto the screen they were opened from;
+  a details panel closes *before* the screen holding it; a run in progress pauses -- and saves, because Back
+  is pressed on the way out and R13.5 asks that a session survive the process, which the HUD's pause button
+  does not do; the pause overlay resumes; a ceremony skips the way a tap on it does; the end screen returns to
+  the menu once its own presentation allows input; and the three screens that are a decision the player owes
+  the game -- reward card, talent point, trial draft -- hold the press and change nothing, because the
+  alternative is discarding a choice the screen's own rules require.
+  Applying the table is `input/ScreenBackPort`, whose nine primitives are each the call sequence that screen's
+  Close or Resume button already makes -- same cue, same controller call, same save, same order -- reached
+  through the router's existing `Host`, so Back cannot do anything a tap cannot, and `Host.audioManager()`
+  narrowed to `AudioPlayback` because playing a cue is all the router needs of it.
+  The key is bound in core, not in the launcher: `HeroDefenseGame.installTouchInput()` calls
+  `Gdx.input.setCatchKey(Keys.BACK, true)` and installs an `InputMultiplexer` holding `SystemBackKeyHandler`
+  ahead of `TouchInputController`. That one call is what stops the activity finishing *and* what registers
+  libGDX's predictive-back callback on API 33+ (constructed when the SDK is 33 or newer and the context is an
+  activity; the emulator job runs API 35), so `AndroidLauncher` needed no change and the whole feature stays
+  testable without a device. `TouchOnlyInputPolicyTest` still forbids a key method on the touch controller and
+  gained a second guard: the only key constant any shipped source may name is `BACK`, and only in the two
+  files that catch it and handle it (negative control: naming `Keys.SPACE` in `TouchInputController` fails it).
+  Evidence: `BackNavigationTest` -- the table for every screen with and without a panel open, the consumption
+  rule, each primitive applied exactly once and no other, and every action driven through a real
+  `GameFlowController` so a press can never reach a player as an illegal transition; `BackButtonRoutingTest`
+  -- the router over the real controllers and a recording host, asserting that what a press does is what the
+  matching button does (two presses to leave a codex entry, one to leave an empty shelf, a held choice making
+  no calls at all); and `BackButtonNavigationTest` on the emulator, which injects a real `KEYCODE_BACK`
+  through the platform rather than calling the game: codex entry, then shelf, then menu; an unopened entry
+  costing no press; settings onto the menu with the activity still resumed; a trial draft held; an opening
+  ceremony skipped into wave 1; a run paused and resumed; an inventory over the pause closing onto the pause;
+  and only the menu's press destroying the activity. Core suite: 183 classes, 758 tests, 0 failures.
+  `HeroDefenseGame` paid for the multiplexer inside its frozen ceiling by losing two delegates --
+  `openingTierFor` (which is `SessionController`'s, and the touch host already read it from there) and
+  `drawCurrentState` (inlined into `FrameHost.draw`, its only caller) -- 775 -> 771 lines at 63 fields, and
+  the ratchet's freeze for it is lowered to that measurement in the same commit.
 - [ ] **R7.5 Accessibility**: font scaling, colour-blind-safe rarity encoding, measured contrast.
 - [ ] **R7.6 Store-facing UI assets** (screenshots, description, feature graphic).
 - [x] **R7.7 The menu's rows are one table, and the device journey asks it instead of copying it.** R3.5 re-tabled
@@ -1358,6 +1395,9 @@ real-device testing: **+35 points, not planned here.**
 
 | 2026-09-17 | 97 | Phase 97 | the commit the re-audit is published at is green on both workflows: core [`35214809477`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35214809477) and the emulator job [`35214809465`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35214809465), which logs the stage-grade pair (dawn 24.874975/57.027878/43.374424 lit 0.6218719 against hollow 24.272823/56.53939/43.505856 lit 0.6208208) and the compressed-texture comparison (`maxDelta=0 exactFraction=1.000`, control `(0,0)`, `controlBeyond=0`, `controlAlpha=0`) on `OpenGL ES 3.0 SwiftShader 4.0.0.1`, with the APK budget printing 26,489,934 of 120,000,000 bytes. The audit's own figures were taken at `12e4dc0`; these runs are what says the documents published after it did not move the code under test | `25ed31a` |
 
+
+| 2026-09-17 | — | CI | `Test core logic` had been red on main since `46c2417` (run [`35226943636`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35226943636)) for a reason the job log named exactly: the perf gate carried its own list of allowed units while `log_run.py` carried the real one, so the four `dB` metrics of the encoder sweep were accepted by the writer and refused by the reader (`AssertionError: 'dB' not found in ('bytes', 'MiB', 'MB', 'ms', 's', 'fps', 'MB/s', 'count', 'percent')`). The duplicate list is gone -- the gate reads `log_run.UNIT_TABLE`, which names the quantity each unit measures -- `LogRunUnitTest` is the failing case for the rule that was missing, and `PERFORMANCE.md` is regenerated by the tool because it still named the pre-correction commit. 24 Python cases (was 20); both workflows green on this commit | `cf762b2` |
+| 2026-09-17 | 95 | R7.4 | Android's Back button is handled instead of finishing the activity: a decision table over all thirteen screens in `input/BackNavigation` (a switch with no `default`, so an undecided screen fails to compile), applied by `input/ScreenBackPort` whose nine primitives are each the call sequence that screen's own button already makes, bound in core by `setCatchKey(Keys.BACK, true)` plus an `InputMultiplexer` that puts `SystemBackKeyHandler` ahead of the touch controller -- one call that both stops the activity finishing and registers libGDX's predictive-back callback on API 33+, so the launcher is unchanged. A run pauses and saves, a panel closes before its screen, a choice the player owes the game is held, a ceremony skips, and only the menu leaves. Pinned by `BackNavigationTest` (table, consumption, one primitive per action, every action legal on a real `GameFlowController`), `BackButtonRoutingTest` (a press makes the calls its button makes) and `BackButtonNavigationTest` on the emulator with a real injected `KEYCODE_BACK`; `TouchOnlyInputPolicyTest` now also fails if any shipped source names a key other than `BACK` outside its two files. Core 183 classes / 758 tests / 0 failures; `HeroDefenseGame` 775 -> 771 lines by losing two delegates, freeze lowered to match | this push |
 ## Definition of done
 
 Two gates, both measured with the granular method of the 2026-09-16 audit and both reproducible from the

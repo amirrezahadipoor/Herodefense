@@ -8,6 +8,7 @@ import com.amirrezahadipoor.herodefense.gameplay.ArenaQueries;
 import com.amirrezahadipoor.herodefense.gameplay.ContinuousWaveRun;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyFactory;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyWaveSpawner;
+import com.amirrezahadipoor.herodefense.gameplay.SessionController;
 import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import org.junit.jupiter.api.Test;
@@ -36,18 +37,21 @@ class OpeningReplayTest {
         assertFalse(ArenaQueries.untouchedFirstWave(state));
     }
 
+    // These two asked `HeroDefenseGame.openingTierFor`, a five-line delegate to the class that owns the rule.
+    // R7.4 needed the lines in the game class more than the delegate did, so the assertions now name the owner
+    // and the delegate is gone; `SessionControllerTest` asserts the same two cases beside the save it drives.
     @Test
     void continueReplaysSnapshotTierNotLiveTier() {
         GameState state = GameState.newRun(7L);
         state.ascensionTier = 3;
         state.openingTier = 1;
-        assertEquals(1, HeroDefenseGame.openingTierFor(state));
+        assertEquals(1, SessionController.openingTierFor(state));
     }
 
     @Test
     void missingSnapshotFallsBackToLiveTier() {
         GameState state = GameState.newRun(7L);
         state.ascensionTier = 2;
-        assertEquals(2, HeroDefenseGame.openingTierFor(state));
+        assertEquals(2, SessionController.openingTierFor(state));
     }
 }

@@ -47,8 +47,13 @@ class ArchitectureRatchetTest {
         // what remains of the feature here is one field, one method and two host forwards — 775 lines, three over
         // the previous record, and 63 fields, one over. The extra field and the three lines are the price of the
         // game object owning the recorder; the next R2.2 slice still has to bring this class down to the ceiling.
+        // R7.4 (Android's Back) added the input multiplexer and the caught key here and paid for both inside
+        // the ceiling: the `openingTierFor` delegate is gone (`SessionController` owns that question and the
+        // touch host already reads it from there) and `drawCurrentState` is inlined into `FrameHost.draw`,
+        // whose one caller it was. 775 -> 771 lines at 63 fields, so the freeze is lowered to the new
+        // measurement and the next change has to pay for itself too.
         "com/amirrezahadipoor/herodefense/HeroDefenseGame.java",
-        new ArchitectureRatchet.Frozen(775, 63),
+        new ArchitectureRatchet.Frozen(771, 63),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.

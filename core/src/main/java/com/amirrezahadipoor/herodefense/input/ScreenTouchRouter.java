@@ -4,7 +4,7 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
@@ -55,14 +55,18 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
 
     private final Host host;
 
+    /** The Back button's view of the game (roadmap R7.4); one instance, since the port holds no state. */
+    private final BackNavigation.Port backPort;
+
     public ScreenTouchRouter(Host host) {
         this.host = host;
+        this.backPort = new ScreenBackPort(host);
     }
 
 
     /** What the router needs from the game; implemented by an adapter inside the game class. */
     public interface Host {
-        GameAudioManager audioManager();
+        AudioPlayback audioManager();
 
         CodexSystem codexSystem();
 
@@ -153,6 +157,12 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
 
         /** Tap-to-focus: marks the enemy under the tap, or clears the mark when the tap hits nothing. */
         void focusFireAt(float worldX, float worldY);
+
+        /**
+         * Hands Android's Back press to the platform when the menu is the last screen left (roadmap R7.4).
+         * The game owns every other screen's answer; only leaving the application is the platform's to do.
+         */
+        void exitApplication();
     }
 
         @Override
@@ -488,4 +498,20 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             }
             return true;
         }
+
+    /**
+     * Android's Back key (roadmap R7.4).
+     *
+     * <p>The policy is {@link BackNavigation}'s table; this is only its application, over the same
+     * {@code Host} every tap on these screens already goes through. Each of the nine primitives below is the
+     * call sequence the matching button makes, so a press and the button it stands in for cannot drift apart
+     * the way the menu's rows and the menu's renderer had before R7.7.
+     *
+     * @return true when the game consumed the press, false when the platform should leave the application
+     */
+    public boolean systemBack() {
+        return BackNavigation.press(backPort);
+    }
+
 }
+

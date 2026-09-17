@@ -66,6 +66,22 @@ public final class InventoryTouchController {
         return selectedIndex;
     }
 
+    /**
+     * Closes the details panel of the selected item and keeps the backpack open (roadmap R7.4).
+     *
+     * <p>Back closes the deepest thing on screen first, which here is the item being inspected, so a press
+     * cannot sell, equip or forge by accident on the way out.
+     *
+     * @return true when an item was selected and is now not
+     */
+    public boolean clearSelection() {
+        if (selectedIndex < 0) {
+            return false;
+        }
+        selectedIndex = -1;
+        return true;
+    }
+
     public int firstVisibleIndex() {
         return firstVisibleIndex;
     }
