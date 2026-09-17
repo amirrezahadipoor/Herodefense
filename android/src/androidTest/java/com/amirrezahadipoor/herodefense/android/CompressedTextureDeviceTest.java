@@ -305,7 +305,8 @@ public final class CompressedTextureDeviceTest {
             ByteBuffer header = ByteBuffer.wrap(container).order(ByteOrder.LITTLE_ENDIAN);
             byte[] identifier = new byte[12];
             header.get(identifier);
-            byte[] ktxIdentifier = {'\u00AB', 'K', 'T', 'X', ' ', '1', '1', '\u00BB', '\r', '\n', '\u001A', '\n'};
+            byte[] ktxIdentifier = {(byte) 0xAB, 'K', 'T', 'X', ' ', '1', '1', (byte) 0xBB,
+                '\r', '\n', (byte) 0x1A, '\n'};
             assertArrayEquals("the fixture is not a KTX container", ktxIdentifier, identifier);
             assertEquals("the fixture's header is not little-endian", 0x04030201, header.getInt());
             header.getInt();
