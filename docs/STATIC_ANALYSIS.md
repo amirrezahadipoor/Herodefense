@@ -91,6 +91,12 @@ tests, because a broken test is as expensive as a broken system.
   `PremiumArenaAssetContractTest`.
 * `TrialSimulationTest`'s pressured-wave floor is a named constant computed once instead of `Math.ceil` on a
   constant expression at every call.
+* R7.3's shaping pipeline arrived with four findings and all four were fixed rather than excluded: `reverse` in
+  `BidiReordering` swapped through two locals instead of walking its `from`/`to` parameters (`AvoidReassigningParameters`),
+  `containsArabicScript` became `text.codePoints().anyMatch(…)` instead of a `for` loop that advanced its own
+  control variable by `Character.charCount` (`AvoidReassigningLoopVariables`), and the three embedding-level
+  parity tests changed from `level % 2 == 1` to `(level & 1) == 1` (`IM_BAD_CHECK_FOR_ODD` — levels are never
+  negative here, but the modulo form would be wrong if one ever were, and the bitwise form says what is meant).
 
 ## Excluded, with the reason
 
@@ -105,6 +111,7 @@ Each entry is also a comment in the config file, next to the exclusion it explai
 | `CompareObjectsWithEquals` (PMD) | 7 | Deliberate identity checks: excluding one entity instance from a target scan, a same-object fast path in item details, and the shared-font owner checks (`shared == this`, `shared.owner == application`). |
 | `AvoidInstantiatingObjectsInLoops` (PMD) | 6 | Construction-time catalog lists and per-frame renderer labels. Frame cost is measured on device (R8.4, R13.1); the profiler, not a style rule, decides whether a draw-loop allocation is worth removing. |
 | `AbstractClassWithoutAbstractMethod` (PMD) | 1 | `ArenaEntity` is a shared base holding common combat fields for its subclasses — reuse, not an abstract contract. |
+| `UseVarargs` (PMD) | 5 | The Persian shaping pipeline (R7.3), where an `int[]` is a buffer of codepoints being worked through, not a caller's argument list: `reshape`, `stripHarakat`, `isAscii`, `matchesAt`, `baseLevel`. The arrays come from `String.codePoints().toArray()`, which is not a varargs call site, and varargs would let `reshape(0x0644, 0x0627)` compile and mean something else. |
 | `UnitTestAssertionsShouldIncludeMessage` (PMD) | 2,505 | The sweeps assert a property per seed/wave; the 2,500 reports are those loops. The gates that fail a build print their measurement table instead. |
 | `UnitTestContainsTooManyAsserts` (PMD) | 553 | Balance and contract tests deliberately check several properties of one object in one test, because they assert a single contract (a wave's roster, a sheet's metadata). |
 | `SimplifiableTestAssertion` (PMD) | 28 | Several contract tests assert a boolean property (a glow flag, a distinct-art check) rather than equality; the suggested `assertEquals` would change what is documented. |

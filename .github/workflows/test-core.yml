@@ -107,6 +107,19 @@ jobs:
       - name: Measure every committed sound and gate its level (roadmap R6.2)
         run: python3 tools/audio/check_audio_levels.py --check
 
+      # R7.3: the Persian shaper is held to evidence this repository did not invent. Both halves of that evidence
+      # are re-derived here — the 245 golden vectors from arabic_reshaper and python-bidi, and the three lookup
+      # tables the Java shaper reads out of those same two libraries. Either one drifting means `PersianShaperTest`
+      # would be checking the shaper against stale evidence, which is worse than not checking it. The versions are
+      # pinned here and asserted again inside both scripts, so a wheel that quietly changes the answers fails.
+      - name: Install the Persian shaping references (roadmap R7.3)
+        run: python3 -m pip install --break-system-packages arabic-reshaper==3.0.1 python-bidi==0.6.11
+
+      - name: Re-derive the shaping vectors and the tables they are read from (roadmap R7.3)
+        run: |
+          python3 tools/i18n/make_shaping_vectors.py --check
+          python3 tools/i18n/make_shaping_tables.py --check
+
       - name: Run the unit-test loop (the balance sweeps are the balance-gate job below)
         run: ./scripts/gradle.sh :core:test --stacktrace
 

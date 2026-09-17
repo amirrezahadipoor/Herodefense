@@ -4,7 +4,7 @@
 # "Logical" is what the string table says; "visual" is what a left-to-right bitmap font must be handed for the
 # eye to read it as Persian. Produced by arabic_reshaper 3.0.1 + python-bidi 0.6.11 on CPython 3.13.14.
 #
-# The Java shaper (text/PersianShaper.java) has to reproduce every line. PersianShaperTest fails on the first
+# The Java shaper (render/PersianShaper.java) has to reproduce every line. PersianShaperTest fails on the first
 # one it does not, printing both sides as codepoints.
 آ	FE81
 ا	FE8D

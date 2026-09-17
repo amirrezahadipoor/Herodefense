@@ -37,6 +37,12 @@
         <!-- ArenaEntity is a shared base holding common combat fields for its subclasses; the hierarchy is about
              reuse, not about an abstract contract, and the rule's advice (make it concrete) would be a rename. -->
         <exclude name="AbstractClassWithoutAbstractMethod"/>
+        <!-- The five reports are the Persian shaping pipeline (R7.3), where an `int[]` is a buffer of codepoints
+             being processed rather than a caller's argument list: `reshape`, `stripHarakat`, `isAscii`,
+             `matchesAt` and `baseLevel`. Varargs would let a caller write `reshape(0x0644, 0x0627)` and mean
+             something different by it, and the arrays here are produced by `String.codePoints().toArray()`, which
+             is not a varargs call site. -->
+        <exclude name="UseVarargs"/>
     </rule>
     <rule ref="category/java/performance.xml">
         <!-- Six reports, all deliberate: the catalogs build their per-tier lists once at construction, and the
