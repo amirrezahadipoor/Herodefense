@@ -53,16 +53,59 @@ jobs:
           path=$(./scripts/install-blender-temp.sh | tail -n 1)
           echo "path=$path" >> "$GITHUB_OUTPUT"
 
+      # Roadmap R5.3. A render is the most expensive thing this repository does, and it used to be
+      # all-or-nothing: a job that timed out at minute 100 threw away everything it had packed, and a batch
+      # whose code had not changed re-rendered from nothing. The masters directory is now cached under a key
+      # that includes every file the masters depend on, and a restored batch asks the hash log what it still
+      # owes. `--only` restricts the generator to those keys, which is exactly the unfinished work: the
+      # manifest in the cache lists the batch's whole key set, so anything the manifest does not mention is
+      # either new (a change to tools/blender, which invalidates the cache and renders everything) or not part
+      # of this batch.
+      - name: Restore the masters this batch already rendered
+        id: masters
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/hero-defense-rendered
+          key: render-masters-${{ inputs.batch }}-${{ hashFiles('tools/blender/**', 'tools/render/**', 'scripts/install-blender-temp.sh') }}
+
+      - name: Work out what this render still owes
+        id: resume
+        run: |
+          mkdir -p /tmp/hero-defense-rendered
+          # Keep the restored log before it is rewritten: it is the record of the last render of this batch,
+          # and the difference against it is what this run changed.
+          if [ -f /tmp/hero-defense-rendered/render_hash_log.json ]; then
+            cp /tmp/hero-defense-rendered/render_hash_log.json /tmp/previous-render-log.json
+          fi
+          python3 tools/render/render_hash_log.py write /tmp/hero-defense-rendered
+          print_owed() {
+            python3 tools/render/render_hash_log.py resume \
+              /tmp/hero-defense-rendered/asset_manifest.json \
+              /tmp/hero-defense-rendered/render_hash_log.json \
+              --root /tmp/hero-defense-rendered $@ || true
+          }
+          owed=$(print_owed --keys)
+          print_owed
+          echo "only=$owed" >> "$GITHUB_OUTPUT"
+          if [ -n "$owed" ]; then
+            echo "Resuming: $(echo "$owed" | wc -w) key(s) still owed by this batch."
+          else
+            echo "No restored manifest: this batch renders from the start."
+          fi
+
       - name: Render requested batch headlessly
-        run: >-
-          xvfb-run -a -s "-screen 0 640x480x24"
-          "${{ steps.blender.outputs.path }}"
-          --background
-          --factory-startup
-          --python tools/blender/generate_assets.py
-          --
-          --batch "${{ inputs.batch }}"
-          --output /tmp/hero-defense-rendered
+        run: |
+          extra=()
+          if [ -n "${{ steps.resume.outputs.only }}" ]; then
+            extra=(--only ${{ steps.resume.outputs.only }})
+          fi
+          xvfb-run -a -s "-screen 0 640x480x24" "${{ steps.blender.outputs.path }}" \
+            --background --factory-startup \
+            --python tools/blender/generate_assets.py \
+            -- \
+            --batch "${{ inputs.batch }}" \
+            --output /tmp/hero-defense-rendered \
+            "${extra[@]}"
 
       # A master render is not the shipped tier. Blender now renders premium characters onto 384 px frames at
       # 3x/32 while the reviewed runtime tier is 192 px at 2x/28, exactly half and on the same grid, so the batch
@@ -95,6 +138,41 @@ jobs:
           size=$(du -sb --exclude=_frames /tmp/hero-defense-rendered | cut -f1)
           test "$size" -lt 100000000
           echo "Reviewable payload bytes (working frames excluded): $size"
+
+      # The hash log is what a render is comparable by: it names every sheet, atlas and descriptor the batch
+      # wrote, with the hash of each, and nothing that changes between two runs of the same bytes (no
+      # timestamp, no commit, no absolute path). It is written even when a step above failed, because a
+      # partial render is exactly the thing that has to be diffable.
+      - name: Write the render hash log
+        if: always()
+        run: |
+          python3 tools/render/render_hash_log.py write /tmp/hero-defense-rendered || true
+          if [ -f /tmp/previous-render-log.json ]; then
+            python3 tools/render/render_hash_log.py diff \
+              /tmp/previous-render-log.json \
+              /tmp/hero-defense-rendered/render_hash_log.json | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No previous log for this batch: this run has nothing to compare against." \
+              | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload the render hash log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-defense-${{ inputs.batch }}-hash-log
+          path: /tmp/hero-defense-rendered/render_hash_log.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      # Only a batch that got through the render step is worth caching: a failed render's directory is
+      # still diffable (the log above) but it is not a resumable state.
+      - name: Cache the masters of a completed render
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/hero-defense-rendered
+          key: render-masters-${{ inputs.batch }}-${{ hashFiles('tools/blender/**', 'tools/render/**', 'scripts/install-blender-temp.sh') }}
 
       # A failed validation must not throw away the render that produced it: the R3.4 render was lost this
       # way once (the ledger gate rejected a partial batch after ~35 minutes of rendering), and the only way

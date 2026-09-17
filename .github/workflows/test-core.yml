@@ -46,6 +46,9 @@ jobs:
       - name: Validate generated assets (edge safety, pivot stability, silhouette + grade — fail fast)
         run: python3 tools/visual/validate_generated_assets.py android/assets/generated
 
+      - name: Test the render hash log (roadmap R5.3 -- resumable, comparable renders)
+        run: python3 -m unittest discover -s tools/render/tests -v
+
       - name: Validate the playtest ledger
         run: |
           python3 tools/playtests/validate_playtest_ledger.py

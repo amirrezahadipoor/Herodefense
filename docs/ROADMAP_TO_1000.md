@@ -789,7 +789,30 @@ sentence has to name the two scores and the commit they were measured on.
 - [ ] **R5.2 Compose a runtime tier from the genuine masters.** The 27 sheets with measured detail gain
   become the runtime tier once (a) the new frame layout has its own accepted, hash-bound review and
   (b) the memory budget allows 384-pixel frames.
-- [ ] **R5.3 Render-workflow reliability**: resumable and deterministic, with a hash log for differences.
+- [x] **R5.3 Render-workflow reliability: resumable, deterministic, comparable.** A Blender batch was
+  all-or-nothing inside a hundred-and-twenty-minute job: a timeout threw away every sheet it had packed, a
+  re-run re-rendered byte-identical sheets, and nothing recorded what a render had produced.
+  `tools/render/render_hash_log.py` now logs every `.png`, `.atlas` and `.json` a render writes — hash and
+  size per file, plus the asset keys the batch's manifest declares — and it deliberately records **no**
+  timestamp, **no** commit and **no** absolute path, because two logs of the same bytes have to be
+  byte-identical for a comparison to mean anything; the manifest itself is logged as keys rather than bytes
+  for the same reason, since it carries `generatedAt`. On the shipped tree the log covers **321 files across
+  111 assets** and a self-diff is clean. Three commands carry the item: `write` (what the render produced),
+  `diff` (added / changed / removed files and keys, with `--fail-on-change` so "this render is the reviewed
+  one" can be a gate rather than a commit message) and `resume` (the keys an interrupted render still owes,
+  from the manifest plus the log, split into *never finished* — a file absent, empty or absent from the log —
+  and *rendered differently*). Resume was rehearsed on the shipped tree with a three-asset fixture: two
+  interrupted keys were named with their reasons (`sprites/rootling.png is empty`,
+  `sprites/stonekin.atlas missing`) and `--keys` printed exactly the two keys the generator needs.
+  The workflow uses all three: it restores the masters from `actions/cache` under a key that includes
+  `hashFiles('tools/blender/**', 'tools/render/**', ...)` — so a resumed render is always a render of the
+  *same code* — asks the log what the batch owes, renders only that, writes the log again, prints the diff
+  against the restored one into the job summary, uploads the log even when a later step fails (a partial
+  render is exactly the thing that has to be diffable) and caches the directory only when the render
+  succeeded. What resume does **not** cover is written down in `tools/render/README.md` rather than implied:
+  a batch interrupted before its first manifest write renders from the start, because the manifest is what
+  maps keys to files. Ten new tests run in the unit job (`tools/render/tests`), and the README documents the
+  three commands with their real output.
 - [ ] **R5.4 Vibrant grade rendered, not filtered**, proven with before/after emulator screenshots
   (unblocks R1.7).
 - [ ] **R5.5 PBR maps in the repository** (normal / roughness / AO) with material provenance.
@@ -1055,6 +1078,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 91 | docs | `docs/BALANCE.md`'s numbers became generated blocks with markers and a gate that names the block that drifted (`BalanceDocumentTest`, `:core:regenerateBalanceDoc`); the hand-typed checkpoints and the R4.6 table are both machine-checked now | `6424fb1` |
 | 2026-09-17 | 91 | ladder | every tier now charges from its first wave: the enemy baseline carries the tier's health and damage charge, fading over 140 waves, so tier 10's brief pressure is 0.0507 against tier 0's 0.0901 and its reach 77.3 waves against 71.3, at the price of a 32% longer tier-10 session that the session gate now budgets for | `af70976` |
 | 2026-09-17 | 91 | elites | the elite cadence skipped the boss lap, so tiers 6-8 had no elites at all in a 200-wave run and the test that pinned it checked the interval arithmetic rather than the outcome; the cadence is `7 → 6 → 4` and the assertion now requires elites at every tier | `75e932b` |
+| 2026-09-17 | 91 | render | the render pipeline became resumable, comparable and deterministic to compare: a hash log of every sheet, atlas and descriptor it writes (no timestamps, no commits, no absolute paths, so two logs of the same bytes are equal), a diff that classifies added / changed / removed with `--fail-on-change` for promotion, and a resume list the workflow feeds straight back into the generator's `--only`; 321 files across 111 assets on the shipped tree, ten new tests in the unit job | `PENDING` |
 
 ## Definition of done
 
