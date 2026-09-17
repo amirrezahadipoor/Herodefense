@@ -29,10 +29,22 @@ final class PremiumShopPresentationTest {
 
     @Test
     void everyStatExplainsItsPermanentBenefit() {
+        // R7.2 changed what this asserts, and the change is the point. The old contract was that the line starts
+        // with "+1 " and is at least ten characters long -- which every line passed while three of the five named
+        // a unit the code does not have ("+1 attack-speed rating" for a stat that gives 0.03 attacks per second,
+        // "+1 critical-chance rating" for a stat that gives 2% drop rate). A line that satisfies a length check
+        // and describes the wrong number is exactly the opacity the 2026-09-13 review measured. The contract now
+        // is that the row states the per-point gain as a number, and comes from the one catalog both stat screens
+        // read (`StatTooltipsTest` checks the numbers themselves against `HeroStats`).
         for (HeroStat stat : HeroStat.values()) {
             String benefit = StatShopOverlayRenderer.statBenefit(stat);
-            assertTrue(benefit.startsWith("+1 "), stat.name());
-            assertTrue(benefit.length() >= 10, stat.name());
+            assertEquals(com.amirrezahadipoor.herodefense.tooltips.StatTooltips.shortLine(stat), benefit,
+                stat.name() + ": the row line has one source, not one per screen");
+            assertTrue(benefit.startsWith("+"), stat.name());
+            assertTrue(benefit.chars().anyMatch(Character::isDigit),
+                stat.name() + " has to state a number, not a rating: " + benefit);
+            assertTrue(benefit.length() <= com.amirrezahadipoor.herodefense.tooltips.StatTooltips
+                .SHORT_LINE_CHARACTER_BUDGET, stat.name() + ": " + benefit);
         }
     }
 

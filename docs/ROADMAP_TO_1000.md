@@ -856,7 +856,28 @@ sentence has to name the two scores and the commit they were measured on.
   (`OnboardingSystem.observe`: coins arriving or items entering the backpack), which is why the coach is ticked
   once a frame by the composer instead of by the input layer. 21 new tests; the step texts are constants so
   the locale work of R7.3 has one place to read them from.
-- [ ] **R7.2 Stat tooltips** for every displayed stat, with a coverage test.
+- [x] **R7.2 Stat tooltips for every displayed stat, with a coverage test — and the coverage test found the
+  screens were explaining the wrong numbers.** `tooltips/StatTooltips` is now the single source for what the
+  talent screens say: `shortLine(stat)` is the row text the stat shop draws (it used to be written inside the
+  shop renderer) and `tooltip(stat)` is the long explanation, shown by the shop's help panel for the row the
+  player last touched (`StatShopSystem.noteTouch`, 4.5 s, drawn by the renderer with the panel's own line
+  budget). Ten readouts the game puts on screen outside the five talents — health, damage, attacks per second,
+  crit, dodge, drop rate, coins, wave, kills, heartwood — each have a label and an explanation too.
+  The old contract this replaces was **passing while it was wrong**: `PremiumShopPresentationTest` asserted
+  that every row line starts with `"+1 "` and is at least ten characters long, and three of the five lines
+  named a unit the code does not have — `DODGE` read "+1 dodge rating" against a real 0.5% per point, `LUCK`
+  read "+1 critical-chance rating" against a real 2% drop multiplier, `AGILITY` read "+1 attack-speed rating"
+  against a real 0.03 attacks per second. A length check cannot catch a sentence that describes the wrong
+  number, which is what the 2026-09-13 review meant by "the value math is opaque". The lines now state the
+  per-point gain with the constant interpolated from `HeroStats`, and the test asserts *that* instead: the row
+  line has one source, starts with a plus, contains a digit and fits its button.
+  The coverage mechanism is a keyword table in `StatTooltipsTest` keyed by `HeroStat`: a new talent fails the
+  test because the table has no row for it, and its tooltip has to name the mechanic it moves (damage, speed,
+  drop, chance, HP are the keywords the shipped five are held to). Length is enforced as the layout budget it
+  is — `noteLines()` wraps a tooltip onto the panel's two lines of 62 characters, the test asserts every
+  tooltip needs no third line, and that wrapping loses no word (`"wrapping may not lose or reorder a word"`).
+  The numbers in the sentences are checked against the constants that produce them: the dodge tooltip must
+  state the cap the code enforces, the luck tooltip the multiplier the code applies.
 - [ ] **R7.3 Persian + RTL**: locale-aware string table, mirrored layout, and a test that fails on
   hard-coded or untranslated user-facing strings.
 - [ ] **R7.4 Back button** handled in game and menus, with an instrumentation test.
@@ -1106,6 +1127,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 91 | elites | the elite cadence skipped the boss lap, so tiers 6-8 had no elites at all in a 200-wave run and the test that pinned it checked the interval arithmetic rather than the outcome; the cadence is `7 → 6 → 4` and the assertion now requires elites at every tier | `75e932b` |
 | 2026-09-17 | 91 | render | the render pipeline became resumable, comparable and deterministic to compare: a hash log of every sheet, atlas and descriptor it writes (no timestamps, no commits, no absolute paths, so two logs of the same bytes are equal), a diff that classifies added / changed / removed with `--fail-on-change` for promotion, and a resume list the workflow feeds straight back into the generator's `--only`; 321 files across 111 assets on the shipped tree, ten new tests in the unit job | `57e21ac` |
 | 2026-09-17 | 95 | R7.1 | the first vigil: five coached steps in one minute, each waiting for its own touch action or its own budget, skippable through a 150-by-100 HUD-sized target that swallows the tap, and taught exactly once per device through the settings the run already writes; 21 tests cover the rules, the geometry and the seen-once path | `PENDING` |
+| 2026-09-17 | 95 | R7.2 | every displayed stat now says what it is: one catalog for the five talents and ten HUD readouts, the shop's help panel explains the row the player touched, and the old "+1 rating" lines — three of which named units the code does not have — were replaced by the interpolated constants; 12 tests cover the keyword table, the line budget, the wrapping and the drift between text and numbers | `PENDING` |
 
 ## Definition of done
 

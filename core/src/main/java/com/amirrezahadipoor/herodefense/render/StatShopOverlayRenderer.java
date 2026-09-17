@@ -10,6 +10,7 @@ import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout;
 import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout.Tab;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.HeroStat;
+import com.amirrezahadipoor.herodefense.tooltips.StatTooltips;
 import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
 import com.amirrezahadipoor.herodefense.skills.SkillEffects;
 import com.amirrezahadipoor.herodefense.skills.SkillEvolution;
@@ -98,8 +99,13 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
             );
         }
         String feedback = tab == Tab.SKILLS ? skills.feedbackMessage() : shop.feedbackMessage();
-        if (feedback != null) {
-            frames.draw(batch, UiFrameRenderer.Kind.PANEL, 100f, 150f, 520f, 64f, true, false);
+        // The help panel (roadmap R7.2): while the player is asking about a talent, the panel explains that
+        // talent; the purchase feedback has the slot the rest of the time. At most two lines, wrapped by the
+        // catalog, so the text and the panel agree on how wide a line is.
+        HeroStat helpStat = tab == Tab.STATS ? shop.helpStat() : null;
+        if (helpStat != null || feedback != null) {
+            frames.draw(batch, UiFrameRenderer.Kind.PANEL, HELP_PANEL_X, HELP_PANEL_Y, HELP_PANEL_WIDTH,
+                HELP_PANEL_HEIGHT, true, false);
         }
         batch.end();
 
@@ -174,7 +180,15 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
                 row.maxed() ? GOLD : row.affordable() ? IVORY : MUTED);
         }
 
-        if (feedback != null) {
+        if (helpStat != null) {
+            drawText(batch, pretty(helpStat).toUpperCase(Locale.ROOT), HELP_PANEL_X + 28f, HELP_PANEL_Y + 58f,
+                0.62f, GOLD);
+            java.util.List<String> lines = StatTooltips.noteLines(StatTooltips.tooltip(helpStat));
+            for (int index = 0; index < lines.size(); index++) {
+                text.draw(batch, lines.get(index), HELP_PANEL_X + 28f, HELP_PANEL_Y + 30f - index * 24f, 0.66f,
+                    SUBTLE, shop.helpAlpha());
+            }
+        } else if (feedback != null) {
             Color base = tab == Tab.SKILLS
                 ? switch (skills.feedbackResult()) {
                     case PURCHASED, EVOLVED -> POSITIVE;
@@ -190,7 +204,7 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
                 };
             Color feedbackColor = new Color(base);
             feedbackColor.a = tab == Tab.SKILLS ? skills.feedbackAlpha() : shop.feedbackAlpha();
-            drawCentered(batch, feedback, 360f, 189f, 0.78f, feedbackColor);
+            drawCentered(batch, feedback, 360f, HELP_PANEL_Y + 62f, 0.78f, feedbackColor);
         }
         batch.end();
     }
@@ -273,14 +287,19 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
         return "NEED $ " + Math.max(0, price - coins);
     }
 
+    /**
+     * The row's line comes from {@code StatTooltips} (roadmap R7.2) rather than being written here: the shop and
+     * the level-up screen teach the same five talents, and a second copy of the text is a second thing to keep
+     * in step with the constants.
+     */
+    /** Panel and text metrics of the help line, in world units. */
+    static final float HELP_PANEL_X = 100f;
+    static final float HELP_PANEL_Y = 112f;
+    static final float HELP_PANEL_WIDTH = 520f;
+    static final float HELP_PANEL_HEIGHT = 98f;
+
     static String statBenefit(HeroStat stat) {
-        return switch (stat) {
-            case STRENGTH -> "+1 base damage";
-            case AGILITY -> "+1 attack-speed rating";
-            case LUCK -> "+1 critical-chance rating";
-            case DODGE -> "+1 dodge rating";
-            case HEALTH -> "+1 vitality and max health";
-        };
+        return StatTooltips.shortLine(stat);
     }
 
     /**

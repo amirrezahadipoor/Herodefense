@@ -312,6 +312,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                     }
                 } else {
                     HeroStat stat = StatShopTouchLayout.statAt(worldX, worldY);
+                    host.statShopSystem().noteTouch(stat);
                     if (host.statShopSystem().purchase(host.gameState(), stat)) {
                         host.gameState().shopStatsBoughtThisRun++;
                         host.gameState().bareHandedEligible = false;

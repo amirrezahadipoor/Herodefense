@@ -15,11 +15,15 @@ public final class StatShopSystem {
     public static final float ENDLESS_PRICE_GROWTH = 1.25f;
     public static final int PRICE_CEILING = 9_999_995;
     private static final float FEEDBACK_DURATION_SECONDS = 1.25f;
+    /** How long a touched row keeps its tooltip on the help panel: long enough to read, short enough to leave. */
+    public static final float HELP_DURATION_SECONDS = 4.5f;
     private final HeroStatCalculator statCalculator = new HeroStatCalculator();
     private PurchaseResult feedbackResult = PurchaseResult.NONE;
     private HeroStat feedbackStat;
     private int feedbackCoins;
     private float feedbackRemainingSeconds;
+    private HeroStat helpStat;
+    private float helpRemainingSeconds;
 
     public int purchasedLevels(GameState state, HeroStat stat) {
         if (state == null || stat == null) return 0;
@@ -47,9 +51,36 @@ public final class StatShopSystem {
     }
 
     public void update(float realDeltaSeconds) {
-        if (realDeltaSeconds <= 0f || feedbackRemainingSeconds <= 0f) return;
-        feedbackRemainingSeconds = Math.max(0f, feedbackRemainingSeconds - realDeltaSeconds);
-        if (feedbackRemainingSeconds == 0f) clearFeedback();
+        if (realDeltaSeconds <= 0f) return;
+        if (helpRemainingSeconds > 0f) {
+            helpRemainingSeconds = Math.max(0f, helpRemainingSeconds - realDeltaSeconds);
+        }
+        if (feedbackRemainingSeconds > 0f) {
+            feedbackRemainingSeconds = Math.max(0f, feedbackRemainingSeconds - realDeltaSeconds);
+            if (feedbackRemainingSeconds == 0f) clearFeedback();
+        }
+    }
+
+    /**
+     * Records that the player touched a talent's row (roadmap R7.2). The tooltip is shown for the row the
+     * player asked about, which is the whole point of it: a help line that talks about a different stat than
+     * the one under the finger teaches nothing.
+     */
+    public void noteTouch(HeroStat stat) {
+        if (stat == null) return;
+        helpStat = stat;
+        helpRemainingSeconds = HELP_DURATION_SECONDS;
+    }
+
+    /** The row whose tooltip belongs on the help panel, or null while nobody has asked. */
+    public HeroStat helpStat() {
+        return helpRemainingSeconds > 0f ? helpStat : null;
+    }
+
+    /** Fades the help panel out at the end of its life instead of blinking it off. */
+    public float helpAlpha() {
+        if (helpRemainingSeconds <= 0f) return 0f;
+        return Math.min(1f, helpRemainingSeconds / 0.35f);
     }
 
     public PurchaseResult feedbackResult() {
