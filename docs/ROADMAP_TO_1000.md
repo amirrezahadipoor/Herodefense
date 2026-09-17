@@ -53,7 +53,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **88** | Boss identity variety across the 20 encounters | R3.2 | `[x]` |
 | **89** | Meta progression, content breadth, run shape | R3.3 · R3.4 · R3.5 | `[x]` |
 | **90** | Human playtest protocol and recorded findings | R3.6 | `[x]` |
-| **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[ ]` |
+| **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[~]` |
 | **92** | Runtime tier composed from the genuine master renders | R5.1 · R5.2 | `[~]` |
 | **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[~]` |
 | **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[x]` |
@@ -976,9 +976,32 @@ sentence has to name the two scores and the commit they were measured on.
   now measures the same set through the same arithmetic instead of its own wider superset, so the two cannot drift
   apart. Remaining: compression (R8.1) to bring the catalog itself down — with one enemy-sized sheet of headroom
   left, a ninth enemy needs smaller frames or a shared page rather than a quiet budget bump.
-- [ ] **R8.3 Residency at wave 50** measured with `adb shell dumpsys meminfo` during a scripted run,
-  logged in the repository, with streaming/release of atlases.
-- [ ] **R8.4 Startup and APK budget** measured in CI against a committed threshold.
+- [~] **R8.3 Residency at wave 50** measured with `adb shell dumpsys meminfo` during a scripted run,
+  logged in the repository, with streaming/release of atlases. Two of the three halves are in and the third is
+  only waiting on a green emulator job. **Streaming/release**: `AtlasResidencyPolicy` (`b32ad6e`) makes residency a
+  rule rather than a hope -- a page is released when its sheet family has been off screen for a stated interval and
+  a re-entry is served by a bounded reload, with `AtlasResidencyPolicyTest` covering the release, the reload and the
+  budget the policy is allowed to work inside; `ResidencyReport` prints what the rule does to the shipped catalog.
+  **The measurement**: the instrumented `WaveFiftyMemoryTest` loads a wave-50 save, taps through the menu, waits
+  four seconds inside the wave and logs one stable line,
+  `HERODEFENSE_PERF wave=50 totalPssKb=... totalRssKb=... graphicsKb=... budgetKb=... source=...`
+  (`0e5c70a`), which `tools/perf/check_wave50_memory.py` reads out of the logcat capture and compares against the
+  committed `docs/perf/wave50_memory_budget.json` (409,600 KiB total PSS, 163,840 KiB graphics), exiting 2 when the
+  log carries no measurement at all. The first CI run of this test measured nothing -- the shell dump was read once
+  and came back truncated before its App Summary -- and the fix (`8a2e05f`, plus a compile error CI caught and
+  `3b7c580` fixed) makes the process's own `Debug.MemoryInfo` the primary source, merges the shell dump field by
+  field, reads it to the end, and keeps it in the logcat as evidence. **What is still missing is the number**:
+  until an emulator job goes green there is no wave-50 reading filed under `docs/perf/runs/`, and this item does not
+  claim a measurement it does not have -- the gate is wired, the run is next.
+- [~] **R8.4 Startup and APK budget** measured in CI against a committed threshold. The instruments are in and
+  the ordering bug the first run found is fixed. `scripts/android-touch-test.sh` now installs the debug APK after
+  the instrumentation run uninstalls it, resolves the launcher component, and measures the cold start with
+  `am start -W` (`6f90222`); `tools/perf/parse_startup.py` turns that line into a number, `tools/perf/log_run.py`
+  files it as a logged run and `tools/perf/render_performance_doc.py` regenerates `docs/perf/PERFORMANCE.md` from
+  those runs; the APK-size and cold-start budgets are committed thresholds that the Android job compares against
+  and the numbers only count when the job is green. That sentence was written the same day the ordering bug was
+  found, which is the reason this row still reads *in progress*: the budget exists, the capture exists, and the
+  first green emulator job is what turns them into a filed measurement.
 - [x] **R8.5 Every performance number in `docs/**` comes from a logged run.** `docs/perf/` is the home: `runs/*.json`
   are the logged runs (command, commit, date, metrics), `PERFORMANCE.md` is *generated* from them, and
   `tools/perf/check_perf_provenance.py` fails the build on any number in the documentation with no run behind
@@ -1211,7 +1234,12 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 91 | render | the render pipeline became resumable, comparable and deterministic to compare: a hash log of every sheet, atlas and descriptor it writes (no timestamps, no commits, no absolute paths, so two logs of the same bytes are equal), a diff that classifies added / changed / removed with `--fail-on-change` for promotion, and a resume list the workflow feeds straight back into the generator's `--only`; 321 files across 111 assets on the shipped tree, ten new tests in the unit job | `57e21ac` |
 | 2026-09-17 | 95 | R7.1 | the first vigil: five coached steps in one minute, each waiting for its own touch action or its own budget, skippable through a 150-by-100 HUD-sized target that swallows the tap, and taught exactly once per device through the settings the run already writes; 21 tests cover the rules, the geometry and the seen-once path | `3b58f4e` |
 | 2026-09-17 | 95 | R7.2 | every displayed stat now says what it is: one catalog for the five talents and ten HUD readouts, the shop's help panel explains the row the player touched, and the old "+1 rating" lines — three of which named units the code does not have — were replaced by the interpolated constants; 12 tests cover the keyword table, the line budget, the wrapping and the drift between text and numbers | `03d7166` |
-| 2026-09-17 | 96 | R8.5 | every documented performance number now traces to a logged run, a committed budget, a named constant or a recorded environment fact; nine uncited numbers fixed, a stale residency figure corrected by measurement, and the gate runs in CI with its own negative controls | `PENDING` |
+| 2026-09-17 | 96 | R8.5 | every documented performance number now traces to a logged run, a committed budget, a named constant or a recorded environment fact; nine uncited numbers fixed, a stale residency figure corrected by measurement, and the gate runs in CI with its own negative controls | `cb457b8` · `2783f05` |
+| 2026-09-17 | 96 | R8.3 (rule half) | residency bounded by `AtlasResidencyPolicy` instead of by luck: a page is released after its sheet family has been off screen for a stated interval, a re-entry reloads inside the budget, `ResidencyReport` prints what the rule costs, and `AtlasResidencyPolicyTest` covers release, reload and the ceiling | `b32ad6e` |
+| 2026-09-17 | 96 | R8.3 (measurement half) | the wave-50 instrumented test logs one stable line, `tools/perf/check_wave50_memory.py` reads it against the committed 409,600 KiB / 163,840 KiB budget and exits 2 when no measurement was taken, with 20 Python cases including the negative control that the diagnosis line is not mistaken for a measurement | `0e5c70a` |
+| 2026-09-17 | 96 | R8.4 | the cold start is measured after the instrumentation run: the script reinstalls the debug APK, resolves the launcher component and times `am start -W`, and `tools/perf/parse_startup.py` + `log_run.py` + `render_performance_doc.py` turn that into a filed run and a generated document | `6f90222` · `cb457b8` |
+| 2026-09-17 | 96 | CI | the first emulator run of the wave-50 test measured nothing (a single truncated shell read) and the cold start ran against an uninstalled package; both diagnosed from the job log, fixed in the script and the test, and a compile error CI found in the new stat helper fixed by parsing `MemoryInfo`'s string stats | `8a2e05f` · `3b7c580` |
+| 2026-09-17 | 93 | R5.5 · R5.6 | 39 material maps (normal / roughness / AO) derived from the shipped masters with a provenance table and a gate that re-derives every one of them, and a review-evidence step that regenerates a rendered batch's contact sheets and audit JSON from the batch itself | `05e2f79` |
 
 ## Definition of done
 
