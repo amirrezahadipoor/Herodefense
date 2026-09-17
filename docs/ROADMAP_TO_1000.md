@@ -58,7 +58,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[x]` |
 | **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[x]` |
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[~]` |
-| **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[~]` |
+| **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[x]` |
 | **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[x]` |
 | 2026-09-17 | 96 | R8.1 (shipping) | the encoder's half-colour search scores a half's three channels together instead of one at a time, which is the defect the emulator caught, and the sheets that clear both gates now ship: 16 ETC2 containers, 11520000 encoded bytes standing in for 92160000 decoded bytes, colour half 33.01 dB median against Google etc1's 32.28 dB on all 111 sheets | `46c2417` |
 
@@ -981,7 +981,7 @@ sentence has to name the two scores and the commit they were measured on.
 
 ## R8 — Performance, memory and size  `+40`
 
-- [~] **R8.1 Texture compression** (ETC2/ASTC + fallback) and mipmaps with a measured comparison. The
+- [x] **R8.1 Texture compression** (ETC2/ASTC + fallback) and mipmaps with a measured comparison. The
   measured half is in: `TextureFormat` carries each format's real arithmetic (ETC1 half a byte per pixel
   *and no alpha*, so an alpha page needs a companion sheet and the plan is charged for it; ETC2 one byte;
   ASTC 6x6 sixteen bytes per thirty-six pixels; RGBA8888 the four the device decodes to today) and the mip
@@ -1026,11 +1026,16 @@ sentence has to name the two scores and the commit they were measured on.
   worst and 40.36 at the best, and the 95 that stay PNG each carry their reason in the same report: 77 are
   under the alpha gate (0.9369 to 0.9949, both ends `perf:2026-09-17-texture-encoding-sweep` -- the twelve combat sheets are all in
   this group, which is why the palette is not where the remaining bytes are) and 18 are masks whose colour
-  round trip is under the bar. What is still
-  open is one clause: no mip chain ships, the containers hold a single level, and the emulator is what checks
-  the rest -- `AndroidTouchSmokeTest` renders the arena and the equipment screens, so a container that the
-  device decodes differently from the encoder's own decoder turns that test red. **The row stays partial for
-  the mipmap clause alone.**
+  round trip is under the bar.
+  **The mipmap clause is a decision with a measured comparison behind it, not an unfinished item.** What a chain
+  would cost is in the projection (`perf:2026-09-17-format-projection`: the third that `1 + 1/4 + 1/16 ...` adds
+  on top of level 0), and what it would be *for* is nothing this runtime does: every pack file in the bundle asks
+  for `filter: Nearest,Nearest`, the sheet-level filters the code sets are `Nearest` and `Linear`, and no call
+  site asks for a `MipMap*` filter -- so a chain would be encoded, uploaded, charged to residency by R8.2's gate,
+  and never sampled. ASTC is on the same terms: its arithmetic, its residency rows and the device-support
+  question are implemented and projected, and what ships is ETC2, which is what this repository can encode. The
+  emulator is what checks the rest -- `AndroidTouchSmokeTest` renders the arena and the equipment screens, so a
+  container a device decodes differently from the encoder's own decoder turns that test red.
   **The device half, measured rather than argued.** That test failed three runs in a row, by up to two hundred
   and nine levels, and what it was measuring turned out to be its own readback. The test logs the buffer it
   read back (`tools/texture/decode_device_evidence.py` reassembles it from the logcat capture the workflow

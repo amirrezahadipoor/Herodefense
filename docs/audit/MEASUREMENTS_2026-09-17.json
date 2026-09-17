@@ -74,15 +74,15 @@
     ],
     "documents": 57,
     "readmeLines": 36,
-    "roadmapDone": 46,
-    "roadmapLines": 1372,
+    "roadmapDone": 47,
+    "roadmapLines": 1378,
     "roadmapOpen": 55,
-    "roadmapPartial": 3
+    "roadmapPartial": 2
   },
   "git": {
-    "commits": "483",
+    "commits": "485",
     "first": "2026-09-17",
-    "head": "b8c7cd6",
+    "head": "5a7eb35",
     "last": "2026-09-17",
     "trackedBytes": 583
   },
@@ -145,11 +145,10 @@
       "2026-09-17-generated-assets",
       "2026-09-17-residency",
       "2026-09-17-runtime-tier-cost",
-      "2026-09-17-texture-encoding",
-      "2026-09-17-wave50-residency",
-      "texture-encoding-sweep"
+      "2026-09-17-texture-encoding-sweep",
+      "2026-09-17-wave50-residency"
     ],
-    "runCount": 10,
+    "runCount": 9,
     "wave50": {
       "commit": "7329f4b",
       "id": "2026-09-17-wave50-residency",
