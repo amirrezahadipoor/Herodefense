@@ -187,7 +187,7 @@ public final class CompressedTextureDeviceTest {
             0, decodeAlignment[2]);
         assertEquals("alpha must decode to the container's one-bit mask -- " + diagnosis,
             0, decodeAlignment[3]);
-        loadThroughTheRuntimeLoader(context, container, expected, header, program, support);
+        loadThroughTheRuntimeLoader(container, expected, header, program, support);
         assertEquals("no GL error for the whole upload and draw", GLES30.GL_NO_ERROR, GLES30.glGetError());
 
         GLES30.glDeleteTextures(1, new int[] {texture}, 0);
@@ -210,11 +210,14 @@ public final class CompressedTextureDeviceTest {
      * is not there would make the test prove the wrong thing.
      */
     private static void loadThroughTheRuntimeLoader(
-        Context context, byte[] container, byte[] expected, Header header, int program, DeviceTextureSupport support
+        byte[] container, byte[] expected, Header header, int program, DeviceTextureSupport support
     ) throws IOException {
-        File sprites = new File(context.getCacheDir(), "sprites");
+        // The target app's own files directory: it is the one the artifact writing above already proves is
+        // writable, and the loader is handed an absolute handle so it never has to know where it is.
+        File sprites = new File(
+            InstrumentationRegistry.getInstrumentation().getTargetContext().getFilesDir(), "sprites");
         File beside = new File(sprites, "compressed/etc2/rootling.ktx");
-        assertTrue("could not make the loader's directory",
+        assertTrue("could not make " + beside.getParentFile(),
             beside.getParentFile().mkdirs() || beside.getParentFile().isDirectory());
         try (FileOutputStream stream = new FileOutputStream(beside)) {
             stream.write(container);

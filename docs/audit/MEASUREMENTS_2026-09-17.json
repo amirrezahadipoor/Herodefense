@@ -75,14 +75,14 @@
     "documents": 57,
     "readmeLines": 30,
     "roadmapDone": 46,
-    "roadmapLines": 1358,
+    "roadmapLines": 1360,
     "roadmapOpen": 55,
     "roadmapPartial": 3
   },
   "git": {
-    "commits": "477",
+    "commits": "482",
     "first": "2026-09-17",
-    "head": "0163031",
+    "head": "ebde57c",
     "last": "2026-09-17",
     "trackedBytes": 583
   },
@@ -160,26 +160,26 @@
     }
   },
   "tests": {
-    "classes": 179,
+    "classes": 181,
     "errors": 0,
     "failures": 0,
     "measured": true,
-    "seconds": 36.755000000000045,
+    "seconds": 31.72300000000004,
     "skipped": 0,
-    "tests": 720
+    "tests": 740
   },
   "tree": {
     "androidFiles": 1,
     "androidTestFiles": 3,
     "blenderTools": 24,
-    "coreMainFiles": 230,
-    "coreMainLines": 23775,
-    "coreTestFiles": 185,
-    "coreTestLines": 18447,
+    "coreMainFiles": 233,
+    "coreMainLines": 24141,
+    "coreTestFiles": 187,
+    "coreTestLines": 18742,
     "largestClasses": [
       {
         "fields": 59,
-        "lines": 770,
+        "lines": 771,
         "methods": 35,
         "name": "HeroDefenseGame.java"
       },
