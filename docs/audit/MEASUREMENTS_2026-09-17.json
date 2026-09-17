@@ -69,19 +69,20 @@
   },
   "docs": {
     "audits": [
-      "AUDIT_2026-09-16.md"
+      "AUDIT_2026-09-16.md",
+      "AUDIT_2026-09-17.md"
     ],
-    "documents": 56,
-    "readmeLines": 19,
+    "documents": 57,
+    "readmeLines": 30,
     "roadmapDone": 46,
-    "roadmapLines": 1363,
+    "roadmapLines": 1358,
     "roadmapOpen": 55,
     "roadmapPartial": 3
   },
   "git": {
-    "commits": "475",
+    "commits": "477",
     "first": "2026-09-17",
-    "head": "12e4dc0",
+    "head": "0163031",
     "last": "2026-09-17",
     "trackedBytes": 583
   },
