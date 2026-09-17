@@ -78,7 +78,7 @@ public final class BackButtonNavigationTest {
             // shelf survives one press, and without one it does not. That difference is the panel-first rule.
             pressBack();
             SystemClock.sleep(800L);
-            assertEquals(GameScreenState.CODEX, game.screenState(), "the entry closed and the shelf stayed");
+            assertEquals("the entry closed and the shelf stayed", GameScreenState.CODEX, game.screenState());
 
             pressBack();
             await("the shelf closes onto the menu", () -> game.screenState() == GameScreenState.MENU);
@@ -148,9 +148,10 @@ public final class BackButtonNavigationTest {
             pressBack();
             await("the run pauses", () -> game.screenState() == GameScreenState.PAUSED);
             assertEquals(Lifecycle.State.RESUMED, scenario.getState());
+            int waveBeforeThePresses = game.gameState().waveNumber;
             pressBack();
             await("the run resumes", () -> game.screenState() == GameScreenState.PLAYING);
-            assertTrue(game.gameState().waveActive || game.gameState().waveNumber >= 1);
+            assertEquals("a pause is not a restart", waveBeforeThePresses, game.gameState().waveNumber);
 
             // From the pause screen an overlay opens and closes by Back, returning to the run and not to the
             // menu: the screen underneath an overlay is the one the player left.
@@ -163,7 +164,7 @@ public final class BackButtonNavigationTest {
             await("the backpack closes onto the pause", () -> game.screenState() == GameScreenState.PAUSED);
             pressBack();
             await("and the pause resumes the run", () -> game.screenState() == GameScreenState.PLAYING);
-            assertFalse(scenario.getState() == Lifecycle.State.DESTROYED);
+            assertEquals(Lifecycle.State.RESUMED, scenario.getState());
         }
     }
 
