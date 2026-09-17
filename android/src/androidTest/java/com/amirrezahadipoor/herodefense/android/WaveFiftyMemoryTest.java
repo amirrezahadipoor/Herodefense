@@ -139,8 +139,8 @@ public final class WaveFiftyMemoryTest {
         Debug.MemoryInfo info = new Debug.MemoryInfo();
         Debug.getMemoryInfo(info);
         reading.pssKib = info.getTotalPss();
-        reading.graphicsKib = info.getMemoryStat("summary.graphics");
-        reading.rssKib = info.getMemoryStat("summary.total-rss");
+        reading.graphicsKib = stat(info, "summary.graphics");
+        reading.rssKib = stat(info, "summary.total-rss");
         if (reading.pssKib > 0) {
             reading.source = "debug.MemoryInfo";
         }
@@ -163,6 +163,23 @@ public final class WaveFiftyMemoryTest {
             reading.diagnosis = "dumpsys meminfo unavailable: " + failure;
         }
         return reading;
+    }
+
+    /**
+     * One field of the platform's own memory report. {@code MemoryInfo.getMemoryStat} answers in a string and
+     * leaves a stat it does not know as an empty string, so "absent" and "unparsable" both read as unknown
+     * (zero) here -- the shell dump is what fills a field the in-process report does not carry. The first CI run
+     * of this test failed to compile because the two stats were assigned straight into long fields; the compile
+     * error is the reason this helper exists rather than a cast.
+     */
+    private static long stat(Debug.MemoryInfo info, String key) {
+        String value = info.getMemoryStat(key);
+        if (value == null || value.trim().isEmpty()) return 0L;
+        try {
+            return Long.parseLong(value.trim());
+        } catch (NumberFormatException unparsable) {
+            return 0L;
+        }
     }
 
     /** Reads the process's own memory report through the shell, which is the measurement the roadmap asks for. */
