@@ -11,6 +11,7 @@ import com.badlogic.gdx.Preferences;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -19,9 +20,17 @@ import org.junit.jupiter.api.Test;
  * word of that language. The locale is global state, so each test puts it back the way it found it.
  */
 final class LanguageSettingsTest {
+    /** The locale is process-wide, so a test that changes it owes the next test the one it started with. */
+    private GameLanguage before;
+
+    @BeforeEach
+    void rememberTheLanguage() {
+        before = GameLocale.current();
+    }
+
     @AfterEach
-    void restoreEnglish() {
-        GameLocale.use(GameLanguage.ENGLISH);
+    void restoreTheLanguage() {
+        GameLocale.use(before);
     }
 
     @Test
