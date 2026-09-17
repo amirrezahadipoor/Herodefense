@@ -44,6 +44,16 @@ public final class MusicSelectionPolicy {
         return deciding ? DUCKED : 1f;
     }
 
+    /**
+     * Whether the vigil's own sound (wind, a distant canopy) is under the music. It belongs to the arena and to
+     * the walls that stand in it: in a menu the place is not around the player, and at the end of a run the
+     * silence is the point.
+     */
+    public static boolean ambienceFor(GameScreenState state) {
+        if (state == null) return false;
+        return combatState(state);
+    }
+
     /** Whether the screen is a fight or a ceremony around one. */
     private static boolean combatState(GameScreenState state) {
         return state == GameScreenState.PLAYING

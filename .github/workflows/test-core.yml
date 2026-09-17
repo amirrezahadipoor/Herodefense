@@ -64,6 +64,18 @@ jobs:
           python3 tools/perf/render_performance_doc.py --check
           python3 tools/perf/check_perf_provenance.py
 
+      # Roadmap R6.2: every committed audio file is decoded and measured here. The gate asks two things --
+      # nothing clips (peak <= 0.94, about -0.5 dBFS) and nothing is inaudible -- and it regenerates
+      # docs/audio/LEVELS.md so the measurement in the repository is the measurement of these bytes.
+      - name: Install soundfile for the audio level gate
+        run: python3 -m pip install --break-system-packages soundfile numpy
+
+      - name: Test the audio tools (roadmap R6.2 -- generator contract, measured document)
+        run: python3 -m unittest discover -s tools/audio/tests -v
+
+      - name: Measure every committed sound and gate its level (roadmap R6.2)
+        run: python3 tools/audio/check_audio_levels.py --check
+
       - name: Run the unit-test loop (the balance sweeps are the balance-gate job below)
         run: ./scripts/gradle.sh :core:test --stacktrace
 

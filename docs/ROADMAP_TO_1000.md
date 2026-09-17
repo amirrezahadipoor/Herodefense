@@ -56,7 +56,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[ ]` |
 | **92** | Runtime tier composed from the genuine master renders | R5.1 · R5.2 | `[~]` |
 | **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[~]` |
-| **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[~]` |
+| **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[x]` |
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[~]` |
 | **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[ ]` |
 | **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[ ]` |
@@ -829,8 +829,20 @@ sentence has to name the two scores and the commit they were measured on.
   it is the source, and the per-file hashes are in `AUDIO_LICENSES.md` with a test that fails if a bed
   is missing from the table. The imported 1.2 MB loop this replaces is retired in the ledger rather than
   deleted from it, and the APK is ~900 KB lighter for it.
-- [ ] **R6.2 SFX coverage** (bow draw/release variants, crits, pickups, UI, telegraph, ambience) with a
-  measured peak level each.
+- [x] **R6.2 SFX coverage** (bow draw/release variants, crits, pickups, UI, telegraph, ambience) with a
+  measured peak level each. Eight cues join the eleven, and every one of them hangs on a real event: the bow
+  release (and a lighter one for the extra arrows of a volley), the ultimate, coins from a kill, a wave that
+  ends, the warning before a boss special (`BossSpecialAttackSystem` now reports telegraphs started, read
+  once per frame so a frame cannot play it twice), menu and overlay taps, closing an overlay, and eight
+  seconds of wind looping under a run. They are authored by `tools/audio/generate_sfx.py`, so the source is
+  the repository. *Measured* is the literal part: `tools/audio/check_audio_levels.py` decodes every
+  committed file and writes `docs/audio/LEVELS.md`, and it immediately found what listening had not -- five
+  of the imported CC0 cues decoded above full scale (`boss_entrance` 1.122, `hit` 1.058, `purchase` 1.022,
+  `death` 0.986, `multi_shot` 0.948) and one of the new beds touched 1.000. The imported files were
+  corrected by `tools/audio/normalize_levels.py`, which re-encodes and re-measures because Vorbis adds its
+  own overshoot, and the applied gains are recorded in the licence ledger; the generated ones were
+  re-rendered with more headroom at their source. The gate runs in CI and fails above 0.94 (-0.5 dBFS) or
+  below the audibility floor.
 - [x] **R6.3 Music state machine** tied to game state, asserted by a test. `MusicSelectionPolicy` maps every
   member of the game's own `GameScreenState` to a bed and a gain, and a boss on the field outranks the screen it
   was found on. The policy is pure, so the test asserts the table itself over all thirteen screens -- including
@@ -839,7 +851,16 @@ sentence has to name the two scores and the commit they were measured on.
   would be louder than either), no overshoot on a stalled frame and no rewind on negative time. The frame
   asks for the bed once per frame through `AudioFrame.guideMusic`, which is recorded and asserted in `FrameDriverTest` --
   menus, the run, and the level-up wall that keeps the track and lowers it instead of switching.
-- [ ] **R6.4 Audio settings** persisted, honouring audio-focus loss, tested.
+- [x] **R6.4 Audio settings** persisted, honouring audio-focus loss, tested. The settings surface grew two
+  rows: effect level and music level, three named steps each (QUIET / NORMAL / FULL, 0.45 / 0.75 / 1.0)
+  because a touch-only screen has no drag handles. They are persisted with the rest, applied per cue and
+  per bed, and a hand-edited or older preference file is snapped to the nearest named step on load rather
+  than drawn as a level the screen cannot label. Audio focus is a core decision rather than an Android
+  detail: `AudioFocusState` says that a real loss silences everything until focus returns, while a
+  transient loss ducks music to a quarter and keeps the fight audible, because a game that goes silent for
+  a notification looks broken. `AndroidLauncher` only translates Android's codes -- through a
+  `AudioFocusRequest` on modern APIs, requesting on resume and abandoning on pause -- and the tests assert
+  the policy over the events, including that the player's own toggles still win.
 
 ## R7 — UI, onboarding and localisation  `+52`
 
@@ -927,9 +948,10 @@ sentence has to name the two scores and the commit they were measured on.
 - [x] **R8.5 Every performance number in `docs/**` comes from a logged run.** `docs/perf/` is the home: `runs/*.json`
   are the logged runs (command, commit, date, metrics), `PERFORMANCE.md` is *generated* from them, and
   `tools/perf/check_perf_provenance.py` fails the build on any number in the documentation with no run behind
-  it. Citations resolve to a run (`perf:<id>`), a committed threshold (`budget:<file>`), a design constant
-  (`code:<path>`, which must exist) or an environment fact (`env:<key>`, listed in `docs/perf/ENVIRONMENT.md`),
-  and a citation that resolves to nothing fails too, because it looks like provenance without being it.
+  it. A citation names a logged run (`perf:` and the run's id), a committed threshold (`budget:` and the file),
+  a design constant (`code:` and a path that must exist) or an environment fact (`env:` and a key listed in
+  `docs/perf/ENVIRONMENT.md`), and a citation that resolves to nothing fails too, because it looks like
+  provenance without being it.
   The rule found nine uncited numbers and all nine were fixed rather than exempted: the 390 MB catalog budget,
   the 45 ms hit stop and the 12 fps playback baseline (now named constants in named files), the APK size
   claim in the release document (now the committed budget), and the runner's disk facts (now `env:` keys).

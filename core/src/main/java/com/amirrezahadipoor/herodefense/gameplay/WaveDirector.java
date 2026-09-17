@@ -112,6 +112,7 @@ public final class WaveDirector {
             return;
         }
         // The wave is behind the player: the trophy ledger counts it even if the run ends here.
+        audioManager.play(AudioCue.WAVE_CLEAR);
         state.trophies.recordWaveCleared();
         if (state.waveNumber > state.peakWaveReached) {
             state.peakWaveReached = state.waveNumber;

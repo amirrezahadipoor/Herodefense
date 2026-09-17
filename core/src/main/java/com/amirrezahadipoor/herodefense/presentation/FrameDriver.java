@@ -123,7 +123,8 @@ public final class FrameDriver {
         boolean bossFight = ArenaQueries.livingBossCount(host.gameState()) > 0;
         audioManager.guideMusic(
             MusicSelectionPolicy.bedFor(state, bossFight),
-            MusicSelectionPolicy.gainFor(state)
+            MusicSelectionPolicy.gainFor(state),
+            MusicSelectionPolicy.ambienceFor(state)
         );
     }
 

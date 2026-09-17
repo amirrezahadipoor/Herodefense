@@ -47,17 +47,56 @@ final class MainMenuAndSettingsTouchTest {
     void settingsUseOnlyLargeTapToggles() {
         GameSettings settings = new GameSettings();
         SettingsTouchController touch = new SettingsTouchController();
+        float centreX = SettingsTouchLayout.ROW_X + SettingsTouchLayout.ROW_WIDTH * 0.5f;
+
         assertEquals(
             SettingsTouchLayout.Action.TOGGLE_SOUND,
-            touch.tap(settings, 360f, 775f)
+            touch.tap(settings, centreX, SettingsTouchLayout.SOUND_ROW_Y + 40f)
         );
         assertFalse(settings.soundEnabled);
         assertEquals(
             SettingsTouchLayout.Action.TOGGLE_MUSIC,
-            touch.tap(settings, 360f, 575f)
+            touch.tap(settings, centreX, SettingsTouchLayout.MUSIC_ROW_Y + 40f)
         );
         assertFalse(settings.musicEnabled);
-        assertEquals(SettingsTouchLayout.Action.CLOSE, touch.tap(settings, 620f, 1170f));
+        assertEquals(SettingsTouchLayout.Action.CLOSE,
+            touch.tap(settings, SettingsTouchLayout.CLOSE_X + 40f, SettingsTouchLayout.CLOSE_Y + 40f));
         assertTrue(SettingsTouchLayout.ROW_HEIGHT >= 96f);
+    }
+
+    @Test
+    void theTwoLevelRowsStepTheSettingAndCannotOverlapEachOtherOrTheCloseButton() {
+        GameSettings settings = new GameSettings();
+        SettingsTouchController touch = new SettingsTouchController();
+        float centreX = SettingsTouchLayout.ROW_X + SettingsTouchLayout.ROW_WIDTH * 0.5f;
+
+        assertEquals(
+            SettingsTouchLayout.Action.CYCLE_SOUND_LEVEL,
+            touch.tap(settings, centreX, SettingsTouchLayout.SOUND_LEVEL_ROW_Y + 40f)
+        );
+        assertEquals(GameSettings.levelValue(0), settings.soundVolume);
+        assertEquals(
+            SettingsTouchLayout.Action.CYCLE_MUSIC_LEVEL,
+            touch.tap(settings, centreX, SettingsTouchLayout.MUSIC_LEVEL_ROW_Y + 40f)
+        );
+        assertEquals(GameSettings.levelValue(0), settings.musicVolume);
+        touch.tap(settings, centreX, SettingsTouchLayout.MUSIC_LEVEL_ROW_Y + 40f);
+        assertEquals(GameSettings.levelValue(1), settings.musicVolume, "the row steps one notch per tap");
+
+        float[] rows = {
+            SettingsTouchLayout.SOUND_ROW_Y,
+            SettingsTouchLayout.MUSIC_ROW_Y,
+            SettingsTouchLayout.SOUND_LEVEL_ROW_Y,
+            SettingsTouchLayout.MUSIC_LEVEL_ROW_Y
+        };
+        for (int index = 0; index < rows.length; index++) {
+            assertTrue(rows[index] > 200f, "a row must clear the footer note");
+            if (index > 0) {
+                assertTrue(rows[index - 1] - rows[index] >= SettingsTouchLayout.ROW_HEIGHT,
+                    "rows must not overlap");
+            }
+        }
+        assertTrue(rows[0] + SettingsTouchLayout.ROW_HEIGHT < SettingsTouchLayout.CLOSE_Y,
+            "the first row must clear the close button");
     }
 }

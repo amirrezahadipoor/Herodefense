@@ -71,11 +71,13 @@ final class FrameDriverTest {
 
         driver.update(0.05f);
         assertEquals(MusicBed.HEARTWOOD_DAWN, audio.bed, "the menu has its own bed");
+        assertFalse(audio.ambience, "the vigil's own sound belongs to the arena, not to a menu");
 
         flow.transitionTo(GameScreenState.PLAYING);
         driver.update(0.05f);
         assertEquals(MusicBed.VIGIL, audio.bed, "the run has its own bed");
         assertEquals(1f, audio.gain);
+        assertTrue(audio.ambience, "wind under a run is what makes the place a place");
 
         flow.transitionTo(GameScreenState.LEVEL_UP);
         driver.update(0.05f);
@@ -224,6 +226,7 @@ final class FrameDriverTest {
     private static final class RecordingAudio implements AudioFrame {
         private MusicBed bed;
         private float gain = -1f;
+        private boolean ambience;
         private int ticks;
 
         @Override
@@ -231,9 +234,14 @@ final class FrameDriverTest {
         }
 
         @Override
-        public void guideMusic(MusicBed requested, float screenGain) {
+        public void guideMusic(MusicBed requested, float screenGain, boolean withAmbience) {
             bed = requested;
             gain = screenGain;
+            ambience = withAmbience;
+        }
+
+        @Override
+        public void onAudioFocus(com.amirrezahadipoor.herodefense.audio.AudioFocusState.Event event) {
         }
 
         @Override

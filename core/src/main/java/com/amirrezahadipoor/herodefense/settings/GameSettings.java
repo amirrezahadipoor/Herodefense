@@ -17,6 +17,62 @@ public final class GameSettings {
      */
     public boolean tutorialSeen;
 
+    /**
+     * Effect and music level, as one of three named steps (roadmap R6.4). Three taps cycle them because the
+     * settings surface is touch-only with no drag handles; the numbers are here so the audio layer has one
+     * source for "how loud is loud" and the screen has one source for the label.
+     */
+    private static final float[] LEVELS = {0.45f, 0.75f, 1.0f};
+    private static final String[] LEVEL_LABELS = {"QUIET", "NORMAL", "FULL"};
+
+    public float musicVolume = LEVELS[LEVELS.length - 1];
+    public float soundVolume = LEVELS[LEVELS.length - 1];
+
+    public static int levelCount() {
+        return LEVELS.length;
+    }
+
+    public static float levelValue(int index) {
+        if (index < 0) return LEVELS[0];
+        return LEVELS[Math.min(index, LEVELS.length - 1)];
+    }
+
+    public static String levelLabel(int index) {
+        if (index < 0) return LEVEL_LABELS[0];
+        return LEVEL_LABELS[Math.min(index, LEVEL_LABELS.length - 1)];
+    }
+
+    /** The stored value's step, or the closest one, so a hand-edited preference cannot break the screen. */
+    public static int levelIndex(float volume) {
+        int best = 0;
+        float bestDistance = Float.MAX_VALUE;
+        for (int index = 0; index < LEVELS.length; index++) {
+            float distance = Math.abs(LEVELS[index] - volume);
+            if (distance < bestDistance) {
+                bestDistance = distance;
+                best = index;
+            }
+        }
+        return best;
+    }
+
+    /** Steps the music level up and wraps back to the quietest; returns the new level's label. */
+    public String cycleMusicVolume() {
+        musicVolume = LEVELS[(levelIndex(musicVolume) + 1) % LEVELS.length];
+        return levelLabel(levelIndex(musicVolume));
+    }
+
+    public String cycleSoundVolume() {
+        soundVolume = LEVELS[(levelIndex(soundVolume) + 1) % LEVELS.length];
+        return levelLabel(levelIndex(soundVolume));
+    }
+
+    /** Keeps persisted values inside the named steps after a load. */
+    public void normalizeVolumes() {
+        musicVolume = levelValue(levelIndex(musicVolume));
+        soundVolume = levelValue(levelIndex(soundVolume));
+    }
+
     /** Legendary and Mythic items are never auto-sold; the toggle simply does not exist for them. */
     public boolean autoSells(ItemTier tier) {
         if (tier == null) return false;

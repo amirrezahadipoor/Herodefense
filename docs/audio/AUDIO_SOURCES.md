@@ -31,3 +31,11 @@ they have no source: they are rendered by `tools/audio/generate_music.py`, which
 The tool is the provenance, the per-file hashes are in `AUDIO_LICENSES.md`, and `MusicSelectionPolicyTest`
 fails if a bed is missing from that ledger. The one imported loop that used to be the whole soundtrack
 (Heavenly Loop, CC0) is retired: its ledger row stays, the file leaves the APK.
+
+## Generated in-repo effects (added 2026-09-17, roadmap R6.2)
+
+The nine effects added for R6.2 (`bow_release`, `bow_release_light`, `bow_release_heavy`, `coin_pickup`,
+`telegraph_warning`, `ui_tap`, `ui_close`, `wave_clear`, `ambience_vigil`) come from
+`tools/audio/generate_sfx.py` for the same reason. Their measured peaks are in `LEVELS.md`; the imported cues
+that measurement found above full scale were re-encoded by `tools/audio/normalize_levels.py` and the applied
+gains are recorded in `AUDIO_LICENSES.md`.

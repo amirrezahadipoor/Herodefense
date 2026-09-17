@@ -19,6 +19,7 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
     private final MusicDeck music = new MusicDeck();
     private GameSettings settings;
     private boolean appBackgrounded;
+    private AudioFocusState focus = AudioFocusState.gained();
 
     private final AudioThrottle throttle = new AudioThrottle();
 
@@ -34,27 +35,36 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
     @Override
     public void update(GameSettings updatedSettings) {
         settings = updatedSettings;
-        if (AudioPlaybackPolicy.shouldPlayMusic(settings, appBackgrounded)) {
+        music.setLevel(settings.musicVolume);
+        if (AudioPlaybackPolicy.shouldPlayMusic(settings, appBackgrounded, focus)) {
             music.resume();
         } else {
             music.pause();
         }
     }
 
+    /** The platform's audio-focus event (roadmap R6.4); the state decides what it costs us. */
+    @Override
+    public void onAudioFocus(AudioFocusState.Event event) {
+        focus = focus.apply(event);
+        update(settings);
+    }
+
     /** Points the music at the bed the game state wants; a change fades rather than cuts (roadmap R6.3). */
     @Override
-    public void guideMusic(MusicBed bed, float screenGain) {
+    public void guideMusic(MusicBed bed, float screenGain, boolean ambience) {
         if (bed == null) return;
-        music.setDuck(screenGain);
+        music.setDuck(screenGain * focus.musicGain());
+        music.setAmbience(ambience && AudioPlaybackPolicy.shouldPlayMusic(settings, appBackgrounded, focus));
         music.select(bed);
     }
 
     @Override
     public void play(AudioCue cue) {
-        if (cue == null || !AudioPlaybackPolicy.shouldPlayEffects(settings, appBackgrounded)) return;
+        if (cue == null || !AudioPlaybackPolicy.shouldPlayEffects(settings, appBackgrounded, focus)) return;
         if (!throttle.allow(cue)) return;
         Sound sound = effects.get(cue);
-        if (sound != null) sound.play(cue.volume());
+        if (sound != null) sound.play(cue.volume() * settings.soundVolume);
     }
 
     /** Advance the per-cue rate limiter and the music fade with real (not simulation) time. */

@@ -9,6 +9,7 @@ import com.badlogic.gdx.utils.TimeUtils;
 import com.badlogic.gdx.utils.viewport.ExtendViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
+import com.amirrezahadipoor.herodefense.audio.AudioFocusState;
 import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
 import com.amirrezahadipoor.herodefense.gameplay.BossFactory;
 import com.amirrezahadipoor.herodefense.gameplay.BossSpecialAttackSystem;
@@ -281,7 +282,9 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             DisplayMetrics.MAX_WORLD_HEIGHT,
             camera
         );
-        applyDisplayMetrics(Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight());
+        displayMetrics = ViewportMetrics.apply(
+            viewport, camera, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight()
+        );
         renderers = new RenderStack();
         screenStateComposer = new ScreenStateComposer(new ComposerHost(), camera, renderers.spriteBatch);
         cinematicFlow = new CinematicFlow(
@@ -319,21 +322,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     @Override
     public void resize(int width, int height) {
-        applyDisplayMetrics(width, height);
-    }
-
-    private void applyDisplayMetrics(int width, int height) {
-        displayMetrics = new DisplayMetrics(width, height, Gdx.graphics.getDensity());
-        viewport.update(width, height, false);
-        // Keep the 1280-unit design area centred; overflow is split above and below it.
-        camera.position.set(
-            WorldLayout.REFERENCE_WIDTH * 0.5f,
-            WorldLayout.REFERENCE_HEIGHT * 0.5f,
-            0f
-        );
-        camera.update();
-        GameFonts.shared().rebuild(displayMetrics);
-        ScreenEdges.update(displayMetrics);
+        displayMetrics = ViewportMetrics.apply(viewport, camera, width, height);
     }
 
     /** Current panel mapping, exposed for instrumentation tests. */
@@ -428,6 +417,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     @Override
     public void resume() {
         if (audioManager != null) audioManager.resumeFromBackground();
+    }
+
+    /** The platform's audio-focus event (roadmap R6.4). */
+    public void onAudioFocus(AudioFocusState.Event event) {
+        if (audioManager != null) audioManager.onAudioFocus(event);
     }
 
     @Override
@@ -551,6 +545,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             );
         }
         screenShakeSystem.triggerUltimate();
+        audioManager.play(AudioCue.ULTIMATE_RELEASE);
         audioManager.play(AudioCue.CHAIN_LIGHTNING);
         audioManager.play(AudioCue.CRITICAL);
     }

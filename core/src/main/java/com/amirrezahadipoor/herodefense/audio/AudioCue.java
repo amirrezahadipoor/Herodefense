@@ -18,7 +18,17 @@ public enum AudioCue {
     CHAIN_LIGHTNING("audio/sfx/chain_lightning.ogg", 0.38f, 0.10f),
     STUN("audio/sfx/stun.ogg", 0.36f, 0.25f),
     MULTI_SHOT("audio/sfx/multi_shot.ogg", 0.30f, 0.12f),
-    PURCHASE("audio/sfx/purchase.ogg", 0.45f, 0.15f);
+    PURCHASE("audio/sfx/purchase.ogg", 0.45f, 0.15f),
+    // Roadmap R6.2: the gaps the 2026-09-13 review named -- the bow itself, the loot, the UI, the
+    // telegraph a boss gives before a special, and the moment a wave ends.
+    BOW_RELEASE("audio/sfx/bow_release.ogg", 0.30f, 0.06f),
+    BOW_RELEASE_LIGHT("audio/sfx/bow_release_light.ogg", 0.22f, 0.06f),
+    ULTIMATE_RELEASE("audio/sfx/bow_release_heavy.ogg", 0.50f, 0.30f),
+    COIN_PICKUP("audio/sfx/coin_pickup.ogg", 0.36f, 0.12f),
+    WAVE_CLEAR("audio/sfx/wave_clear.ogg", 0.46f, 1.20f),
+    TELEGRAPH_WARNING("audio/sfx/telegraph_warning.ogg", 0.52f, 0.60f),
+    UI_TAP("audio/sfx/ui_tap.ogg", 0.26f, 0.06f),
+    UI_CLOSE("audio/sfx/ui_close.ogg", 0.28f, 0.10f);
 
     private final String path;
     private final float volume;

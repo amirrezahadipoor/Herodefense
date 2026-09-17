@@ -22,7 +22,11 @@ final class MusicDeck {
     private MusicBed activeBed;
     private float bedGain = 1f;
     private float targetGain = 1f;
+    private float level = 1f;
     private boolean backgrounded;
+    private Music ambience;
+    private float ambienceGain;
+    private float ambienceTarget;
 
     /** Points the deck at a bed, opening it and fading the previous one out if it is a change. */
     void select(MusicBed bed) {
@@ -43,6 +47,26 @@ final class MusicDeck {
         targetGain = Math.max(0f, Math.min(1f, gain));
     }
 
+    /** The player's music level (roadmap R6.4): one of three named steps, applied to every bed. */
+    void setLevel(float musicLevel) {
+        level = Math.max(0f, Math.min(1f, musicLevel));
+    }
+
+    /** The ambience bed, laid under the music for as long as a run lasts and faded in and out like the rest. */
+    void setAmbience(boolean wanted) {
+        ambienceTarget = wanted ? Ambience.VIGIL.volume() : 0f;
+        if (wanted && ambience == null) {
+            ambience = Gdx.audio.newMusic(Gdx.files.internal(Ambience.VIGIL.path()));
+            ambience.setLooping(true);
+            ambience.setVolume(0f);
+            ambience.play();
+        } else if (!wanted && ambience != null && ambienceGain <= 0f) {
+            ambience.stop();
+            ambience.dispose();
+            ambience = null;
+        }
+    }
+
     /** Advances the fade and the duck; called once per frame with real time. */
     void advance(float realDeltaSeconds) {
         crossfade.advance(realDeltaSeconds);
@@ -50,20 +74,31 @@ final class MusicDeck {
         bedGain = bedGain < targetGain ? Math.min(targetGain, bedGain + step)
             : Math.max(targetGain, bedGain - step);
         if (!crossfade.fading()) closeRetiring();
+        float ambienceStep = DUCK_PER_SECOND * 0.5f * Math.max(0f, realDeltaSeconds);
+        ambienceGain = ambienceGain < ambienceTarget
+            ? Math.min(ambienceTarget, ambienceGain + ambienceStep)
+            : Math.max(ambienceTarget, ambienceGain - ambienceStep);
+        if (ambience != null && ambienceTarget <= 0f && ambienceGain <= 0f) {
+            ambience.stop();
+            ambience.dispose();
+            ambience = null;
+        }
         apply();
     }
 
     private void apply() {
         float gain = crossfade.incoming() * bedGain;
-        if (active != null) active.setVolume(activeBed == null ? 0f : activeBed.baseVolume() * gain);
-        if (retiring != null) retiring.setVolume(0.35f * crossfade.outgoing());
+        if (active != null) active.setVolume(activeBed == null ? 0f : activeBed.baseVolume() * gain * level);
+        if (retiring != null) retiring.setVolume(0.35f * crossfade.outgoing() * level);
+        if (ambience != null) ambience.setVolume(ambienceGain * level);
     }
 
-    /** Pauses both decks: the app went to the background, and silence is the only correct gain. */
+    /** Pauses every deck: the app went to the background, and silence is the only correct gain. */
     void pause() {
         backgrounded = true;
         if (active != null && active.isPlaying()) active.pause();
         if (retiring != null && retiring.isPlaying()) retiring.pause();
+        if (ambience != null && ambience.isPlaying()) ambience.pause();
     }
 
     /** Resumes whatever the deck was holding; the fade and duck it was in the middle of still apply. */
@@ -71,6 +106,7 @@ final class MusicDeck {
         backgrounded = false;
         if (active != null && !active.isPlaying()) active.play();
         if (retiring != null && !retiring.isPlaying()) retiring.play();
+        if (ambience != null && !ambience.isPlaying()) ambience.play();
     }
 
     boolean backgrounded() {
@@ -78,6 +114,12 @@ final class MusicDeck {
     }
 
     void dispose() {
+        if (ambience != null) {
+            ambience.stop();
+            ambience.dispose();
+            ambience = null;
+            ambienceGain = 0f;
+        }
         if (retiring != null) {
             retiring.stop();
             retiring.dispose();

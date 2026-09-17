@@ -11,6 +11,8 @@ public final class LocalSettingsRepository {
     private static final String AUTO_SELL_UNCOMMON_KEY = "inventory.autoSell.uncommon";
     private static final String AUTO_SELL_RARE_KEY = "inventory.autoSell.rare";
     private static final String TUTORIAL_SEEN_KEY = "onboarding.tutorialSeen";
+    private static final String MUSIC_VOLUME_KEY = "audio.musicVolume";
+    private static final String SOUND_VOLUME_KEY = "audio.soundVolume";
     private final Preferences preferences;
 
     public LocalSettingsRepository(Preferences preferences) {
@@ -26,6 +28,11 @@ public final class LocalSettingsRepository {
         settings.autoSellUncommon = preferences.getBoolean(AUTO_SELL_UNCOMMON_KEY, false);
         settings.autoSellRare = preferences.getBoolean(AUTO_SELL_RARE_KEY, false);
         settings.tutorialSeen = preferences.getBoolean(TUTORIAL_SEEN_KEY, false);
+        settings.musicVolume = preferences.getFloat(MUSIC_VOLUME_KEY, settings.musicVolume);
+        settings.soundVolume = preferences.getFloat(SOUND_VOLUME_KEY, settings.soundVolume);
+        // A preference file can be edited by hand or written by an older build; the screen only knows the
+        // three named steps, so anything else is snapped to the closest one here rather than at draw time.
+        settings.normalizeVolumes();
         return settings;
     }
 
@@ -37,6 +44,8 @@ public final class LocalSettingsRepository {
         preferences.putBoolean(AUTO_SELL_UNCOMMON_KEY, settings.autoSellUncommon);
         preferences.putBoolean(AUTO_SELL_RARE_KEY, settings.autoSellRare);
         preferences.putBoolean(TUTORIAL_SEEN_KEY, settings.tutorialSeen);
+        preferences.putFloat(MUSIC_VOLUME_KEY, settings.musicVolume);
+        preferences.putFloat(SOUND_VOLUME_KEY, settings.soundVolume);
         preferences.flush();
     }
 }

@@ -14,10 +14,12 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     static final float CLOSE_X = 570f;
     static final float CLOSE_Y = 1120f;
     static final float CLOSE_SIZE = 100f;
-    static final float SOUND_ROW_Y = 700f;
-    static final float MUSIC_ROW_Y = 500f;
+    static final float SOUND_ROW_Y = SettingsTouchLayout.SOUND_ROW_Y;
+    static final float MUSIC_ROW_Y = SettingsTouchLayout.MUSIC_ROW_Y;
+    static final float SOUND_LEVEL_ROW_Y = SettingsTouchLayout.SOUND_LEVEL_ROW_Y;
+    static final float MUSIC_LEVEL_ROW_Y = SettingsTouchLayout.MUSIC_LEVEL_ROW_Y;
     static final float NOTE_PANEL_X = 100f;
-    static final float NOTE_PANEL_Y = 300f;
+    static final float NOTE_PANEL_Y = 250f;
     static final float NOTE_PANEL_WIDTH = 520f;
     static final float NOTE_PANEL_HEIGHT = 120f;
 
@@ -61,6 +63,14 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             true, settings.musicEnabled, SettingsTouchLayout.ROW_X, MUSIC_ROW_Y,
             SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
         );
+        UiFrameRenderer.State soundLevelState = frames.resolve(
+            true, settings.soundVolume > 0f, SettingsTouchLayout.ROW_X, SOUND_LEVEL_ROW_Y,
+            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+        );
+        UiFrameRenderer.State musicLevelState = frames.resolve(
+            true, settings.musicVolume > 0f, SettingsTouchLayout.ROW_X, MUSIC_LEVEL_ROW_Y,
+            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+        );
 
         batch.begin();
         frames.draw(batch, UiFrameRenderer.Kind.BUTTON, CLOSE_X, CLOSE_Y, CLOSE_SIZE, CLOSE_SIZE,
@@ -75,6 +85,12 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
             settings.musicEnabled
         );
+        frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, SOUND_LEVEL_ROW_Y,
+            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+            settings.soundVolume > 0f);
+        frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, MUSIC_LEVEL_ROW_Y,
+            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+            settings.musicVolume > 0f);
         frames.draw(batch, UiFrameRenderer.Kind.PANEL, NOTE_PANEL_X, NOTE_PANEL_Y,
             NOTE_PANEL_WIDTH, NOTE_PANEL_HEIGHT, true, false);
 
@@ -89,10 +105,15 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         drawToggle(batch, "MUSIC", "World Tree vigil theme",
             MUSIC_ROW_Y, settings.musicEnabled, musicState);
 
-        text.draw(batch, "TOUCH ONLY", 130f, 386f, 0.66f, OverlayText.GOLD);
-        text.draw(batch, "Tap a row to switch it. Changes apply instantly.", 130f, 352f, 0.74f,
+        drawLevel(batch, "EFFECT LEVEL", "Arrows, hits, loot", SOUND_LEVEL_ROW_Y,
+            settings.soundVolume, soundLevelState);
+        drawLevel(batch, "MUSIC LEVEL", "How loud the vigil sits", MUSIC_LEVEL_ROW_Y,
+            settings.musicVolume, musicLevelState);
+
+        text.draw(batch, "TOUCH ONLY", 130f, 336f, 0.66f, OverlayText.GOLD);
+        text.draw(batch, "Tap a row to switch it, tap again to step the level.", 130f, 302f, 0.74f,
             OverlayText.IVORY);
-        text.draw(batch, "Tap Close to return to the main menu.", 130f, 324f, 0.74f,
+        text.draw(batch, "Tap Close to return to the main menu.", 130f, 274f, 0.74f,
             OverlayText.SUBTLE);
         batch.end();
     }
@@ -112,6 +133,29 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             enabled ? OverlayText.GOLD : OverlayText.MUTED);
         text.drawRightAligned(batch, enabled ? "tap to mute" : "tap to enable", 590f,
             y + 54f + offset, 0.62f, OverlayText.SUBTLE);
+    }
+
+    private void drawLevel(
+        SpriteBatch batch,
+        String title,
+        String subtitle,
+        float y,
+        float volume,
+        UiFrameRenderer.State state
+    ) {
+        float offset = MainMenuRenderer.pressedOffset(state);
+        text.draw(batch, title, 136f, y + 104f + offset, 1.16f, OverlayText.IVORY);
+        text.draw(batch, subtitle, 136f, y + 54f + offset, 0.68f, OverlayText.SUBTLE);
+        text.drawRightAligned(
+            batch,
+            GameSettings.levelLabel(GameSettings.levelIndex(volume)),
+            590f,
+            y + 96f + offset,
+            1.06f,
+            OverlayText.GOLD
+        );
+        text.drawRightAligned(batch, "tap to step", 590f, y + 54f + offset, 0.62f,
+            OverlayText.SUBTLE);
     }
 
     static String toggleLabel(boolean enabled) {

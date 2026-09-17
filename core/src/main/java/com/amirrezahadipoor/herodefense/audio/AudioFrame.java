@@ -18,7 +18,10 @@ public interface AudioFrame {
      * Points the music at the bed the current game state wants, with the screen's gain (roadmap R6.3). The
      * frame says what the game is doing; the audio layer decides whether that means a crossfade.
      */
-    void guideMusic(MusicBed bed, float screenGain);
+    void guideMusic(MusicBed bed, float screenGain, boolean ambience);
+
+    /** The platform told us something about who owns the speakers (roadmap R6.4). */
+    void onAudioFocus(AudioFocusState.Event event);
 
     void tick(float realDeltaSeconds);
 }

@@ -184,8 +184,10 @@ def render(spec: dict) -> np.ndarray:
     mix = mix[:-wrap]
     # Headroom, not loudness: Vorbis can overshoot the peak it was given, and a track that clips on the device
     # is a defect no listener forgives.
+    # Vorbis can overshoot the peak it was handed (measured: the first render of hollow_march decoded at
+    # exactly 1.000), so the target sits well under the 0.94 ceiling the level gate enforces.
     peak = float(np.max(np.abs(mix))) or 1.0
-    mix *= 0.82 / peak
+    mix *= 0.72 / peak
     return mix
 
 

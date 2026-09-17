@@ -117,7 +117,10 @@ public final class CombatSystem {
         if (attackEvents.stuns() > 0) audioManager.play(AudioCue.STUN);
         if (attackEvents.shots() > 1) {
             audioManager.play(AudioCue.MULTI_SHOT);
+            audioManager.play(AudioCue.BOW_RELEASE_LIGHT);
             particleSystem.emitMuzzleFlash(state.hero.x, state.hero.y + 45f, attackEvents.shots());
+        } else if (attackEvents.shots() == 1) {
+            audioManager.play(AudioCue.BOW_RELEASE);
         }
         if (ArenaQueries.totalEnemyHealth(state) < enemyHealthBeforeAttack - 0.001f) {
             audioManager.play(AudioCue.HIT);
@@ -131,6 +134,9 @@ public final class CombatSystem {
         }
         float heroHealthBeforeAttack = state.hero.health;
         bossSpecialAttackSystem.update(state, simulationDelta);
+        if (bossSpecialAttackSystem.consumeTelegraphsStarted() > 0) {
+            audioManager.play(AudioCue.TELEGRAPH_WARNING);
+        }
         boolean gameOver = enemyMeleeAttackSystem.update(state, simulationDelta);
         if (state.hero.health < heroHealthBeforeAttack - 0.001f) {
             screenShakeSystem.triggerHeroHit();
@@ -159,6 +165,7 @@ public final class CombatSystem {
         codexSystem.unlockForWaveReached(state);
         codexSystem.unlockSecretsForProgress(state);
         if (killRewards.coins() > 0) {
+            audioManager.play(AudioCue.COIN_PICKUP);
             floatingCoinTextSystem.emit(
                 state.hero.x,
                 state.hero.y + 145f,

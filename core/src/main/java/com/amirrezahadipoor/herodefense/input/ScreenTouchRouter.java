@@ -204,8 +204,10 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                     host.settings(), worldX, worldY
                 );
                 if (action == SettingsTouchLayout.Action.CLOSE) {
+                    host.audioManager().play(AudioCue.UI_CLOSE);
                     host.flow().transitionTo(GameScreenState.MENU);
                 } else if (action != SettingsTouchLayout.Action.NONE) {
+                    host.audioManager().play(AudioCue.UI_TAP);
                     host.settingsRepository().save(host.settings());
                 }
                 return true;
@@ -288,6 +290,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             if (host.flow().state() == GameScreenState.SHOP) {
                 StatShopTouchLayout.Tab tab = StatShopTouchLayout.tabAt(worldX, worldY);
                 if (StatShopTouchLayout.closeAt(worldX, worldY)) {
+                    host.audioManager().play(AudioCue.UI_CLOSE);
                     host.flow().returnFromOverlay();
                     host.saveNow();
                 } else if (StatShopTouchLayout.rootAt(worldX, worldY)) {
@@ -329,6 +332,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 // The first vigil (roadmap R7.1) is offered to a new run and never to a Continue: the player
                 // who is resuming a session has already met the game, and a lesson about tapping the ground is
                 // exactly the wrong thing to open with on the way back into wave 40.
+                if (action != MainMenuTouchLayout.Action.NONE) host.audioManager().play(AudioCue.UI_TAP);
                 if (action == MainMenuTouchLayout.Action.NEW_GAME) {
                     host.flow().onboarding().attach(host.settings(), host.settingsRepository());
                     host.flow().onboarding().beginIfUnseen(false);
@@ -373,6 +377,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             }
             if (host.flow().state() == GameScreenState.PLAYING
                 && HudTouchLayout.inventoryAt(worldX, worldY)) {
+                host.audioManager().play(AudioCue.UI_TAP);
                 host.flow().transitionTo(GameScreenState.INVENTORY);
                 host.inventoryTouchController().open();
                 host.saveNow();
@@ -449,6 +454,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                     host.gameState(), worldX, worldY
                 );
                 if (action == CodexTouchController.Action.CLOSED) {
+                    host.audioManager().play(AudioCue.UI_CLOSE);
                     host.codexTouchController().close();
                     host.flow().returnFromOverlay();
                     host.saveNow();

@@ -12,6 +12,12 @@ public final class BossSpecialAttackSystem {
     /** Warning window between a special's trigger and its damage landing. */
     public static final float TELEGRAPH_SECONDS = 0.5f;
     private final HeroDamageSystem heroDamageSystem;
+    /**
+     * Telegraphs started since the last read (roadmap R6.2). The warning a boss gives before a special was
+     * visible and silent; this is the same signal the fight renderer already draws from, published for audio
+     * rather than for the screen, and read-once so a frame cannot play it twice.
+     */
+    private int telegraphsStarted;
 
     public BossSpecialAttackSystem(HeroDamageSystem heroDamageSystem) {
         this.heroDamageSystem = heroDamageSystem;
@@ -59,10 +65,18 @@ public final class BossSpecialAttackSystem {
                         chargeToMeleeRange(state, boss);
                     }
                     boss.specialPending = true;
+                    telegraphsStarted++;
                     boss.specialAnimationSeconds = script.currentTelegraphSeconds(boss);
                 }
             }
         }
+    }
+
+    /** Telegraphs begun since this was last called, then cleared. */
+    public int consumeTelegraphsStarted() {
+        int count = telegraphsStarted;
+        telegraphsStarted = 0;
+        return count;
     }
 
     /** One special of the boss's identity, repeated when the encounter's script strikes twice. */
