@@ -13,6 +13,8 @@ import sys
 import unittest
 from pathlib import Path
 
+import numpy as np
+
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 sys.path.insert(0, str(TOOLS / "texture"))
@@ -45,25 +47,40 @@ class DeviceFixtureTest(unittest.TestCase):
         self.assertGreater(document["roundTripPsnr"], 20.0)
 
 
-    def test_punchthrough_never_writes_the_differential_flag(self) -> None:
-        """The bug the device test caught first: a punchthrough block has no differential mode.
+    def test_the_flag_bit_agrees_with_the_pixels_of_every_block(self) -> None:
+        """The one rule the driver enforces that the encoder could get wrong on its own: the opaque bit.
 
-        The layout the encoder used to write was self-consistent -- it set the differential flag and decoded it
-        the same way -- so every round trip in this suite passed while a GPU, which reads the punchthrough layout
-        as individual mode by definition, produced something else entirely. This case is the local guard for it:
-        no block of a punchthrough stream may carry the flag that only the individual layout is allowed to
-        leave cleared.
+        In the punchthrough format the bit that selects the colour layout in ETC2_RGB8 is the opaque bit, and it
+        decides two things at once in the decoder: which intensity-modifier table the block is read with, and
+        whether an index of `10` punches a hole. A block that carries a clear pixel and declares itself opaque
+        therefore decodes with a hole missing on a device -- the defect the emulator caught, in the state it was
+        caught in, where the flag was *never* set and every block was read as non-opaque under the wrong table.
+
+        The fixture is the stream the device uploads, so this checks the actual bytes rather than a fresh encode.
         """
         container = (make_device_fixture.FIXTURES / f"{make_device_fixture.NAME}.ktx").read_bytes()
         payload = container[68:]
         self.assertEqual(0, len(payload) % 8)
-        flagged = []
+        opaque_blocks = clear_blocks = 0
         for offset in range(0, len(payload), 8):
-            high = ((payload[offset] << 24) | (payload[offset + 1] << 16)
-                    | (payload[offset + 2] << 8) | payload[offset + 3])
-            if high & 2:
-                flagged.append(offset // 8)
-        self.assertEqual([], flagged, "block(s) set the flag that means differential mode")
+            high = int.from_bytes(payload[offset:offset + 4], "big")
+            low = int.from_bytes(payload[offset + 4:offset + 8], "big")
+            flag = (high >> 1) & 1
+            bits = np.arange(16)
+            indices = ((low >> bits) & 1) | (((low >> (bits + 16)) & 1) << 1)
+            clears = int((indices == etc2.PUNCHTHROUGH_INDEX).sum())
+            opaque_blocks += flag
+            clear_blocks += 1 if clears else 0
+            if clears:
+                self.assertEqual(
+                    0, flag,
+                    f"block {offset // 8} declares itself opaque and still carries a clear pixel",
+                )
+        self.assertGreater(clear_blocks, 0, "the fixture carried no clear pixel to check the opaque bit on")
+        self.assertGreater(
+            opaque_blocks, 0,
+            "the fixture has no opaque block, so the flag is never exercised the other way",
+        )
 
     def test_the_expectation_is_the_decode_of_the_container(self) -> None:
         container = (make_device_fixture.FIXTURES / f"{make_device_fixture.NAME}.ktx").read_bytes()

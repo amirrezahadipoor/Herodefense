@@ -982,20 +982,29 @@ sentence has to name the two scores and the commit they were measured on.
   GLES3 pbuffer through `EGL14` (the game asks libGDX for a GLES2 context, which could never load an ETC2
   page), uploads a 64x64 punchthrough container built from a real shipped sheet by
   `tools/texture/make_device_fixture.py`, reads the frame back with `glReadPixels` and asserts the GPU agrees
-  channel by channel with this repository's own decode of the same bytes -- and that run earned its keep
-  immediately: the first emulator run reported a maximum channel difference of 247 and 2,448 of 4,096 pixels
-  outside tolerance, because the encoder was emitting differential-mode blocks inside a punchthrough stream,
-  where that layout does not exist. Every local round trip passed, since the decoder read the flag the same
-  wrong way; the fix is the mode search honouring the format (`29e2bdb`), a local regression case that no
-  punchthrough block may carry the differential flag, and a rebuilt fixture -- with the fixture rebuilt in the
-  unit job, so a device cannot be asked to decode bytes the encoder no longer produces. What that run has not
-  done yet is happen, and the first three runs of it say something uncomfortable rather than something
-  reassuring: the driver rejects nothing (`GL_NO_ERROR`) and the policy side passes, but the decoded
-  pixels disagree with this repository's decoder by up to 247 levels on 2,448-2,507 of 4,096 pixels.
-  The punchthrough layout is therefore *not* proven, whatever the local round trips say, and the item
-  states that instead of hiding it: the next step is an independent decoder known to agree with drivers
-  (`texture2ddecoder`) and a container re-derived until it does, and the row stays `[~]` until a green
-  emulator run has decoded a container correctly.
+  channel by channel with this repository's own decode of the same bytes -- and that run earned its keep immediately: the first emulator run reported a maximum channel difference of 247
+  with 2,448 of 4,096 pixels outside tolerance, and the run after a first correction did not move (247 on 2,507),
+  because that correction was the same mistake mirrored. Settling it took a driver's own decoder rather than
+  another round trip. In the punchthrough format the colour part is *always* the differential layout -- there is
+  no individual mode to select -- and the bit that selects between the two layouts in ETC2_RGB8 is the **opaque
+  bit** here: it decides which intensity-modifier table the decoder uses for the whole block (ETC1's when the
+  block is opaque, the specification's punchthrough table when it is not, whose first and third modifiers are
+  zero so that index `00` lands on the base colour exactly), and only a non-opaque block can carry a clear pixel
+  at all. The encoder was writing individual-layout colour pairs and reading that bit as a layout flag, and the
+  decoder read the flag the same wrong way, which is exactly why every round trip in this repository passed while
+  an emulator disagreed on an alpha-perfect picture -- and why `29e2bdb`, whose whole rule was that no
+  punchthrough block may carry the differential flag, made the stream no more correct than before it. Both halves
+  follow the driver now: the encoder searches the differential layout only, runs its colour search once per
+  modifier table and refuses the opaque answer to any block with a clear pixel in it, and clamps each channel's
+  step so that base plus step stays inside the five-bit range, because a sum that leaves it is read as a T, H or
+  planar block rather than a differential one; the decoder takes its table and its alpha from the opaque bit, and
+  decodes a clear pixel to black the way a driver does rather than to the colour the base and modifier would
+  produce. The evidence is not another round trip: `tools/texture/tests/driver_vectors.py` records Google's
+  `swiftshader` decoder -- `src/Device/ETC_Decoder.cpp` at commit `112faf4`, the GLES3 implementation an
+  emulator without a GPU decodes through -- reading two streams this encoder wrote, and the test decodes those
+  streams again and demands the same pixels, which it gets **exactly**, maximum channel difference 0, no pixel
+  differing and no alpha mismatch. That now includes the 64x64 container the device uploads. The row stays `[~]`
+  until an emulator run decodes it green.
 - [x] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
   manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (raised from 390 MB to **525,000,000 bytes** on 2026-09-17 at the owner's direction, so the genuine-master tier R5.2 costs 519,290,880 of it) and the
   live combat set against `decodedCombatResidencyBudgetBytes`, a deliberate **100 MiB** (was 150 MB), and the

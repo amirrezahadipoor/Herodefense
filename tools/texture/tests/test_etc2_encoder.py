@@ -1,8 +1,13 @@
 """Tests for the first-party ETC2 encoder and the KTX container it writes (roadmap R8.1).
 
-The gate that matters is the first one: four blocks produced by Google's `etc1` reference implementation -- the
-encoder/decoder pair libGDX ships as JNI and Android's own tooling embeds -- are decoded here and compared pixel
-for pixel. A layout error in this module would otherwise only show up as an ugly sprite on a device.
+The gates that matter are the first two, and they are *not* round trips:
+
+* four blocks produced by Google's `etc1` reference implementation -- the encoder/decoder pair libGDX ships as
+  JNI and Android's own tooling embeds -- are decoded here and compared pixel for pixel;
+* streams this encoder wrote on 2026-09-17 are decoded again and compared with what Google's `swiftshader`
+  decoder made of them (see `driver_vectors.py`), because a round trip agrees with itself even when both of its
+  halves read the layout the same wrong way. That is what happened to the punchthrough format: every test in
+  this file passed while an emulator disagreed with this module by 247 levels on an alpha-perfect picture.
 
 The rest are round trips and negative controls: an encoder that produced valid-looking bytes which do not decode
 back is not an encoder, and a gate that cannot fail is not a gate.
@@ -20,6 +25,9 @@ TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 sys.path.insert(0, str(TOOLS / "texture"))
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+
+import driver_vectors  # noqa: E402
 import etc2  # noqa: E402
 import ktx  # noqa: E402
 
@@ -80,6 +88,84 @@ class ReferenceLayoutTest(unittest.TestCase):
         block = bytes.fromhex("00000000" + "ffff0000")
         decoded = etc2.decode_blocks(block, 4, 4, punchthrough=True)
         self.assertTrue((decoded[..., 3] == 0).all())
+
+
+class DriverLayoutTest(unittest.TestCase):
+    """The punchthrough layout, held to a decoder this repository did not write.
+
+    `driver_vectors.py` records both halves of the evidence: the block streams, and the pixels Google's
+    `swiftshader` decoder produced from them. The first case here decodes those streams again -- so a change to
+    the decoder that quietly reinterprets the layout fails here instead of on a device. The second case pins the
+    encoder's side of the same contract with the structural rules that were broken, because a stream can only be
+    checked against a driver's *rules* without a driver.
+    """
+
+    def test_the_decoder_matches_a_driver_pixel_for_pixel(self) -> None:
+        for vector in driver_vectors.VECTORS:
+            with self.subTest(stream=vector.name):
+                decoded = etc2.decode_blocks(
+                    bytes.fromhex(vector.blocks_hex), vector.width, vector.height, punchthrough=True
+                )
+                expected = np.frombuffer(bytes.fromhex(vector.pixels_hex), dtype=np.uint8).reshape(
+                    vector.height, vector.width, 4
+                )
+                np.testing.assert_array_equal(decoded, expected)
+
+    def test_a_clear_pixel_decodes_to_black_not_to_its_base_colour(self) -> None:
+        """The last behaviour the device comparison tripped over, on its own so a regression names itself."""
+        covered = 0
+        for vector in driver_vectors.VECTORS:
+            pixels = np.frombuffer(bytes.fromhex(vector.pixels_hex), dtype=np.uint8).reshape(
+                vector.height, vector.width, 4
+            )
+            clear = pixels[..., 3] == 0
+            if not clear.any():
+                continue
+            covered += int(clear.sum())
+            self.assertTrue(
+                (pixels[clear][:, :3] == 0).all(),
+                f"{vector.name}: the driver gave a clear pixel a colour",
+            )
+        self.assertGreater(covered, 0, "no recorded stream had a clear pixel to check")
+
+    def test_the_encoder_writes_the_layout_a_driver_reads(self) -> None:
+        """The structural rules of the driver's decode path, on the blocks the encoder just wrote.
+
+        These are the rules that were broken before the emulator was believed:
+
+        * the colour part is the differential layout, so the five-bit bases and three-bit steps a decoder reads
+          must add up inside the five-bit range -- a sum that leaves it is not a differential block at all but a
+          T, H or planar one, and the colours come back from somewhere else entirely;
+        * the flag bit is the opaque bit: a block that carries a clear pixel must declare itself non-opaque, and
+          a block that declares itself opaque has no clear pixel in it;
+        * the stream has to contain a clear pixel at all, or the rule above would be checked on nothing. The
+          other direction -- a block that declares itself opaque, and the fixture's 58 of them -- is asserted in
+          `test_device_fixture.py`, against the stream the device actually uploads.
+        """
+        payload = etc2.encode_blocks(synthetic_sheet(32), etc2.ETC2_RGB8_PUNCHTHROUGH_ALPHA1)
+        clear_blocks = 0
+        for offset in range(0, len(payload), 8):
+            high = int.from_bytes(payload[offset:offset + 4], "big")
+            low = int.from_bytes(payload[offset + 4:offset + 8], "big")
+            flag = (high >> 1) & 1
+            bases = np.array([(high >> 27) & 0x1F, (high >> 19) & 0x1F, (high >> 11) & 0x1F])
+            steps = np.array([(high >> 24) & 7, (high >> 16) & 7, (high >> 8) & 7])
+            steps = np.where(steps > 3, steps - 8, steps)
+            sums = bases + steps
+            self.assertTrue(
+                ((sums >= 0) & (sums <= 31)).all(),
+                f"block {offset // 8} is read as T, H or planar, not differential: bases {bases} steps {steps}",
+            )
+            bits = np.arange(16)
+            indices = ((low >> bits) & 1) | (((low >> (bits + 16)) & 1) << 1)
+            clears = int((indices == etc2.PUNCHTHROUGH_INDEX).sum())
+            clear_blocks += 1 if clears else 0
+            if clears:
+                self.assertEqual(
+                    0, flag,
+                    f"block {offset // 8} declares itself opaque and still carries a clear pixel",
+                )
+        self.assertGreater(clear_blocks, 0, "the stream carried no clear pixel to check the opaque bit on")
 
 
 class EncoderRoundTripTest(unittest.TestCase):
