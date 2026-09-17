@@ -132,7 +132,6 @@ final class DrawnStringProvenanceTest {
         "ReflectionLines.java",
         "RewardCardId.java",
         "RewardCardOverlayRenderer.java",
-        "RootNetworkOverlayRenderer.java",
         "SkillEvolution.java",
         "SkillId.java",
         "StatShopOverlayRenderer.java",

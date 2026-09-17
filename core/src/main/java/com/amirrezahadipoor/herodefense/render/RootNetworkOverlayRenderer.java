@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.render;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.RootNetworkStrings;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,6 +16,11 @@ import com.amirrezahadipoor.herodefense.model.GameState;
 
 /** Renders World Tree full-screen with root-node overlays. Reuses existing tree art concept. */
 public final class RootNetworkOverlayRenderer implements AutoCloseable {
+    /** The header's inset from the screen's leading edge. */
+    static final float TITLE_INSET = 40f;
+    /** Where the Heartwood total starts, in the left-to-right layout; it mirrors about the screen. */
+    static final float HEARTWOOD_X = 480f;
+
     private final ShapeRenderer shapes = new ShapeRenderer();
     private final OverlayText text = new OverlayText();
 
@@ -79,22 +86,32 @@ public final class RootNetworkOverlayRenderer implements AutoCloseable {
             String icon = iconKeyFor(def.bonusType());
             icons.draw(batch, icon, def.x() - 16f, def.y() - 16f, 32f);
             if (purchased) {
-                text.drawCentered(batch, "OK", def.x(), def.y() + 28f, 0.8f, OverlayText.GOLD, 1f);
+                text.drawCentered(batch, GameLocale.text(RootNetworkStrings.AWAKENED),
+                    def.x(), def.y() + 28f, 0.8f, OverlayText.GOLD, 1f);
             }
         }
-        text.draw(batch, "ROOT NETWORK", 40f, 1220f, 1.2f, OverlayText.GOLD, 1f);
-        text.draw(batch, "Permanent growth. Never resets.", 40f, 1180f, 0.7f, OverlayText.SUBTLE, 1f);
-        text.draw(batch, "HEARTWOOD: " + state.heartwood, 480f, 1190f, 0.9f, OverlayText.IVORY, 1f);
+        text.drawLeading(batch, GameLocale.text(RootNetworkStrings.TITLE), 0f, UiMirror.SCREEN_WIDTH,
+            TITLE_INSET, 1220f, 1.2f, OverlayText.GOLD, 1f);
+        text.drawLeading(batch, GameLocale.text(RootNetworkStrings.SUBTITLE), 0f, UiMirror.SCREEN_WIDTH,
+            TITLE_INSET, 1180f, 0.7f, OverlayText.SUBTLE, 1f);
+        String heartwood = GameLocale.text(
+            RootNetworkStrings.HEARTWOOD, GameLocale.number(state.heartwood));
+        text.draw(batch, heartwood,
+            UiMirror.leadingOnScreen(HEARTWOOD_X, text.width(heartwood, 0.9f)),
+            1190f, 0.9f, OverlayText.IVORY, 1f);
+        float closeX = RootNetworkTouchLayout.closeX();
         frames.draw(batch, UiFrameRenderer.Kind.BUTTON,
-            RootNetworkTouchLayout.CLOSE_X, RootNetworkTouchLayout.CLOSE_Y,
+            closeX, RootNetworkTouchLayout.CLOSE_Y,
             RootNetworkTouchLayout.CLOSE_W, RootNetworkTouchLayout.CLOSE_H, true, false);
-        text.drawCentered(batch, "CLOSE", 80f, 1190f, 0.8f, OverlayText.IVORY, 1f);
+        text.drawCentered(batch, GameLocale.text(RootNetworkStrings.CLOSE),
+            closeX + RootNetworkTouchLayout.CLOSE_W * 0.5f, 1190f, 0.8f, OverlayText.IVORY, 1f);
         String feedback = system.feedbackMessage();
         if (feedback != null) {
             float alpha = system.feedbackAlpha();
             text.drawCentered(batch, feedback, 360f, 200f, 1.0f, OverlayText.GOLD, alpha);
         }
-        text.drawCentered(batch, "Tap a green node to awaken it with Heartwood", 360f, 140f, 0.7f, OverlayText.SUBTLE, 1f);
+        text.drawCentered(batch, GameLocale.text(RootNetworkStrings.HINT),
+            UiMirror.SCREEN_WIDTH * 0.5f, 140f, 0.7f, OverlayText.SUBTLE, 1f);
         batch.end();
     }
 

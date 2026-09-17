@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.ascension;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.RootNetworkStrings;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 
@@ -52,14 +54,20 @@ public final class RootNetworkSystem {
         if (!canPurchase(state, nodeId)) {
             RootNodeDefinition def = RootNetworkCatalog.byId(nodeId);
             if (def != null && state != null && state.heartwood < def.cost()) {
-                showFeedback("NEED " + (def.cost() - state.heartwood) + " MORE HEARTWOOD");
+                showFeedback(GameLocale.text(
+                    RootNetworkStrings.FEEDBACK_NEED,
+                    GameLocale.number(def.cost() - state.heartwood)));
             }
             return false;
         }
         RootNodeDefinition def = RootNetworkCatalog.byId(nodeId);
         state.heartwood -= def.cost();
         state.rootNodesPurchased.put(nodeId, true);
-        showFeedback("ROOT AWAKENED | " + def.name().toUpperCase(Locale.ROOT));
+        // Upper-casing is a no-op on Persian and keeps the node name in the caps sentence it sits in for
+                // English, so the call stays: the name is content from the catalog, not an entry that could be
+                // written in caps at the table.
+                showFeedback(GameLocale.text(
+                    RootNetworkStrings.FEEDBACK_AWAKENED, def.name().toUpperCase(Locale.ROOT)));
         return true;
     }
 
