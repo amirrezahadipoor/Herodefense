@@ -22094,7 +22094,7 @@
   ],
   "blenderVersion": "4.2.23",
   "decodedBytes": 384872448,
-  "decodedCatalogBudgetBytes": 390000000,
+  "decodedCatalogBudgetBytes": 525000000,
   "decodedCombatResidencyBudgetBytes": 104857600,
   "decodedCombatResidencyNote": "Combat residency = hero + every regular enemy that can share a wave (eight since R3.4) + one boss + six equipped sheets + arena art, computed by RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2). Target <=100 MiB.",
   "engineVersion": "78.0-integrity-recovery-runtime-tier",

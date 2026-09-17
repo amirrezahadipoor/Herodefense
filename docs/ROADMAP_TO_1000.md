@@ -735,19 +735,19 @@ sentence has to name the two scores and the commit they were measured on.
 ## R5 — Visual assets  `+68`
 
 - [x] **R5.1 The "HD" claim settled with measurements** (Phase 78 evidence above).
-- [~] **R5.2 Compose a runtime tier from the genuine masters.** The cost of the promotion is now
-  measured instead of estimated, and it is the reason this row is not done. The 27 sheets the provenance
-  table classifies as independent renders (`docs/art_reviews/MASTER_TIER_PROVENANCE.md`) are genuine
-  higher-resolution renders, and composing the runtime tier out of them would add **134,418,432 bytes**
-  (128.2 MiB) of decoded sheet memory -- eight sprites alone cost 16.9 MiB each, because the render is
-  3840x1536 where the reviewed tier is 1920x768 (`perf:2026-09-17-runtime-tier-cost`). The committed catalog
-  budget has **5,127,552 bytes** of headroom, so the tier overshoots it by **129,290,880 bytes** (123.3 MiB)
-  -- which is not a number to absorb quietly: it is the same measurement that says the tier needs either a
-  layout that promotes only the sheets whose on-screen scale resolves the extra detail, or the compression
-  R8.1 is still working on (the whole catalog measures 96,218,112 bytes as ETC2, but no sheet clears the
-  encoder's quality bar yet). The other half of the item stands too: the promoted layout would need its own
-  accepted, hash-bound review before it could ship, because the art evidence in `docs/art_reviews/**` is
-  hash-bound to the tier that is in the repository today.
+- [~] **R5.2 Compose a runtime tier from the genuine masters.** The promotion is measured, the ceiling it needs
+  has been raised deliberately, and the composition itself is the remaining step. The 27 sheets that
+  `docs/art_reviews/MASTER_TIER_PROVENANCE.md` classifies as independent renders are genuine higher-resolution
+  renders, and composing the runtime tier out of them costs **134,418,432 bytes** (128.2 MiB) of decoded sheet
+  memory -- eight sprites account for 16.9 MiB each, because the render is 3840x1536 where the reviewed tier is
+  1920x768 (`perf:2026-09-17-runtime-tier-cost`). Against the old 390,000,000-byte ceiling that was 129,290,880
+  bytes too much, and a number that size is not absorbed quietly, so it was not: the owner raised
+  `decodedCatalogBudgetBytes` to **525,000,000 bytes** on 2026-09-17, recorded in the manifest and in
+  `docs/ASSET_ENGINE.md` with its arithmetic (384,872,448 + 134,418,432 = 519,290,880, leaving 5,709,120 bytes
+  of headroom). That decision was what the item was waiting on. What is left is the composition itself -- the
+  384 px frame layout, the review that binds the new tier by hash, the atlas and manifest geometry, the asset
+  hash ledger and the draw scale -- which ships together or not at all, and this row keeps its `[~]` until it
+  lands with a green emulator run behind it.
 
 - [x] **R5.3 Render-workflow reliability: resumable, deterministic, comparable.** A Blender batch was
   all-or-nothing inside a hundred-and-twenty-minute job: a timeout threw away every sheet it had packed, a
@@ -988,7 +988,7 @@ sentence has to name the two scores and the commit they were measured on.
   unit job, so a device cannot be asked to decode bytes the encoder no longer produces. What that run has not
   done yet is happen: the row stays `[~]` until the emulator job reports it green.
 - [x] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
-  manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (390 MB) and the
+  manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (raised from 390 MB to **525,000,000 bytes** on 2026-09-17 at the owner's direction, so the genuine-master tier R5.2 costs 519,290,880 of it) and the
   live combat set against `decodedCombatResidencyBudgetBytes`, a deliberate **100 MiB** (was 150 MB), and the
   measured values are a logged run rather than a sentence: `perf:2026-09-17-residency` records the catalog at
   384,872,448 bytes of the 390,000,000 budget and the live combat set at 104,087,552 bytes -- **99.3 MiB** of
@@ -1275,6 +1275,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | — | Roadmap | Table B (the phase index for the experience phases 98-145) is deleted at the owner's direction; the experience rubric and the R9-R16 items it points at stay, and the numbered phases now end at 97 | `PENDING` |
 | 2026-09-17 | 92 · 93 | R5.2 · R5.7 | R5.7 closes: the three runtime effects (rarity glow, impacts, trails) with the tests that bind each one to its state and the emulator captures that show them under the brightness contract; R5.2 gets the measurement it was missing -- composing the runtime tier from the 27 genuine masters adds 134,418,432 bytes against 5,127,552 bytes of headroom, so the item states its gap in bytes instead of in adjectives | `PENDING` |
 | 2026-09-17 | 93 | R5.4 | the stage grade is a runtime decision rather than a review-strip stamp: `StageGrade` interpolates the four stops by wave, the arena draws the ground under it (no full-screen pass), a drift test reads the Java recipe and `review_strips.py` together, and a new emulator case plays the same run at wave 20 and wave 175 to capture the before/after pair and assert the direction the arc states on the ground band | `3479cd3` |
+| 2026-09-17 | 92 | R5.2 (budget) | at the owner's direction the catalog ceiling moves from 390,000,000 to 525,000,000 bytes, recorded with its arithmetic in the manifest and `docs/ASSET_ENGINE.md`, so the 27 genuine masters (519,290,880 bytes) fit with 5,709,120 of headroom; the composition itself is the next step | `PENDING` |
 
 ## Definition of done
 

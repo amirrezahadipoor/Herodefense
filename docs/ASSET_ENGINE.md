@@ -170,7 +170,7 @@ Checks (automatable where Pillow is available, manifest-only otherwise):
 | `alphaMode == STRAIGHT_RGBA`, `bit_depth==8`, `color_type==6` | Texture contract | image header |
 | Frame & page geometry, `decodedBytes`, page size ≤2048 | Atlas integrity | manifest + header |
 | Icon 96×96 RGBA | Equipment icons | manifest + header |
-| `decodedCatalog` within `decodedCatalogBudgetBytes` (390 MB in the shipped manifest; measured `perf:2026-09-17-residency`, arithmetic in `code:main/java/com/amirrezahadipoor/herodefense/render/RuntimeResidency.java`) | Memory budget | manifest, enforced by core `RuntimeResidencyTest` |
+| `decodedCatalog` within `decodedCatalogBudgetBytes` (525 MB in the shipped manifest, raised from 390 MB on 2026-09-17 at the owner's direction to make room for the 27 genuine-master sheets of R5.2: 384,872,448 + 134,418,432 = 519,290,880 bytes, 5,709,120 of headroom; measured `perf:2026-09-17-residency`, arithmetic in `code:main/java/com/amirrezahadipoor/herodefense/render/RuntimeResidency.java`) | Memory budget | manifest, enforced by core `RuntimeResidencyTest` |
 | No undeclared/missing PNGs | Manifest completeness | filesystem |
 
 If Pillow is not installed the validator runs in manifest-only mode and prints `Pillow not available — skipped image-level checks`.
