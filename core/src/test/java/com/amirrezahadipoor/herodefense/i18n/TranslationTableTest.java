@@ -35,13 +35,12 @@ class TranslationTableTest {
     private static final Path SOURCES =
         Path.of("..", "core", "src", "main", "java", "com", "amirrezahadipoor", "herodefense", "i18n").normalize();
 
-    /** Every table this test sweeps. A new one has to be added here, and {@link #everyTableIsListed} enforces it. */
-    private static final List<Translated[]> TABLES = List.of(
-        MenuStrings.values(),
-        PauseStrings.values(),
-        GameOverStrings.values(),
-        HudStrings.values(),
-        SettingsStrings.values());
+    /**
+     * The tables this test sweeps, which is {@link GameStrings#tables()} rather than a list of its own: the font's
+     * glyph set is derived from the same list, and two lists would eventually disagree.
+     * {@link #everyTableIsListed} is what keeps that list complete.
+     */
+    private static final List<Translated[]> TABLES = GameStrings.tables();
 
     /** A format placeholder, {@code %1$s}: the position is what has to match between the two languages. */
     private static final Pattern PLACEHOLDER = Pattern.compile("%(\\d+)\\$[sd]");
@@ -66,8 +65,9 @@ class TranslationTableTest {
             swept.add(table[0].getClass().getSimpleName());
         }
         assertEquals(declared.stream().sorted().toList(), swept.stream().sorted().toList(),
-            "a string table exists in " + SOURCES + " that this test does not sweep: add it to TABLES, because a"
-                + " table nobody checks is a table that can ship a blank or half-translated string");
+            "a string table exists in " + SOURCES + " that GameStrings.tables() does not list: add it there,"
+                + " because a table nobody sweeps is a table that can ship a blank or half-translated string, and"
+                + " a table the font derivation misses is a glyph that renders as a box");
     }
 
     @Test
@@ -170,7 +170,7 @@ class TranslationTableTest {
     }
 
     private static String name(Translated entry) {
-        return entry.getClass().getSimpleName() + "." + ((Enum<?>) entry).name();
+        return entry.getClass().getSimpleName() + "." + entry.key();
     }
 
     private static List<String> placeholders(String pattern) {

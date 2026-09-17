@@ -16,6 +16,12 @@ import java.util.Locale;
  */
 public interface Translated {
 
+    /**
+     * The entry's own name, which is how a failure points at it. An enum constant knows this and a cast does not
+     * have to guess it: the tests that sweep the tables report `MenuStrings.NEW_GAME`, not a hash.
+     */
+    String key();
+
     /** The English text. */
     String english();
 

@@ -40,6 +40,11 @@ public enum GameOverStrings implements Translated {
     }
 
     @Override
+    public String key() {
+        return name();
+    }
+
+    @Override
     public String english() {
         return english;
     }
