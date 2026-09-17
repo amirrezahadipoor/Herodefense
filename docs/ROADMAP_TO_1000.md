@@ -60,6 +60,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[~]` |
 | **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[~]` |
 | **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[x]` |
+| 2026-09-17 | 96 | R8.1 (shipping) | the encoder's half-colour search scores a half's three channels together instead of one at a time, which is the defect the emulator caught, and the sheets that clear both gates now ship: 16 ETC2 containers, 11520000 encoded bytes standing in for 92160000 decoded bytes, colour half 33.01 dB median against Google etc1's 32.28 dB on all 111 sheets | `d9943a4` |
 
 *Removed 2026-09-17 at the owner's direction: **Table B**, the phase index that numbered the experience
 phases 98-145. The experience rubric in section 4 and the R9-R16 items it is measured by are still
@@ -1003,21 +1004,33 @@ sentence has to name the two scores and the commit they were measured on.
   the round trip. Running it over the combat sheets answered the question rather than assuming it: the shipped
   sheets are **not** masks (0.94-0.99 of their pixels are 0 or 255, so 0.6-6 % would be hardened by the
   punchthrough format, and ETC2_RGBA8's base-and-modifier alpha cannot represent a mask at all), and the
-  encoder's colour quality measures **28.88 dB** against the **33.57 dB** the reference encoder reaches on the
-  same pixels -- below the 32 dB bar this item sets for itself, so the tool declines every sheet and the PNG
-  stays the shipped payload. The per-device half is in and tested (`DeviceTextureSupport` reads the format out of
+  encoder's colour quality then measured **28.88 dB** against the **33.57 dB** the reference encoder reached on
+  the same pixels -- below the 32 dB bar this item sets for itself, so the tool declined every sheet that day.
+  What changed afterwards is at the end of this row. The per-device half is in and tested (`DeviceTextureSupport` reads the format out of
   the GL version, `TexturePayloadPolicy` chooses the container per sheet and falls back to the reviewed PNG,
   six cases in `TexturePayloadPolicyTest`), so a payload that does clear the bar switches on without a second
-  decision at runtime. What is still open is written down rather than implied: closing the five-decibel gap
-  against the reference encoder (or pinning that encoder and its licence), wiring containers into the
-  atlas-page loading path, and the device evidence that a compressed palette uploads and renders on the
-  emulator.
-  **What is closed here and what is not.** Closed: the per-format arithmetic and the projection, the
-  first-party encoder and container with their references, the per-device format choice and PNG fallback, and
-  the on-device decode of a container. Open, and neither of them is implied by the rest: every shipped sheet
-  still ships as a reviewed PNG because the encoder measures 28.88 dB against its own 32 dB bar, and the
-  containers are not wired into the atlas-page loading path, so a payload that did clear the bar would need
-  that work before it could ship.
+  decision at runtime. Those three were written down rather than implied, and all three are closed now: the gap
+  against the reference encoder is closed and reversed (the measurement is in the paragraphs below), the
+  containers are wired into the page-loading path, and the emulator decodes a container with a channel
+  difference of zero.
+  **What is closed here and what is not.** Closed: the per-format arithmetic and the projection, the first-party
+  encoder and container with their references, the per-device format choice and PNG fallback, the on-device
+  decode of a container, the loader that reads one, and -- measured on 2026-09-17 -- the payload itself:
+  **16 sheets ship as ETC2 containers**, 11,520,000 encoded bytes where the device would otherwise decode
+  92,160,000. Two things moved the encoder's numbers: the base colours of a half are searched *together across
+  the three channels* (scoring each channel on its own error is the defect the emulator caught, and it missed
+  near-uniform blocks by tens of levels), and the tool now writes its containers where the loader actually
+  looks. Across all 111 sheets the colour half measures 33.01 dB median against **32.28 dB** for Google's
+  `etc1` on the same pixels, beating it on every sheet, and all 111 were measured rather than sampled
+  (`perf:2026-09-17-texture-encoding-sweep`). The shipped sixteen are one backdrop and fifteen equipment sheets, 32.07 dB at the
+  worst and 40.36 at the best, and the 95 that stay PNG each carry their reason in the same report: 77 are
+  under the alpha gate (0.9369 to 0.9949, both ends `perf:2026-09-17-texture-encoding-sweep` -- the twelve combat sheets are all in
+  this group, which is why the palette is not where the remaining bytes are) and 18 are masks whose colour
+  round trip is under the bar. What is still
+  open is one clause: no mip chain ships, the containers hold a single level, and the emulator is what checks
+  the rest -- `AndroidTouchSmokeTest` renders the arena and the equipment screens, so a container that the
+  device decodes differently from the encoder's own decoder turns that test red. **The row stays partial for
+  the mipmap clause alone.**
   **The device half, measured rather than argued.** That test failed three runs in a row, by up to two hundred
   and nine levels, and what it was measuring turned out to be its own readback. The test logs the buffer it
   read back (`tools/texture/decode_device_evidence.py` reassembles it from the logcat capture the workflow

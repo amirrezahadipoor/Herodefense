@@ -25,7 +25,9 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 RUNS = ROOT / "docs" / "perf" / "runs"
 COMMIT = re.compile(r"^[0-9a-f]{7,40}$")
 NAME = re.compile(r"^[a-z][A-Za-z0-9]*$")
-UNITS = ("bytes", "MiB", "MB", "ms", "s", "fps", "MB/s", "count", "percent")
+#: The units a metric may carry. `dB` is here for the texture encoder, whose quality is a signal-to-noise
+#: ratio in decibels; everything else is a size, a duration, a rate, a ratio or a plain count.
+UNITS = ("bytes", "MiB", "MB", "ms", "s", "fps", "MB/s", "count", "percent", "dB")
 
 
 def parse_metric(text: str) -> dict:

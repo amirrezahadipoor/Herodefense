@@ -331,5 +331,59 @@ Use this checklist on every review sheet before promotion. A single **REJECT** b
 
 ---
 
+## 7) Texture compression (R8.1)
+
+The catalog ships as PNG unless a sheet clears the encoder's gate, in which case the container beside it ships
+too and a device that decodes ETC2 reads that instead. The encoder is first-party, the containers are KTX v1, and
+every number below can be re-taken with the commands at the end of this section.
+
+**The encoder.** `tools/texture/etc2.py` implements ETC2_RGB8 and the punchthrough format. Its punchthrough colour
+layout is the one Google's `swiftshader` decoder reads, and that decoder's own output for two streams this encoder
+wrote is committed as `tools/texture/tests/driver_vectors.py` -- so a layout this repository gets wrong fails a
+test rather than failing on a device. The base colours of a half are searched *together across the three
+channels*, because the two-bit index is shared between them; `JOINT_LEVEL_RADIUS` is how wide that search looks,
+and zero (two levels per channel, eight combinations) is the shipped width.
+
+**What was measured on 2026-09-17** (`perf:2026-09-17-texture-encoding-sweep`): 111 sheets, colour half 25.09 dB
+worst, 33.01 dB median, 40.51 dB best; Google's `etc1` on the same pixels 32.28 dB median, which this encoder
+beats on **111 of 111** sheets. 34 sheets are masks (0.995 or more of their alpha is already 0 or 255) and 16 of
+those clear the 32 dB bar, so **16 containers ship** -- 11,520,000 encoded bytes standing in for 92,160,000
+bytes of RGBA8888 on the sheets that take them (`perf:2026-09-17-texture-encoding-sweep`, which also carries the per-sheet line):
+one backdrop and fifteen equipment sheets, the worst of them round-tripping at 32.07 dB and the best at
+40.36. The other 95 stay PNG and the report names the reason for every one of them: 77 are under the alpha
+gate -- a sheet whose alpha is softer than 0.995 would have up to 6 % of its pixels hardened into a mask by
+the format, and the twelve combat sheets sit at 0.9369 to 0.9936 (`perf:2026-09-17-texture-encoding-sweep`) -- and 18 are masks
+whose colour round trip is under the bar, 25.6 to 30.9 dB (`perf:2026-09-17-texture-encoding-sweep`). No mip chain ships yet -- the containers hold one level, so this format's mipmap clause is still
+open.
+
+**The container and the loader.** `tools/texture/ktx.py` writes KTX v1 and `encode_textures.py` puts a sheet's
+container beside it under `compressed/etc2/`, which is the path `TexturePayloadPolicy.containerPath` predicts and
+`AtlasPageSource.containerBeside` looks in -- pinned by a test that names both halves of the rule, because they
+disagreed once. At runtime `SheetPayloads` is the only place a sheet becomes a texture: it asks
+`AtlasPageSource` (which reads the container's own header and refuses one this device cannot decode, or one that
+is not the sheet's size), then hands the file to libGDX's `KTXTextureData`. Both the page path (an atlas) and the
+single-sheet path (a backdrop, an icon) go through it, and `HeroDefenseGame.create()` installs the answer once,
+from the GL version string.
+
+**The rules that keep it honest.** `tools/texture/tests/test_shipped_containers.py` re-derives the decision from
+the bundle itself: every container must have the sheet it was encoded from, be accounted for in
+`docs/perf/texture-encoding-report.json` with the same payload length, decode within the bar over the
+pixels that show, and reproduce the sheet's mask exactly. A container that was hand-copied in, or left behind by
+an older encoder, fails that test.
+
+**Reproduce it.**
+
+```bash
+python3 tools/texture/encode_textures.py --combat --report-only                   # per sheet, no files written
+python3 tools/texture/encode_textures.py --combat --reference ./etc1_reference    # with the reference beside it
+python3 -m unittest discover -s tools/texture/tests                                # encoder, containers, bundle
+```
+
+The reference is Google's `etc1` (`etc1_utils.cpp`, Apache-2.0), and it is deliberately not vendored: the module
+docstring of `encode_textures.py` names the URL and the two-line harness that calls `etc1_encode_image`, so the
+comparison can be re-taken without shipping anyone else's code in this repository.
+
+---
+
 *This runbook is the single source of truth for how art moves from `tools/blender` into `android/assets/generated`. If the code and this document disagree, the code's validator wins — then update this document to match.*
 

@@ -49,7 +49,12 @@ import ktx  # noqa: E402
 
 ROOT = TOOLS.parent
 GENERATED = ROOT / "android" / "assets" / "generated"
-REPORT = ROOT / "docs" / "perf" / "runs" / "2026-09-17-texture-encoding.json"
+#: Where a run with the report enabled lands. It is the tool's own record, one line per sheet, and
+#: `tools/texture/tests/test_shipped_containers.py` reads it back to check that every container in the
+#: bundle is one this file accounted for. It is deliberately *not* in `docs/perf/runs`, which holds run
+#: files (one `metrics` array each) and is rendered into `docs/perf/PERFORMANCE.md`: the report is a
+#: per-sheet document, and the directory holding both is a directory that breaks its own renderer.
+REPORT = ROOT / "docs" / "perf" / "texture-encoding-report.json"
 
 #: Below this share of binary alpha a sheet keeps its PNG: punchthrough would harden soft edges.
 MINIMUM_BINARY_ALPHA = 0.995

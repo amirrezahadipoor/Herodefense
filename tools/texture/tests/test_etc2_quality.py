@@ -197,6 +197,28 @@ class JointBaseSearchTest(unittest.TestCase):
         self.assertGreaterEqual(quality, SHIPPED_SHEET_FLOOR_DB,
                                 f"{SHIPPED_SHEET} measured {quality:.2f} dB over its opaque pixels")
 
+    def test_a_flat_block_is_never_missed_by_more_than_one_level(self) -> None:
+        """The case the shared index broke: near-uniform halves.
+
+        Measured on 2026-09-17 at the shipped search width: the worst error over all 256 flat greys is one level,
+        and 132 of the 256 round-trip exactly. The version of this search that chose each channel's base on that
+        channel's own error missed flat blocks by tens of levels, which is what the emulator saw before the
+        channels were searched together.
+        """
+        worst = 0
+        exact = 0
+        for grey in range(256):
+            image = np.dstack([
+                np.full((4, 4, 3), grey, dtype=np.uint8),
+                np.full((4, 4, 1), 255, dtype=np.uint8),
+            ])
+            decoded = etc2.decode_blocks(etc2.encode_blocks(image, etc2.ETC2_RGB8), 4, 4, punchthrough=False)
+            error = int(np.abs(decoded[..., :3].astype(int) - grey).max())
+            exact += 1 if error == 0 else 0
+            worst = max(worst, error)
+        self.assertLessEqual(worst, 1, f"a flat colour was missed by {worst} levels")
+        self.assertGreaterEqual(exact, 128, f"only {exact} of 256 flat greys round-trip exactly")
+
     def test_the_floor_is_held_by_the_search_that_earned_it(self) -> None:
         """The floors are measurements of *this* search, so they are stated with the search they were taken on."""
         source = (TOOLS / "etc2.py").read_text(encoding="utf-8")
