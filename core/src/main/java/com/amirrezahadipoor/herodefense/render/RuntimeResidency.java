@@ -38,6 +38,17 @@ public final class RuntimeResidency {
     /** Equipment slots the hero can wear at once, as art sheets. */
     public static final int EQUIPPED_SHEETS = 6;
 
+    /**
+     * Decoded-byte capacity for resident entity atlases (roadmap R8.3), enforced at runtime by
+     * {@link AtlasResidencyPolicy} rather than only checked here by arithmetic.
+     *
+     * <p>It is the manifest's own combat budget plus one sheet of headroom: the live set must fit without the
+     * policy releasing a sheet it is about to draw, and a transient load (the next boss entering, an equipment
+     * sheet appearing) must not push the process past the budget in the frame it happens. Measured live set:
+     * 104,087,552 bytes of a 104,857,600-byte budget (`perf:2026-09-17-residency`).
+     */
+    public static final long ATLAS_CAPACITY_BYTES = 112L * 1024L * 1024L;
+
     private RuntimeResidency() {
     }
 

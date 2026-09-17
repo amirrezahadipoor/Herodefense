@@ -60,8 +60,11 @@ public final class CombatEntityRenderer implements AutoCloseable {
     static final float FOCUS_RING_CENTER_Y_OFFSET = 73f;
     private static final Set<String> BOSS_ASSET_KEYS = bossAssetKeys();
 
-    private final Map<String, EntityClips> clipsByKey = new LinkedHashMap<>();
-    private final Map<String, Texture> dropTextures = new HashMap<>();
+    // Access-ordered (roadmap R8.3): reading a sheet moves it to the back, so the map's iteration order is
+    // the least-recently-used order the residency policy releases in. A plain map cannot answer "what has
+    // not been drawn in the longest time", which is the whole question once the set has a capacity.
+    private final Map<String, EntityClips> clipsByKey = new LinkedHashMap<>(16, 0.75f, true);
+    private final DropTextureCache dropTextures = new DropTextureCache();
     private final RarityGlowRenderer dropGlowRenderer = new RarityGlowRenderer();
 
     private final FocusMarkRenderer focusMarkRenderer = new FocusMarkRenderer();
@@ -76,9 +79,9 @@ public final class CombatEntityRenderer implements AutoCloseable {
         pixmap.fill();
         pixel = new Texture(pixmap);
         pixmap.dispose();
-        arrowNormal = createArrowTexture(26, 6, 0.545f, 0.353f, 0.169f, 0.78f, 0.78f, 0.82f, 0.85f, 0.78f, 0.57f);
-        arrowCrit = createArrowTexture(30, 8, 0.545f, 0.353f, 0.169f, 1f, 0.84f, 0.31f, 0.35f, 0.92f, 0.96f);
-        arrowSecondary = createArrowTexture(20, 5, 0.30f, 0.36f, 0.23f, 0.72f, 0.75f, 0.78f, 0.48f, 0.80f, 0.52f);
+        arrowNormal = ArrowTextures.arrow(26, 6, 0.545f, 0.353f, 0.169f, 0.78f, 0.78f, 0.82f, 0.85f, 0.78f, 0.57f);
+        arrowCrit = ArrowTextures.arrow(30, 8, 0.545f, 0.353f, 0.169f, 1f, 0.84f, 0.31f, 0.35f, 0.92f, 0.96f);
+        arrowSecondary = ArrowTextures.arrow(20, 5, 0.30f, 0.36f, 0.23f, 0.72f, 0.75f, 0.78f, 0.48f, 0.80f, 0.52f);
     }
 
     /** Arrow rotation in degrees for a velocity vector; 0 is +X. */
@@ -87,47 +90,6 @@ public final class CombatEntityRenderer implements AutoCloseable {
     }
 
     // True arrow sprite: shaft/head/fletching, head >=25% length, silhouette distinct per variant.
-    private static Texture createArrowTexture(int w, int h,
-                                              float shaftR, float shaftG, float shaftB,
-                                              float headR, float headG, float headB,
-                                              float fletchR, float fletchG, float fletchB) {
-        Pixmap pm = new Pixmap(w, h, Pixmap.Format.RGBA8888);
-        pm.setBlending(Pixmap.Blending.None);
-        // shaft
-        int shaftX0 = Math.max(1, (int) (w * 0.18f));
-        int shaftX1 = (int) (w * 0.74f);
-        int shaftY0 = h / 2 - Math.max(1, h / 6);
-        int shaftY1 = h / 2 + Math.max(1, h / 6);
-        pm.setColor(shaftR, shaftG, shaftB, 1f);
-        pm.fillRectangle(shaftX0, shaftY0, shaftX1 - shaftX0, shaftY1 - shaftY0 + 1);
-        // head triangle pointed +X, head is >=25% of length
-        pm.setColor(headR, headG, headB, 1f);
-        int headBase = shaftX1;
-        int tipX = w - 1;
-        int mid = h / 2;
-        for (int x = headBase; x <= tipX; x++) {
-            float t = (x - headBase) / (float) Math.max(1, tipX - headBase);
-            int half = (int) ((1f - t) * (h * 0.5f));
-            int y0 = mid - half;
-            int y1 = mid + half;
-            int hh = Math.max(1, y1 - y0 + 1);
-            pm.fillRectangle(x, y0, 1, hh);
-        }
-        // fletching: two small feathers at tail
-        pm.setColor(fletchR, fletchG, fletchB, 1f);
-        int f0 = 1;
-        int f1 = shaftX0;
-        int featherH = Math.max(2, h / 3);
-        pm.fillRectangle(f0, 0, f1 - f0, featherH);
-        pm.fillRectangle(f0, h - featherH, f1 - f0, featherH);
-        // small notch
-        pm.setColor(0f, 0f, 0f, 0f);
-        pm.fillRectangle(f0, mid, 1, 1);
-        Texture tex = new Texture(pm);
-        pm.dispose();
-        tex.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        return tex;
-    }
 
     public void drawActors(SpriteBatch batch, GameState state, float runTimeSeconds) {
         for (Enemy enemy : state.aliveEnemies) {
@@ -136,7 +98,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         for (Boss boss : state.aliveBosses) {
             if (boss != null) drawEnemy(batch, boss, true, runTimeSeconds);
         }
-        disposeInactiveBossAtlases(state);
+        releaseUnusedAtlases(state, liveKeys(state));
         batch.setColor(1f, 1f, 1f, 1f);
     }
 
@@ -439,8 +401,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     private void drawDrops(SpriteBatch batch, GameState state, float runTimeSeconds) {
         for (DropEntity drop : state.drops) {
             if (drop == null || !drop.active) continue;
-            String path = dropTexturePath(drop);
-            Texture texture = dropTextures.computeIfAbsent(path, CombatEntityRenderer::loadTexture);
+            Texture texture = dropTextures.textureFor(drop);
             float progress = dropHomingProgress(drop);
             float size = 56f * (1f - progress * 0.42f);
             float alpha = 0.96f * (1f - progress * 0.24f);
@@ -579,19 +540,50 @@ public final class CombatEntityRenderer implements AutoCloseable {
         return clips;
     }
 
-    private void disposeInactiveBossAtlases(GameState state) {
-        Set<String> activeBossKeys = new HashSet<>();
+    /** Sheets this frame needs: every enemy on the field, and the hero's own sheet. */
+    private static Set<String> liveKeys(GameState state) {
+        Set<String> live = new HashSet<>();
+        live.add("hero");
+        for (Enemy enemy : state.aliveEnemies) {
+            if (enemy != null) live.add(enemy.type().assetKey());
+        }
+        return live;
+    }
+
+    /**
+     * Releases atlases that are not needed right now (roadmap R8.3).
+     *
+     * <p>Two rules, in order. A boss whose encounter is over is released at once: it held a whole battle's art
+     * for nothing, and it is the cheapest release there is. Then, if the resident set is over the capacity, the
+     * least recently drawn sheets go — the live wave, the live boss and the hero are protected, so nothing the
+     * frame is about to draw can be evicted out from under it. {@link AtlasResidencyPolicy} is the rule; this
+     * method only hands it the facts.
+     */
+    private void releaseUnusedAtlases(GameState state, Set<String> liveKeys) {
         for (Boss boss : state.aliveBosses) {
-            if (boss != null) activeBossKeys.add(boss.bossDefinition().assetKey());
+            if (boss != null) liveKeys.add(boss.bossDefinition().assetKey());
         }
         Iterator<Map.Entry<String, EntityClips>> iterator = clipsByKey.entrySet().iterator();
         while (iterator.hasNext()) {
             Map.Entry<String, EntityClips> entry = iterator.next();
-            if (BOSS_ASSET_KEYS.contains(entry.getKey())
-                && !activeBossKeys.contains(entry.getKey())) {
+            if (BOSS_ASSET_KEYS.contains(entry.getKey()) && !liveKeys.contains(entry.getKey())) {
                 entry.getValue().atlas.dispose();
                 iterator.remove();
             }
+        }
+        Map<String, Long> bytesByKey = new LinkedHashMap<>();
+        long resident = 0L;
+        for (Map.Entry<String, EntityClips> entry : clipsByKey.entrySet()) {
+            long bytes = entry.getValue().decodedBytes();
+            bytesByKey.put(entry.getKey(), bytes);
+            resident += bytes;
+        }
+        for (String key : AtlasResidencyPolicy.releases(
+            clipsByKey.keySet(), bytesByKey, liveKeys, resident, RuntimeResidency.ATLAS_CAPACITY_BYTES,
+            ATLAS_RELEASES_PER_FRAME
+        )) {
+            EntityClips clips = clipsByKey.remove(key);
+            if (clips != null) clips.atlas.dispose();
         }
     }
 
@@ -610,28 +602,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         return regions;
     }
 
-    private static String dropTexturePath(DropEntity drop) {
-        if ("POTION".equals(drop.dropType)) {
-            try {
-                if (drop.itemId == null) throw new IllegalArgumentException("missing potion tier");
-                return PotionTier.valueOf(drop.itemId).iconPath();
-            } catch (IllegalArgumentException ignored) {
-                return PotionTier.TIER_1.iconPath();
-            }
-        }
-        if ("ITEM".equals(drop.dropType)) {
-            EquipmentDefinition item = EquipmentCatalog.byId(drop.itemId);
-            if (item != null) return item.iconPath();
-            return "generated/icons/ui_inventory.png";
-        }
-        return "generated/icons/ui_coin.png";
-    }
 
-    private static Texture loadTexture(String path) {
-        Texture texture = new Texture(Gdx.files.internal(path));
-        texture.setFilter(Texture.TextureFilter.Linear, Texture.TextureFilter.Linear);
-        return texture;
-    }
 
     private static Set<String> bossAssetKeys() {
         Set<String> keys = new HashSet<>();
@@ -643,14 +614,16 @@ public final class CombatEntityRenderer implements AutoCloseable {
     public void close() {
         for (EntityClips clips : clipsByKey.values()) clips.atlas.dispose();
         clipsByKey.clear();
-        for (Texture texture : dropTextures.values()) texture.dispose();
-        dropTextures.clear();
+        dropTextures.close();
         dropGlowRenderer.close();
         pixel.dispose();
         arrowNormal.dispose();
         arrowCrit.dispose();
         arrowSecondary.dispose();
     }
+
+    /** How many sheets one frame may release, so a frame never stalls reloading half the catalog. */
+    private static final int ATLAS_RELEASES_PER_FRAME = 2;
 
     private static final class EntityClips {
         private final TextureAtlas atlas;
@@ -668,6 +641,13 @@ public final class CombatEntityRenderer implements AutoCloseable {
             this.idle = idle;
             this.attack = attack;
             this.death = death;
+        }
+
+        /** Decoded bytes of the atlas page: the same arithmetic the residency report uses. */
+        private long decodedBytes() {
+            int width = atlas.getTextures().first().getWidth();
+            int height = atlas.getTextures().first().getHeight();
+            return AtlasResidencyPolicy.decodedBytes(width, height);
         }
     }
 }

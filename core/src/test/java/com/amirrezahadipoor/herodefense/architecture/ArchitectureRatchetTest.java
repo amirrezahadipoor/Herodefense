@@ -52,8 +52,15 @@ class ArchitectureRatchetTest {
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.
+        //
+        // R8.3 brought this file *down* from 681 to 653 lines and stayed at 13 fields while adding a feature:
+        // the atlas residency release pass needs the clip map to be access-ordered, to measure each resident
+        // sheet and to protect the live wave. The lines for it were paid for by two extractions, which is the
+        // ratchet working as intended -- `ArrowTextures` (the arrow pixmap builder, 41 lines) and
+        // `DropTextureCache` (the drop texture map and its two helpers, 23 lines). The frozen size is lowered
+        // to the new measurement so the next change has to pay for itself too.
         "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
-        new ArchitectureRatchet.Frozen(681, 13),
+        new ArchitectureRatchet.Frozen(653, 13),
         // R3.5 added a mode-aware entry point (`runBrief`) and kept the old signature as a one-line delegate,
         // so the standard sweeps are unchanged by construction. R3.4 needed no growth here at all: the omens'
         // counterfactual is simply a run without the omen trial, which the existing trial axes already measure.

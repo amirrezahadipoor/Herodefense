@@ -9,6 +9,8 @@ import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -24,12 +26,25 @@ import java.util.Map;
  */
 public final class ResidencyReport {
 
+    /** Writes the report for the shipped catalog to {@code output}; nothing prints, nothing returns to a shell. */
     public static void main(String[] args) throws IOException {
         Path root = Path.of(args.length > 0 ? args[0] : "android/assets/generated").toAbsolutePath().normalize();
+        Path output = Path.of(args.length > 1 ? args[1] : "core/build/reports/residency.txt");
+        Path parent = output.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
+        Files.writeString(output, report(root));
+    }
+
+    /**
+     * The report as text. Pure with respect to the tree it reads, which is what lets a test compare two
+     * manifests through it without a device or a renderer.
+     */
+    public static String report(Path root) throws IOException {
         Path manifestPath = root.resolve("asset_manifest.json");
         if (!Files.isRegularFile(manifestPath)) {
-            System.err.println("no manifest at " + manifestPath);
-            System.exit(2);
+            throw new IOException("no manifest at " + manifestPath);
         }
         JsonValue manifest = new JsonReader().parse(Files.readString(manifestPath));
         long catalog = RuntimeResidency.catalogBytes(manifest, icons(root));
@@ -38,15 +53,20 @@ public final class ResidencyReport {
         for (JsonValue asset = manifest.get("assets").child; asset != null; asset = asset.next) {
             assets++;
         }
-        System.out.println("residency report for " + root);
-        System.out.println("  assets in the manifest: " + assets);
-        System.out.println("  decodedCatalogBytes: " + catalog
-            + " (manifest says " + manifest.getLong("decodedBytes") + ")");
-        System.out.println("  decodedCatalogBudgetBytes: " + manifest.getLong("decodedCatalogBudgetBytes"));
-        System.out.println("  liveCombatResidencyBytes: " + combat
-            + " of " + manifest.getLong("decodedCombatResidencyBudgetBytes"));
-        System.out.println("  liveCombatResidencyMiB: " + String.format("%.1f", combat / 1048576.0));
-        System.out.println("  catalogMatchesManifest: " + (catalog == manifest.getLong("decodedBytes")));
+        // Built line by line: a list of lines is clearer than a chain of appends, and cheaper to extend
+        // when the next metric is added.
+        List<String> lines = List.of(
+            "residency report for " + root,
+            "  assets in the manifest: " + assets,
+            "  decodedCatalogBytes: " + catalog + " (manifest says " + manifest.getLong("decodedBytes") + ")",
+            "  decodedCatalogBudgetBytes: " + manifest.getLong("decodedCatalogBudgetBytes"),
+            "  liveCombatResidencyBytes: " + combat + " of "
+                + manifest.getLong("decodedCombatResidencyBudgetBytes"),
+            "  liveCombatResidencyMiB: " + String.format(Locale.ROOT, "%.1f", combat / 1048576.0),
+            "  atlasCapacityBytes: " + RuntimeResidency.ATLAS_CAPACITY_BYTES,
+            "  catalogMatchesManifest: " + (catalog == manifest.getLong("decodedBytes"))
+        );
+        return String.join("\n", lines) + "\n";
     }
 
     /** Reads icon dimensions straight from the PNG header (IHDR); no image library needed. */
