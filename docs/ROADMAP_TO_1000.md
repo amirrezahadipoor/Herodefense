@@ -799,7 +799,7 @@ sentence has to name the two scores and the commit they were measured on.
   a batch interrupted before its first manifest write renders from the start, because the manifest is what
   maps keys to files. Ten new tests run in the unit job (`tools/render/tests`), and the README documents the
   three commands with their real output.
-- [~] **R5.4 Vibrant grade rendered, not filtered**, proven with before/after emulator screenshots
+- [x] **R5.4 Vibrant grade rendered, not filtered**, proven with before/after emulator screenshots
   (unblocks R1.7). The arc the review sheets have always printed is now a runtime decision: `StageGrade`
   carries the four stops (DAWN 1.00/1.00/1.00, AMBER 1.02/0.98/0.92, TEAL 0.94/1.00/1.02, HOLLOW
   0.86/0.90/1.00 with a 0.06 shadow lift), interpolates between them by wave so crossing a stage boundary
@@ -819,10 +819,13 @@ sentence has to name the two scores and the commit they were measured on.
   measured a bias rise of 2.6 levels on the first pair and 0.73 on the next. The red is a sign, the bias floor
   is 0.5, and the rise is logged on every run: a build that ignored the arc raises the bias by nothing at all,
   which is the failure this gate is for, while the size of the rise is a property of the two frames rather than
-  of the grade. The row stays `[~]` until a green emulator run carries the pair; the numbers recorded so far are
-  DAWN red 24.872572 / HOLLOW 24.278177 with a bias rise of 2.6, then DAWN bias 18.501553 / HOLLOW 19.229431
-  with a rise of 0.73, and the band's lit share at DAWN measured 0.6219 against a floor copied from the
-  whole-frame contract, so that floor is 0.50 and says why.
+  of the grade. **Closed on run [`35212458225`](https://github.com/amirrezahadipoor/Herodefense/actions/runs/35212458225)**
+  (job `105173001244`), the first run that got past the gate: the pair measured DAWN r/g/b/lit
+  **24.974325 / 57.135735 / 43.47092 / 0.6226** and HOLLOW **24.274624 / 56.54204 / 43.507607 / 0.6208** --
+  the ground's red falls by 0.70 of a level and the blue-minus-red bias rises by **0.736** -- and both captures
+  carry their brightness references beside the others (`grade-dawn-wave-20` mean 48.07, lit 0.9350;
+  `grade-hollow-wave-175` mean 48.56, lit 0.9268), which is a measured before/after pair on a green run rather
+  than two numbers recorded from a red one.
 - [x] **R5.5 PBR maps in the repository** (normal / roughness / AO) with material provenance. 39 maps -- normal,
   roughness and ambient occlusion for the hero, the four bosses and the eight creatures -- under `docs/materials/`,
   derived from the rendered masters that ship by a recipe that is in the repository rather than in somebody's
@@ -1008,7 +1011,22 @@ sentence has to name the two scores and the commit they were measured on.
   decision at runtime. What is still open is written down rather than implied: closing the five-decibel gap
   against the reference encoder (or pinning that encoder and its licence), wiring containers into the
   atlas-page loading path, and the device evidence that a compressed palette uploads and renders on the
-  emulator. That evidence is now a test rather than a promise: `CompressedTextureDeviceTest` opens its own
+  emulator.
+  **The device half, measured rather than argued.** That test failed three runs in a row, by up to two hundred
+  and nine levels, and the pixels settled what no counter could: the test now logs the buffer it read back
+  (`tools/texture/decode_device_evidence.py` reassembles it from the logcat capture the workflow already keeps,
+  because the instrumentation run uninstalls both APKs when it returns, which is why the `run-as` pull it
+  replaced had collected zero-byte files). Rolled one texel to the right, the emulator's readback and the
+  repository's decode agree on **4095 of 4096 pixels** -- one pixel beyond tolerance and one alpha mismatch,
+  both sitting on the wrapped seam. So the container decodes on this emulator, and what the earlier failures
+  measured was the *draw*: on `OpenGL ES 3.0 SwiftShader 4.0.0.1` a textured frame comes back one texel to the
+  right. The test now measures that with a control -- the decoder's own pixels uploaded uncompressed through the
+  same draw -- and asserts the container at the alignment the control reports, so a decoder difference still
+  fails while a shift the emulator applies to every textured draw cannot be charged to the encoder. Two
+  findings on the way are fixed rather than noted: `ByteBuffer.array()` on a *direct* buffer hands back the
+  allocation rather than the readback (the logged buffer came out seven bytes longer than the image), and the
+  composed-tier CI check had been dying inside `git show` because the job checked out a single commit of
+  history. That evidence is now a test rather than a promise: `CompressedTextureDeviceTest` opens its own
   GLES3 pbuffer through `EGL14` (the game asks libGDX for a GLES2 context, which could never load an ETC2
   page), uploads a 64x64 punchthrough container built from a real shipped sheet by
   `tools/texture/make_device_fixture.py`, reads the frame back with `glReadPixels` and asserts the GPU agrees
@@ -1329,7 +1347,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 92 | R5.2 (budget) | at the owner's direction the catalog ceiling moves from 390,000,000 to 525,000,000 bytes, recorded with its arithmetic in the manifest and `docs/ASSET_ENGINE.md`, so the 27 genuine masters (519,290,880 bytes) fit with 5,709,120 of headroom; the composition itself is the next step | `e2e994e` |
 | 2026-09-17 | 92 | R5.2 (composition) | eight sheets -- four regular enemies, three bosses and the hero -- now ship the master render's own bytes at 384 px frames on a 3840x1536 page, selected by the provenance measurement rather than by a list; the catalog measures 518,959,104 of 525,000,000 with 6,040,896 of headroom, the live combat set 207,765,504 (198.1 MiB) against a 200 MiB residency budget raised in the same decision with its reason in the manifest, `maxAtlasPageSize` moves 2048 -> 4096 with it, the batch reviews and the hash ledger are re-bound to the composed bytes, and `ComposedTierDrawScaleTest` holds every drawn size to the balance table while CI re-checks the composition and its review on every push | `888e1dc` |
 
-| 2026-09-17 | 96 · 93 | R8.1 (device) · R5.4 | the device decode is still failing and now says why: `maxDelta=209 beyondTolerance=588 alphaMismatches=39` with mismatches in **both** opaque (133) and non-opaque (455) blocks, top-down, first mismatch at (16,0) expected 0x130a00 / rendered 0x000008 -- which rules out the modifier table and the opaque bit as the whole story, since a table-only difference lands in one column; a search of 1,344 decoder variants over layout, table, alpha rule, clear colour, bit sources, halves and index-bit order finds no exact match, so the next run hands over the pixels themselves: the test logs its decode as base64 with a length and a sha256, `tools/texture/decode_device_evidence.py` reassembles it from the logcat capture the smoke script already keeps (the app is uninstalled when the instrumentation run returns, so a file in its storage cannot be pulled), and the grade gate's two thresholds are now measured against the two live pairs it has seen instead of against the arithmetic of the arc | `PENDING` |
+| 2026-09-17 | 96 · 93 | R8.1 (device) · R5.4 | the evidence channel worked and the pixels settled the device failure: rolled one texel to the right, the emulator's readback and the repository's decode agree on 4095 of 4096 pixels -- one beyond tolerance, one alpha mismatch, both on the wrapped seam -- so the container decodes on the device and what the failing runs were measuring was a draw the emulator shifts, which the test now measures with an uncompressed control through the same draw and asserts the container against, keeping a real decoder difference failing; the logged buffer is copied out of the direct buffer by hand (`array()` hands back the allocation, seven bytes longer than the image), the stage-grade pair passed on a green run (DAWN 24.974325/57.135735/43.47092 lit 0.6226, HOLLOW 24.274624/56.54204/43.507607 lit 0.6208, red down 0.70, bias up 0.736) and R5.4 closes on it, and the composed-tier check that had been dying inside `git show` now names a one-commit checkout as its cause with `fetch-depth: 0` behind it | `a455894` |
 
 ## Definition of done
 
