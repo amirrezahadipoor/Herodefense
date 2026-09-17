@@ -789,7 +789,10 @@ sentence has to name the two scores and the commit they were measured on.
   `grade-hollow-wave-175.png` as artifacts, measures the ground band rather than the whole frame because the
   HUD is not graded, and asserts the direction the arc states: the ground's red falls by at least two levels
   and blue-minus-red rises by at least two. The row stays `[~]` until that pair has been measured on a green
-  emulator run and the two captures carry brightness references beside the others.
+  emulator run and the two captures carry brightness references beside the others. The first run of
+  the pair measured DAWN at a lit share of 0.6219 in the band, which failed a floor copied from the
+  whole-frame contract; the floor is now 0.50 and says why, and the two captures are waiting on a run
+  that gets past the assertion to be recorded as references.
 - [x] **R5.5 PBR maps in the repository** (normal / roughness / AO) with material provenance. 39 maps -- normal,
   roughness and ambient occlusion for the hero, the four bosses and the eight creatures -- under `docs/materials/`,
   derived from the rendered masters that ship by a recipe that is in the repository rather than in somebody's
@@ -986,7 +989,13 @@ sentence has to name the two scores and the commit they were measured on.
   wrong way; the fix is the mode search honouring the format (`29e2bdb`), a local regression case that no
   punchthrough block may carry the differential flag, and a rebuilt fixture -- with the fixture rebuilt in the
   unit job, so a device cannot be asked to decode bytes the encoder no longer produces. What that run has not
-  done yet is happen: the row stays `[~]` until the emulator job reports it green.
+  done yet is happen, and the first three runs of it say something uncomfortable rather than something
+  reassuring: the driver rejects nothing (`GL_NO_ERROR`) and the policy side passes, but the decoded
+  pixels disagree with this repository's decoder by up to 247 levels on 2,448-2,507 of 4,096 pixels.
+  The punchthrough layout is therefore *not* proven, whatever the local round trips say, and the item
+  states that instead of hiding it: the next step is an independent decoder known to agree with drivers
+  (`texture2ddecoder`) and a container re-derived until it does, and the row stays `[~]` until a green
+  emulator run has decoded a container correctly.
 - [x] **R8.2 A memory budget enforced by a test.** `RuntimeResidency` computes residency from the
   manifest; `RuntimeResidencyTest` checks the catalog against `decodedCatalogBudgetBytes` (raised from 390 MB to **525,000,000 bytes** on 2026-09-17 at the owner's direction, so the genuine-master tier R5.2 costs 519,290,880 of it) and the
   live combat set against `decodedCombatResidencyBudgetBytes`, a deliberate **100 MiB** (was 150 MB), and the
