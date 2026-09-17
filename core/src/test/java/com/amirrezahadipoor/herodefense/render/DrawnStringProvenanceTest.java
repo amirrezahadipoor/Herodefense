@@ -116,8 +116,9 @@ final class DrawnStringProvenanceTest {
     private static final Pattern COLOUR_HEX = Pattern.compile("[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?");
 
     /**
-     * Renderers that still draw their own words, named by {@link #nothingDrawsAHardCodedString} itself: run it,
-     * read the report, and every name in it belongs here until that screen speaks through a table.
+     * The files that still carry their own words, named by {@link #nothingDrawsAHardCodedString} itself: run it,
+     * read the report, and every name in it belongs here until that file speaks through a table. It is a ratchet
+     * in both directions -- a name that stays after its file is migrated fails the build too.
      */
     private static final Set<String> NOT_YET_MIGRATED = Set.of(
         "AffixId.java",
@@ -127,7 +128,6 @@ final class DrawnStringProvenanceTest {
         "Epilogue.java",
         "EquipmentSetBonus.java",
         "FloatingCoinTextRenderer.java",
-        "GameMode.java",
         "InventoryOverlayRenderer.java",
         "ItemForgeSystem.java",
         "LevelUpOverlayRenderer.java",
@@ -145,8 +145,7 @@ final class DrawnStringProvenanceTest {
         "TrialDraftOverlayRenderer.java",
         "TrialId.java",
         "Trophy.java",
-        "TrophyPresenter.java",
-        "WaveModifier.java"
+        "TrophyPresenter.java"
     );
 
     @Test

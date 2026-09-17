@@ -1,5 +1,8 @@
 package com.amirrezahadipoor.herodefense.model;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.RunStrings;
+
 /**
  * How long a run is (roadmap R3.5).
  *
@@ -11,20 +14,21 @@ package com.amirrezahadipoor.herodefense.model;
 public enum GameMode {
 
     /** The shipped two-hundred-wave run. */
-    STANDARD("The Long Vigil", GameState.FINAL_WAVE),
+    STANDARD(RunStrings.MODE_STANDARD, GameState.FINAL_WAVE),
     /** The same run, ended after the sixth boss. */
-    BRIEF("A Brief Vigil", 30);
+    BRIEF(RunStrings.MODE_BRIEF, 30);
 
-    private final String title;
+    private final RunStrings title;
     private final int waves;
 
-    GameMode(String title, int waves) {
+    GameMode(RunStrings title, int waves) {
         this.title = title;
         this.waves = waves;
     }
 
+    /** The mode's name in the language in force. The save stores {@link #name()}, never this. */
     public String title() {
-        return title;
+        return GameLocale.text(title);
     }
 
     /** The wave the run ends on. */

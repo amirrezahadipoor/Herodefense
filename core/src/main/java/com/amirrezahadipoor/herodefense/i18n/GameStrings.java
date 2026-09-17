@@ -21,6 +21,7 @@ public final class GameStrings {
     /** The tables, one entry per screen, in the order a player meets them. */
     private static final List<Translated[]> TABLES = List.of(
         MenuStrings.values(),
+        RunStrings.values(),
         PauseStrings.values(),
         GameOverStrings.values(),
         HudStrings.values(),

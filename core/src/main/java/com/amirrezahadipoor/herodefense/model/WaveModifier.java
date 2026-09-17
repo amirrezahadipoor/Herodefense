@@ -1,5 +1,8 @@
 package com.amirrezahadipoor.herodefense.model;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.RunStrings;
+
 /**
  * An omen: a deterministic twist on an ordinary wave (roadmap R3.4, "wave modifiers").
  *
@@ -14,11 +17,11 @@ package com.amirrezahadipoor.herodefense.model;
  * own script.
  */
 public enum WaveModifier {
-    NONE("", "", 1f, 1f, 1f, 1f, 1f),
-    SWARM("SWARM", "more of them", 1.25f, 1f, 1f, 1f, 1.25f),
-    IRON_HIDE("IRON HIDE", "harder to fell", 1f, 1.15f, 1f, 1f, 1.25f),
-    BLOODRUSH("BLOODRUSH", "heavier blows", 1f, 1f, 1.12f, 1f, 1.25f),
-    QUICKSTEP("QUICKSTEP", "they close faster", 1f, 1f, 1f, 1.10f, 1.25f);
+    NONE(null, null, 1f, 1f, 1f, 1f, 1f),
+    SWARM(RunStrings.OMEN_SWARM, RunStrings.OMEN_SWARM_DETAIL, 1.25f, 1f, 1f, 1f, 1.25f),
+    IRON_HIDE(RunStrings.OMEN_IRON_HIDE, RunStrings.OMEN_IRON_HIDE_DETAIL, 1f, 1.15f, 1f, 1f, 1.25f),
+    BLOODRUSH(RunStrings.OMEN_BLOODRUSH, RunStrings.OMEN_BLOODRUSH_DETAIL, 1f, 1f, 1.12f, 1f, 1.25f),
+    QUICKSTEP(RunStrings.OMEN_QUICKSTEP, RunStrings.OMEN_QUICKSTEP_DETAIL, 1f, 1f, 1f, 1.10f, 1.25f);
 
     /** One omen wave every six waves, on top of the pre-existing elite cadence. */
     public static final int OMEN_PERIOD = 6;
@@ -27,8 +30,9 @@ public enum WaveModifier {
     /** Paid on top of an ordinary kill's coins, so a heavier wave is also a richer one. */
     private static final long OMEN_SALT = 0x0DE0A11L;
 
-    private final String label;
-    private final String detail;
+    /** Null for {@link #NONE}, which is the absence of an omen and has no words to draw. */
+    private final RunStrings label;
+    private final RunStrings detail;
     private final float enemyCountMultiplier;
     private final float healthMultiplier;
     private final float damageMultiplier;
@@ -36,8 +40,8 @@ public enum WaveModifier {
     private final float coinMultiplier;
 
     WaveModifier(
-        String label,
-        String detail,
+        RunStrings label,
+        RunStrings detail,
         float enemyCountMultiplier,
         float healthMultiplier,
         float damageMultiplier,
@@ -53,12 +57,14 @@ public enum WaveModifier {
         this.coinMultiplier = coinMultiplier;
     }
 
+    /** The omen's name in the language in force, or empty for a wave that is not an omen. */
     public String label() {
-        return label;
+        return label == null ? "" : GameLocale.text(label);
     }
 
+    /** What the omen changes, in the language in force; the HUD draws it beside the name. */
     public String detail() {
-        return detail;
+        return detail == null ? "" : GameLocale.text(detail);
     }
 
     public boolean isOmen() {
