@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.ItemStrings;
 import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.items.AffixId;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
@@ -82,8 +84,18 @@ public final class ItemForgeSystem {
         return item.name.replaceFirst("\\s\\+\\d+$", "");
     }
 
+    /**
+     * The name a player reads: the base name, with the forge level appended once there is one.
+     *
+     * <p>Through the table rather than string concatenation, because the level is a number: appended directly
+     * it would be Latin digits inside an otherwise Persian name. {@link #baseName} strips the same suffix with
+     * a regex, so the two have to agree on the shape " +N" -- {@code ItemStrings.ITEM_UPGRADE_LEVEL} is where
+     * that shape is written down.
+     */
     public static String displayName(String baseName, int upgradeLevel) {
-        return upgradeLevel <= 0 ? baseName : baseName + " +" + upgradeLevel;
+        return upgradeLevel <= 0
+            ? baseName
+            : GameLocale.text(ItemStrings.ITEM_UPGRADE_LEVEL, baseName, GameLocale.number(upgradeLevel));
     }
 
     /** Declines the affix gamble: every reforge adds its stat step. Used by the simulator. */
@@ -156,14 +168,16 @@ public final class ItemForgeSystem {
         return feedbackRemainingSeconds > 0f ? feedbackResult : Result.NONE;
     }
 
+    /** The anvil's one-line verdict, in the language in force, or null while there is nothing to say. */
     public String feedbackMessage() {
         if (feedbackRemainingSeconds <= 0f || feedbackItemName == null) return null;
+        String coins = GameLocale.number(feedbackCoins);
         return switch (feedbackResult) {
-            case FORGED -> "REFORGED  |  " + feedbackItemName + "  |  -$ " + feedbackCoins;
-            case AFFIX_REROLLED -> "AFFIX REROLLED  |  " + feedbackItemName + "  |  -$ " + feedbackCoins;
-            case INSUFFICIENT_COINS -> "NEED $ " + feedbackCoins + " MORE  |  ANVIL";
-            case NOT_FORGEABLE -> "ANVIL TAKES RARE & LEGENDARY ONLY";
-            case MAXED -> "FULLY REFORGED  |  " + feedbackItemName;
+            case FORGED -> GameLocale.text(ItemStrings.FORGE_REFORGED, feedbackItemName, coins);
+            case AFFIX_REROLLED -> GameLocale.text(ItemStrings.FORGE_AFFIX_REROLLED, feedbackItemName, coins);
+            case INSUFFICIENT_COINS -> GameLocale.text(ItemStrings.FORGE_NEED_COINS, coins);
+            case NOT_FORGEABLE -> GameLocale.text(ItemStrings.FORGE_NOT_FORGEABLE);
+            case MAXED -> GameLocale.text(ItemStrings.FORGE_MAXED, feedbackItemName);
             default -> null;
         };
     }

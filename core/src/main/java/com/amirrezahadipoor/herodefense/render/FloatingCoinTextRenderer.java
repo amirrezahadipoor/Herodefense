@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.render;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.ItemStrings;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -33,8 +35,9 @@ public final class FloatingCoinTextRenderer implements AutoCloseable {
         batch.end();
     }
 
+    /** The label in the language in force: "$ +30", or "+۳۰ سکه" which the shaper lays out as "سکه ۳۰+". */
     static String labelFor(int amount) {
-        return "$ +" + Math.max(0, amount);
+        return GameLocale.text(ItemStrings.FLOATING_COIN, GameLocale.number(Math.max(0, amount)));
     }
 
     @Override

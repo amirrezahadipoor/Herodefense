@@ -26,6 +26,7 @@ public final class GameStrings {
         PauseStrings.values(),
         GameOverStrings.values(),
         HudStrings.values(),
+        ItemStrings.values(),
         SettingsStrings.values());
 
     private GameStrings() {

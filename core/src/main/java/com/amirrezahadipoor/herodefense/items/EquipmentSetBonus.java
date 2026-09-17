@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.items;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.ItemStrings;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Item;
 
@@ -20,18 +22,22 @@ public final class EquipmentSetBonus {
 
     public record SetBonus(
         String setId,
-        String displayName,
+        ItemStrings name,
         int pieces,
         float attackSpeedBonus,
         int chainTargetsBonus,
         float maxHealthBonus,
         float damageBonus
     ) {
+        /** The set's name in the language in force. */
+        public String displayName() {
+            return GameLocale.text(name);
+        }
     }
 
     private static final List<SetBonus> ALL = List.of(
-        new SetBonus(VERDANT_COVENANT, "Verdant Covenant", 4, 0.05f, 1, 0f, 0f),
-        new SetBonus(BASTION_OATH, "Bastion Oath", 4, 0f, 0, 0.05f, 0.10f)
+        new SetBonus(VERDANT_COVENANT, ItemStrings.SET_VERDANT_COVENANT, 4, 0.05f, 1, 0f, 0f),
+        new SetBonus(BASTION_OATH, ItemStrings.SET_BASTION_OATH, 4, 0f, 0, 0.05f, 0.10f)
     );
 
     private EquipmentSetBonus() {
@@ -67,19 +73,25 @@ public final class EquipmentSetBonus {
     }
 
     /**
-     * One-line Inventory status, e.g. "SETS: Verdant Covenant 2/4 | Bastion Oath 0/4".
-     * Always lists every set so players learn the hunts exist.
+     * One-line Inventory status, e.g. "SETS: Verdant Covenant 2/4 | Bastion Oath 0/4", or the same line with
+     * Persian names and Persian digits. Always lists every set so players learn the hunts exist.
+     *
+     * <p>The counts go through {@code GameLocale.number} rather than being concatenated: a set's progress is a
+     * number a player reads, and appending an {@code int} here would put Latin digits in the middle of a
+     * Persian sentence.
      */
     public static String statusLine(GameState state) {
         Map<String, Integer> counts = equippedCounts(state);
-        StringBuilder line = new StringBuilder("SETS:");
+        String[] entries = new String[ALL.size()];
         for (int index = 0; index < ALL.size(); index++) {
             SetBonus set = ALL.get(index);
-            line.append(' ').append(set.displayName()).append(' ')
-                .append(counts.getOrDefault(set.setId(), 0)).append('/').append(set.pieces());
-            if (index < ALL.size() - 1) line.append(" |");
+            entries[index] = GameLocale.text(
+                ItemStrings.SET_PROGRESS,
+                set.displayName(),
+                GameLocale.number(counts.getOrDefault(set.setId(), 0)),
+                GameLocale.number(set.pieces()));
         }
-        return line.toString();
+        return GameLocale.text(ItemStrings.SETS_STATUS, entries);
     }
 
     /** Set ids with all four pieces equipped. */

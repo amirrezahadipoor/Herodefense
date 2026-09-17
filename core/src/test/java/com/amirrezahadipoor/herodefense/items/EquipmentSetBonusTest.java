@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.gameplay.HeroStatCalculator;
+import com.amirrezahadipoor.herodefense.i18n.ItemStrings;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +93,21 @@ final class EquipmentSetBonusTest {
             "SETS: Verdant Covenant 2/4 | Bastion Oath 0/4",
             EquipmentSetBonus.statusLine(state)
         );
+    }
+
+    /**
+     * The status line is one pattern with a slot per set, so the pattern and the list of sets have to agree: a
+     * third set without a third placeholder would throw at draw time, in front of a player, rather than here.
+     */
+    @Test
+    void theStatusLineHasOneSlotPerSet() {
+        int slots = 0;
+        String english = ItemStrings.SETS_STATUS.english();
+        String persian = ItemStrings.SETS_STATUS.persian();
+        while (english.contains("%" + (slots + 1) + "$s") && persian.contains("%" + (slots + 1) + "$s")) {
+            slots++;
+        }
+        assertEquals(EquipmentSetBonus.all().size(), slots);
     }
 
     private static void equipById(GameState state, String slot, String id) {
