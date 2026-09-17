@@ -1,20 +1,22 @@
 package com.amirrezahadipoor.herodefense.audio;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
 import java.util.EnumMap;
 import java.util.Map;
 
-/** Owns libGDX Music/Sound resources, looping watchdog, settings, and lifecycle pause. */
+/**
+ * Owns libGDX Sound resources, the music deck, the rate limiter, settings, and lifecycle pause.
+ *
+ * <p>Roadmap R6.3 moved the music out of this class and into {@link MusicDeck}: the frame passes the bed the
+ * game state wants ({@link #guideMusic}) and the deck decides whether that means a crossfade.
+ */
 public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCloseable {
-    public static final String MUSIC_PATH = "audio/music/world_tree_vigil.ogg";
-    private static final float MUSIC_VOLUME = 0.28f;
 
-    private final Music music;
     private final Map<AudioCue, Sound> effects = new EnumMap<>(AudioCue.class);
+    private final MusicDeck music = new MusicDeck();
     private GameSettings settings;
     private boolean appBackgrounded;
 
@@ -22,24 +24,29 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
 
     public GameAudioManager(GameSettings settings) {
         this.settings = settings;
-        music = Gdx.audio.newMusic(Gdx.files.internal(MUSIC_PATH));
-        music.setLooping(true);
-        music.setVolume(MUSIC_VOLUME);
         for (AudioCue cue : AudioCue.values()) {
             effects.put(cue, Gdx.audio.newSound(Gdx.files.internal(cue.path())));
         }
         update(settings);
     }
 
-    /** Called each render so an interrupted looping track is restarted when policy permits. */
+    /** Applies the current settings; called each render so a toggle takes effect on the next frame. */
     @Override
     public void update(GameSettings updatedSettings) {
         settings = updatedSettings;
         if (AudioPlaybackPolicy.shouldPlayMusic(settings, appBackgrounded)) {
-            if (!music.isPlaying()) music.play();
-        } else if (music.isPlaying()) {
+            music.resume();
+        } else {
             music.pause();
         }
+    }
+
+    /** Points the music at the bed the game state wants; a change fades rather than cuts (roadmap R6.3). */
+    @Override
+    public void guideMusic(MusicBed bed, float screenGain) {
+        if (bed == null) return;
+        music.setDuck(screenGain);
+        music.select(bed);
     }
 
     @Override
@@ -50,15 +57,16 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         if (sound != null) sound.play(cue.volume());
     }
 
-    /** Advance the per-cue rate limiter with real (not simulation) time. */
+    /** Advance the per-cue rate limiter and the music fade with real (not simulation) time. */
     @Override
     public void tick(float realDeltaSeconds) {
         throttle.advance(realDeltaSeconds);
+        music.advance(realDeltaSeconds);
     }
 
     public void pauseForBackground() {
         appBackgrounded = true;
-        if (music.isPlaying()) music.pause();
+        music.pause();
         for (Sound sound : effects.values()) sound.stop();
     }
 
@@ -69,7 +77,6 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
 
     @Override
     public void close() {
-        music.stop();
         music.dispose();
         for (Sound sound : effects.values()) sound.dispose();
         effects.clear();

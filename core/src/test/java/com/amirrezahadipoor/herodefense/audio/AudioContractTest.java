@@ -25,7 +25,6 @@ final class AudioContractTest {
             assertTrue(java.nio.file.Files.isRegularFile(
                 java.nio.file.Paths.get("..", "android", "assets", cue.path())), cue.path());
         }
-        assertEquals("audio/music/world_tree_vigil.ogg", GameAudioManager.MUSIC_PATH);
     }
 
     @Test

@@ -23,3 +23,11 @@ The source pages identify all three collections as free CC0 content. Exact archi
 | Stun | `Audio/impactBell_heavy_004.ogg` | [Kenney Impact Sounds](https://kenney.nl/assets/impact-sounds) | CC0 1.0 |
 | Multi Shot bowstring | `Audio/pluck_002.ogg` | [Kenney Interface Sounds](https://kenney.nl/assets/interface-sounds) | CC0 1.0 |
 | Shop purchase | `Audio/handleCoins.ogg` | [Kenney RPG Audio](https://kenney.nl/assets/rpg-audio) | CC0 1.0 |
+
+## Generated in-repo (added 2026-09-17, roadmap R6.1)
+
+The four music beds (`vigil`, `hollow_march`, `heartwood_dawn`, `quiet_after`) have no source page because
+they have no source: they are rendered by `tools/audio/generate_music.py`, which is committed next to them.
+The tool is the provenance, the per-file hashes are in `AUDIO_LICENSES.md`, and `MusicSelectionPolicyTest`
+fails if a bed is missing from that ledger. The one imported loop that used to be the whole soundtrack
+(Heavenly Loop, CC0) is retired: its ledger row stays, the file leaves the APK.

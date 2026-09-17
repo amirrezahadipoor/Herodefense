@@ -4,6 +4,9 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioFrame;
+import com.amirrezahadipoor.herodefense.audio.MusicBed;
+import com.amirrezahadipoor.herodefense.audio.MusicSelectionPolicy;
+import com.amirrezahadipoor.herodefense.gameplay.ArenaQueries;
 import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.HitStopSystem;
@@ -114,10 +117,21 @@ public final class FrameDriver {
         this.clock = clock == null ? System::nanoTime : clock;
     }
 
+    /** The music follows the flow (roadmap R6.3): the bed comes from the policy, never from a call site. */
+    private void guideMusic() {
+        GameScreenState state = flow.state();
+        boolean bossFight = ArenaQueries.livingBossCount(host.gameState()) > 0;
+        audioManager.guideMusic(
+            MusicSelectionPolicy.bedFor(state, bossFight),
+            MusicSelectionPolicy.gainFor(state)
+        );
+    }
+
     /** Advances and draws one frame; {@code deltaSeconds} is already clamped by the caller. */
     public void update(float deltaSeconds) {
         audioManager.update(settings);
         trackPauseDuration();
+        guideMusic();
         audioManager.tick(deltaSeconds);
         touchFeedbackSystem.update(deltaSeconds);
         if (inventoryTouchController != null) inventoryTouchController.update(deltaSeconds);

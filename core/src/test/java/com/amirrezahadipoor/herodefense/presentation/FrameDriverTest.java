@@ -10,6 +10,7 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioFrame;
+import com.amirrezahadipoor.herodefense.audio.MusicBed;
 import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
 import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -60,6 +61,27 @@ final class FrameDriverTest {
         assertEquals(1, host.played, "the simulation advances once per frame");
         assertEquals(0, host.cinematics, "no prologue runs while the arena is live");
         assertEquals(1, host.draws, "and the frame still draws");
+    }
+
+    @Test
+    void theFrameAsksForTheBedTheGameStateWantsAndDucksWhileThePlayerDecides() {
+        FrameDriver driver = driver(false);
+        host.state = GameState.newRun(21L);
+        flow.transitionTo(GameScreenState.MENU);
+
+        driver.update(0.05f);
+        assertEquals(MusicBed.HEARTWOOD_DAWN, audio.bed, "the menu has its own bed");
+
+        flow.transitionTo(GameScreenState.PLAYING);
+        driver.update(0.05f);
+        assertEquals(MusicBed.VIGIL, audio.bed, "the run has its own bed");
+        assertEquals(1f, audio.gain);
+
+        flow.transitionTo(GameScreenState.LEVEL_UP);
+        driver.update(0.05f);
+        assertEquals(MusicBed.VIGIL, audio.bed, "a level-up wall does not change the track, it lowers it");
+        assertTrue(audio.gain < 1f, "the music steps back while the player chooses");
+        assertEquals(3, audio.ticks, "the fade advances once per frame, with real time");
     }
 
     @Test
@@ -200,12 +222,23 @@ final class FrameDriverTest {
     }
 
     private static final class RecordingAudio implements AudioFrame {
+        private MusicBed bed;
+        private float gain = -1f;
+        private int ticks;
+
         @Override
         public void update(GameSettings settings) {
         }
 
         @Override
+        public void guideMusic(MusicBed requested, float screenGain) {
+            bed = requested;
+            gain = screenGain;
+        }
+
+        @Override
         public void tick(float realDeltaSeconds) {
+            ticks++;
         }
     }
 }

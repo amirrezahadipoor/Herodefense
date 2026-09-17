@@ -56,7 +56,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **91** | Balance program: scaling threats, telegraph contract, drop economy, generated docs, CI band | R4.1 – R4.5 | `[ ]` |
 | **92** | Runtime tier composed from the genuine master renders | R5.1 · R5.2 | `[~]` |
 | **93** | Render pipeline: reliability, rendered grading, PBR maps, per-batch reviews, real VFX | R5.3 – R5.7 | `[~]` |
-| **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[ ]` |
+| **94** | Audio program: music breadth, SFX coverage, state machine, settings | R6.1 – R6.4 | `[~]` |
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[~]` |
 | **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[ ]` |
 | **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[ ]` |
@@ -821,10 +821,24 @@ sentence has to name the two scores and the commit they were measured on.
 
 ## R6 — Audio  `+28`
 
-- [ ] **R6.1 Music breadth** (3–4 tracks) with licence and file hash per file.
+- [x] **R6.1 Music breadth** (3–4 tracks) with licence and file hash per file. There are four beds -- `vigil` for
+  the run, `hollow_march` for a boss on the field, `heartwood_dawn` for the menus, the codex and the root
+  network, `quiet_after` for the end of a run -- and none of them is a download. `tools/audio/generate_music.py`
+  renders each one from a seed: oscillators, an envelope per voice, a wrapped reverb tail and a wrapped head, so
+  the loop has no seam, in one key so a crossfade lands. That is a stronger provenance than a licence because
+  it is the source, and the per-file hashes are in `AUDIO_LICENSES.md` with a test that fails if a bed
+  is missing from the table. The imported 1.2 MB loop this replaces is retired in the ledger rather than
+  deleted from it, and the APK is ~900 KB lighter for it.
 - [ ] **R6.2 SFX coverage** (bow draw/release variants, crits, pickups, UI, telegraph, ambience) with a
   measured peak level each.
-- [ ] **R6.3 Music state machine** tied to game state, asserted by a test.
+- [x] **R6.3 Music state machine** tied to game state, asserted by a test. `MusicSelectionPolicy` maps every
+  member of the game's own `GameScreenState` to a bed and a gain, and a boss on the field outranks the screen it
+  was found on. The policy is pure, so the test asserts the table itself over all thirteen screens -- including
+  that a new screen added later cannot slip through with the menu theme playing over a fight. `Crossfade` owns the
+  hand-over: two decoders for 0.8 s, gains that always sum to one (asserted, because two beds that add up
+  would be louder than either), no overshoot on a stalled frame and no rewind on negative time. The frame
+  asks for the bed once per frame through `AudioFrame.guideMusic`, which is recorded and asserted in `FrameDriverTest` --
+  menus, the run, and the level-up wall that keeps the track and lowers it instead of switching.
 - [ ] **R6.4 Audio settings** persisted, honouring audio-focus loss, tested.
 
 ## R7 — UI, onboarding and localisation  `+52`

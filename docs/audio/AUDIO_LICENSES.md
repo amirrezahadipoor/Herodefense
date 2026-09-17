@@ -41,11 +41,32 @@ Every source and license below was checked on 2026-09-12 **before** the correspo
 - Exact bundled license: `licenses/kenney-impact-sounds-license.txt`
 - The RPG Audio and Interface Sounds archives were re-downloaded on 2026-09-14 and matched the SHA-256 values recorded above before the two new files were taken from them.
 
+## Generated in-repo (added 2026-09-17, roadmap R6.1)
+
+These four beds are not downloads. They are authored by `tools/audio/generate_music.py`, which is committed, so
+the provenance is stronger than a licence: it is the source. Each is rendered from a seed -- oscillators, an
+envelope per voice, a wrapped reverb tail and a wrapped head so the loop has no seam -- and every note is in the
+same key, which is what lets a fight crossfade into a menu without a jolt. The tool prints a per-file size and
+tempo; `MusicSelectionPolicyTest` fails if any of these files or hashes is missing from this table.
+
+Rights: nothing here is derived from a third-party recording, sample pack or composition, so there is no
+attribution obligation and no licence to honour -- the files are the output of a generator, in the same sense
+as the 111 PNG sprites the art pipeline renders. The one imported loop this replaces
+(`audio/music/world_tree_vigil.ogg`, CC0, Heavenly Loop by isaiah658) is retired in the table above rather than
+deleted from the ledger, and its row keeps the hash it shipped with.
+
+| Committed file | Original file | Source | Use | SHA-256 |
+|---|---|---|---|---|
+| `audio/music/vigil.ogg` | *(none)* | generated in-repo | Music bed | `cb172c403429bdb7c8ea8f5fe24c5cc575e52cfffd2dc37c9807168c067ef1cf` |
+| `audio/music/hollow_march.ogg` | *(none)* | generated in-repo | Music bed | `b040eac884ef13fede64447697e15d8fd47e75b820577dc6d6970cd66ecb46b7` |
+| `audio/music/heartwood_dawn.ogg` | *(none)* | generated in-repo | Music bed | `08ef19b484bfd96bdf7f9be315f34b32f679181ce4fc4c64f2dc58e6c17701a7` |
+| `audio/music/quiet_after.ogg` | *(none)* | generated in-repo | Music bed | `d12b1d07183e479e8117b3998698d563d4ea9f45a19362c8151d12c4fc3fa78d` |
+
 ## Per-file ledger
 
 | Committed file | Original file | Source | Use | SHA-256 |
 |---|---|---|---|---|
-| `audio/music/world_tree_vigil.ogg` | `Heavenly Loop.ogg` | OpenGameArt / isaiah658 | Seamless background loop | `a842e9e054019132cacc8fd352e7b31c000ebb51e0b227a2511e1bccb4eb166e` |
+| `audio/music/world_tree_vigil.ogg` | `Heavenly Loop.ogg` | OpenGameArt / isaiah658 | Seamless background loop | `a842e9e054019132cacc8fd352e7b31c000ebb51e0b227a2511e1bccb4eb166e` | *retired 2026-09-17 (R6.1)*
 | `audio/sfx/hit.ogg` | `Audio/chop.ogg` | Kenney RPG Audio | Hit | `d00c2b3c9fff07e376145c8c8c45c90e5084ec192f6ce0387db233f7b86f1486` |
 | `audio/sfx/death.ogg` | `Audio/dropLeather.ogg` | Kenney RPG Audio | Death | `097e1d3b74949b0145fda0519d40b7e0773ab82ec4858727f95be830927e1a45` |
 | `audio/sfx/item_drop.ogg` | `Audio/drop_002.ogg` | Kenney Interface Sounds | Item drop/pickup | `4ac4d1cef7e936965cbf795852ca2020300b9e2ba7daa59f2bf4f1f7bf416218` |

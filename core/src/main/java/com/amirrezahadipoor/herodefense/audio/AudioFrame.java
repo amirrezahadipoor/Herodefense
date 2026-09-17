@@ -14,5 +14,11 @@ public interface AudioFrame {
 
     void update(GameSettings settings);
 
+    /**
+     * Points the music at the bed the current game state wants, with the screen's gain (roadmap R6.3). The
+     * frame says what the game is doing; the audio layer decides whether that means a crossfade.
+     */
+    void guideMusic(MusicBed bed, float screenGain);
+
     void tick(float realDeltaSeconds);
 }
