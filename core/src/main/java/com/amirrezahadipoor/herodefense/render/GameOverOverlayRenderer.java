@@ -6,6 +6,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.GameOverStrings;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.items.EquipmentDefinition;
@@ -103,32 +105,43 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
             interactive, false);
 
         Color titleColor = victory ? OverlayText.GOLD : OverlayText.NEGATIVE;
-        text.drawCentered(batch, victory ? "RUN COMPLETE" : "DEFEAT", 360f, 1168f, 0.78f,
+        text.drawCentered(batch,
+            victory ? GameLocale.text(GameOverStrings.RUN_COMPLETE) : GameLocale.text(GameOverStrings.DEFEAT),
+            360f, 1168f, 0.78f,
             titleColor, reveal);
         drawEpilogue(batch, state, victory, reveal);
 
-        text.drawCentered(batch, "RUN SUMMARY", 360f, 762f, 0.82f, OverlayText.GOLD, reveal);
-        drawRow(batch, icons, 0, "wave", "Wave reached",
-            state.waveNumber + " / " + state.runLengthWaves(), reveal);
-        drawRow(batch, icons, 1, "health", "Hero level", Integer.toString(state.heroLevel), reveal);
-        drawRow(batch, icons, 2, "strength", "Enemies defeated",
-            Integer.toString(state.totalKills), reveal);
-        drawRow(batch, icons, 3, "general_power", "Bosses defeated",
-            state.defeatedBosses + " / 20", reveal);
-        drawRow(batch, icons, 4, "coin", "Kill coins earned",
+        text.drawCentered(batch, GameLocale.text(GameOverStrings.SUMMARY_TITLE), 360f, 762f, 0.82f,
+            OverlayText.GOLD, reveal);
+        drawRow(batch, icons, 0, "wave", GameLocale.text(GameOverStrings.WAVE_REACHED),
+            GameLocale.text(
+                GameOverStrings.WAVE_COUNT,
+                GameLocale.number(state.waveNumber), GameLocale.number(state.runLengthWaves())
+            ), reveal);
+        drawRow(batch, icons, 1, "health", GameLocale.text(GameOverStrings.HERO_LEVEL),
+            GameLocale.number(state.heroLevel), reveal);
+        drawRow(batch, icons, 2, "strength", GameLocale.text(GameOverStrings.ENEMIES_DEFEATED),
+            GameLocale.number(state.totalKills), reveal);
+        drawRow(batch, icons, 3, "general_power", GameLocale.text(GameOverStrings.BOSSES_DEFEATED),
+            GameLocale.text(GameOverStrings.BOSSES_COUNT, GameLocale.number(state.defeatedBosses)), reveal);
+        drawRow(batch, icons, 4, "coin", GameLocale.text(GameOverStrings.COINS_EARNED),
             MainMenuRenderer.coinTotalLabel(state.totalKillCoinsEarned), reveal);
         String mythicName = mythicEarnedName(state);
         if (victory && mythicName != null) {
-            drawRow(batch, icons, 5, null, "Mythic earned", mythicName, reveal);
+            drawRow(batch, icons, 5, null, GameLocale.text(GameOverStrings.MYTHIC_EARNED), mythicName, reveal);
         }
 
         float offset = MainMenuRenderer.pressedOffset(restartState);
         icons.draw(batch, "restart", 152f, GameOverTouchLayout.RESTART_Y + 24f + offset, 64f,
             restartState);
-        text.draw(batch, victory ? "DEFEND AGAIN" : "RESTART AT WAVE 1", 228f,
+        text.draw(batch,
+            victory
+                ? GameLocale.text(GameOverStrings.DEFEND_AGAIN)
+                : GameLocale.text(GameOverStrings.RESTART_AT_WAVE_ONE),
+            228f,
             GameOverTouchLayout.RESTART_Y + 68f + offset, 1.08f,
             interactive ? OverlayText.IVORY : OverlayText.MUTED, reveal);
-        text.draw(batch, "Begin fresh run same tier", 228f,
+        text.draw(batch, GameLocale.text(GameOverStrings.DEFEND_AGAIN_SUBTITLE), 228f,
             GameOverTouchLayout.RESTART_Y + 34f + offset, 0.62f, OverlayText.SUBTLE, reveal);
 
         float ascOffset = MainMenuRenderer.pressedOffset(ascendState);
@@ -136,19 +149,25 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
             ascendState);
         int heartwoodPreview = Math.round(GameState.calculateHeartwoodReward(state.peakWaveReached, state.ascensionTier, !state.heroDiedThisRun)
             * TrialEffects.heartwoodMultiplier(state.activeTrials));
-        text.draw(batch, "ASCEND  |  +" + heartwoodPreview + " HEARTWOOD", 228f,
+        text.draw(batch, GameLocale.text(GameOverStrings.ASCEND, GameLocale.number(heartwoodPreview)), 228f,
             GameOverTouchLayout.ASCEND_Y + 60f + ascOffset, 1.0f,
             interactive ? OverlayText.GOLD : OverlayText.MUTED, reveal);
-        text.draw(batch, "Tier " + state.ascensionTier + " -> " + (state.ascensionTier + 1) + "  |  Harder foes, permanent roots", 228f,
+        text.draw(
+            batch,
+            GameLocale.text(
+                GameOverStrings.TIER_PROGRESS,
+                GameLocale.number(state.ascensionTier), GameLocale.number(state.ascensionTier + 1)
+            ),
+            228f,
             GameOverTouchLayout.ASCEND_Y + 30f + ascOffset, 0.58f, OverlayText.SUBTLE, reveal);
 
         float rootOffset = MainMenuRenderer.pressedOffset(rootState);
         icons.draw(batch, "health", 152f, GameOverTouchLayout.ROOT_Y + 20f + rootOffset, 56f,
             rootState);
-        text.draw(batch, "ROOT NETWORK  |  " + state.heartwood + " HW", 228f,
+        text.draw(batch, GameLocale.text(GameOverStrings.ROOT_NETWORK, GameLocale.number(state.heartwood)), 228f,
             GameOverTouchLayout.ROOT_Y + 60f + rootOffset, 1.0f,
             interactive ? OverlayText.IVORY : OverlayText.MUTED, reveal);
-        text.draw(batch, "Spend Heartwood on permanent growth", 228f,
+        text.draw(batch, GameLocale.text(GameOverStrings.ROOT_NETWORK_SUBTITLE), 228f,
             GameOverTouchLayout.ROOT_Y + 30f + rootOffset, 0.58f, OverlayText.SUBTLE, reveal);
 
         batch.end();

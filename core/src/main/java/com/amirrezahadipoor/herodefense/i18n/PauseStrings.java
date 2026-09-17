@@ -27,13 +27,16 @@ public enum PauseStrings implements Translated {
     GROVE_CODEX("GROVE CODEX", "کدکس بیشه"),
     GROVE_CODEX_SUBTITLE("Read what the Tree remembers", "آنچه درخت به یاد دارد را بخوانید"),
 
-    /** The two readouts under the title. */
+    /**
+     * The two readouts under the title. The wave line is one entry with two arguments rather than a wave entry
+     * and a separator, because "WAVE 12 / 200" is one sentence the screen draws in one call: splitting it would
+     * put the decision about where the slash goes in the renderer instead of in the language.
+     */
     CURRENT_WAVE("CURRENT WAVE", "موج جاری"),
-    WAVE_VALUE("WAVE %1$s", "موج %1$s"),
+    WAVE_VALUE("WAVE %1$s / %2$s", "موج %1$s / %2$s"),
     BOSS_WAVE("BOSS WAVE", "موج غول"),
     HERO_LEVEL("HERO LEVEL %1$s", "سطح قهرمان %1$s"),
-    COINS("COINS", "سکه‌ها"),
-    COIN_VALUE("%1$s / %2$s", "%1$s / %2$s");
+    COINS("COINS", "سکه‌ها");
 
     private final String english;
     private final String persian;

@@ -5,10 +5,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.PauseStrings;
 import com.amirrezahadipoor.herodefense.input.PauseTouchLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
-import java.util.Locale;
 
 /** Premium pause surface: dimmed live arena, run context, and four framed touch actions. */
 public final class PauseOverlayRenderer implements AutoCloseable {
@@ -101,40 +102,51 @@ public final class PauseOverlayRenderer implements AutoCloseable {
         );
 
         icons.draw(batch, "pause", 84f, 1122f, 76f);
-        text.draw(batch, "COMBAT PAUSED", 180f, 1196f, 1.36f, OverlayText.GOLD);
-        text.draw(batch, "The arena holds still until you return", 180f, 1150f, 0.74f,
+        text.draw(batch, GameLocale.text(PauseStrings.TITLE), 180f, 1196f, 1.36f, OverlayText.GOLD);
+        text.draw(batch, GameLocale.text(PauseStrings.SUBTITLE), 180f, 1150f, 0.74f,
             OverlayText.SUBTLE);
 
         drawAction(
-            batch, icons, "shop", "STAT SHOP", "Spend earned coins on permanent upgrades",
+            batch, icons, "shop", GameLocale.text(PauseStrings.STAT_SHOP),
+            GameLocale.text(PauseStrings.STAT_SHOP_SUBTITLE),
             PauseTouchLayout.SHOP_Y, PauseTouchLayout.SECONDARY_HEIGHT, shopState
         );
         drawAction(
-            batch, icons, "inventory", "INVENTORY", "Equip, compare, and sell gear",
+            batch, icons, "inventory", GameLocale.text(PauseStrings.INVENTORY),
+            GameLocale.text(PauseStrings.INVENTORY_SUBTITLE),
             PauseTouchLayout.INVENTORY_Y, PauseTouchLayout.SECONDARY_HEIGHT, inventoryState
         );
         drawAction(
-            batch, icons, "general_power", "ROOT NETWORK", "Spend Heartwood on permanent growth",
+            batch, icons, "general_power", GameLocale.text(PauseStrings.ROOT_NETWORK),
+            GameLocale.text(PauseStrings.ROOT_NETWORK_SUBTITLE),
             PauseTouchLayout.ROOT_Y, PauseTouchLayout.SECONDARY_HEIGHT, rootState
         );
         drawAction(
-            batch, icons, "inventory", "GROVE CODEX", "Read what the Tree remembers",
+            batch, icons, "inventory", GameLocale.text(PauseStrings.GROVE_CODEX),
+            GameLocale.text(PauseStrings.GROVE_CODEX_SUBTITLE),
             PauseTouchLayout.CODEX_Y, PauseTouchLayout.SECONDARY_HEIGHT, codexState
         );
         float resumeOffset = MainMenuRenderer.pressedOffset(resumeState);
         icons.draw(batch, "continue", 132f, PauseTouchLayout.RESUME_Y + 62f + resumeOffset, 116f,
             resumeState);
-        text.draw(batch, "RESUME", 274f, PauseTouchLayout.RESUME_Y + 158f + resumeOffset, 1.62f,
+        text.draw(batch, GameLocale.text(PauseStrings.RESUME), 274f,
+            PauseTouchLayout.RESUME_Y + 158f + resumeOffset, 1.62f,
             OverlayText.GOLD);
-        text.draw(batch, "Return to the battle", 274f,
+        text.draw(batch, GameLocale.text(PauseStrings.RESUME_SUBTITLE), 274f,
             PauseTouchLayout.RESUME_Y + 104f + resumeOffset, 0.80f, OverlayText.IVORY);
 
         icons.draw(batch, "wave", 84f, 272f, 62f);
         text.draw(batch, waveLabel(state), 160f, 328f, 0.66f, OverlayText.GOLD);
-        text.draw(batch, "WAVE " + state.waveNumber + " / " + GameState.FINAL_WAVE, 160f, 294f,
-            0.96f, OverlayText.IVORY);
+        text.draw(
+            batch,
+            GameLocale.text(
+                PauseStrings.WAVE_VALUE,
+                GameLocale.number(state.waveNumber), GameLocale.number(GameState.FINAL_WAVE)
+            ),
+            160f, 294f, 0.96f, OverlayText.IVORY
+        );
         icons.draw(batch, "coin", 392f, 272f, 62f);
-        text.draw(batch, "COINS", 468f, 328f, 0.66f, OverlayText.GOLD);
+        text.draw(batch, GameLocale.text(PauseStrings.COINS), 468f, 328f, 0.66f, OverlayText.GOLD);
         text.draw(batch, MainMenuRenderer.coinTotalLabel(state.coins), 468f, 294f, 0.96f,
             OverlayText.IVORY);
         batch.end();
@@ -156,12 +168,17 @@ public final class PauseOverlayRenderer implements AutoCloseable {
         text.draw(batch, subtitle, 246f, y + 44f + offset, 0.72f, OverlayText.SUBTLE);
     }
 
+    /**
+     * The caption over the wave readout. The words are the table's, so the upper-casing the English side used to
+     * do at the call site is now a property of the entry: Persian has no case to change, and a renderer that
+     * upper-cased a Persian string would be pretending the two languages share an alphabet.
+     */
     static String waveLabel(GameState state) {
-        if (state == null) return "CURRENT WAVE";
-        if (state.waveNumber % 5 == 0) return "BOSS WAVE";
+        if (state == null) return GameLocale.text(PauseStrings.CURRENT_WAVE);
+        if (state.waveNumber % 5 == 0) return GameLocale.text(PauseStrings.BOSS_WAVE);
         return state.heroLevel > 0
-            ? ("HERO LEVEL " + state.heroLevel).toUpperCase(Locale.ROOT)
-            : "CURRENT WAVE";
+            ? GameLocale.text(PauseStrings.HERO_LEVEL, GameLocale.number(state.heroLevel))
+            : GameLocale.text(PauseStrings.CURRENT_WAVE);
     }
 
     @Override

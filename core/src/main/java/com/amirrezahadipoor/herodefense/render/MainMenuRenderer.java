@@ -7,6 +7,8 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.MenuStrings;
 import com.amirrezahadipoor.herodefense.input.MainMenuTouchLayout;
 
 /** Premium touch-first menu using the reviewed arena, Heartwood frames, and clear type hierarchy. */
@@ -135,42 +137,54 @@ public final class MainMenuRenderer implements AutoCloseable {
 
         icons.draw(batch, "coin", 508f, 1201f, 46f);
         drawShadowedCentered(batch, coinTotalLabel(coins), 611f, 1232f, 1.05f, GOLD);
-        drawShadowedCentered(batch, "THE WORLD TREE AWAITS", 360f, 1120f, 0.86f, GOLD);
-        drawShadowedCentered(batch, "HERO DEFENSE", 360f, 1058f, 2.28f, GOLD);
+        drawShadowedCentered(batch, GameLocale.text(MenuStrings.TAGLINE), 360f, 1120f, 0.86f, GOLD);
+        drawShadowedCentered(batch, GameLocale.text(MenuStrings.TITLE), 360f, 1058f, 2.28f, GOLD);
         drawShadowedCentered(
-            batch, "Hold the last green sanctuary through 200 waves, or thirty",
+            batch, GameLocale.text(MenuStrings.PITCH),
             360f, 988f, 0.92f, IVORY
         );
 
         drawMenuAction(
-            batch, icons, "new_game", "NEW GAME", "Begin a fresh defense",
+            batch, icons, "new_game", GameLocale.text(MenuStrings.NEW_GAME),
+            GameLocale.text(MenuStrings.NEW_GAME_SUBTITLE),
             780f, newGameState, true
         );
+        // The three numbers are formatted rather than concatenated so the row reads "ردهٔ ۳ | اوج ۴۱ | ۱۲ چوب دل"
+        // in Persian digits and does not mix two numbering systems inside one sentence.
         String continueSubtitle = continueAvailable
-            ? ("Tier " + ascensionTier + " | Peak " + peakWave + " | " + heartwood + " HW")
-            : "Return to the active wave";
+            ? GameLocale.text(
+                MenuStrings.PROGRESS_SUMMARY,
+                GameLocale.number(ascensionTier), GameLocale.number(peakWave), GameLocale.number(heartwood)
+            )
+            : GameLocale.text(MenuStrings.CONTINUE_SUBTITLE);
         drawMenuAction(
-            batch, icons, "general_power", "BRIEF VIGIL",
-            "A full run in thirty waves | same tier, same grove",
+            batch, icons, "general_power", GameLocale.text(MenuStrings.BRIEF_VIGIL),
+            GameLocale.text(MenuStrings.BRIEF_VIGIL_SUBTITLE),
             MainMenuTouchLayout.rowBottom(1), briefState, true
         );
         drawMenuAction(
-            batch, icons, "continue", "CONTINUE", continueSubtitle,
+            batch, icons, "continue", GameLocale.text(MenuStrings.CONTINUE), continueSubtitle,
             MainMenuTouchLayout.rowBottom(2), continueState, continueAvailable
         );
         drawMenuAction(
-            batch, icons, "general_power", "ROOT NETWORK", heartwood + " Heartwood | Permanent growth",
+            batch, icons, "general_power", GameLocale.text(MenuStrings.ROOT_NETWORK),
+            GameLocale.text(MenuStrings.ROOT_NETWORK_SUBTITLE, GameLocale.number(heartwood)),
             MainMenuTouchLayout.rowBottom(3), rootState, true
         );
         drawMenuAction(
-            batch, icons, "inventory", "GROVE CODEX", "Thirty entries the Tree remembers",
+            batch, icons, "inventory", GameLocale.text(MenuStrings.GROVE_CODEX),
+            GameLocale.text(MenuStrings.GROVE_CODEX_SUBTITLE),
             MainMenuTouchLayout.rowBottom(4), codexState, true
         );
         drawMenuAction(
-            batch, icons, "settings", "SETTINGS", "Comfort, music, and effects",
+            batch, icons, "settings", GameLocale.text(MenuStrings.SETTINGS),
+            GameLocale.text(MenuStrings.SETTINGS_SUBTITLE),
             MainMenuTouchLayout.rowBottom(5), settingsState, true
         );
-        drawShadowedCentered(batch, "200 WAVES  |  ONE LAST TREE  |  ASCEND FOREVER  |  T" + ascensionTier, 360f, 80f, 0.74f, SUBTLE);
+        drawShadowedCentered(
+            batch, GameLocale.text(MenuStrings.FOOTER, GameLocale.number(ascensionTier)),
+            360f, 80f, 0.74f, SUBTLE
+        );
         batch.end();
     }
 
@@ -225,8 +239,12 @@ public final class MainMenuRenderer implements AutoCloseable {
         return state == UiFrameRenderer.State.PRESSED ? -4f : 0f;
     }
 
+    /**
+     * The coin count as the three screens that draw it draw it: the menu's corner, the pause overlay and the
+     * end screen all call this rather than keeping their own copy of the format.
+     */
     static String coinTotalLabel(int coins) {
-        return "$ " + Math.max(0, coins);
+        return GameLocale.text(MenuStrings.COINS, GameLocale.number(Math.max(0, coins)));
     }
 
     @Override

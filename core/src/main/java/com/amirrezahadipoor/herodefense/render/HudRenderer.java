@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.HudStrings;
 import com.amirrezahadipoor.herodefense.input.HudTouchLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.WaveModifier;
@@ -192,16 +194,23 @@ public final class HudRenderer implements AutoCloseable {
 
         batch.begin();
         icons.draw(batch, "health", 28f, 1194f + up, 50f);
-        drawShadowed(batch, "LV " + state.heroLevel, 102f, 1199f + up, 0.52f,
+        drawShadowed(batch, GameLocale.text(HudStrings.LEVEL, GameLocale.number(state.heroLevel)),
+            102f, 1199f + up, 0.52f,
             flash > 0f ? EXP_FLASH : EXP);
         text.drawRightAligned(batch, experienceLabel(state), 580f, 1199f + up, 0.46f, SUBTLE);
         if (state.ascensionTier > 0) {
-            drawShadowed(batch, "T" + state.ascensionTier, 620f, 1199f + up, 0.58f, GOLD);
+            drawShadowed(batch,
+                GameLocale.text(HudStrings.TIER_BADGE, GameLocale.number(state.ascensionTier)),
+                620f, 1199f + up, 0.58f, GOLD);
         }
-        drawShadowed(batch, "HEALTH", 102f, 1244f + up, 0.68f, GOLD);
+        drawShadowed(batch, GameLocale.text(HudStrings.HEALTH), 102f, 1244f + up, 0.68f, GOLD);
         drawShadowedCentered(
             batch,
-            Math.round(state.hero.health) + " / " + Math.round(state.hero.maxHealth),
+            GameLocale.text(
+                HudStrings.FRACTION,
+                GameLocale.number(Math.round(state.hero.health)),
+                GameLocale.number(Math.round(state.hero.maxHealth))
+            ),
             381f,
             1226f + up,
             0.84f,
@@ -209,9 +218,15 @@ public final class HudRenderer implements AutoCloseable {
         );
 
         icons.draw(batch, "wave", 29f, 1087f + up, 48f);
-        drawShadowed(batch, "WAVE", 84f, 1144f + up, 0.66f, GOLD);
-        drawShadowed(batch, state.waveNumber + " / " + GameState.FINAL_WAVE,
-            84f, 1107f + up, 1.02f, IVORY);
+        drawShadowed(batch, GameLocale.text(HudStrings.WAVE), 84f, 1144f + up, 0.66f, GOLD);
+        drawShadowed(
+            batch,
+            GameLocale.text(
+                HudStrings.FRACTION,
+                GameLocale.number(state.waveNumber), GameLocale.number(GameState.FINAL_WAVE)
+            ),
+            84f, 1107f + up, 1.02f, IVORY
+        );
         // Wave omens (roadmap R3.4): the wave says what it is going to do to you, in one line, while it runs.
         WaveModifier omen = WaveOmens.of(state, state.waveNumber);
         if (omen.isOmen()) {
@@ -219,17 +234,21 @@ public final class HudRenderer implements AutoCloseable {
         }
 
         icons.draw(batch, "coin", 231f, 1087f + up, 48f);
-        drawShadowed(batch, "COINS", 286f, 1144f + up, 0.66f, GOLD);
-        drawShadowed(batch, "$ " + Math.max(0, state.coins), 286f, 1107f + up, 1.02f, IVORY);
+        drawShadowed(batch, GameLocale.text(HudStrings.COINS), 286f, 1144f + up, 0.66f, GOLD);
+        drawShadowed(batch, MainMenuRenderer.coinTotalLabel(state.coins), 286f, 1107f + up, 1.02f, IVORY);
         // Grove HP (32.3): show planted count and health ratio reusing groveHealthRatio
         int groveTotal = 1 + Math.max(0, state.plantedTreesCount);
         float groveRatio = WorldTreeAnimationController.groveHealthRatio(state);
-        String groveLabel = "GROVE " + groveTotal + "/4 " + Math.round(groveRatio * 100) + "%";
+        String groveLabel = GameLocale.text(
+            HudStrings.GROVE_STATUS,
+            GameLocale.number(groveTotal), GameLocale.percent(Math.round(groveRatio * 100))
+        );
         drawShadowed(batch, groveLabel, 286f, 1075f + up, 0.52f, groveRatio < 0.4f ? CRITICAL : (groveRatio < 0.7f ? WOUNDED : HEALTHY));
 
         float speedOffset = MainMenuRenderer.pressedOffset(speedState);
         icons.draw(batch, "speed", 440f, 1091f + up + speedOffset, 44f, speedState);
-        drawShadowed(batch, Math.round(state.simulationSpeed) + "x",
+        drawShadowed(batch,
+            GameLocale.text(HudStrings.SPEED, GameLocale.number(Math.round(state.simulationSpeed))),
             487f, 1124f + up + speedOffset, 0.96f, IVORY);
 
         float pauseOffset = MainMenuRenderer.pressedOffset(pauseState);
@@ -249,16 +268,16 @@ public final class HudRenderer implements AutoCloseable {
         }
 
         drawUtilityAction(
-            batch, icons, "inventory", "INVENTORY",
+            batch, icons, "inventory", GameLocale.text(HudStrings.INVENTORY),
             HudTouchLayout.INVENTORY_X, inventoryState
         );
         drawUtilityAction(
-            batch, icons, "shop", "SHOP",
+            batch, icons, "shop", GameLocale.text(HudStrings.SHOP),
             HudTouchLayout.SHOP_X, shopState
         );
         if (FocusSystem.isFull(state)) {
             drawUtilityAction(
-                batch, icons, "general_power", "ULTIMATE",
+                batch, icons, "general_power", GameLocale.text(HudStrings.ULTIMATE),
                 HudTouchLayout.ULTIMATE_X, ultimateState
             );
         }
@@ -299,9 +318,15 @@ public final class HudRenderer implements AutoCloseable {
         return Math.max(0f, Math.min(1f, state.heroExperience / (float) required));
     }
 
+    /** The bar's caption, in the language in force: a capped hero reads MAX / کامل. */
     static String experienceLabel(GameState state) {
         int required = PROGRESSION.experienceRequiredForNextLevel(state.heroLevel);
-        return required <= 0 ? "MAX" : state.heroExperience + " / " + required + " XP";
+        return required <= 0
+            ? GameLocale.text(HudStrings.READY)
+            : GameLocale.text(
+                HudStrings.XP_PROGRESS,
+                GameLocale.number(state.heroExperience), GameLocale.number(required)
+            );
     }
 
     static float healthRatio(float health, float maxHealth) {
