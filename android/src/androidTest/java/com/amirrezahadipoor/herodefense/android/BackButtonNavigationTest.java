@@ -61,21 +61,14 @@ public final class BackButtonNavigationTest {
             await("main menu", () -> game.screenState() == GameScreenState.MENU);
             View surface = gameSurfaceFrom(scenario);
             SystemClock.sleep(1_000L);
-
-            // --- the Codex, with an entry open: two presses, because the entry is deeper than the shelf
-            long touches = game.handledTouchUpCount();
-            float codexY = menuActionY(MainMenuTouchLayout.Action.CODEX, false);
-            tapWorld(surface, MENU_X, codexY);
-            await("codex touch dispatch", () -> game.handledTouchUpCount() > touches);
-            float[] correction = touchCorrection(game, MENU_X, codexY);
+            float[] correction = openMenuAction(game, surface, MainMenuTouchLayout.Action.CODEX);
             await("codex opens", () -> game.screenState() == GameScreenState.CODEX);
-            touches = game.handledTouchUpCount();
-            tapWorld(surface, 360f + correction[0], 973f + correction[1]); // first lore row
-            await("codex row tap dispatch", () -> game.handledTouchUpCount() > touches);
-            SystemClock.sleep(400L);
 
-            // The selection is not readable from here, and it does not need to be: with an entry open the
-            // shelf survives one press, and without one it does not. That difference is the panel-first rule.
+            // The codex with an entry open. The selection itself is not readable from here and does not need
+            // to be: with an entry open the shelf survives one press, and with none open it does not. That
+            // difference is the panel-first rule, and the next block is the control that proves it.
+            tap(game, surface, 360f + correction[0], 973f + correction[1], "first lore row");
+            SystemClock.sleep(400L);
             pressBack();
             SystemClock.sleep(800L);
             assertEquals("the entry closed and the shelf stayed", GameScreenState.CODEX, game.screenState());
@@ -83,25 +76,18 @@ public final class BackButtonNavigationTest {
             pressBack();
             await("the shelf closes onto the menu", () -> game.screenState() == GameScreenState.MENU);
 
-            // --- the Codex with nothing selected: one press, which is what makes the two above meaningful
-            touches = game.handledTouchUpCount();
-            tapWorld(surface, MENU_X, codexY);
-            await("codex touch dispatch again", () -> game.handledTouchUpCount() > touches);
+            openMenuAction(game, surface, MainMenuTouchLayout.Action.CODEX);
             await("codex opens again", () -> game.screenState() == GameScreenState.CODEX);
             pressBack();
             await("an unopened entry costs no press", () -> game.screenState() == GameScreenState.MENU);
 
-            // --- settings close onto the menu, and the application survives the press
-            touches = game.handledTouchUpCount();
-            float settingsY = menuActionY(MainMenuTouchLayout.Action.SETTINGS, false);
-            tapWorld(surface, MENU_X, settingsY);
-            await("settings touch dispatch", () -> game.handledTouchUpCount() > touches);
+            openMenuAction(game, surface, MainMenuTouchLayout.Action.SETTINGS);
             await("settings open", () -> game.screenState() == GameScreenState.SETTINGS);
             pressBack();
             await("settings close onto the menu", () -> game.screenState() == GameScreenState.MENU);
             assertEquals(Lifecycle.State.RESUMED, scenario.getState());
 
-            // --- the menu is the end of the stack, so this press is the platform's
+            // The menu is the end of the stack, so this press is the platform's.
             pressBack();
             await("the application leaves", 10_000L,
                 () -> scenario.getState() == Lifecycle.State.DESTROYED);
@@ -117,12 +103,7 @@ public final class BackButtonNavigationTest {
             await("main menu", () -> game.screenState() == GameScreenState.MENU);
             View surface = gameSurfaceFrom(scenario);
             SystemClock.sleep(1_000L);
-
-            long touches = game.handledTouchUpCount();
-            float newGameY = menuActionY(MainMenuTouchLayout.Action.NEW_GAME, false);
-            tapWorld(surface, MENU_X, newGameY);
-            await("new-game touch dispatch", () -> game.handledTouchUpCount() > touches);
-            float[] correction = touchCorrection(game, MENU_X, newGameY);
+            float[] correction = openMenuAction(game, surface, MainMenuTouchLayout.Action.NEW_GAME);
 
             // The draft is a decision the player owes the game: Back is swallowed and the picks stay.
             await("trial draft", () -> game.screenState() == GameScreenState.TRIAL_DRAFT);
@@ -132,9 +113,9 @@ public final class BackButtonNavigationTest {
             assertTrue(game.gameState().trialDraftPicks.isEmpty());
             assertEquals(Lifecycle.State.RESUMED, scenario.getState());
 
-            tapWorld(surface, 360f + correction[0], 887.5f + correction[1]); // first trial card
+            tap(game, surface, 360f + correction[0], 887.5f + correction[1], "first trial card");
             await("first trial pick", () -> game.gameState().trialDraftPicks.size() == 1);
-            tapWorld(surface, 360f + correction[0], 702.5f + correction[1]); // second trial card
+            tap(game, surface, 360f + correction[0], 702.5f + correction[1], "second trial card");
             await("trial pair bound", () -> game.gameState().activeTrials.size() == 2);
             await("opening cinematic", () -> game.screenState() == GameScreenState.CINEMATIC);
 
@@ -153,11 +134,11 @@ public final class BackButtonNavigationTest {
             await("the run resumes", () -> game.screenState() == GameScreenState.PLAYING);
             assertEquals("a pause is not a restart", waveBeforeThePresses, game.gameState().waveNumber);
 
-            // From the pause screen an overlay opens and closes by Back, returning to the run and not to the
-            // menu: the screen underneath an overlay is the one the player left.
+            // An overlay opened from the pause screen closes back onto the pause, not onto the menu: the
+            // screen underneath an overlay is the one the player left.
             pressBack();
             await("paused again", () -> game.screenState() == GameScreenState.PAUSED);
-            tapWorld(surface, 360f + correction[0], 780f + correction[1]); // Inventory row on the pause screen
+            tap(game, surface, 360f + correction[0], 780f + correction[1], "inventory row on the pause screen");
             await("inventory opens over the pause", () ->
                 game.screenState() == GameScreenState.INVENTORY && game.inventoryOpen());
             pressBack();
@@ -179,15 +160,39 @@ public final class BackButtonNavigationTest {
     }
 
     /**
+     * Taps one main-menu row and waits for the touch to be handled, so a journey cannot continue past a tap
+     * that landed on nothing. Returns the correction between where the tap was aimed in world units and where
+     * the viewport actually put it, which is what every later tap in the same journey is aimed with.
+     */
+    private static float[] openMenuAction(
+        HeroDefenseGame game, View surface, MainMenuTouchLayout.Action action
+    ) {
+        float y = menuActionY(action);
+        return tap(game, surface, MENU_X, y, action + " row");
+    }
+
+    /**
      * Where the menu puts one of its actions: the layout owns the drawn row and the tappable row, so the
      * journey asks it instead of copying a number (the reason R7.7 exists).
      */
-    private static float menuActionY(MainMenuTouchLayout.Action action, boolean continueAvailable) {
+    private static float menuActionY(MainMenuTouchLayout.Action action) {
         for (int row = 0; row <= MAXIMUM_MENU_ROWS; row++) {
             float y = MainMenuTouchLayout.rowBottom(row) + MainMenuTouchLayout.BUTTON_HEIGHT / 2f;
-            if (MainMenuTouchLayout.actionAt(MENU_X, y, continueAvailable) == action) return y;
+            if (MainMenuTouchLayout.actionAt(MENU_X, y, false) == action) {
+                return y;
+            }
         }
         throw new AssertionError("the main menu has no tappable row for " + action);
+    }
+
+    /** One tap, and the wait that proves the game saw it. */
+    private static float[] tap(
+        HeroDefenseGame game, View surface, float worldX, float worldY, String label
+    ) {
+        long handledBefore = game.handledTouchUpCount();
+        tapWorld(surface, worldX, worldY);
+        await(label + " touch dispatch", () -> game.handledTouchUpCount() > handledBefore);
+        return touchCorrection(game, worldX, worldY);
     }
 
     private static HeroDefenseGame gameFrom(ActivityScenario<AndroidLauncher> scenario) {
@@ -248,7 +253,9 @@ public final class BackButtonNavigationTest {
     private static void await(String label, long timeoutMillis, BooleanSupplier condition) {
         long deadline = SystemClock.uptimeMillis() + timeoutMillis;
         while (SystemClock.uptimeMillis() < deadline) {
-            if (condition.getAsBoolean()) return;
+            if (condition.getAsBoolean()) {
+                return;
+            }
             SystemClock.sleep(50L);
         }
         throw new AssertionError("Timed out waiting for " + label);
