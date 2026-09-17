@@ -60,7 +60,7 @@ Status legend: `[x]` verified · `[~]` in progress · `[ ]` not started · `[!]`
 | **95** | Onboarding, tooltips, Persian + RTL, Back button, accessibility, store UI | R7.1 – R7.6 | `[~]` |
 | **96** | Memory and performance program: compression, budgets, wave-50 residency, startup/APK | R8.1 – R8.5 | `[~]` |
 | **97** | Re-audit with the same granular method and publish the repo-rubric score | Gate 1 of the definition of done | `[x]` |
-| 2026-09-17 | 96 | R8.1 (shipping) | the encoder's half-colour search scores a half's three channels together instead of one at a time, which is the defect the emulator caught, and the sheets that clear both gates now ship: 16 ETC2 containers, 11520000 encoded bytes standing in for 92160000 decoded bytes, colour half 33.01 dB median against Google etc1's 32.28 dB on all 111 sheets | `d9943a4` |
+| 2026-09-17 | 96 | R8.1 (shipping) | the encoder's half-colour search scores a half's three channels together instead of one at a time, which is the defect the emulator caught, and the sheets that clear both gates now ship: 16 ETC2 containers, 11520000 encoded bytes standing in for 92160000 decoded bytes, colour half 33.01 dB median against Google etc1's 32.28 dB on all 111 sheets | `46c2417` |
 
 *Removed 2026-09-17 at the owner's direction: **Table B**, the phase index that numbered the experience
 phases 98-145. The experience rubric in section 4 and the R9-R16 items it is measured by are still
