@@ -18,9 +18,9 @@ audit. There are two audits in this repository, and both are meant to be read to
 | audit | commit | score |
 |---|---|---|
 | [`AUDIT_2026-09-16.md`](docs/audit/AUDIT_2026-09-16.md) — what the project looked like before the roadmap | `49fa799` | 550 / 1000 |
-| [`AUDIT_2026-09-17.md`](docs/audit/AUDIT_2026-09-17.md) — the same rubric, re-measured at Phase 97 | `12e4dc0` | **737 / 920 in scope** (release preparation is not scored, so there is no 1,000-point figure) |
+| [`AUDIT_2026-09-17.md`](docs/audit/AUDIT_2026-09-17.md) — the same rubric, re-measured at Phase 97 | `12e4dc0` | **722 / 920 in scope** (release preparation is not scored, so there is no 1,000-point figure) |
 
-The roadmap's Gate 1 asks for ≥ 900 of 920 at Phase 97 and the re-audit measures 737, so the gate is **not
+The roadmap's Gate 1 asks for ≥ 900 of 920 at Phase 97 and the re-audit measures 722, so the gate is **not
 met** and no document here claims a finished score: the missing points are itemised sub-item by sub-item in
 the audit, and the numbers behind it are frozen beside it as `docs/audit/MEASUREMENTS_2026-09-17.json` and
 re-takable with `tools/audit/measure_round.py`.

@@ -14,6 +14,12 @@ A single-hero action-defense game for Android. The Hero (an Elf) stands fixed at
 > (`tools/visual/restore_runtime_tier.py`), and the plan that answers the audit is
 > [`docs/ROADMAP_TO_1000.md`](docs/ROADMAP_TO_1000.md). This file is a historical log; where it and the
 > audit disagree, the audit wins.
+>
+> **Re-audit (2026-09-17):** the same rubric was run again over the finished round and published as
+> [`docs/audit/AUDIT_2026-09-17.md`](docs/audit/AUDIT_2026-09-17.md): **722 of 920 in scope**, against the
+> 505 in scope the audit above measured. The roadmap's Gate 1 asks for 900, so the gate is **not met** and
+> the audit itemises the 198 missing points in plain language. Release preparation is out of scope at the
+> owner's direction, so no document in this repository states a 1000-point figure.
 
 ## Core Specs (Quick Reference)
 
