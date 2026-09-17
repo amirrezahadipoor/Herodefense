@@ -252,7 +252,7 @@ Character armatures use these stable bone names:
 | Hit | 4 | no | sharp readable recoil |
 | Death | 10 | no | silhouette collapse, final hold |
 
-- Playback baseline: 12 fps; gameplay may scale Attack timing with Agility.
+- Playback baseline: `FRAME_RATE = 12` (`code:main/java/com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java`); gameplay may scale Attack timing with Agility.
 - Keyframes are authored on armature bones. Mesh-object-only transforms do not count as character animation.
 - Root translation is zero for the Hero. Enemies may use in-place walk cycles; game code controls travel.
 - First and last Idle poses match. Death's last two frames are held.

@@ -24,7 +24,7 @@ Question: can the EEVEE pipeline render in a clean GPU-less sandbox?
 | CI `generate-visual-assets.yml` (ubuntu-latest + xvfb) | ✅ GO — 27 runs on record, recent all green |
 
 Sandbox recipe (reproducible, no sudo): `scripts/install-blender-temp.sh`
-with `HERO_TOOLS_ROOT` on a large disk (`/tmp` here is a 1 GB tmpfs and does
+with `HERO_TOOLS_ROOT` on a large disk (`/tmp` on the CI runner is a 1 GB tmpfs, `env:ci-tmp-disk`, and does
 NOT fit Blender), plus `apt-get download` + `dpkg-deb -x` of `libxkbcommon0`
 libx11-6 libxi6 libxxf86vm1 libxfixes3 libxrender1 libgl1 libegl1 libsm6
 libice6 libxext6 (libxau6 libxdmcp6 libbsd0 libmd0) into a sysroot on
@@ -51,7 +51,7 @@ Production-path decision (locked by this spike):
 - **Blender 4.2.23** (checksum-pinned, see `tools/blender/hd_pipeline/config.py: BLENDER_VERSION`).
   Never commit the binary — install to a disposable cache:
   ```bash
-  export HERO_TOOLS_ROOT=/tmp/herodefense-tools   # must be on a large disk, not the 1 GB /tmp tmpfs
+  export HERO_TOOLS_ROOT=/tmp/herodefense-tools   # large disk, not the 1 GB tmpfs (`env:ci-tmp-disk`)
   bash scripts/install-blender-temp.sh
   export PATH="$HERO_TOOLS_ROOT/blender-4.2.23/blender:$PATH"
   ```
@@ -63,7 +63,8 @@ Production-path decision (locked by this spike):
   python3 -m pip install --break-system-packages pillow
   ```
 
-- **Disk:** `/tmp` inside the CI sandbox is only ~1 GB — the Blender install alone is >400 MB.
+- **Disk:** `/tmp` on the CI runner is only ~1 GB (`env:ci-tmp-disk`) — the Blender install alone is over
+  400 MB (`env:blender-install`).
   Always set `HERO_TOOLS_ROOT` (and `GRADLE_USER_HOME`, `HERO_PROJECT_CACHE_DIR`) to a
   cache outside the repository.
 
@@ -169,7 +170,7 @@ Checks (automatable where Pillow is available, manifest-only otherwise):
 | `alphaMode == STRAIGHT_RGBA`, `bit_depth==8`, `color_type==6` | Texture contract | image header |
 | Frame & page geometry, `decodedBytes`, page size ≤2048 | Atlas integrity | manifest + header |
 | Icon 96×96 RGBA | Equipment icons | manifest + header |
-| `decodedCatalog` within `decodedCatalogBudgetBytes` (390 MB in the shipped manifest) | Memory budget | manifest, enforced by core `RuntimeResidencyTest` |
+| `decodedCatalog` within `decodedCatalogBudgetBytes` (390 MB in the shipped manifest; measured `perf:2026-09-17-residency`, arithmetic in `code:main/java/com/amirrezahadipoor/herodefense/render/RuntimeResidency.java`) | Memory budget | manifest, enforced by core `RuntimeResidencyTest` |
 | No undeclared/missing PNGs | Manifest completeness | filesystem |
 
 If Pillow is not installed the validator runs in manifest-only mode and prints `Pillow not available — skipped image-level checks`.
@@ -292,13 +293,14 @@ Use this checklist on every review sheet before promotion. A single **REJECT** b
 - [ ] Edge safety: no opaque pixel touches the 1px frame border (arena_backdrop exempt).
 - [ ] Pivot stability: `0.5, 0.12` for character/boss, `0.5, 0.06` for tree, `0.5, 0.5` otherwise, within tolerance.
 - [ ] Silhouette coverage not empty (<0.2%) nor full (>95%) for non-arena.
-- [ ] Page ≤2048px, `decodedCatalog` within the manifest budget (390 MB in the shipped manifest), icons 96×96 RGBA straight.
+- [ ] Page ≤2048px, `decodedCatalog` within the manifest budget (390 MB, `perf:2026-09-17-residency`), icons 96×96 RGBA straight.
 - [ ] `visualQuality` and `engineVersion` equal what the shipped manifest declares and the validator accepts (`studio-v3`, `78.0-integrity-recovery-runtime-tier` at the time of writing).
 - [ ] Review sheet hash-bound: markdown contains `**Decision:** ACCEPTED` and the SHA256 of both manifest and audit, and all sheet PNGs are byte-identical to the audit record.
 
 ### 4.4 Production hygiene
 
-- [ ] `.blend` not committed unless <5 MB and regeneratable — otherwise only `tools/blender/*.py` is the source of truth.
+- [ ] `.blend` not committed at all (`tools/blender/*.py` is the source of truth; a committed blend would also be a
+  multi-megabyte blob in a repository that keeps its payload under 30 MB, `budget:apk_budget.json`).
 - [ ] No SDK/Blender/cache in `android/assets/generated` — only PNG/atlas/json/manifest.
 - [ ] `validate_generated_assets.py` green on both `test-core` and `build-android` CI before merge.
 

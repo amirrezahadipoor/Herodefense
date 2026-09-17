@@ -1,0 +1,29 @@
+{
+  "id": "2026-09-17-generated-assets",
+  "date": "2026-09-17",
+  "commit": "PENDING_COMMIT",
+  "command": "python3 tools/visual/validate_generated_assets.py android/assets/generated",
+  "note": "The shipped tree measured by the visual validator: what is on disk, what it decodes to, and the largest atlas page.",
+  "metrics": [
+    {
+      "name": "validatedAssets",
+      "value": 111,
+      "unit": "count"
+    },
+    {
+      "name": "rgbaPngs",
+      "value": 157,
+      "unit": "count"
+    },
+    {
+      "name": "decodedBytes",
+      "value": 384872448,
+      "unit": "bytes"
+    },
+    {
+      "name": "maxPagePixels",
+      "value": 2048,
+      "unit": "count"
+    }
+  ]
+}

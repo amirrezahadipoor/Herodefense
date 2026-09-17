@@ -54,6 +54,16 @@ jobs:
           python3 tools/playtests/validate_playtest_ledger.py
           python3 -m unittest discover -s tools/playtests/tests -t .
 
+      # Roadmap R8.4/R8.5: the performance gates are Python because they measure artifacts (an APK, a logcat
+      # capture, the asset tree) rather than run the game. Their own tests run here, with the negative controls.
+      - name: Test the performance gates (roadmap R8.4/R8.5 -- APK budget, startup, logged runs)
+        run: python3 -m unittest discover -s tools/perf/tests -v
+
+      - name: Check that every documented performance number comes from a logged run (roadmap R8.5)
+        run: |
+          python3 tools/perf/render_performance_doc.py --check
+          python3 tools/perf/check_perf_provenance.py
+
       - name: Run the unit-test loop (the balance sweeps are the balance-gate job below)
         run: ./scripts/gradle.sh :core:test --stacktrace
 

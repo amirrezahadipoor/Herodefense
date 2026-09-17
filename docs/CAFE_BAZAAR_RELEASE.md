@@ -26,7 +26,7 @@ Before upload, the workflow:
 3. Runs Android release lint.
 4. Builds `:android:assembleRelease` with the secret-backed signing configuration.
 5. Uses Android SDK `apksigner` to verify the APK and print its certificate fingerprints.
-6. Confirms package ID `com.amirrezahadipoor.herodefense`, a non-empty version, all three supported libGDX ABIs, and an APK size below 100 MB.
+6. Confirms package ID `com.amirrezahadipoor.herodefense`, a non-empty version, all three supported libGDX ABIs, and an APK size inside the committed budget (`budget:apk_budget.json`, enforced in CI by `tools/perf/check_apk_budget.py`).
 7. Uploads `HeroDefense-<version>-cafe-bazaar.apk` plus its SHA-256 checksum as a 90-day GitHub Actions artifact.
 
 The output is an APK, not an Android App Bundle, because the requested release target is Cafe Bazaar.

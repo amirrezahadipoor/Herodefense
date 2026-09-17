@@ -56,6 +56,18 @@ jobs:
             unzip -l "$apk" "lib/$abi/libgdx.so" | grep -q "lib/$abi/libgdx.so"
           done
 
+      # Roadmap R8.4. The APK is a deliverable with a committed budget, so it is measured on every push rather
+      # than discovered to be 200 MB at release time. The report goes into the run summary, and the job fails
+      # the moment a threshold is crossed: a budget nobody fails is a budget nobody has.
+      - name: Measure the APK against the committed budget
+        run: |
+          set -o pipefail
+          {
+            echo "### APK budget"
+            echo
+            python3 tools/perf/check_apk_budget.py android/build/outputs/apk/debug/android-debug.apk
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
       - name: Run in headless emulator using touch-only smoke test
         uses: reactivecircus/android-emulator-runner@v2
         with:
@@ -67,6 +79,26 @@ jobs:
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
             -camera-back none -camera-front none
           script: ./scripts/android-touch-test.sh
+
+      # Roadmap R8.4. Cold start is the platform's own Displayed line from the logcat the smoke script captured,
+      # not a stopwatch the app started. A capture without the line reports "not measured" and exits 2, which is
+      # not a pass and not a failure -- it is a missing measurement, and this step says so instead of hiding it.
+      - name: Measure cold start from the captured logcat
+        if: always()
+        run: |
+          set -o pipefail
+          set +e
+          log=android/build/reports/androidTests/diagnostics/emulator-logcat.txt
+          {
+            echo "### Startup budget"
+            echo
+            python3 tools/perf/parse_startup.py "$log" --component amirrezahadipoor
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          code=${PIPESTATUS[0]}
+          # 0 is a pass, 2 is "this capture holds no measurement" (not a pass, not a failure), anything else
+          # is the budget being crossed.
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+          exit 0
 
       - name: Upload debug APK
         if: always()

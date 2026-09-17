@@ -72,6 +72,14 @@ tasks.named("check") {
 // Everything between a pair of `balance:generated` markers in docs/BALANCE.md is built from the shipped constants
 // and the simulator, and BalanceDocumentTest refuses to let the file disagree with the code. This task is for the
 // other direction: change a number on purpose, run it, and the document catches up.
+tasks.register("residencyReport", JavaExec) {
+    description = "Prints the residency of the shipped asset catalog from the same arithmetic the gate uses (roadmap R8.5)."
+    group = "documentation"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "com.amirrezahadipoor.herodefense.render.ResidencyReport"
+    args = [rootProject.file("android/assets/generated").absolutePath]
+}
+
 tasks.register("regenerateBalanceDoc", JavaExec) {
     description = "Rewrites the generated blocks of docs/BALANCE.md from the code (roadmap R4.4)."
     group = "documentation"

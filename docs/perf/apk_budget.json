@@ -1,0 +1,19 @@
+{
+  "note": "Committed budgets for the debug APK that CI builds on every push. Raising a threshold is a decision, not a fix, and it is recorded here next to the reason.",
+  "unit": "bytes",
+  "enforced_by": "tools/perf/check_apk_budget.py, run by .github/workflows/build-android.yml after :android:assembleDebug",
+  "thresholds": {
+    "apkBytes": 120000000,
+    "assetsBytes": 30000000,
+    "nativeBytesPerAbi": {
+      "arm64-v8a": 25000000,
+      "armeabi-v7a": 20000000,
+      "x86_64": 25000000
+    },
+    "requiredAbis": [
+      "arm64-v8a",
+      "armeabi-v7a",
+      "x86_64"
+    ]
+  }
+}

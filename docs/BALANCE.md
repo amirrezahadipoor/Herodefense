@@ -163,7 +163,8 @@ The sweeps are fixed, because a gate that picks fresh seeds every push measures 
 ## Critical hits
 
 - Every Hero projectile has a deterministic `5%` critical chance and deals `1.75×` damage on success; Critical Mastery raises both (see Skill shop).
-- A confirmed critical impact freezes only combat simulation for `45 ms`; UI and rendering continue.
+- A confirmed critical impact freezes only combat simulation for `CRITICAL_HIT_STOP_SECONDS = 0.045` s
+  (`code:main/java/com/amirrezahadipoor/herodefense/polish/HitStopSystem.java`); UI and rendering continue.
 
 ## Direct stat shop
 
