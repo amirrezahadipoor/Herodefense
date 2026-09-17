@@ -813,12 +813,16 @@ sentence has to name the two scores and the commit they were measured on.
   `theArenaIsRenderedUnderTheStageGrade`, which plays the same prepared run at wave 20 (DAWN -- the identity,
   and therefore the "before") and at wave 175 (HOLLOW, the "after"), writes `grade-dawn-wave-20.png` and
   `grade-hollow-wave-175.png` as artifacts, measures the ground band rather than the whole frame because the
-  HUD is not graded, and asserts the direction the arc states: the ground's red falls by at least two levels
-  and blue-minus-red rises by at least two. The row stays `[~]` until that pair has been measured on a green
-  emulator run and the two captures carry brightness references beside the others. The first run of
-  the pair measured DAWN at a lit share of 0.6219 in the band, which failed a floor copied from the
-  whole-frame contract; the floor is now 0.50 and says why, and the two captures are waiting on a run
-  that gets past the assertion to be recorded as references.
+  HUD is not graded, and asserts the direction the arc states: the ground's red falls, and blue-minus-red
+  rises. What those two thresholds are is measured rather than imagined, because the pair is two *live* waves
+  -- the band holds the graded ground plus the HUD, the vignette and whatever is on screen -- so the same code
+  measured a bias rise of 2.6 levels on the first pair and 0.73 on the next. The red is a sign, the bias floor
+  is 0.5, and the rise is logged on every run: a build that ignored the arc raises the bias by nothing at all,
+  which is the failure this gate is for, while the size of the rise is a property of the two frames rather than
+  of the grade. The row stays `[~]` until a green emulator run carries the pair; the numbers recorded so far are
+  DAWN red 24.872572 / HOLLOW 24.278177 with a bias rise of 2.6, then DAWN bias 18.501553 / HOLLOW 19.229431
+  with a rise of 0.73, and the band's lit share at DAWN measured 0.6219 against a floor copied from the
+  whole-frame contract, so that floor is 0.50 and says why.
 - [x] **R5.5 PBR maps in the repository** (normal / roughness / AO) with material provenance. 39 maps -- normal,
   roughness and ambient occlusion for the hero, the four bosses and the eight creatures -- under `docs/materials/`,
   derived from the rendered masters that ship by a recipe that is in the repository rather than in somebody's
@@ -1324,6 +1328,8 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 93 | R5.4 | the stage grade is a runtime decision rather than a review-strip stamp: `StageGrade` interpolates the four stops by wave, the arena draws the ground under it (no full-screen pass), a drift test reads the Java recipe and `review_strips.py` together, and a new emulator case plays the same run at wave 20 and wave 175 to capture the before/after pair and assert the direction the arc states on the ground band | `3479cd3` |
 | 2026-09-17 | 92 | R5.2 (budget) | at the owner's direction the catalog ceiling moves from 390,000,000 to 525,000,000 bytes, recorded with its arithmetic in the manifest and `docs/ASSET_ENGINE.md`, so the 27 genuine masters (519,290,880 bytes) fit with 5,709,120 of headroom; the composition itself is the next step | `e2e994e` |
 | 2026-09-17 | 92 | R5.2 (composition) | eight sheets -- four regular enemies, three bosses and the hero -- now ship the master render's own bytes at 384 px frames on a 3840x1536 page, selected by the provenance measurement rather than by a list; the catalog measures 518,959,104 of 525,000,000 with 6,040,896 of headroom, the live combat set 207,765,504 (198.1 MiB) against a 200 MiB residency budget raised in the same decision with its reason in the manifest, `maxAtlasPageSize` moves 2048 -> 4096 with it, the batch reviews and the hash ledger are re-bound to the composed bytes, and `ComposedTierDrawScaleTest` holds every drawn size to the balance table while CI re-checks the composition and its review on every push | `888e1dc` |
+
+| 2026-09-17 | 96 · 93 | R8.1 (device) · R5.4 | the device decode is still failing and now says why: `maxDelta=209 beyondTolerance=588 alphaMismatches=39` with mismatches in **both** opaque (133) and non-opaque (455) blocks, top-down, first mismatch at (16,0) expected 0x130a00 / rendered 0x000008 -- which rules out the modifier table and the opaque bit as the whole story, since a table-only difference lands in one column; a search of 1,344 decoder variants over layout, table, alpha rule, clear colour, bit sources, halves and index-bit order finds no exact match, so the next run hands over the pixels themselves: the test logs its decode as base64 with a length and a sha256, `tools/texture/decode_device_evidence.py` reassembles it from the logcat capture the smoke script already keeps (the app is uninstalled when the instrumentation run returns, so a file in its storage cannot be pulled), and the grade gate's two thresholds are now measured against the two live pairs it has seen instead of against the arithmetic of the arc | `PENDING` |
 
 ## Definition of done
 

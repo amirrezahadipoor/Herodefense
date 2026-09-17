@@ -145,6 +145,12 @@ public final class CompressedTextureDeviceTest {
         writePixels("texture-rendered.png", rendered, header.width, header.height);
         writePixels("texture-expected.png", expected, header.width, header.height);
         writeText("texture-comparison.txt", diagnosis + "\n" + glLine(glVersion, header));
+        // Those three files die with the install -- `connectedDebugAndroidTest` uninstalls both APKs when it
+        // returns and the emulator stops after that -- so the pixels go out through the one channel that
+        // outlives both. `tools/texture/decode_device_evidence.py` puts them back together from the logcat
+        // capture the smoke script already keeps, and a buffer whose sha256 does not match is thrown away
+        // there rather than believed.
+        logPixels("texture-rendered", rendered);
         assertEquals("the GPU's decode disagrees with the encoder's own decode by more than "
                 + CHANNEL_TOLERANCE + " -- " + diagnosis,
             0, best.beyondTolerance);
@@ -356,6 +362,26 @@ public final class CompressedTextureDeviceTest {
         try (FileOutputStream stream = new FileOutputStream(new File(directory, name))) {
             stream.write(text.getBytes(StandardCharsets.UTF_8));
         }
+    }
+
+    /** The whole decoded buffer, base64 with its length and sha256, the only evidence logcat will carry. */
+    private static void logPixels(String name, byte[] pixels) {
+        StringBuilder hex = new StringBuilder();
+        try {
+            for (byte value : java.security.MessageDigest.getInstance("SHA-256").digest(pixels)) {
+                hex.append(String.format("%02x", value));
+            }
+        } catch (java.security.NoSuchAlgorithmException impossible) {
+            throw new AssertionError(impossible);
+        }
+        Log.i("HERODEFENSE_TEXTURE_PIXELS",
+            name + " bytes=" + pixels.length + " sha256=" + hex);
+        String base64 = android.util.Base64.encodeToString(pixels, android.util.Base64.NO_WRAP);
+        for (int offset = 0; offset < base64.length(); offset += 700) {
+            Log.i("HERODEFENSE_TEXTURE_PIXELS",
+                name + " " + base64.substring(offset, Math.min(base64.length(), offset + 700)));
+        }
+        Log.i("HERODEFENSE_TEXTURE_PIXELS", name + " end");
     }
 
     private static int rgbAt(byte[] pixels, int offset) {
