@@ -17,6 +17,7 @@ import zipfile
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parents[1]))
 
 import check_apk_budget  # noqa: E402
+import check_wave50_memory  # noqa: E402
 import parse_startup  # noqa: E402
 import render_performance_doc  # noqa: E402
 
@@ -182,6 +183,63 @@ class ParseStartupTest(unittest.TestCase):
                  "--budget", str(budget)], capture_output=True, text=True, check=False).returncode
             self.assertEqual(1, slow_code)
             self.assertEqual(0, fast_code)
+
+
+class WaveFiftyMemoryTest(unittest.TestCase):
+    BUDGET = {"thresholds": {"totalPssKib": 409600, "graphicsKib": 163840}}
+
+    def test_a_measurement_line_is_parsed_with_its_thousands_separators(self) -> None:
+        text = (
+            "I/HERODEFENSE_PERF: HERODEFENSE_PERF wave=50 totalPssKb=284,112 totalRssKb=402,880 "
+            "graphicsKb=98,120\n"
+        )
+        found = check_wave50_memory.measurements(text)
+        self.assertEqual(1, len(found))
+        self.assertEqual(284112, found[0]["totalPssKb"])
+        self.assertEqual(98120, found[0]["graphicsKb"])
+
+    def test_lines_without_a_measurement_are_ignored(self) -> None:
+        self.assertEqual([], check_wave50_memory.measurements(
+            "I/HERODEFENSE_PERF: entering wave\nI/other: totalPssKb=1\n"
+        ))
+
+    def test_a_set_inside_the_budget_passes_and_an_oversized_one_fails_with_the_number(self) -> None:
+        ok = {"totalPssKb": 300_000, "totalRssKb": 400_000, "graphicsKb": 100_000}
+        self.assertEqual([], check_wave50_memory.problems(ok, self.BUDGET))
+        over = {"totalPssKb": 500_000, "totalRssKb": 600_000, "graphicsKb": 200_000}
+        issues = check_wave50_memory.problems(over, self.BUDGET)
+        self.assertEqual(2, len(issues), issues)
+        self.assertIn("500000", issues[0].replace(",", ""))
+        self.assertIn("graphics", issues[1])
+
+    def test_the_cli_distinguishes_missing_from_failing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = pathlib.Path(tmp)
+            budget = tmp_path / "wave50_memory_budget.json"
+            budget.write_text(json.dumps(self.BUDGET))
+            empty = tmp_path / "empty.txt"
+            empty.write_text("nothing measured here\n")
+            missing = subprocess.run(
+                [sys.executable, str(pathlib.Path(check_wave50_memory.__file__)), str(empty),
+                 "--budget", str(budget)], capture_output=True, text=True, check=False)
+            self.assertEqual(2, missing.returncode)
+            self.assertIn("NOT MEASURED", missing.stdout)
+
+            good = tmp_path / "good.txt"
+            good.write_text("I/HERODEFENSE_PERF: HERODEFENSE_PERF wave=50 totalPssKb=250000 "
+                            "totalRssKb=300000 graphicsKb=90000\n")
+            passed = subprocess.run(
+                [sys.executable, str(pathlib.Path(check_wave50_memory.__file__)), str(good),
+                 "--budget", str(budget)], capture_output=True, text=True, check=False)
+            self.assertEqual(0, passed.returncode, passed.stdout)
+
+    def test_the_shipped_budget_is_the_one_the_app_asserts(self) -> None:
+        shipped = json.loads((ROOT / "docs/perf/wave50_memory_budget.json").read_text())
+        threshold = shipped["thresholds"]["totalPssKib"]
+        source = (ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense/render/"
+                  "RuntimeResidency.java").read_text()
+        self.assertIn(str(threshold), source,
+                      "the app-side constant and the committed budget have to be the same number")
 
 
 class PerformancePageTest(unittest.TestCase):

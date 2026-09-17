@@ -25,6 +25,8 @@ traced to the commit and the command that produced it.
 | `nativeBytesPerAbi` | {'arm64-v8a': 25000000, 'armeabi-v7a': 20000000, 'x86_64': 25000000} | bytes | `tools/perf/check_apk_budget.py, run by .github/workflows/build-android.yml after :android:assembleDebug` |
 | `requiredAbis` | ['arm64-v8a', 'armeabi-v7a', 'x86_64'] | bytes | `tools/perf/check_apk_budget.py, run by .github/workflows/build-android.yml after :android:assembleDebug` |
 | `coldStartMillis` | 6000 | milliseconds | `tools/perf/parse_startup.py, run by .github/workflows/build-android.yml on the captured logcat` |
+| `graphicsKib` | 163840 | KiB | `tools/perf/check_wave50_memory.py, run by .github/workflows/build-android.yml on the captured logcat` |
+| `totalPssKib` | 409600 | KiB | `tools/perf/check_wave50_memory.py, run by .github/workflows/build-android.yml on the captured logcat` |
 
 ## Runs
 

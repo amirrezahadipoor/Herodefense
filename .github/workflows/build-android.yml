@@ -100,6 +100,24 @@ jobs:
           if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
           exit 0
 
+      # Roadmap R8.3. The instrumented test measures the process at wave 50 with `dumpsys meminfo` and logs one
+      # line; this step is the gate that reads it. Exit 2 means the capture holds no measurement -- the test did
+      # not reach wave 50 -- which is reported as a missing measurement rather than as a pass.
+      - name: Check the wave-50 residency measurement
+        if: always()
+        run: |
+          set -o pipefail
+          set +e
+          log=android/build/reports/androidTests/diagnostics/emulator-logcat.txt
+          {
+            echo "### Wave-50 residency"
+            echo
+            python3 tools/perf/check_wave50_memory.py "$log"
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+          exit 0
+
       - name: Upload debug APK
         if: always()
         uses: actions/upload-artifact@v4

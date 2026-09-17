@@ -22,9 +22,11 @@ public final class RuntimeResidency {
 
     /**
      * Regular enemies that can share a wave: the whole roster, because the spawner cycles every type and a wave can
-     * therefore contain all of them. Measured for the eight-role roster (R3.4): 95.9 MiB of the 100 MiB budget, so
-     * the roster has roughly one more 5.6 MiB sheet of headroom; a ninth role would need smaller enemy frames or a
-     * shared page rather than a quiet budget bump.
+     * therefore contain all of them. Measured for the eight-role roster (R3.4), re-measured 2026-09-17:
+     * 104,087,552 bytes = 99.3 MiB of the 100 MiB budget, so the roster has 750 KiB of headroom left; a ninth
+     * role needs smaller enemy frames, a shared page or the compression of R8.1 rather than a quiet budget
+     * bump. The earlier note in this file said 95.9 MiB, which the `:core:residencyReport` task contradicted
+     * on its first run -- exactly the kind of stale number R8.5 exists to catch.
      */
     public static final List<String> REGULAR_ENEMIES = List.of(
         "bark_stalker", "bramble_thrall", "fungal_brute", "gloom_wolf",
@@ -37,6 +39,17 @@ public final class RuntimeResidency {
 
     /** Equipment slots the hero can wear at once, as art sheets. */
     public static final int EQUIPPED_SHEETS = 6;
+
+    /**
+     * What the whole process may hold at wave 50 (roadmap R8.3), in KiB of PSS.
+     *
+     * <p>This is the number the instrumented measurement asserts on the device and the number
+     * {@code docs/perf/wave50_memory_budget.json} commits to; a test keeps the two equal so the app and the CI
+     * gate cannot disagree about the budget. The emulator it is measured on runs software GL (swiftshader) on
+     * x86_64, which holds more than a physical arm64 phone, so the threshold is a regression tripwire rather
+     * than a claim about phones.
+     */
+    public static final int WAVE_50_PROCESS_BUDGET_KIB = 409600;
 
     /**
      * Decoded-byte capacity for resident entity atlases (roadmap R8.3), enforced at runtime by

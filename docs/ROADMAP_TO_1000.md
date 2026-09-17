@@ -910,7 +910,20 @@ sentence has to name the two scores and the commit they were measured on.
 - [ ] **R8.3 Residency at wave 50** measured with `adb shell dumpsys meminfo` during a scripted run,
   logged in the repository, with streaming/release of atlases.
 - [ ] **R8.4 Startup and APK budget** measured in CI against a committed threshold.
-- [ ] **R8.5 Every performance number in `docs/**` comes from a logged run.**
+- [x] **R8.5 Every performance number in `docs/**` comes from a logged run.** `docs/perf/` is the home: `runs/*.json`
+  are the logged runs (command, commit, date, metrics), `PERFORMANCE.md` is *generated* from them, and
+  `tools/perf/check_perf_provenance.py` fails the build on any number in the documentation with no run behind
+  it. Citations resolve to a run (`perf:<id>`), a committed threshold (`budget:<file>`), a design constant
+  (`code:<path>`, which must exist) or an environment fact (`env:<key>`, listed in `docs/perf/ENVIRONMENT.md`),
+  and a citation that resolves to nothing fails too, because it looks like provenance without being it.
+  The rule found nine uncited numbers and all nine were fixed rather than exempted: the 390 MB catalog budget,
+  the 45 ms hit stop and the 12 fps playback baseline (now named constants in named files), the APK size
+  claim in the release document (now the committed budget), and the runner's disk facts (now `env:` keys).
+  Three documents are exempt with their reasons written into the checker: the roadmap (the plan and the work
+  log), the 2026-09-13 review (a dated document whose numbers are the finding) and the audit/art-review
+  records. The first two logged runs also caught a stale number in the repository: R8.2's note says the live
+  combat set is 95.9 MiB, and `:core:residencyReport` measures 104,087,552 bytes — 99.3 MiB of a 100 MiB
+  budget, 750 KiB of headroom. The note is corrected and the measurement is what the file says now.
 
 ---
 
@@ -1128,6 +1141,7 @@ real-device testing: **+35 points, not planned here.**
 | 2026-09-17 | 91 | render | the render pipeline became resumable, comparable and deterministic to compare: a hash log of every sheet, atlas and descriptor it writes (no timestamps, no commits, no absolute paths, so two logs of the same bytes are equal), a diff that classifies added / changed / removed with `--fail-on-change` for promotion, and a resume list the workflow feeds straight back into the generator's `--only`; 321 files across 111 assets on the shipped tree, ten new tests in the unit job | `57e21ac` |
 | 2026-09-17 | 95 | R7.1 | the first vigil: five coached steps in one minute, each waiting for its own touch action or its own budget, skippable through a 150-by-100 HUD-sized target that swallows the tap, and taught exactly once per device through the settings the run already writes; 21 tests cover the rules, the geometry and the seen-once path | `3b58f4e` |
 | 2026-09-17 | 95 | R7.2 | every displayed stat now says what it is: one catalog for the five talents and ten HUD readouts, the shop's help panel explains the row the player touched, and the old "+1 rating" lines — three of which named units the code does not have — were replaced by the interpolated constants; 12 tests cover the keyword table, the line budget, the wrapping and the drift between text and numbers | `03d7166` |
+| 2026-09-17 | 96 | R8.5 | every documented performance number now traces to a logged run, a committed budget, a named constant or a recorded environment fact; nine uncited numbers fixed, a stale residency figure corrected by measurement, and the gate runs in CI with its own negative controls | `PENDING` |
 
 ## Definition of done
 
