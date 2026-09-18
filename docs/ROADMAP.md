@@ -352,6 +352,16 @@ started, `[!]` attempted and failed, with the failure written down.
       directions (the silent-failure class), the SpriteBatch vertex contract, the restraint ceilings and the
       fallback arithmetic; the chain's real compilation happens where it matters — the CI emulator's GL stack,
       in pedantic mode, at construction. 933/933 green locally, PMD and SpotBugs clean.
+      **Correction of record, measured by the CI emulator the same day:** the first run of the chain rendered
+      every in-run screen near-black — the bare arena at a mean luma of 1.35 against the smoke suite's floor of
+      30 — while the menu and overlay-only screens passed, which is the fingerprint of a composite returning
+      darkness under healthy overlays. The cause was one GL call: the composite binds the bloom texture to unit
+      1, and `Texture.bind(1)` leaves `GL_TEXTURE1` active; SpriteBatch flushes by binding the drawn texture to
+      whatever unit is active, so the scene landed on unit 1 and `u_texture` sampled the near-black bloom as the
+      frame. The fix is the two-word restore — `glActiveTexture(GL_TEXTURE0)` between the bind and the draw —
+      and the class is pinned locally by a source-order test
+      (`theMultiTexturePassRestoresTheActiveUnitBeforeTheBatchDraws`), because no unit test can see a texture
+      unit and no emulator run should have to.
 - [ ] **E2 (−8) Sprite animation at the frame rate and frame counts named in
       `code:main/java/com/amirrezahadipoor/herodefense/gameplay/HeroAnimationController.java`** (idle, attack and
       hit clips). Correct and consistent, but it is the ceiling of the presentation, not a step towards

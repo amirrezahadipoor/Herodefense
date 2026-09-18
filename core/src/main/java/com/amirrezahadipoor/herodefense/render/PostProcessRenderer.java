@@ -136,6 +136,11 @@ public final class PostProcessRenderer implements AutoCloseable {
         compositeShader.setUniformf("u_bloomIntensity", BLOOM_INTENSITY);
         compositeShader.setUniformf("u_vignette", VIGNETTE_STRENGTH);
         bloomA.getColorBufferTexture().bind(1);
+        // bind(1) leaves GL_TEXTURE1 active, and SpriteBatch flushes by binding the drawn texture to
+        // whatever unit is active -- without this restore the scene would land on unit 1 and the
+        // composite would sample the near-black bloom texture as the frame. The first CI run of E1
+        // measured exactly that: every in-run screen under the brightness floor.
+        Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         batch.draw(
             scene.getColorBufferTexture(),
             0f, 0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());

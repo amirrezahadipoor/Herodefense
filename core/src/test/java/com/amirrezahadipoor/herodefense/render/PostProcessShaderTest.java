@@ -77,6 +77,22 @@ final class PostProcessShaderTest {
     }
 
     @Test
+    void theMultiTexturePassRestoresTheActiveUnitBeforeTheBatchDraws() throws IOException {
+        // SpriteBatch binds the drawn texture to the ACTIVE unit at flush. A second-unit bind that
+        // is not followed by a restore silently swaps the composite's inputs -- scene becomes bloom,
+        // bloom becomes scene -- and every in-run frame goes near-black. This is the pin for the
+        // failure the first E1 emulator run measured (luma 0.2 against a floor of 30).
+        String source = Files.readString(RENDERER);
+        int secondUnit = source.indexOf(".bind(1);");
+        int restore = source.indexOf("glActiveTexture(GL20.GL_TEXTURE0);");
+        assertTrue(secondUnit >= 0, "the composite binds the bloom texture to unit 1");
+        assertTrue(restore > secondUnit,
+            "and restores unit 0 as the active texture before the batch draw");
+        int draw = source.indexOf("batch.draw(", restore);
+        assertTrue(draw > restore, "the restore happens before the composite's draw call");
+    }
+
+    @Test
     void theChainStaysRestrainedAndItsBuffersStaySane() {
         assertTrue(PostProcessRenderer.BLOOM_THRESHOLD > 0.5f
                 && PostProcessRenderer.BLOOM_THRESHOLD < 1f,
