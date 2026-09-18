@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.presentation;
 
+import com.amirrezahadipoor.herodefense.input.HapticFeedback;
 import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
@@ -46,6 +47,11 @@ public final class FrameDriver {
         void updateCinematic(float deltaSeconds);
 
         void draw(float presentationDeltaSeconds);
+
+        /** The device's hands (roadmap F4); a default because a host without them is a silence, not a crash. */
+        default HapticFeedback hapticFeedback() {
+            return null;
+        }
     }
 
     /** How long a story line stays on screen; the HUD and the whisper renderer share it. */
@@ -75,6 +81,7 @@ public final class FrameDriver {
     private final ParticleSystem particleSystem;
     private final CodexSystem codexSystem;
     private final NanoClock clock;
+    private HapticRunWatcher hapticWatcher;
 
     private GameScreenState lastFrameState = GameScreenState.MENU;
     private long pauseStartNanos;
@@ -117,6 +124,18 @@ public final class FrameDriver {
         this.clock = clock == null ? System::nanoTime : clock;
     }
 
+    /**
+     * The run's transitions become haptics (roadmap F4), gated by the effects toggle because a phone that
+     * is silenced should also be stilled.
+     */
+    private void watchHaptics(float deltaSeconds) {
+        if (settings == null || !settings.soundEnabled) return;
+        if (hapticWatcher == null) {
+            hapticWatcher = new HapticRunWatcher(host.hapticFeedback());
+        }
+        hapticWatcher.watch(flow.state(), host.gameState(), deltaSeconds);
+    }
+
     /** The music follows the flow (roadmap R6.3): the bed comes from the policy, never from a call site. */
     private void guideMusic() {
         GameScreenState state = flow.state();
@@ -135,6 +154,7 @@ public final class FrameDriver {
         audioManager.update(settings);
         trackPauseDuration();
         guideMusic();
+        watchHaptics(deltaSeconds);
         audioManager.tick(deltaSeconds);
         touchFeedbackSystem.update(deltaSeconds);
         if (inventoryTouchController != null) inventoryTouchController.update(deltaSeconds);

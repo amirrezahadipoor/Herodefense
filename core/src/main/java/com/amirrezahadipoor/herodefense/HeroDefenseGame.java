@@ -607,6 +607,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     /** Adapter for the frame composer; one line per member, like the touch host. */
     /** What the frame needs from the game: its state, saving, the two update paths and the draw call. */
     private final class FrameHost implements FrameDriver.Host {
+        @Override public HapticFeedback hapticFeedback() { return hapticFeedback; }
+
         @Override
         public GameState gameState() {
             return gameState;

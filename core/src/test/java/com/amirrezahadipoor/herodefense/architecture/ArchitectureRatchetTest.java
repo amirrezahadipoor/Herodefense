@@ -57,7 +57,11 @@ class ArchitectureRatchetTest {
         // HeroMovementSystem.update, which needed one import and three lines of comment saying why the anchor
         // left. Every other line of the movement verb -- the system, the drag routing, the meter -- landed in a
         // file the ratchet does not hold, which is the point of the extractions this file has already paid for.
-        new ArchitectureRatchet.Frozen(775, 63),
+        //
+        // F4 raised this by two lines and no fields: the frame host answers hapticFeedback() so the run
+        // watcher can reach the device's hands. The vocabulary, the watcher and every pattern live in files
+        // the ratchet does not hold; this file only owns the seam, as it owns every other port.
+        new ArchitectureRatchet.Frozen(777, 63),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.

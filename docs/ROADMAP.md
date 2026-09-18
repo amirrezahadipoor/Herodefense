@@ -327,7 +327,10 @@ started, `[!]` attempted and failed, with the failure written down.
       not hopeful: the layer opens on the same frame -- the same sample -- as the bed it rides, and any bed
       change closes it outright rather than resuming it against a playhead it never started on. Boss fights
       need no layer because the whole bed already changes to the march. The chain of evidence held: the level
-      gate re-measured all 30 files, the ledger carries the stem's SHA-256, and the policy's curve, the
+      gate re-measured all 30 files (the stem decodes at peak 0.838 -- Vorbis overshoots the 0.72 render
+      target, which is precisely why the gate measures bytes and not intentions; the commit message that
+      shipped the stem quoted the render target instead of the decode, and this line is the correction of
+      record, in the spirit of H4), the ledger carries the stem's SHA-256, and the policy's curve, the
       red-health bonus and the one-bed-one-layer contract are all pinned in `MusicSelectionPolicyTest`.
 - [x] **F2 (−10) Twenty SFX** cover twelve enemy/boss identities plus every skill, which means audible reuse.
       The identity axis now has voices: five new cues, all generated in-repo by `tools/audio/generate_sfx.py`
@@ -344,7 +347,20 @@ started, `[!]` attempted and failed, with the failure written down.
       the body has a voice.
 - [ ] **F3 (−6) No voice or narration,** including for the 31 lore entries and the boss title cards that are
       written as if they were being read aloud.
-- [ ] **F4 (−4) Haptics are the `VIBRATE` permission** and a couple of trigger points.
+- [x] **F4 (−4) Haptics are the `VIBRATE` permission** and a couple of trigger points. The hands now speak
+      the run's punctuation, not just the UI's: `HapticFeedback` grew five words -- a hit, a boss falling, a
+      level, a wave rolling over, the ultimate going out -- as defaults, so every fake that predates the
+      vocabulary still compiles and a host without hands is a silence rather than a crash.
+      `presentation/HapticRunWatcher` fires them by diffing frame to frame, which keeps every gameplay
+      system free of the device (the same reason the music follows the flow from the presentation side), and
+      two rules keep it honest: the first frame after the run screen is entered only remembers, so a load or
+      a pause never pulses for damage nobody watched, and the hit pulse is rate-limited because a swarm is
+      one event, not a jackhammer. The gate is the effects toggle: a silenced phone is also a stilled one.
+      `GdxHapticFeedback` says each word inside what libGDX 1.13 actually offers -- duration plus amplitude
+      (API 26+, full-amplitude fallback), no patterns -- and the difference is honest: 55 ms full-strength
+      for a hit, the longest heaviest 140 ms the hands ever say for a boss, a medium lift for a level, an
+      18 ms soft tick for a wave, one long pulse for the ultimate. Seven watcher tests pin the vocabulary,
+      the cooldown, the rebaseline and the silences.
 
 ## G — UI, UX and readability (54/100, 46 points deducted)
 
