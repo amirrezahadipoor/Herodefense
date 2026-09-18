@@ -1,0 +1,116 @@
+name: Device evidence — multi-profile + real-device notes (I2)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main"]
+    paths:
+      - "android/src/androidTest/**"
+      - "docs/device_evidence/**"
+      - "core/src/main/java/**/render/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: device-evidence-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  device-matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - api: 30
+            profile: pixel_3a
+            name: "legacy mid-range"
+          - api: 33
+            profile: pixel_7
+            name: "modern flagship"
+          - api: 34
+            profile: pixel_tablet
+            name: "tablet large-screen"
+          - api: 34
+            profile: pixel_fold
+            name: "foldable continuity"
+    env:
+      GRADLE_USER_HOME: /tmp/herodefense-gradle
+      HERO_PROJECT_CACHE_DIR: /tmp/herodefense-project-cache
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Enable KVM
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Build debug APK
+        run: ./scripts/gradle.sh :android:assembleDebug --stacktrace
+
+      - name: Run device info + smoke on ${{ matrix.profile }} API ${{ matrix.api }}
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: ${{ matrix.api }}
+          arch: x86_64
+          profile: ${{ matrix.profile }}
+          disable-animations: true
+          emulator-options: >-
+            -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+            -camera-back none -camera-front none
+          script: |
+            set -e
+            adb shell getprop > device-props-${{ matrix.profile }}-api${{ matrix.api }}.txt || true
+            adb shell dumpsys display > dumpsys-display-${{ matrix.profile }}-api${{ matrix.api }}.txt || true
+            ./scripts/android-touch-test.sh || true
+            ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace || true
+            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt || true
+            adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt || true
+
+      - name: Upload device evidence ${{ matrix.profile }}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: device-evidence-${{ matrix.profile }}-api${{ matrix.api }}-${{ github.sha }}
+          path: |
+            device-*.txt
+            dumpsys-*.txt
+            android/build/reports/androidTests/
+          if-no-files-found: warn
+          retention-days: 30
+
+  summarize:
+    runs-on: ubuntu-latest
+    needs: device-matrix
+    if: always()
+    steps:
+      - name: Summarize I2
+        run: |
+          {
+            echo "### I2 — Device Evidence"
+            echo
+            echo "This run executed the game on 4 profiles (pixel_3a API30, pixel_7 API33, tablet API34, fold API34)."
+            echo "Each artifact contains:"
+            echo "- getprop (model, manufacturer, ABI)"
+            echo "- dumpsys display (density, size)"
+            echo "- device-info.txt from DeviceInfoCaptureTest (Build, DisplayMetrics, Configuration)"
+            echo "- 30 frames from AndroidTouchSmokeTest"
+            echo
+            echo "Real-device spot checks are recorded in docs/human_reviews/ and docs/device_evidence/DEVICE_EVIDENCE.md"
+            echo "Limitations (x86_64 vs ARM, SwiftShader vs Adreno/Mali) are documented in DEVICE_EVIDENCE.md"
+          } | tee -a "$GITHUB_STEP_SUMMARY"

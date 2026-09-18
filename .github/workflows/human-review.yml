@@ -8,6 +8,7 @@ on:
       - "android/assets/generated/**"
       - "core/src/main/java/**/render/**"
       - "docs/human_reviews/**"
+      - "docs/device_evidence/**"
 
 permissions:
   contents: read
@@ -47,7 +48,7 @@ jobs:
       - name: Build debug APK for review
         run: ./scripts/gradle.sh :android:assembleDebug --stacktrace
 
-      - name: Run touch smoke test — 30 frames for human eyes (E3)
+      - name: Run touch smoke test — 30 frames for human eyes (E3) + device info (I2)
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 35
@@ -57,9 +58,15 @@ jobs:
           emulator-options: >-
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
             -camera-back none -camera-front none
-          script: ./scripts/android-touch-test.sh
+          script: |
+            set -e
+            adb shell getprop > device-props.txt || true
+            adb shell dumpsys display > dumpsys-display.txt || true
+            ./scripts/android-touch-test.sh
+            ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace || true
+            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt device-info.txt || true
 
-      - name: Upload human-review frames (E3 — what a machine cannot catch)
+      - name: Upload human-review frames (E3 — what a machine cannot catch) + device info (I2)
         if: always()
         uses: actions/upload-artifact@v4
         with:
@@ -67,6 +74,8 @@ jobs:
           path: |
             android/build/reports/androidTests/
             android/build/reports/androidTests/diagnostics/
+            device-*.txt
+            dumpsys-*.txt
           if-no-files-found: warn
           retention-days: 30
 
@@ -74,15 +83,17 @@ jobs:
         if: always()
         run: |
           {
-            echo "### Human Review — E3"
+            echo "### Human Review — E3 + I2 Device Evidence"
             echo
             echo "This run captured 30 frames of the running game via AndroidTouchSmokeTest."
+            echo "Device info (I2) captured via getprop, dumpsys, and DeviceInfoCaptureTest."
             echo "A human must open the artifact 'human-review-frames' and check:"
             echo "- No subtitle collides with tap hint (G5a)"
             echo "- No text overflows at arm's length (E4)"
             echo "- HUD mirrors in RTL (G4)"
             echo "- Second arena distinct (D1) and 8 boss identities readable (D3)"
             echo "- Walk bob (E2) does not obscure feet"
+            echo "- Device evidence beyond x86 emulator (I2) — see docs/device_evidence/DEVICE_EVIDENCE.md"
             echo
             echo "Record findings in docs/human_reviews/REVIEW_YYYY-MM-DD.md"
             echo "Evidence: HumanReviewRecordTest guards existence of review file."

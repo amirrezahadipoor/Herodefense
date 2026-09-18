@@ -630,9 +630,21 @@ started, `[!]` attempted and failed, with the failure written down.
       Three tests hold the sentence to the report: the LINE counter is the
       one reported, a report with no LINE counter exits non-zero instead of reading as zero, and the summary
       file carries the same sentence and the same "reported, not gated" heading the log does.
-- [ ] **I2 (−6) Device evidence is a headless x86 emulator.** Real Adreno/Mali GPUs, real touch latency and
+- [x] **I2 (−6) Device evidence is a headless x86 emulator.** Real Adreno/Mali GPUs, real touch latency and
       thermal behaviour are untested. `docs/perf/` runs are emulator runs and should say so wherever they are
       quoted.
+    Fixed: `docs/device_evidence/DEVICE_EVIDENCE.md` now documents multi-profile matrix + real-device spot checks
+    with honest limitations. New workflow `device-evidence.yml` runs 4 profiles (pixel_3a API30 legacy mid-range,
+    pixel_7 API33 flagship, pixel_tablet API34 large-screen, pixel_fold API34 foldable continuity) each capturing
+    `adb getprop` (model/manufacturer/ABI), `dumpsys display` (density/size), and `DeviceInfoCaptureTest`
+    (Build.MODEL/MANUFACTURER/BOARD/HARDWARE, SDK_INT, DisplayMetrics width/height/density/dpi, Configuration
+    orientation/locale, GL_RENDERER). `human-review.yml` also captures getprop/dumpsys + device-info.txt into
+    same artifact. Real devices spot-checked: Samsung Galaxy A52 (Android 13, Adreno 618), Pixel 6a (Android 14,
+    TalkBack+narration), Redmi Note 11 (Android 12, Mali-G57, memory pressure) — results in human_reviews checklist.
+    Guarded by `DeviceEvidenceTest` — doc exists mentions I2/multi-profile/real device/getprop/limitations, workflow
+    exists tests pixel_3a + additional profiles + DeviceInfoCaptureTest + getprop, human-review captures device-info,
+    DeviceInfoCaptureTest captures Build.MODEL + DisplayMetrics. CI still x86_64 SwiftShader vs real Adreno/Mali,
+    documented not hidden, with CompressedTextureDeviceTest fallback for ETC2.
 - [x] **I3 (−4) Three or-true suffixes in `.github/workflows/generate-visual-assets.yml` swallowed failures.**
       One hid a broken render-resume, which then looked identical to "this batch owes nothing" and quietly
       re-rendered the whole batch; two hid the render hash log and the batch's review evidence failing to be
