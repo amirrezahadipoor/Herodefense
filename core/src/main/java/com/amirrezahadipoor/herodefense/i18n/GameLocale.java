@@ -60,6 +60,11 @@ public final class GameLocale {
         return GameNumbers.integer(value, current);
     }
 
+    /** {@code value} in the short combat shape: "1.2k" / «۱٫۲ه» once it passes a thousand. */
+    public static String compact(long value) {
+        return GameNumbers.compact(value, current);
+    }
+
     /** {@code value} as a whole percentage, with the current language's percent sign. */
     public static String percent(long value) {
         return GameNumbers.percent(value, current);

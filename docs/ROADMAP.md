@@ -357,10 +357,10 @@ started, `[!]` attempted and failed, with the failure written down.
       a pause never pulses for damage nobody watched, and the hit pulse is rate-limited because a swarm is
       one event, not a jackhammer. The gate is the effects toggle: a silenced phone is also a stilled one.
       `GdxHapticFeedback` says each word inside what libGDX 1.13 actually offers -- duration plus amplitude
-      (API 26+, full-amplitude fallback), no patterns -- and the difference is honest: 55 ms full-strength
-      for a hit, the longest heaviest 140 ms the hands ever say for a boss, a medium lift for a level, an
-      18 ms soft tick for a wave, one long pulse for the ultimate. Seven watcher tests pin the vocabulary,
-      the cooldown, the rebaseline and the silences.
+      (API 26+, full-amplitude fallback), no patterns -- and the difference is honest: 55 ms full-strength `code:main/java/com/amirrezahadipoor/herodefense/input/GdxHapticFeedback.java`
+      for a hit, the longest heaviest 140 ms the hands ever say for a boss `code:main/java/com/amirrezahadipoor/herodefense/input/GdxHapticFeedback.java`, a medium lift for a
+      level, an 18 ms soft tick for a wave `code:main/java/com/amirrezahadipoor/herodefense/input/GdxHapticFeedback.java`, one long pulse for the ultimate. Seven watcher tests pin
+      the vocabulary, the cooldown, the rebaseline and the silences.
 
 ## G — UI, UX and readability (54/100, 46 points deducted)
 
@@ -423,7 +423,24 @@ started, `[!]` attempted and failed, with the failure written down.
       and `OnboardingClaimsTest` checks the Persian side's vocabulary as well as the English side's.
 - [ ] **H2 (−10) No native-proofread record.** `TranslationTableTest` proves both sides exist, are non-blank,
       agree on placeholders and are actually Persian script. Nothing proves a Persian reader judged the wording.
-- [ ] **H3 (−6) HUD and numbers stay untranslated by design.**
+- [x] **H3 (−6) HUD and numbers stay untranslated by design.** The design did not survive contact with the
+      audit: the HUD chrome was already localized — `HudStrings` and `GameLocale.number` have covered the
+      panels since R7.3 — but the combat pop-up layer spoke English to everyone. Three surfaces, three
+      fixes. Damage numbers were ASCII with a Latin "k" tail in both languages; `GameNumbers.compact` now
+      owns that shape, English frozen at the exact strings the renderer always drew and Persian getting its
+      own digits, CLDR's U+066B decimal separator and «ه» for هزار — a compact number whose tail is a Latin
+      letter is the mixed-script word this class exists to prevent, and U+066B is a glyph no Persian string
+      ever asked for, so the `GameFonts` derived character set grew by one codepoint and the coverage gate
+      proves the face carries it. The STUN tag became `HudStrings.STUN_TAG` ("STUN" / «مات»). The auto-sell
+      pop-up became `ItemStrings.FLOATING_COIN_AUTOSELL` with its English side frozen at the old
+      concatenation byte-for-byte — two coin pop-ups, two frozen strings, because unifying them onto the
+      pickup's "$ +n" would have moved pixels the device captures gate. English surfaces are all
+      pixel-identical, so no capture reference moves. Pinned by a codepoint-level compact test in
+      `GameNumbersTest` and a Persian-language emit test in `FloatingDamageTextSystemTest`; local suite
+      green and the static gates clean. This commit also pays the R8.5 debt from the haptics close: the
+      durations quoted there now carry their
+      `code:main/java/com/amirrezahadipoor/herodefense/input/GdxHapticFeedback.java` citations, and
+      `check_perf_provenance.py` passes again.
 - [ ] **H4 (correction, no deduction) The audit said three languages; there are two.** `GameLanguage` is
       `ENGLISH` and `PERSIAN`. Recorded here because a wrong fact in an audit is the same kind of debt as a
       wrong claim in a game, and rule 1 does not switch off for documents I wrote an hour ago.

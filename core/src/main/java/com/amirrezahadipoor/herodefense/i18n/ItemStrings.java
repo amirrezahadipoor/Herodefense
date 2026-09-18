@@ -19,6 +19,10 @@ public enum ItemStrings implements Translated {
     /** The golden number that rises off a kill. {@code GameNumbers.signed} supplies the argument. */
     FLOATING_COIN("$ +%1$s", "+%1$s سکه"),
 
+    /** Auto-sell conversion pop-up. English keeps the "+$ n" shape the combat renderer has always drawn;
+     *  the pickup coin above reads "$ +n" in its own table entry — two pop-ups, two frozen strings. */
+    FLOATING_COIN_AUTOSELL("+$ %1$s", "+%1$s سکه"),
+
     /** Anvil feedback: what happened, to what, and what it cost. */
     FORGE_REFORGED("REFORGED  |  %1$s  |  -$ %2$s", "بازآهنگری شد  |  %1$s  |  -%2$s سکه"),
     FORGE_AFFIX_REROLLED("AFFIX REROLLED  |  %1$s  |  -$ %2$s", "وند تازه  |  %1$s  |  -%2$s سکه"),

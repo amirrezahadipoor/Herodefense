@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.i18n;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.util.Locale;
 
 /**
  * Numbers as the player's market writes them (roadmap R7.3).
@@ -76,6 +77,32 @@ public final class GameNumbers {
             out.append(character >= '0' && character <= '9' ? (char) (zero + character - '0') : character);
         }
         return out.toString();
+    }
+
+    /**
+     * The short combat number: whole below a thousand, then "1.2k"-style so a late-run hit stays narrow on
+     * screen. English keeps the ASCII shape it has always drawn; Persian gets its own digits, its own decimal
+     * separator (U+066B, what CLDR uses for fa-IR) and its own suffix — «ه» for هزار — because a compact
+     * number whose tail is a Latin letter is exactly the mixed-script word this class exists to prevent.
+     */
+    public static String compact(long value, GameLanguage language) {
+        long rounded = Math.max(1L, value);
+        String ascii;
+        if (rounded < 1_000L) {
+            ascii = Long.toString(rounded);
+        } else if (rounded < 100_000L) {
+            ascii = String.format(Locale.ROOT, "%.1f", rounded / 1_000f) + suffix(language);
+        } else {
+            ascii = (rounded / 1_000L) + suffix(language);
+        }
+        if (language == GameLanguage.ENGLISH) {
+            return ascii;
+        }
+        return digits(ascii, language).replace('.', symbols(language).getDecimalSeparator());
+    }
+
+    private static String suffix(GameLanguage language) {
+        return language == GameLanguage.PERSIAN ? "ه" : "k";
     }
 
     private static DecimalFormatSymbols symbols(GameLanguage language) {

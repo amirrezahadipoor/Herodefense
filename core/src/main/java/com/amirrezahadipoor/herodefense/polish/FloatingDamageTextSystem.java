@@ -1,12 +1,14 @@
 package com.amirrezahadipoor.herodefense.polish;
 
 import com.amirrezahadipoor.herodefense.gameplay.CombatEvent;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.HudStrings;
+import com.amirrezahadipoor.herodefense.i18n.ItemStrings;
 import com.amirrezahadipoor.herodefense.polish.FloatingDamageText.Style;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Bounded deterministic queue of damage numbers. Positions come only from the combat event
@@ -31,14 +33,17 @@ public final class FloatingDamageTextSystem {
                 event.x(), event.y() + 6f, CRITICAL_LIFETIME_SECONDS);
             case CHAIN_ARC -> add(Style.CHAIN, formatDamage(event.amount()),
                 event.x(), event.y(), LIFETIME_SECONDS);
-            case STUN -> add(Style.STUN, "STUN", event.x(), event.y(), CRITICAL_LIFETIME_SECONDS);
+            case STUN -> add(Style.STUN, GameLocale.text(HudStrings.STUN_TAG),
+                event.x(), event.y(), CRITICAL_LIFETIME_SECONDS);
         }
     }
 
     /** Gold "+$ n" pop-up above the Hero when auto-sell converts a drop into coins. */
     public void emitCoins(int coins, float x, float y) {
         if (coins <= 0) return;
-        add(Style.COIN, "+$ " + coins, x, y, CRITICAL_LIFETIME_SECONDS);
+        add(Style.COIN,
+            GameLocale.text(ItemStrings.FLOATING_COIN_AUTOSELL, GameLocale.number(coins)),
+            x, y, CRITICAL_LIFETIME_SECONDS);
     }
 
     public void emitAll(List<CombatEvent> events) {
@@ -60,12 +65,13 @@ public final class FloatingDamageTextSystem {
         labels.clear();
     }
 
-    /** Whole numbers up to 999, then "1.2k" style so late-run damage stays short on screen. */
+    /**
+     * Whole numbers up to 999, then "1.2k" style so late-run damage stays short on screen (roadmap H3). The
+     * digits, the decimal separator and the suffix belong to the current language — a Persian run reads
+     * «۱٫۲ه», not a Latin tail on Persian digits.
+     */
     public static String formatDamage(float amount) {
-        int rounded = Math.max(1, Math.round(amount));
-        if (rounded < 1_000) return Integer.toString(rounded);
-        if (rounded < 100_000) return String.format(Locale.ROOT, "%.1fk", rounded / 1_000f);
-        return (rounded / 1_000) + "k";
+        return GameLocale.compact(Math.max(1, Math.round(amount)));
     }
 
     private void add(Style style, String text, float x, float y, float lifetime) {

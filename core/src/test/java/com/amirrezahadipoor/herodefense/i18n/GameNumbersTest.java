@@ -67,6 +67,19 @@ class GameNumbersTest {
         assertNull(GameNumbers.digits(null, GameLanguage.PERSIAN));
     }
 
+    @Test
+    void compactNumberSpeaksEachLanguagesOwnScript() {
+        // English keeps the exact shape the combat pop-ups have always drawn.
+        assertEquals("999", GameNumbers.compact(999, GameLanguage.ENGLISH));
+        assertEquals("1.2k", GameNumbers.compact(1_240, GameLanguage.ENGLISH));
+        assertEquals("120k", GameNumbers.compact(120_400, GameLanguage.ENGLISH));
+        assertEquals("1", GameNumbers.compact(0, GameLanguage.ENGLISH), "a hit is never worth zero");
+        // Persian: Extended Arabic-Indic digits, the U+066B decimal separator CLDR uses for fa-IR, «ه» suffix.
+        assertEquals("U+06F9 U+06F9 U+06F9", codepoints(GameNumbers.compact(999, GameLanguage.PERSIAN)));
+        assertEquals("U+06F1 U+066B U+06F2 U+0647", codepoints(GameNumbers.compact(1_240, GameLanguage.PERSIAN)));
+        assertEquals("U+06F1 U+06F2 U+06F0 U+0647", codepoints(GameNumbers.compact(120_400, GameLanguage.PERSIAN)));
+    }
+
     /** The string as codepoints, which is the only honest way to assert what a Persian number is made of. */
     private static String codepoints(String text) {
         StringBuilder out = new StringBuilder();

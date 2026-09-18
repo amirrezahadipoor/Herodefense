@@ -40,7 +40,10 @@ public enum HudStrings implements Translated {
 
     /** The experience bar's caption: progress toward the next level, or {@link #READY} once the hero is capped. */
     XP_PROGRESS("%1$s / %2$s XP", "%1$s / %2$s تجربه"),
-    READY("MAX", "کامل");
+    READY("MAX", "کامل"),
+
+    /** The lilac tag floating over a stunned enemy (roadmap H3). */
+    STUN_TAG("STUN", "مات");
 
     private final String english;
     private final String persian;
