@@ -1,0 +1,149 @@
+name: Build and touch-test Android
+
+on:
+  push:
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-emulator-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      GRADLE_USER_HOME: /tmp/herodefense-gradle
+      HERO_PROJECT_CACHE_DIR: /tmp/herodefense-project-cache
+      ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Enable KVM for the Android emulator
+        run: |
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' \
+            | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          sudo udevadm control --reload-rules
+          sudo udevadm trigger --name-match=kvm
+
+      - name: Validate generated assets (edge safety, pivot, silhouette, grade — fails fast)
+        run: |
+          python3 -m pip install --break-system-packages pillow
+          python3 tools/visual/validate_generated_assets.py android/assets/generated
+
+      - name: Assemble debug APK
+        run: ./scripts/gradle.sh :android:assembleDebug --stacktrace
+
+      - name: Verify packaged libGDX natives for every supported ABI
+        run: |
+          apk=android/build/outputs/apk/debug/android-debug.apk
+          for abi in arm64-v8a armeabi-v7a x86_64; do
+            unzip -l "$apk" "lib/$abi/libgdx.so" | grep -q "lib/$abi/libgdx.so"
+          done
+
+      # Roadmap R8.4. The APK is a deliverable with a committed budget, so it is measured on every push rather
+      # than discovered to be 200 MB at release time. The report goes into the run summary, and the job fails
+      # the moment a threshold is crossed: a budget nobody fails is a budget nobody has.
+      - name: Measure the APK against the committed budget
+        run: |
+          set -o pipefail
+          {
+            echo "### APK budget"
+            echo
+            python3 tools/perf/check_apk_budget.py android/build/outputs/apk/debug/android-debug.apk
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: Run in headless emulator using touch-only smoke test
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 35
+          arch: x86_64
+          profile: pixel_3a
+          disable-animations: true
+          emulator-options: >-
+            -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+            -camera-back none -camera-front none
+          script: ./scripts/android-touch-test.sh
+
+      # Roadmap R8.4. Cold start is the platform's own Displayed line from the logcat the smoke script captured,
+      # not a stopwatch the app started. A capture without the line reports "not measured" and exits 2, which is
+      # not a pass and not a failure -- it is a missing measurement, and this step says so instead of hiding it.
+      - name: Measure cold start from the captured logcat
+        if: always()
+        run: |
+          set -o pipefail
+          set +e
+          log=android/build/reports/androidTests/diagnostics/emulator-logcat.txt
+          {
+            echo "### Startup budget"
+            echo
+            python3 tools/perf/parse_startup.py "$log" --component amirrezahadipoor
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          code=${PIPESTATUS[0]}
+          # 0 is a pass, 2 is "this capture holds no measurement" (not a pass, not a failure), anything else
+          # is the budget being crossed.
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+          exit 0
+
+      # Roadmap R8.3. The instrumented test measures the process at wave 50 with `dumpsys meminfo` and logs one
+      # line; this step is the gate that reads it. Exit 2 means the capture holds no measurement -- the test did
+      # not reach wave 50 -- which is reported as a missing measurement rather than as a pass.
+      - name: Check the wave-50 residency measurement
+        if: always()
+        run: |
+          set -o pipefail
+          set +e
+          log=android/build/reports/androidTests/diagnostics/emulator-logcat.txt
+          {
+            echo "### Wave-50 residency"
+            echo
+            python3 tools/perf/check_wave50_memory.py "$log"
+          } 2>&1 | tee -a "$GITHUB_STEP_SUMMARY"
+          code=${PIPESTATUS[0]}
+          if [ "$code" -ne 0 ] && [ "$code" -ne 2 ]; then exit "$code"; fi
+          exit 0
+
+      - name: Upload debug APK
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-defense-debug-apk
+          path: android/build/outputs/apk/debug/android-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+
+      # The device test logs the decode it produced (base64, with its length and sha256) because the pixels
+      # themselves do not survive the uninstall; this turns the capture back into the bytes, so the next failing
+      # run hands over a picture instead of a max-delta, and the reports artifact carries it.
+      - name: Decode the decode evidence the device test logged
+        if: always()
+        run: |
+          python3 tools/texture/decode_device_evidence.py \
+            android/build/reports/androidTests/diagnostics/emulator-logcat.txt \
+            android/build/reports/androidTests/device-evidence
+
+      - name: Upload instrumentation reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-test-reports
+          path: |
+            android/build/reports/androidTests/
+            android/build/outputs/connected_android_test_additional_output/
+          if-no-files-found: ignore
+          retention-days: 14

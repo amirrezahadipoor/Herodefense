@@ -1,0 +1,543 @@
+package com.amirrezahadipoor.herodefense.render;
+
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.gameplay.ItemForgeSystem;
+import com.amirrezahadipoor.herodefense.items.EquipmentSetBonus;
+import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
+import com.amirrezahadipoor.herodefense.input.InventoryTouchLayout;
+import com.amirrezahadipoor.herodefense.model.EquipmentSlot;
+import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.Item;
+import com.amirrezahadipoor.herodefense.model.ItemTier;
+import com.amirrezahadipoor.herodefense.settings.GameSettings;
+import com.amirrezahadipoor.herodefense.render.InventoryItemDetails.Details;
+import com.amirrezahadipoor.herodefense.render.InventoryItemDetails.StatComparison;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+/** Vector phone overlay with lazy 96-pixel item icons and touch-matched bounds. */
+public final class InventoryOverlayRenderer implements AutoCloseable {
+    private static final Color GOLD = Color.valueOf("EAC66D");
+    private static final Color IVORY = Color.valueOf("F3E4BC");
+    private static final Color SUBTLE = Color.valueOf("AEBCAE");
+    private static final Color POSITIVE = Color.valueOf("69C884");
+    private static final Color NEGATIVE = Color.valueOf("DF6A65");
+    private static final Color MUTED = Color.valueOf("777D76");
+    private static final Color FORGE = Color.valueOf("E08A4C");
+    private static final Color MYTHIC = Color.valueOf("C77DFF");
+
+    private final ShapeRenderer shapes = new ShapeRenderer();
+    private final OverlayText text = new OverlayText();
+    private final Map<String, Texture> icons = new HashMap<>();
+
+    public InventoryOverlayRenderer() {
+    }
+
+    public void drawInventory(
+        SpriteBatch batch,
+        Matrix4 projection,
+        GameState state,
+        InventoryTouchController controller,
+        UiIconRenderer uiIcons,
+        UiFrameRenderer frames
+    ) {
+        drawInventory(batch, projection, state, controller, uiIcons, frames, null);
+    }
+
+    public void drawInventory(
+        SpriteBatch batch,
+        Matrix4 projection,
+        GameState state,
+        InventoryTouchController controller,
+        UiIconRenderer uiIcons,
+        UiFrameRenderer frames,
+        GameSettings settings
+    ) {
+        Set<String> visibleIcons = new HashSet<>();
+        Item selected = controller.selectedItem(state);
+        beginShapes(projection);
+        shapes.setColor(0.070f, 0.150f, 0.130f, 0.96f);
+        shapes.rect(0f, ScreenEdges.bottom(), 720f, ScreenEdges.height());
+        shapes.setColor(0.04f, 0.13f, 0.11f, 0.82f);
+        shapes.rect(0f, 1160f, 720f, 120f);
+        shapes.end();
+        endShapes();
+
+        batch.setProjectionMatrix(projection);
+        batch.begin();
+        drawInventoryFrames(batch, state, controller, frames, settings);
+        if (controller.feedbackMessage() != null) {
+            frames.draw(batch, UiFrameRenderer.Kind.PANEL, 110f, 195f, 500f, 60f, true, false);
+        }
+        batch.end();
+
+        beginShapes(projection);
+        for (int index = 0; index < EquipmentSlot.values().length; index++) {
+            EquipmentSlot slot = EquipmentSlot.values()[index];
+            Item item = state.equippedItems.get(slot.name());
+            if (item == null) continue;
+            int column = index % 2;
+            int row = index / 2;
+            float x = column == 0 ? InventoryTouchLayout.SLOT_LEFT_X : InventoryTouchLayout.SLOT_RIGHT_X;
+            float y = InventoryTouchLayout.SLOT_TOP_Y
+                - InventoryTouchLayout.SLOT_HEIGHT
+                - row * InventoryTouchLayout.SLOT_ROW_STRIDE;
+            rarityAccent(x + 5f, y + 9f, 5f, InventoryTouchLayout.SLOT_HEIGHT - 18f, item.tier);
+        }
+        for (int row = 0; row < InventoryTouchLayout.VISIBLE_ROWS; row++) {
+            int itemIndex = controller.firstVisibleIndex() + row;
+            if (itemIndex >= state.inventory.size()) continue;
+            Item item = state.inventory.get(itemIndex);
+            float y = InventoryTouchLayout.LIST_TOP_Y
+                - InventoryTouchLayout.LIST_ROW_HEIGHT
+                - row * InventoryTouchLayout.LIST_ROW_STRIDE;
+            rarityAccent(
+                InventoryTouchLayout.LIST_X + 5f,
+                y + 9f,
+                5f,
+                InventoryTouchLayout.LIST_ROW_HEIGHT - 18f,
+                item.tier
+            );
+        }
+        shapes.end();
+        endShapes();
+
+        batch.begin();
+        uiIcons.draw(batch, "close", 588f, 1128f, 64f, frames.resolve(
+            true, false,
+            InventoryTouchLayout.CLOSE_X, InventoryTouchLayout.CLOSE_Y,
+            InventoryTouchLayout.CLOSE_SIZE, InventoryTouchLayout.CLOSE_SIZE
+        ));
+        drawText(batch, "EQUIPMENT & INVENTORY", 40f, 1232f, 1.35f, GOLD);
+        drawText(batch, "Tap a loadout slot to unequip", 40f, 1189f, 0.76f, SUBTLE);
+        drawText(batch, "AUTO-SELL", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1102f, 0.62f, GOLD);
+        drawText(batch, "on pickup", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1072f, 0.54f, SUBTLE);
+        for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.size(); index++) {
+            ItemTier tier = InventoryTouchLayout.AUTO_SELL_TIERS.get(index);
+            boolean on = settings != null && settings.autoSells(tier);
+            float chipX = InventoryTouchLayout.autoSellChipX(index);
+            float centerX = chipX + InventoryTouchLayout.AUTO_SELL_WIDTH * 0.5f;
+            drawCentered(batch, autoSellChipLabel(tier, on), centerX,
+                InventoryTouchLayout.AUTO_SELL_Y + 52f, 0.56f, on ? rarityColor(tier.name()) : MUTED);
+            drawCentered(batch, on ? "ON" : "OFF", centerX,
+                InventoryTouchLayout.AUTO_SELL_Y + 26f, 0.60f, on ? POSITIVE : MUTED);
+        }
+        drawText(batch, "EQUIPPED LOADOUT", 40f, 1023f, 0.72f, GOLD);
+        drawText(
+            batch,
+            "BACKPACK  " + state.inventory.size(),
+            InventoryTouchLayout.LIST_X,
+            668f,
+            0.68f,
+            GOLD
+        );
+        drawText(batch, "ITEM DETAILS", InventoryTouchLayout.DETAILS_X, 681f, 0.72f, GOLD);
+
+        for (int index = 0; index < EquipmentSlot.values().length; index++) {
+            EquipmentSlot slot = EquipmentSlot.values()[index];
+            int column = index % 2;
+            int row = index / 2;
+            float x = column == 0 ? InventoryTouchLayout.SLOT_LEFT_X : InventoryTouchLayout.SLOT_RIGHT_X;
+            float y = InventoryTouchLayout.SLOT_TOP_Y
+                - InventoryTouchLayout.SLOT_HEIGHT
+                - row * InventoryTouchLayout.SLOT_ROW_STRIDE;
+            Item item = state.equippedItems.get(slot.name());
+            drawText(batch, pretty(slot.name()).toUpperCase(Locale.ROOT), x + 30f, y + 70f, 0.64f, GOLD);
+            if (item == null) {
+                drawText(batch, "Empty slot", x + 112f, y + 39f, 0.78f, MUTED);
+            } else {
+                drawIcon(batch, item, x + 14f, y + 8f, 58f, visibleIcons);
+                drawText(batch, item.name, x + 80f, y + 41f, 0.78f, IVORY);
+                drawText(batch, prettyOrUnknown(item.tier), x + 220f, y + 66f, 0.58f, rarityColor(item.tier));
+            }
+        }
+
+        for (int row = 0; row < InventoryTouchLayout.VISIBLE_ROWS; row++) {
+            int itemIndex = controller.firstVisibleIndex() + row;
+            if (itemIndex >= state.inventory.size()) continue;
+            Item item = state.inventory.get(itemIndex);
+            float y = InventoryTouchLayout.LIST_TOP_Y
+                - InventoryTouchLayout.LIST_ROW_HEIGHT
+                - row * InventoryTouchLayout.LIST_ROW_STRIDE;
+            drawIcon(batch, item, InventoryTouchLayout.LIST_X + 12f, y + 9f, 70f, visibleIcons);
+            drawText(batch, item.name, InventoryTouchLayout.LIST_X + 92f, y + 61f, 0.79f, IVORY);
+            drawText(
+                batch,
+                prettyOrUnknown(item.tier).toUpperCase(Locale.ROOT),
+                InventoryTouchLayout.LIST_X + 92f,
+                y + 29f,
+                0.58f,
+                rarityColor(item.tier)
+            );
+            drawText(batch, "$ " + item.sellPrice, InventoryTouchLayout.LIST_X + 247f, y + 29f, 0.62f, GOLD);
+        }
+
+        drawDetails(batch, state, selected);
+        boolean hasSelection = selected != null;
+        UiFrameRenderer.State equipState = frames.resolve(
+            hasSelection, false,
+            InventoryTouchLayout.EQUIP_X, InventoryTouchLayout.ACTION_Y,
+            InventoryTouchLayout.ACTION_WIDTH, InventoryTouchLayout.ACTION_HEIGHT
+        );
+        UiFrameRenderer.State sellState = frames.resolve(
+            hasSelection, false,
+            InventoryTouchLayout.SELL_X, InventoryTouchLayout.ACTION_Y,
+            InventoryTouchLayout.ACTION_WIDTH, InventoryTouchLayout.ACTION_HEIGHT
+        );
+        int forgeCost = ItemForgeSystem.nextCost(selected);
+        boolean forgeable = forgeCost > 0;
+        UiFrameRenderer.State forgeState = frames.resolve(
+            forgeable, false,
+            InventoryTouchLayout.FORGE_X, InventoryTouchLayout.ACTION_Y,
+            InventoryTouchLayout.ACTION_WIDTH, InventoryTouchLayout.ACTION_HEIGHT
+        );
+        float equipOffset = MainMenuRenderer.pressedOffset(equipState);
+        float sellOffset = MainMenuRenderer.pressedOffset(sellState);
+        float forgeOffset = MainMenuRenderer.pressedOffset(forgeState);
+        float forgeCenterX = InventoryTouchLayout.FORGE_X + InventoryTouchLayout.ACTION_WIDTH * 0.5f;
+        drawCentered(batch, forgeButtonLabel(selected), forgeCenterX, 158f + forgeOffset, 0.86f,
+            forgeable ? FORGE : MUTED);
+        drawCentered(batch, forgeCostLabel(selected), forgeCenterX, 118f + forgeOffset, 0.70f,
+            forgeable ? (state.coins >= forgeCost ? GOLD : NEGATIVE) : MUTED);
+        String equipLabel = selected != null
+            && InventoryItemDetails.inspect(state, selected).comparedItemName() != null
+            ? "REPLACE"
+            : "EQUIP";
+        drawCentered(
+            batch, equipLabel,
+            InventoryTouchLayout.EQUIP_X + InventoryTouchLayout.ACTION_WIDTH * 0.5f,
+            145f + equipOffset,
+            0.96f,
+            hasSelection ? IVORY : MUTED
+        );
+        float sellCenterX = InventoryTouchLayout.SELL_X + InventoryTouchLayout.ACTION_WIDTH * 0.5f;
+        drawCentered(batch, "SELL", sellCenterX, 158f + sellOffset, 0.86f, hasSelection ? GOLD : MUTED);
+        drawCentered(batch, selected == null ? "--" : "$ " + selected.sellPrice,
+            sellCenterX, 118f + sellOffset, 0.70f, hasSelection ? IVORY : MUTED);
+        drawText(batch, EquipmentSetBonus.statusLine(state), 40f, 208f, 0.62f, IVORY);
+        String feedback = controller.feedbackMessage();
+        if (feedback != null) {
+            Color feedbackColor = new Color(GOLD);
+            feedbackColor.a = controller.feedbackAlpha();
+            drawCentered(batch, feedback, 360f, 234f, 0.82f, feedbackColor);
+        }
+        batch.end();
+        disposeHiddenIcons(visibleIcons);
+    }
+
+    private void drawInventoryFrames(
+        SpriteBatch batch,
+        GameState state,
+        InventoryTouchController controller,
+        UiFrameRenderer frames,
+        GameSettings settings
+    ) {
+        frames.draw(
+            batch, UiFrameRenderer.Kind.BUTTON,
+            InventoryTouchLayout.CLOSE_X, InventoryTouchLayout.CLOSE_Y,
+            InventoryTouchLayout.CLOSE_SIZE, InventoryTouchLayout.CLOSE_SIZE,
+            true, false
+        );
+        for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.size(); index++) {
+            boolean on = settings != null && settings.autoSells(InventoryTouchLayout.AUTO_SELL_TIERS.get(index));
+            frames.draw(
+                batch, UiFrameRenderer.Kind.SLOT,
+                InventoryTouchLayout.autoSellChipX(index), InventoryTouchLayout.AUTO_SELL_Y,
+                InventoryTouchLayout.AUTO_SELL_WIDTH, InventoryTouchLayout.AUTO_SELL_HEIGHT,
+                settings != null, on
+            );
+        }
+        for (int index = 0; index < EquipmentSlot.values().length; index++) {
+            int column = index % 2;
+            int row = index / 2;
+            float x = column == 0
+                ? InventoryTouchLayout.SLOT_LEFT_X
+                : InventoryTouchLayout.SLOT_RIGHT_X;
+            float y = InventoryTouchLayout.SLOT_TOP_Y
+                - InventoryTouchLayout.SLOT_HEIGHT
+                - row * InventoryTouchLayout.SLOT_ROW_STRIDE;
+            frames.draw(
+                batch, UiFrameRenderer.Kind.SLOT, x, y,
+                InventoryTouchLayout.SLOT_WIDTH, InventoryTouchLayout.SLOT_HEIGHT,
+                true, false
+            );
+        }
+        for (int row = 0; row < InventoryTouchLayout.VISIBLE_ROWS; row++) {
+            int itemIndex = controller.firstVisibleIndex() + row;
+            float y = InventoryTouchLayout.LIST_TOP_Y
+                - InventoryTouchLayout.LIST_ROW_HEIGHT
+                - row * InventoryTouchLayout.LIST_ROW_STRIDE;
+            frames.draw(
+                batch, UiFrameRenderer.Kind.SLOT,
+                InventoryTouchLayout.LIST_X, y,
+                InventoryTouchLayout.LIST_WIDTH, InventoryTouchLayout.LIST_ROW_HEIGHT,
+                itemIndex < state.inventory.size(), itemIndex == controller.selectedIndex()
+            );
+        }
+        frames.draw(
+            batch, UiFrameRenderer.Kind.PANEL,
+            InventoryTouchLayout.DETAILS_X, InventoryTouchLayout.DETAILS_Y,
+            InventoryTouchLayout.DETAILS_WIDTH, InventoryTouchLayout.DETAILS_HEIGHT,
+            true, false
+        );
+        boolean hasSelection = controller.selectedItem(state) != null;
+        frames.draw(
+            batch, UiFrameRenderer.Kind.BUTTON,
+            InventoryTouchLayout.EQUIP_X, InventoryTouchLayout.ACTION_Y,
+            InventoryTouchLayout.ACTION_WIDTH, InventoryTouchLayout.ACTION_HEIGHT,
+            hasSelection, false
+        );
+        frames.draw(
+            batch, UiFrameRenderer.Kind.BUTTON,
+            InventoryTouchLayout.SELL_X, InventoryTouchLayout.ACTION_Y,
+            InventoryTouchLayout.ACTION_WIDTH, InventoryTouchLayout.ACTION_HEIGHT,
+            hasSelection, false
+        );
+        frames.draw(
+            batch, UiFrameRenderer.Kind.BUTTON,
+            InventoryTouchLayout.FORGE_X, InventoryTouchLayout.ACTION_Y,
+            InventoryTouchLayout.ACTION_WIDTH, InventoryTouchLayout.ACTION_HEIGHT,
+            ItemForgeSystem.nextCost(controller.selectedItem(state)) > 0, false
+        );
+    }
+
+    /** Anvil button copy: "ANVIL +N" while a step remains, explicit reasons otherwise. */
+    static String forgeButtonLabel(Item selected) {
+        if (selected == null) return "ANVIL";
+        if (!ItemForgeSystem.isForgeable(selected)) return "ANVIL";
+        int level = ItemForgeSystem.upgradeLevel(selected);
+        if (level >= ItemForgeSystem.MAX_UPGRADE) return "ANVIL  MAX";
+        return "ANVIL  +" + (level + 1);
+    }
+
+    static String forgeCostLabel(Item selected) {
+        if (selected == null) return "--";
+        if (!ItemForgeSystem.isForgeable(selected)) return "RARE+ ONLY";
+        int cost = ItemForgeSystem.nextCost(selected);
+        return cost > 0 ? "$ " + cost : "+" + ItemForgeSystem.MAX_UPGRADE + " REACHED";
+    }
+
+    static String autoSellChipLabel(ItemTier tier, boolean on) {
+        return pretty(tier.name()).toUpperCase(Locale.ROOT);
+    }
+
+    private void drawDetails(SpriteBatch batch, GameState state, Item selected) {
+        float x = InventoryTouchLayout.DETAILS_X + 26f;
+        float top = InventoryTouchLayout.DETAILS_Y + InventoryTouchLayout.DETAILS_HEIGHT - 25f;
+        if (selected == null) {
+            drawText(batch, "SELECT AN ITEM", x, top, 0.82f, SUBTLE);
+            drawText(batch, "Review every bonus and compare", x, top - 46f, 0.66f, MUTED);
+            drawText(batch, "it with the equipped slot.", x, top - 76f, 0.66f, MUTED);
+            drawText(batch, "Green = upgrade", x, top - 150f, 0.66f, POSITIVE);
+            drawText(batch, "Red = downgrade", x, top - 182f, 0.66f, NEGATIVE);
+            return;
+        }
+
+        Details details = InventoryItemDetails.inspect(state, selected);
+        drawText(batch, details.name(), x, top, 0.86f, rarityColor(details.rarity()));
+        drawText(
+            batch,
+            prettyOrUnknown(details.rarity()).toUpperCase(Locale.ROOT)
+                + "  |  " + (details.slot() == null ? "UNKNOWN" : details.slot().name()),
+            x,
+            top - 40f,
+            0.60f,
+            GOLD
+        );
+        drawText(
+            batch,
+            details.equipped() ? "CURRENTLY EQUIPPED" : "IN BAG",
+            x,
+            top - 73f,
+            0.58f,
+            details.equipped() ? POSITIVE : SUBTLE
+        );
+        drawText(
+            batch,
+            "COMPARE: " + (details.comparedItemName() == null ? "EMPTY SLOT" : details.comparedItemName()),
+            x,
+            top - 108f,
+            0.60f,
+            SUBTLE
+        );
+        if (ItemForgeSystem.isForgeable(selected)) {
+            int level = ItemForgeSystem.upgradeLevel(selected);
+            drawText(batch, "REFORGED +" + level + " / +" + ItemForgeSystem.MAX_UPGRADE,
+                x + 150f, top - 73f, 0.56f, level > 0 ? FORGE : SUBTLE);
+        }
+        boolean mythic = details.passiveLine() != null;
+        drawText(batch, mythic ? "MYTHIC PASSIVE" : "STAT COMPARISON", x, top - 151f, 0.64f, GOLD);
+        if (mythic) {
+            drawMythicBody(batch, details, x, top);
+            return;
+        }
+        if (details.stats().isEmpty()) {
+            drawText(batch, "No stat bonuses", x, top - 194f, 0.68f, MUTED);
+            return;
+        }
+        boolean compared = details.comparedItemName() != null;
+        for (int index = 0; index < details.stats().size(); index++) {
+            StatComparison comparison = details.stats().get(index);
+            float y = top - 194f - index * 43f;
+            drawText(batch, pretty(comparison.stat().name()), x, y, 0.62f, IVORY);
+            drawText(batch, signed(comparison.candidateValue()), x + 104f, y, 0.62f, IVORY);
+            drawText(
+                batch,
+                comparisonLabel(comparison.difference(), compared),
+                x + 165f,
+                y,
+                0.57f,
+                comparisonColor(comparison.difference(), compared)
+            );
+        }
+        if (details.affixLine() != null) {
+            float y = top - 194f - details.stats().size() * 43f - 36f;
+            drawText(batch, details.affixLine(), x, y, 0.62f, FORGE);
+        }
+    }
+
+    /**
+     * Mythics are passive-defined ("instead of raw stats"), so their token stat rows yield
+     * to the passive plus §7 flavor. Eight tight rows (2 passive + 6 flavor) end at
+     * top-362, inside the top-375 panel bottom.
+     */
+    private void drawMythicBody(SpriteBatch batch, Details details, float x, float top) {
+        float maxWidth = InventoryTouchLayout.DETAILS_WIDTH - 52f;
+        List<String> passive = CodexOverlayRenderer.capLines(
+            CodexOverlayRenderer.wrapLines(details.passiveLine(), line -> text.width(line, 0.62f), maxWidth),
+            2
+        );
+        List<String> flavor = CodexOverlayRenderer.capLines(
+            CodexOverlayRenderer.wrapLines(details.flavorLine(), line -> text.width(line, 0.60f), maxWidth),
+            6
+        );
+        float y = top - 194f;
+        for (String line : passive) {
+            drawText(batch, line, x, y, 0.62f, MYTHIC);
+            y -= 24f;
+        }
+        for (String line : flavor) {
+            drawText(batch, line, x, y, 0.60f, SUBTLE);
+            y -= 24f;
+        }
+    }
+
+    private void drawIcon(
+        SpriteBatch batch,
+        Item item,
+        float x,
+        float y,
+        float size,
+        Set<String> visibleIcons
+    ) {
+        if (item.iconKey == null || item.iconKey.isEmpty()) return;
+        visibleIcons.add(item.id);
+        Texture texture = icons.get(item.id);
+        if (texture == null) {
+            texture = SheetPayloads.texture(item.iconKey);
+            texture.setFilter(Texture.TextureFilter.Nearest, Texture.TextureFilter.Nearest);
+            icons.put(item.id, texture);
+        }
+        batch.draw(texture, x, y, size, size);
+    }
+
+    private void disposeHiddenIcons(Set<String> visible) {
+        Iterator<Map.Entry<String, Texture>> iterator = icons.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Texture> entry = iterator.next();
+            if (!visible.contains(entry.getKey())) {
+                entry.getValue().dispose();
+                iterator.remove();
+            }
+        }
+    }
+
+    private void beginShapes(Matrix4 projection) {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+        shapes.setProjectionMatrix(projection);
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+    }
+
+    private void endShapes() {
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
+    private void rarityAccent(float x, float y, float width, float height, String rarity) {
+        shapes.setColor(rarityColor(rarity));
+        shapes.rect(x, y, width, height);
+    }
+
+    private void drawCentered(
+        SpriteBatch batch, String label, float centerX, float y, float scale, Color color
+    ) {
+        text.drawCentered(batch, label, centerX, y, scale, color);
+    }
+
+    private void drawText(
+        SpriteBatch batch, String label, float x, float y, float scale, Color color
+    ) {
+        text.draw(batch, label, x, y, scale, color);
+    }
+
+    static String comparisonLabel(float difference, boolean compared) {
+        if (!compared) return "NEW " + signed(difference);
+        if (difference > 0.001f) return "UP " + signed(difference);
+        if (difference < -0.001f) return "DOWN " + signed(difference);
+        return "SAME";
+    }
+
+    private static Color comparisonColor(float difference, boolean compared) {
+        if (!compared || difference > 0.001f) return POSITIVE;
+        if (difference < -0.001f) return NEGATIVE;
+        return MUTED;
+    }
+
+    private static Color rarityColor(String rarity) {
+        if (rarity == null) return Color.valueOf("E7D8B1");
+        return switch (rarity) {
+            case "UNCOMMON" -> Color.valueOf("74C365");
+            case "RARE" -> Color.valueOf("6FADEB");
+            case "LEGENDARY" -> Color.valueOf("F2B84B");
+            case "MYTHIC" -> Color.valueOf("C77DFF");
+            default -> Color.valueOf("E7D8B1");
+        };
+    }
+
+    private static String signed(float value) {
+        int rounded = Math.round(value);
+        if (Math.abs(value - rounded) < 0.001f) {
+            return String.format(Locale.ROOT, "%+d", rounded);
+        }
+        return String.format(Locale.ROOT, "%+.1f", value);
+    }
+
+    private static String prettyOrUnknown(String value) {
+        return value == null || value.isBlank() ? "Unknown" : pretty(value);
+    }
+
+    private static String pretty(String value) {
+        String text = value.replace('_', ' ').toLowerCase(Locale.ROOT);
+        return Character.toUpperCase(text.charAt(0)) + text.substring(1);
+    }
+
+    @Override
+    public void close() {
+        for (Texture icon : icons.values()) icon.dispose();
+        icons.clear();
+        text.close();
+        shapes.dispose();
+    }
+}

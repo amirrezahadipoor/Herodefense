@@ -1,0 +1,316 @@
+{
+  "alphaMode": "STRAIGHT_RGBA",
+  "armature": "hero_armature",
+  "atlas": "sprites/hero.atlas",
+  "attachment_variant": "equipment_neutral",
+  "boneAnimated": true,
+  "bones": [
+    "armor_socket",
+    "boot_socket.L",
+    "boot_socket.R",
+    "chest",
+    "foot.L",
+    "foot.R",
+    "forearm.L",
+    "forearm.R",
+    "hand.L",
+    "hand.R",
+    "head",
+    "helmet_socket",
+    "neck",
+    "pelvis",
+    "ring_socket.L",
+    "ring_socket.R",
+    "root",
+    "shin.L",
+    "shin.R",
+    "spine",
+    "thigh.L",
+    "thigh.R",
+    "upper_arm.L",
+    "upper_arm.R",
+    "weapon_socket"
+  ],
+  "builder": "hero",
+  "categoryReview": {
+    "category": "hero",
+    "document": "docs/art_reviews/HERO_PREMIUM_V2_REVIEW.md",
+    "status": "accepted"
+  },
+  "clips": {
+    "attack": [
+      {
+        "height": 384,
+        "index": 0,
+        "page": 0,
+        "width": 384,
+        "x": 0,
+        "y": 384
+      },
+      {
+        "height": 384,
+        "index": 1,
+        "page": 0,
+        "width": 384,
+        "x": 384,
+        "y": 384
+      },
+      {
+        "height": 384,
+        "index": 2,
+        "page": 0,
+        "width": 384,
+        "x": 768,
+        "y": 384
+      },
+      {
+        "height": 384,
+        "index": 3,
+        "page": 0,
+        "width": 384,
+        "x": 1152,
+        "y": 384
+      },
+      {
+        "height": 384,
+        "index": 4,
+        "page": 0,
+        "width": 384,
+        "x": 1536,
+        "y": 384
+      },
+      {
+        "height": 384,
+        "index": 5,
+        "page": 0,
+        "width": 384,
+        "x": 1920,
+        "y": 384
+      },
+      {
+        "height": 384,
+        "index": 6,
+        "page": 0,
+        "width": 384,
+        "x": 2304,
+        "y": 384
+      },
+      {
+        "height": 384,
+        "index": 7,
+        "page": 0,
+        "width": 384,
+        "x": 2688,
+        "y": 384
+      }
+    ],
+    "death": [
+      {
+        "height": 384,
+        "index": 0,
+        "page": 0,
+        "width": 384,
+        "x": 0,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 1,
+        "page": 0,
+        "width": 384,
+        "x": 384,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 2,
+        "page": 0,
+        "width": 384,
+        "x": 768,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 3,
+        "page": 0,
+        "width": 384,
+        "x": 1152,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 4,
+        "page": 0,
+        "width": 384,
+        "x": 1536,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 5,
+        "page": 0,
+        "width": 384,
+        "x": 1920,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 6,
+        "page": 0,
+        "width": 384,
+        "x": 2304,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 7,
+        "page": 0,
+        "width": 384,
+        "x": 2688,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 8,
+        "page": 0,
+        "width": 384,
+        "x": 3072,
+        "y": 1152
+      },
+      {
+        "height": 384,
+        "index": 9,
+        "page": 0,
+        "width": 384,
+        "x": 3456,
+        "y": 1152
+      }
+    ],
+    "hit": [
+      {
+        "height": 384,
+        "index": 0,
+        "page": 0,
+        "width": 384,
+        "x": 0,
+        "y": 768
+      },
+      {
+        "height": 384,
+        "index": 1,
+        "page": 0,
+        "width": 384,
+        "x": 384,
+        "y": 768
+      },
+      {
+        "height": 384,
+        "index": 2,
+        "page": 0,
+        "width": 384,
+        "x": 768,
+        "y": 768
+      },
+      {
+        "height": 384,
+        "index": 3,
+        "page": 0,
+        "width": 384,
+        "x": 1152,
+        "y": 768
+      }
+    ],
+    "idle": [
+      {
+        "height": 384,
+        "index": 0,
+        "page": 0,
+        "width": 384,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "height": 384,
+        "index": 1,
+        "page": 0,
+        "width": 384,
+        "x": 384,
+        "y": 0
+      },
+      {
+        "height": 384,
+        "index": 2,
+        "page": 0,
+        "width": 384,
+        "x": 768,
+        "y": 0
+      },
+      {
+        "height": 384,
+        "index": 3,
+        "page": 0,
+        "width": 384,
+        "x": 1152,
+        "y": 0
+      },
+      {
+        "height": 384,
+        "index": 4,
+        "page": 0,
+        "width": 384,
+        "x": 1536,
+        "y": 0
+      },
+      {
+        "height": 384,
+        "index": 5,
+        "page": 0,
+        "width": 384,
+        "x": 1920,
+        "y": 0
+      }
+    ]
+  },
+  "engineVersion": "33.0-studio-v3-3x36-full",
+  "family": "hero",
+  "frameClass": "character",
+  "frameRate": 12,
+  "frameSize": 384,
+  "key": "hero",
+  "masterRender": {
+    "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+    "frameSize": 384,
+    "lod": "none -- the shipped sheet is the master's own render",
+    "masterCommit": "6449a6d",
+    "materialCount": 13,
+    "meshParts": 61,
+    "renderSamples": 48,
+    "renderSupersample": 4,
+    "sheetHeight": 1536,
+    "sheetWidth": 3840
+  },
+  "modelRevision": "hero-premium-v2-final",
+  "pivot": {
+    "units": "normalized-bottom-left",
+    "x": 0.5,
+    "y": 0.12
+  },
+  "renderSamples": 36,
+  "renderSupersample": 3,
+  "reviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
+  "rigProfile": "premium-humanoid-v2",
+  "sheet": "sprites/hero.png",
+  "sheetHeight": 1536,
+  "sheetWidth": 3840,
+  "sheets": [
+    {
+      "decodedBytes": 23592960,
+      "file": "sprites/hero.png",
+      "height": 1536,
+      "width": 3840
+    }
+  ],
+  "silhouette": "premium_elf_archer",
+  "triangles": 1508,
+  "visualQuality": "studio-v5-hd-pbr"
+}

@@ -1,0 +1,8 @@
+{
+  "note": "Cold start is the platform's own Displayed line from logcat, measured on the CI emulator (API 35, x86_64, swiftshader). A physical device is faster; this is the regression tripwire, not a marketing number.",
+  "unit": "milliseconds",
+  "enforced_by": "tools/perf/parse_startup.py, run by .github/workflows/build-android.yml on the captured logcat",
+  "thresholds": {
+    "coldStartMillis": 6000
+  }
+}

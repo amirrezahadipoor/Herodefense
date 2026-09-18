@@ -1,0 +1,351 @@
+{
+ "assets": [
+  {
+   "animationProfile": "ancient-golem-ground-slam-v2",
+   "baselineAtlasSha256": "6d3f8cefe193a10c503522a8c2a6fc506f1a35fb824d2b585079e376046f6c72",
+   "baselineMetadataSha256": "8827610c29abdbd3ee0d6dab77d739f88ce1df2830166c1aef6647442bb93a16",
+   "baselineSheetSha256": "7ba44bff83e7c18680134e689af6962d5a1c14689bc578e6748fd0c845e05927",
+   "candidateAtlasSha256": "6d3f8cefe193a10c503522a8c2a6fc506f1a35fb824d2b585079e376046f6c72",
+   "candidateMetadataSha256": "8827610c29abdbd3ee0d6dab77d739f88ce1df2830166c1aef6647442bb93a16",
+   "candidateSheetSha256": "7ba44bff83e7c18680134e689af6962d5a1c14689bc578e6748fd0c845e05927",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 38,
+      "left": 68,
+      "right": 56,
+      "top": 70
+     },
+     "uniqueVisibleFrames": 8
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 45,
+      "left": 55,
+      "right": 14,
+      "top": 72
+     },
+     "uniqueVisibleFrames": 9
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 42,
+      "left": 71,
+      "right": 46,
+      "top": 66
+     },
+     "uniqueVisibleFrames": 4
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 43,
+      "left": 78,
+      "right": 80,
+      "top": 79
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "ancient_golem",
+   "label": "Ancient Golem",
+   "masterTier": "render-384",
+   "masterTierNote": "Roadmap R5.2 composed this sheet out of the genuine master render (`6449a6d`, engine 73.0-studio-v5-hd-pbr-4x48-pbr) at the resolution it was rendered at, because the provenance measurement classifies it as an independent render rather than a resampled copy. The candidate hashes below are the shipped 384 px sheet and its atlas; the previous shipped bytes are recorded as the baseline, and the review sheets above still show what the review looked at. The batch's own decoded budget grows with it, which the roadmap row states with its arithmetic.",
+   "materialCount": 9,
+   "meshParts": 64,
+   "minimumAlphaMargins": {
+    "bottom": 38,
+    "left": 55,
+    "right": 14,
+    "top": 66
+   },
+   "modelRevision": "heartstone-colossus-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-heavy-humanoid-v2",
+   "signatureAttack": "ground_slam",
+   "triangles": 3442
+  },
+  {
+   "animationProfile": "thorn-matriarch-thorn-cage-v2",
+   "baselineAtlasSha256": "d9e3d88a31c009290e3be36b92cab8726be478ad61951be566909c7cae9ebed3",
+   "baselineMetadataSha256": "4c900a299b562b4de8c0eaeedf24931651de60259422a8c56d01f58923247857",
+   "baselineSheetSha256": "c35967f23e4ade32699ae499560a8a3ab2d802fbbd535b52004fe28b510b8070",
+   "candidateAtlasSha256": "d9e3d88a31c009290e3be36b92cab8726be478ad61951be566909c7cae9ebed3",
+   "candidateMetadataSha256": "4c900a299b562b4de8c0eaeedf24931651de60259422a8c56d01f58923247857",
+   "candidateSheetSha256": "c35967f23e4ade32699ae499560a8a3ab2d802fbbd535b52004fe28b510b8070",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 31,
+      "left": 86,
+      "right": 77,
+      "top": 68
+     },
+     "uniqueVisibleFrames": 8
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 32,
+      "left": 79,
+      "right": 64,
+      "top": 80
+     },
+     "uniqueVisibleFrames": 9
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 32,
+      "left": 96,
+      "right": 78,
+      "top": 67
+     },
+     "uniqueVisibleFrames": 4
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 33,
+      "left": 103,
+      "right": 100,
+      "top": 79
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "thorn_matriarch",
+   "label": "Thorn Matriarch",
+   "masterTier": "render-384",
+   "masterTierNote": "Roadmap R5.2 composed this sheet out of the genuine master render (`6449a6d`, engine 73.0-studio-v5-hd-pbr-4x48-pbr) at the resolution it was rendered at, because the provenance measurement classifies it as an independent render rather than a resampled copy. The candidate hashes below are the shipped 384 px sheet and its atlas; the previous shipped bytes are recorded as the baseline, and the review sheets above still show what the review looked at. The batch's own decoded budget grows with it, which the roadmap row states with its arithmetic.",
+   "materialCount": 10,
+   "meshParts": 71,
+   "minimumAlphaMargins": {
+    "bottom": 31,
+    "left": 79,
+    "right": 64,
+    "top": 67
+   },
+   "modelRevision": "briar-sovereign-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-rooted-caster-v2",
+   "signatureAttack": "thorn_cage",
+   "triangles": 2008
+  },
+  {
+   "animationProfile": "ember-wyrm-flame-sweep-v2",
+   "baselineAtlasSha256": "cdc1d39d81dcbb23b0afef925e8c69a4c7ff6c639a4597045eddc9f267d05c96",
+   "baselineMetadataSha256": "795ee529a85bc74a97ea98deafd7001314ae36906648f26ce516bce9b9ba0316",
+   "baselineSheetSha256": "2e4bdfc5f994135109b1e1c686809f3fa6930c47cbde016ad687f647b7c5aa36",
+   "candidateAtlasSha256": "cdc1d39d81dcbb23b0afef925e8c69a4c7ff6c639a4597045eddc9f267d05c96",
+   "candidateMetadataSha256": "795ee529a85bc74a97ea98deafd7001314ae36906648f26ce516bce9b9ba0316",
+   "candidateSheetSha256": "2e4bdfc5f994135109b1e1c686809f3fa6930c47cbde016ad687f647b7c5aa36",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 43,
+      "left": 35,
+      "right": 66,
+      "top": 77
+     },
+     "uniqueVisibleFrames": 8
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 52,
+      "left": 54,
+      "right": 31,
+      "top": 56
+     },
+     "uniqueVisibleFrames": 9
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 48,
+      "left": 78,
+      "right": 62,
+      "top": 57
+     },
+     "uniqueVisibleFrames": 4
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 49,
+      "left": 83,
+      "right": 56,
+      "top": 76
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "ember_wyrm",
+   "label": "Ember Wyrm",
+   "masterTier": "render-384",
+   "masterTierNote": "Roadmap R5.2 composed this sheet out of the genuine master render (`6449a6d`, engine 73.0-studio-v5-hd-pbr-4x48-pbr) at the resolution it was rendered at, because the provenance measurement classifies it as an independent render rather than a resampled copy. The candidate hashes below are the shipped 384 px sheet and its atlas; the previous shipped bytes are recorded as the baseline, and the review sheets above still show what the review looked at. The batch's own decoded budget grows with it, which the roadmap row states with its arithmetic.",
+   "materialCount": 10,
+   "meshParts": 74,
+   "minimumAlphaMargins": {
+    "bottom": 43,
+    "left": 35,
+    "right": 31,
+    "top": 56
+   },
+   "modelRevision": "furnace-wyrm-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-winged-wyrm-mapped-v2",
+   "signatureAttack": "flame_sweep",
+   "triangles": 2324
+  },
+  {
+   "animationProfile": "void-knight-void-charge-v2",
+   "baselineSheetSha256": "2089420152fadd853328445a2a2aa271fcad9e316cf9e73be66fe595ba33bf2a",
+   "candidateAtlasSha256": "accaf00c3db2c600cc005afb56f298948982316bbb773b9e047640b7e73ef9a9",
+   "candidateMetadataSha256": "ad80aec523664ced95df3668e6e45f1b04c2255ed27cbf27b197371453b9bd95",
+   "candidateSheetSha256": "2089420152fadd853328445a2a2aa271fcad9e316cf9e73be66fe595ba33bf2a",
+   "clips": {
+    "attack": {
+     "frameCount": 8,
+     "minimumAlphaMargins": {
+      "bottom": 26,
+      "left": 55,
+      "right": 37,
+      "top": 38
+     },
+     "uniqueVisibleFrames": 8
+    },
+    "death": {
+     "frameCount": 10,
+     "minimumAlphaMargins": {
+      "bottom": 32,
+      "left": 56,
+      "right": 29,
+      "top": 60
+     },
+     "uniqueVisibleFrames": 9
+    },
+    "hit": {
+     "frameCount": 4,
+     "minimumAlphaMargins": {
+      "bottom": 31,
+      "left": 64,
+      "right": 51,
+      "top": 45
+     },
+     "uniqueVisibleFrames": 4
+    },
+    "idle": {
+     "frameCount": 6,
+     "minimumAlphaMargins": {
+      "bottom": 32,
+      "left": 67,
+      "right": 60,
+      "top": 58
+     },
+     "uniqueVisibleFrames": 5
+    }
+   },
+   "key": "void_knight",
+   "label": "Void Knight",
+   "materialCount": 10,
+   "meshParts": 61,
+   "minimumAlphaMargins": {
+    "bottom": 26,
+    "left": 55,
+    "right": 29,
+    "top": 38
+   },
+   "modelRevision": "abyss-champion-v2",
+   "rigBoneCount": 25,
+   "rigProfile": "premium-armored-humanoid-v2",
+   "signatureAttack": "void_charge",
+   "triangles": 2082
+  }
+ ],
+ "baselineManifestSha256": "26207965685a794b63b6f8bf10839bddc6c0d792c1634c626d1e757fb9d899c1",
+ "batch": "bosses-premium-v2",
+ "candidateManifestSha256": "94cc21f7c9d693a4f323241a5224150aa3a23edae8a5cc32d8df8f3b966a9214",
+ "expectedKeys": [
+  "ancient_golem",
+  "thorn_matriarch",
+  "ember_wyrm",
+  "void_knight"
+ ],
+ "frameContract": {
+  "attack": 8,
+  "death": 10,
+  "hit": 4,
+  "idle": 6
+ },
+ "minimumUniqueVisibleFrames": {
+  "attack": 7,
+  "death": 9,
+  "hit": 3,
+  "idle": 5
+ },
+ "reviewSheetCount": 9,
+ "reviewSheets": {
+  "ancient_golem_full_motion.png": {
+   "bytes": 957570,
+   "sha256": "b74ba56eb8f82747ed44489abdb232c03ebc278f418c1e76360b90af97165394"
+  },
+  "ancient_golem_readability.png": {
+   "bytes": 200073,
+   "sha256": "0ff0caaf0d1cc86b9588e0f3c2c5bf6fa6b3c8f7920ad4c958b36bc68d9996ea"
+  },
+  "bosses_lineup.png": {
+   "bytes": 223635,
+   "sha256": "53ac50a597bc4f46f37f677279348b8ffd2a57bc2c4abd169a66d59b748042d1"
+  },
+  "ember_wyrm_full_motion.png": {
+   "bytes": 898336,
+   "sha256": "cbe8ad3308051a4202cd5cc82e76b7e49a0689303a04227fc67b975ac057244a"
+  },
+  "ember_wyrm_readability.png": {
+   "bytes": 202138,
+   "sha256": "d39b40d4668a037123f26e70c6f4d4d4f224112cfef8a0f0d4a32ad240ae7347"
+  },
+  "thorn_matriarch_full_motion.png": {
+   "bytes": 827820,
+   "sha256": "ca587663cbec24953b8fdcc6152deb43d67f8cc3e28bcb0c7367397d22c18eb2"
+  },
+  "thorn_matriarch_readability.png": {
+   "bytes": 188785,
+   "sha256": "708df9d5975cee43965d58f6d4f968987f586bea3f8842f5e428f47138727ca8"
+  },
+  "void_knight_full_motion.png": {
+   "bytes": 513583,
+   "sha256": "fa8fa9819c41f1a1172382442dbb5d2e041aec52dccf042740008aeb9ece01e9"
+  },
+  "void_knight_readability.png": {
+   "bytes": 177049,
+   "sha256": "5f44143b3bfe492012ac407d18afdf1aeea7c6044e67b0263c2a1fa14bfecd3c"
+  }
+ },
+ "schemaVersion": 1,
+ "summary": {
+  "assetCount": 4,
+  "decodedBudgetBytes": 83886080,
+  "decodedBytes": 79167488,
+  "decodedBytesNote": "Measured on the sheets that ship: roadmap R5.2 composed three of these four out of the genuine master renders at 3840x1536 (3 x 23,592,960 + 2,048 x 1,024 x 4 = 79,167,488) and void_knight keeps its reviewed page because the provenance measurement does not classify it as an independent render. The batch budget is 80 MiB.",
+  "frameCount": 112,
+  "maximumTriangles": 3442,
+  "minimumAlphaMargins": {
+   "bottom": 26,
+   "left": 35,
+   "right": 14,
+   "top": 38
+  },
+  "minimumMaterialCount": 9,
+  "minimumMeshParts": 61,
+  "minimumTriangles": 2008,
+  "singlePageAtlasCount": 4
+ }
+}

@@ -1,0 +1,59 @@
+{
+  "id": "2026-09-17-texture-encoding-sweep",
+  "date": "2026-09-17",
+  "commit": "46c2417",
+  "command": "python3 tools/texture/encode_textures.py --keys <every sheet> --reference <google etc1 harness>",
+  "note": "the ETC2 encoder measured over every sheet in the catalog, with Google's etc1 encoder measured on the same pixels beside it; a sheet ships only if the alpha gate and the 32 dB bar both pass, and none does yet",
+  "metrics": [
+    {
+      "name": "sheetsMeasured",
+      "value": 111,
+      "unit": "count"
+    },
+    {
+      "name": "sheetsThatAreMasks",
+      "value": 34,
+      "unit": "count"
+    },
+    {
+      "name": "sheetsClearingTheBar",
+      "value": 16,
+      "unit": "count"
+    },
+    {
+      "name": "sheetsMeasuredForColour",
+      "value": 111,
+      "unit": "count"
+    },
+    {
+      "name": "sheetsTheToolWouldShip",
+      "value": 16,
+      "unit": "count"
+    },
+    {
+      "name": "bestColourPsnr",
+      "value": 40.51,
+      "unit": "dB"
+    },
+    {
+      "name": "worstColourPsnr",
+      "value": 25.09,
+      "unit": "dB"
+    },
+    {
+      "name": "medianColourPsnr",
+      "value": 33.01,
+      "unit": "dB"
+    },
+    {
+      "name": "sheetsBeatingTheReference",
+      "value": 111,
+      "unit": "count"
+    },
+    {
+      "name": "referenceMedianPsnr",
+      "value": 32.28,
+      "unit": "dB"
+    }
+  ]
+}

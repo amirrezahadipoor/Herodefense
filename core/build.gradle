@@ -1,0 +1,155 @@
+plugins {
+    id "java-library"
+    // Roadmap R2.5: static analysis, run as its own task so the test loop keeps its pace.
+    id "com.github.spotbugs" version "6.0.26"
+    id "pmd"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+compileJava.options.encoding = "UTF-8"
+compileTestJava.options.encoding = "UTF-8"
+
+dependencies {
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+
+    testImplementation platform("org.junit:junit-bom:$junitVersion")
+    testImplementation "org.junit.jupiter:junit-jupiter"
+}
+
+test {
+    // Roadmap R4.5: the suites that sweep whole runs are tagged `balance` and belong to :core:balanceGate, which CI
+    // runs as its own job. The tag decides which task pays for a suite, never whether it runs: `check` depends on
+    // both tasks, and the balance job is the one that judges a push. Keeping them out of this task is what makes
+    // the unit loop seconds instead of minutes, and no suite runs twice.
+    useJUnitPlatform {
+        excludeTags "balance"
+    }
+    maxHeapSize = "640m"
+
+    // Two test JVMs when the machine has the cores. Every test class builds its own state and seeds its own
+    // simulation, so running two classes at once changes nothing except the wall clock; the property is there
+    // for machines that prefer to stay serial.
+    if (Runtime.runtime.availableProcessors() >= 2 && !project.hasProperty("serialTests")) {
+        maxParallelForks = 2
+    }
+
+}
+
+// --- The balance gate (roadmap R4.5) ----------------------------------------------------------------------
+// The same suites the `balance` tag marks, run as their own task so CI can give them their own job, timeout and
+// report: a curve that leaves the band fails a job called "balance", not one line inside a 650-test run. The
+// fixed seeds every gate sweeps are named in docs/BALANCE.md.
+tasks.register("balanceGate", Test) {
+    description = "Runs the balance gates (curve, ascension, trials, reward cards, non-optimiser band) on their fixed seeds."
+    group = "verification"
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform {
+        includeTags "balance"
+    }
+    maxHeapSize = "640m"
+    if (Runtime.runtime.availableProcessors() >= 2 && !project.hasProperty("serialTests")) {
+        maxParallelForks = 2
+    }
+    // The document is an input: BalanceDocumentTest fails when docs/BALANCE.md disagrees with the code, and without
+    // this line an incremental local run would call the task up to date after an edit to the file -- a gate that
+    // silently skips the thing it guards. CI is a fresh checkout, so it always ran there; this is for the desk.
+    inputs.file(rootProject.file("docs/BALANCE.md")).withPropertyName("balanceDocument").optional()
+}
+
+// `check` is the complete gate: the unit loop plus the sweeps. A push is judged by CI running both.
+tasks.named("check") {
+    dependsOn tasks.named("balanceGate")
+}
+
+// --- Generated balance document (roadmap R4.4) -------------------------------------------------------------
+// Everything between a pair of `balance:generated` markers in docs/BALANCE.md is built from the shipped constants
+// and the simulator, and BalanceDocumentTest refuses to let the file disagree with the code. This task is for the
+// other direction: change a number on purpose, run it, and the document catches up.
+def residencyOutput = layout.buildDirectory.file("reports/residency.txt")
+tasks.register("residencyReport", JavaExec) {
+    description = "Reports the residency of the shipped asset catalog from the same arithmetic the gate uses (roadmap R8.5)."
+    group = "documentation"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "com.amirrezahadipoor.herodefense.render.ResidencyReport"
+    // Production code does not print (PMD's SystemPrintln is enabled); the tool writes a file and the build
+    // prints it, so the command's output is the measurement and the file is the artifact.
+    args = [rootProject.file("android/assets/generated").absolutePath, residencyOutput.get().asFile.absolutePath]
+    outputs.file(residencyOutput)
+    doLast {
+        println residencyOutput.get().asFile.text
+    }
+}
+
+tasks.register("regenerateBalanceDoc", JavaExec) {
+    description = "Rewrites the generated blocks of docs/BALANCE.md from the code (roadmap R4.4)."
+    group = "documentation"
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = "com.amirrezahadipoor.herodefense.balance.BalanceDocument"
+    // The generator writes the file and says nothing (production code here does not print); the task reports what
+    // changed by comparing the document before and after the run, and BalanceDocumentTest is what fails if a
+    // contributor forgets to run it.
+    def documentFile = rootProject.file("docs/BALANCE.md")
+    def before = providers.provider { documentFile.exists() ? documentFile.text : "" }
+    def snapshot = before.get()
+    doLast {
+        if (documentFile.text == snapshot) {
+            println "docs/BALANCE.md: every generated block already matches the code"
+        } else {
+            println "docs/BALANCE.md: regenerated from the code"
+        }
+    }
+}
+
+// --- Static analysis (roadmap R2.5) -----------------------------------------------------------------------
+// Two analysers with different eyes: SpotBugs reads the compiled bytecode (null dereferences, ignored return
+// values, exposure of mutable state), PMD reads the source (unused or shadowing declarations, missing braces,
+// needless object churn). Neither is wired into `test`, so the fast loop stays fast; `ciStaticAnalysis` is what
+// the workflow runs, and `check` stays the aggregate of tests plus both reports.
+//
+// Findings are triaged, never silenced: every exclusion below names a rule AND the file or pattern it covers, so
+// the reports stay actionable. The triage record lives in docs/STATIC_ANALYSIS.md.
+
+spotbugs {
+    toolVersion = "4.8.6"
+    effort.set(com.github.spotbugs.snom.Effort.valueOf("MAX"))
+    reportLevel.set(com.github.spotbugs.snom.Confidence.valueOf("LOW"))
+    excludeFilter = file("config/spotbugs/exclude.xml")
+}
+
+pmd {
+    toolVersion = "7.7.0"
+    consoleOutput = true
+    ruleSetFiles = files("config/pmd/ruleset.xml")
+    ruleSets = []
+}
+
+tasks.withType(com.github.spotbugs.snom.SpotBugsTask).configureEach {
+    reports {
+        html.required = true
+        xml.required = true
+    }
+}
+
+tasks.withType(Pmd).configureEach {
+    ignoreFailures = false
+}
+
+// Test sources get the same rules minus four that describe test-writing style rather than defects (see
+// config/pmd/ruleset-tests.xml for each reason). A broken test is as expensive as a broken system, so the
+// correctness rules -- unused members, resource leaks, float loop indices, collection choices -- stay on.
+tasks.named("pmdTest") {
+    ruleSetFiles = files("config/pmd/ruleset-tests.xml")
+}
+
+tasks.register("ciStaticAnalysis") {
+    group = "verification"
+    description = "Both analysers over main and test sources; fails on any finding they have not been told to ignore."
+    dependsOn "spotbugsMain", "spotbugsTest", "pmdMain", "pmdTest"
+}

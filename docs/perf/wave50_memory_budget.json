@@ -1,0 +1,9 @@
+{
+  "note": "What the process may hold at wave 50 on the CI emulator, measured by dumpsys meminfo through the instrumented test. The emulator runs a software GL stack (swiftshader) and an x86_64 build; a physical arm64 device holds less. This is the regression tripwire for the atlas residency policy (R8.3) and for the texture work of R8.1.",
+  "unit": "KiB",
+  "enforced_by": "tools/perf/check_wave50_memory.py, run by .github/workflows/build-android.yml on the captured logcat",
+  "thresholds": {
+    "totalPssKib": 409600,
+    "graphicsKib": 163840
+  }
+}

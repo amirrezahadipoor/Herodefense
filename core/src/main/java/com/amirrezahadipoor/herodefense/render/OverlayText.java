@@ -1,0 +1,211 @@
+package com.amirrezahadipoor.herodefense.render;
+
+import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+
+/**
+ * Shared premium-v2 typography: density-true glyphs in the current language's face, warm parchment fills, and a
+ * fixed forest shadow. Legacy call sites still pass a scale; it is mapped onto a typographic role so
+ * every label is physically at least 11sp on the device instead of 5sp of blurred bitmap font.
+ *
+ * <p>Every string that reaches a batch passes through {@link #visual(String)} first, and this is the only place
+ * in the render path where that happens. A right-to-left language has to be shaped -- contextual forms chosen and
+ * the run reordered -- and it has to be measured shaped, because the advance of a joined Persian word is not the
+ * sum of the advances of its unshaped letters. Doing both here is what makes "the caller passes a string and a
+ * position" still true in Persian: a renderer that centred an unshaped string would centre the wrong width, and
+ * nothing about the code at the call site would look wrong.
+ */
+final class OverlayText implements AutoCloseable {
+    static final Color GOLD = Color.valueOf("EAC66D");
+    static final Color IVORY = Color.valueOf("F7EBCB");
+    static final Color SUBTLE = Color.valueOf("C6D2C4");
+    static final Color POSITIVE = Color.valueOf("7ED898");
+    static final Color NEGATIVE = Color.valueOf("EA7F79");
+    static final Color MUTED = Color.valueOf("97A096");
+
+    private static final float SHADOW_OFFSET_X = 1.5f;
+    private static final float SHADOW_OFFSET_Y = -2.5f;
+    private static final float SHADOW_ALPHA = 0.85f;
+
+    private final GlyphLayout layout = new GlyphLayout();
+
+    OverlayText() {
+    }
+
+    void draw(SpriteBatch batch, String text, float x, float y, float scale, Color color) {
+        draw(batch, text, x, y, scale, color, 1f);
+    }
+
+    void draw(
+        SpriteBatch batch, String text, float x, float y, float scale, Color color, float alpha
+    ) {
+        draw(batch, text, x, y, GameFonts.Role.forLegacyScale(scale), color, alpha);
+    }
+
+    void draw(
+        SpriteBatch batch,
+        String text,
+        float x,
+        float y,
+        GameFonts.Role role,
+        Color color,
+        float alpha
+    ) {
+        if (text == null || text.isEmpty()) return;
+        float resolvedAlpha = Math.max(0f, Math.min(1f, color.a * alpha));
+        BitmapFont font = GameFonts.shared().font(role, GameLocale.current());
+        String visual = visual(text);
+        font.setColor(0.003f, 0.010f, 0.009f, resolvedAlpha * SHADOW_ALPHA);
+        font.draw(batch, visual, x + SHADOW_OFFSET_X, y + SHADOW_OFFSET_Y);
+        font.setColor(color.r, color.g, color.b, resolvedAlpha);
+        font.draw(batch, visual, x, y);
+    }
+
+    /**
+     * Draws {@code text} on the container's leading edge, {@code inset} in from it: the left edge in English, the
+     * right one in Persian. The run is measured shaped, because the advance of a joined Persian word is not the
+     * sum of its letters' advances and mirroring with the unshaped width would leave the last word hanging off
+     * the edge it was measured against.
+     */
+    void drawLeading(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color
+    ) {
+        draw(batch, text,
+            UiMirror.leading(containerX, containerWidth, inset, width(text, scale)), y, scale, color);
+    }
+
+    /** {@link #drawLeading} with the alpha a reveal or a disabled state asks for. */
+    void drawLeading(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color,
+        float alpha
+    ) {
+        draw(batch, text,
+            UiMirror.leading(containerX, containerWidth, inset, width(text, scale)), y, scale, color, alpha);
+    }
+
+    /** {@link #drawTrailing} with the alpha a reveal or a disabled state asks for. */
+    void drawTrailing(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color,
+        float alpha
+    ) {
+        draw(batch, text,
+            UiMirror.trailing(containerX, containerWidth, inset, width(text, scale)), y, scale, color, alpha);
+    }
+
+    /** The same on the container's trailing edge, where a row's value and its hint go. */
+    void drawTrailing(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float y,
+        float scale,
+        Color color
+    ) {
+        draw(batch, text,
+            UiMirror.trailing(containerX, containerWidth, inset, width(text, scale)), y, scale, color);
+    }
+
+    void drawCentered(
+        SpriteBatch batch, String text, float centerX, float y, float scale, Color color
+    ) {
+        drawCentered(batch, text, centerX, y, scale, color, 1f);
+    }
+
+    void drawCentered(
+        SpriteBatch batch,
+        String text,
+        float centerX,
+        float y,
+        float scale,
+        Color color,
+        float alpha
+    ) {
+        GameFonts.Role role = GameFonts.Role.forLegacyScale(scale);
+        draw(batch, text, centerX - width(text, role) * 0.5f, y, role, color, alpha);
+    }
+
+    void drawRightAligned(
+        SpriteBatch batch, String text, float rightX, float y, float scale, Color color
+    ) {
+        drawRightAligned(batch, text, rightX, y, scale, color, 1f);
+    }
+
+    void drawRightAligned(
+        SpriteBatch batch,
+        String text,
+        float rightX,
+        float y,
+        float scale,
+        Color color,
+        float alpha
+    ) {
+        GameFonts.Role role = GameFonts.Role.forLegacyScale(scale);
+        draw(batch, text, rightX - width(text, role), y, role, color, alpha);
+    }
+
+    float width(String text, float scale) {
+        return width(text, GameFonts.Role.forLegacyScale(scale));
+    }
+
+    float width(String text, GameFonts.Role role) {
+        if (text == null || text.isEmpty()) return 0f;
+        layout.setText(GameFonts.shared().font(role, GameLocale.current()), visual(text));
+        return layout.width;
+    }
+
+    /**
+     * The text as the current language's font draws it: shaped and reordered for a right-to-left language, and
+     * untouched otherwise.
+     *
+     * <p>Shaping is skipped entirely for English rather than relying on {@link PersianShaper}'s own ASCII fast
+     * path, because an English string is allowed to contain a stray non-ASCII character -- an en dash, a bullet --
+     * that must not be reordered by a rule it was never written for.
+     *
+     * <p>Shaping a Persian string allocates: a codepoint array, a list of the letters being joined, and the
+     * builder the result is written into. It is not cached, because nothing here has been measured and this
+     * repository decides that with a profiler rather than by anticipation (R13.1). What is known is that the cost
+     * is only paid in Persian, on a screen's worth of short labels, and that the English path this shipped with
+     * returns its argument untouched.
+     */
+    static String visual(String text) {
+        GameLanguage language = GameLocale.current();
+        return language.rightToLeft() ? PersianShaper.shape(text) : text;
+    }
+
+    /** Cap-to-baseline height of the role, used by callers that stack lines. */
+    float lineHeight(GameFonts.Role role) {
+        return GameFonts.shared().font(role, GameLocale.current()).getLineHeight();
+    }
+
+    @Override
+    public void close() {
+        // Fonts are owned by GameFonts.shared(); nothing to release per renderer.
+    }
+}

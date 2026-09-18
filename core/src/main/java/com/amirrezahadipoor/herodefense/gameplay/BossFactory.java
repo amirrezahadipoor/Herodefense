@@ -1,0 +1,48 @@
+package com.amirrezahadipoor.herodefense.gameplay;
+
+import com.amirrezahadipoor.herodefense.model.Boss;
+import com.amirrezahadipoor.herodefense.model.BossType;
+import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.trials.TrialEffects;
+
+/** Creates a boss with its authored identity and milestone-wave multipliers. */
+public final class BossFactory {
+    private final DifficultyCurve difficultyCurve;
+
+    public BossFactory() {
+        this(new DifficultyCurve());
+    }
+
+    public BossFactory(DifficultyCurve difficultyCurve) {
+        this.difficultyCurve = difficultyCurve;
+    }
+
+    public Boss create(
+        GameState state,
+        BossType type,
+        float x,
+        float y,
+        int bossNumber,
+        int spawnLane
+    ) {
+        if (state == null || type == null || bossNumber < 1) {
+            throw new IllegalArgumentException("Valid state, boss type, and boss number are required");
+        }
+        Boss boss = new Boss(state.allocateEntityId(), type.name(), x, y, bossNumber);
+        BossFightScript script = BossEncounterTable.scriptFor(bossNumber);
+        boss.fightScript = script.name();
+        boss.uniqueAttack = type.uniqueAttack();
+        boss.movementSpeed = type.movementSpeed() * script.movementMultiplier();
+        boss.attackRange = type.attackRange() * script.attackRangeMultiplier();
+        // The basic attack keeps the identity's cadence on purpose: a script changes how the *special* fights,
+        // so a run's ordinary damage intake does not drift with the encounter number.
+        boss.attackIntervalSeconds = type.attackIntervalSeconds();
+        boss.spawnLane = spawnLane;
+        difficultyCurve.applyToBoss(boss, bossNumber * 5, state.ascensionTier);
+        float healthMult = TrialEffects.bossHealthMultiplier(state.activeTrials);
+        boss.health *= healthMult;
+        boss.maxHealth *= healthMult;
+        boss.damage *= TrialEffects.bossDamageMultiplier(state.activeTrials);
+        return boss;
+    }
+}

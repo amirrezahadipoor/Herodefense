@@ -1,0 +1,254 @@
+package com.amirrezahadipoor.herodefense.gameplay;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import com.amirrezahadipoor.herodefense.model.Enemy;
+import com.amirrezahadipoor.herodefense.model.EnemyType;
+import com.amirrezahadipoor.herodefense.model.GameState;
+import org.junit.jupiter.api.Test;
+
+final class DifficultyCurveTest {
+    private final DifficultyCurve curve = new DifficultyCurve();
+
+    @Test
+    void regularHealthUsesTheSimulationTunedWaveFormulaAndTypeMultiplier() {
+        assertEquals(
+            DifficultyCurve.BASE_ENEMY_HEALTH * DifficultyCurve.ENEMY_HEALTH_GROWTH,
+            curve.baselineRegularHealth(1),
+            0.0001f
+        );
+        assertEquals(
+            curve.baselineRegularHealth(25) * EnemyType.STONEKIN.baseHealth() / 20f,
+            curve.regularHealth(EnemyType.STONEKIN, 25),
+            0.001f
+        );
+        assertTrue(curve.baselineRegularHealth(100) > curve.baselineRegularHealth(50));
+    }
+
+    @Test
+    void damageGrowsButCannotOneShotReasonablyBuiltHero() {
+        for (EnemyType type : EnemyType.values()) {
+            float damage = curve.regularDamage(type, 100);
+            assertTrue(damage <= curve.reasonableHeroMaxHealth(100) * 0.28f);
+        }
+    }
+
+    @Test
+    void bossesUseFifteenTimesBaselineHpAndThreeTimesBaselineDamage() {
+        int wave = 50;
+        assertEquals(
+            curve.baselineRegularHealth(wave) * 15f,
+            curve.bossHealth(wave),
+            0.001f
+        );
+        assertEquals(
+            curve.baselineRegularDamage(wave) * 3f,
+            curve.bossDamage(wave),
+            0.001f
+        );
+        assertTrue(curve.bossHealth(wave) > curve.regularHealth(EnemyType.FUNGAL_BRUTE, wave));
+        assertTrue(curve.bossDamage(wave) > curve.regularDamage(EnemyType.FUNGAL_BRUTE, wave));
+    }
+
+    @Test
+    void ascensionScheduleIsBitIdenticalAtTierZero() {
+        assertEquals(DifficultyCurve.ENEMY_HEALTH_GROWTH, DifficultyCurve.healthGrowthForTier(0), 0.0f);
+        assertEquals(DifficultyCurve.ENEMY_DAMAGE_GROWTH, DifficultyCurve.damageGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.SECOND_HALF_HEALTH_GROWTH, DifficultyCurve.secondHalfHealthGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.SECOND_HALF_DAMAGE_GROWTH, DifficultyCurve.secondHalfDamageGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.FINAL_QUARTER_HEALTH_GROWTH, DifficultyCurve.finalQuarterHealthGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.FINAL_QUARTER_DAMAGE_GROWTH, DifficultyCurve.finalQuarterDamageGrowthForTier(0), 0.0f);
+    }
+
+    @Test
+    void ascensionBumpsScaleMultiplicativelyAndMonotonically() {
+        assertEquals(
+            DifficultyCurve.ENEMY_HEALTH_GROWTH * (1f + DifficultyCurve.ASCENSION_HEALTH_BUMP_PER_TIER * 10),
+            DifficultyCurve.healthGrowthForTier(10),
+            0.000001f
+        );
+        assertEquals(
+            DifficultyCurve.ENEMY_DAMAGE_GROWTH * (1f + DifficultyCurve.ASCENSION_DAMAGE_BUMP_PER_TIER * 10),
+            DifficultyCurve.damageGrowthForTier(10),
+            0.000001f
+        );
+        int[] tiers = {0, 1, 3, 6, 10};
+        for (int i = 1; i < tiers.length; i++) {
+            assertTrue(DifficultyCurve.healthGrowthForTier(tiers[i])
+                > DifficultyCurve.healthGrowthForTier(tiers[i - 1]));
+            assertTrue(DifficultyCurve.damageGrowthForTier(tiers[i])
+                > DifficultyCurve.damageGrowthForTier(tiers[i - 1]));
+        }
+        assertEquals(
+            DifficultyCurve.healthGrowthForTier(0), DifficultyCurve.healthGrowthForTier(-4), 0.0f);
+        assertEquals(
+            DifficultyCurve.damageGrowthForTier(0), DifficultyCurve.damageGrowthForTier(-4), 0.0f);
+    }
+
+    /**
+     * R4.7's charge, pinned as arithmetic rather than as a vibe: tier 0 is bit-identical (so every tier-0 gate in
+     * the repository keeps measuring the shipped game), the charge is heaviest on the first wave of the run and fades
+     * to nothing by the end of its span, and it lands on the baseline rather than on a growth rate -- which is what
+     * makes it pay for the tier's flat starting power in the waves where that power is worth the most.
+     */
+    @Test
+    void theAscensionBaseChargeIsBitIdenticalAtTierZeroAndFadesAcrossItsSpan() {
+        int span = DifficultyCurve.ASCENSION_BASE_CHARGE_SPAN_WAVES;
+        assertTrue(span > 1, "the charge has to have a span to fade across");
+        for (int wave : new int[] {1, 25, span / 2, span, GameState.FINAL_WAVE}) {
+            assertEquals(1f, DifficultyCurve.baseScaleForTier(wave, 0), 0.0f, "tier 0 pays no base charge");
+            assertEquals(1f, DifficultyCurve.baseDamageScaleForTier(wave, 0), 0.0f);
+        }
+        assertEquals(1f + DifficultyCurve.ASCENSION_BASE_HEALTH_BUMP_PER_TIER * 10f,
+            DifficultyCurve.baseScaleForTier(1, 10), 0.000001f, "tier 10 pays full price on wave one");
+        assertEquals(1f + DifficultyCurve.ASCENSION_BASE_DAMAGE_BUMP_PER_TIER * 10f,
+            DifficultyCurve.baseDamageScaleForTier(1, 10), 0.000001f);
+        assertEquals(1f + DifficultyCurve.ASCENSION_BASE_HEALTH_BUMP_PER_TIER * 10f / span,
+            DifficultyCurve.baseScaleForTier(span, 10), 0.000001f,
+            "the fade is linear: the last wave of the span carries one span'th of the charge");
+        assertEquals(1f + DifficultyCurve.ASCENSION_BASE_DAMAGE_BUMP_PER_TIER * 10f / span,
+            DifficultyCurve.baseDamageScaleForTier(span, 10), 0.000001f);
+        assertEquals(1f, DifficultyCurve.baseScaleForTier(span + 1, 10), 0.0f, "and then it is gone exactly");
+        assertEquals(1f, DifficultyCurve.baseScaleForTier(GameState.FINAL_WAVE, 10), 0.0f);
+        float previous = Float.MAX_VALUE;
+        for (int wave = 1; wave <= GameState.FINAL_WAVE; wave++) {
+            float scale = DifficultyCurve.baseScaleForTier(wave, 10);
+            assertTrue(scale <= previous, "the fade is monotone: wave " + wave + " charged more than the last");
+            previous = scale;
+        }
+        DifficultyCurve curve = new DifficultyCurve();
+        float endRatio = curve.baselineRegularHealth(GameState.FINAL_WAVE, 10)
+            / curve.baselineRegularHealth(GameState.FINAL_WAVE, 0);
+        assertEquals((float) Math.pow(1f + DifficultyCurve.ASCENSION_HEALTH_BUMP_PER_TIER * 10f,
+                GameState.FINAL_WAVE), endRatio, 0.01f,
+            "the last wave keeps only the per-wave growth bump: the base charge has faded out entirely");
+        assertTrue(curve.baselineRegularHealth(1, 10) > curve.baselineRegularHealth(1, 0) * 3f,
+            "and the first wave is more than three times the tier-0 enemy -- the charge is on the baseline the game reads");
+        assertTrue(curve.baselineRegularDamage(1, 10) > curve.baselineRegularDamage(1, 0) * 2f,
+            "damage pays part of it too");
+    }
+
+    @Test
+    void bothSecondHalfSpansKeepTheSameRelativeBump() {
+        for (int tier : new int[] {1, 3, 6, 10}) {
+            assertEquals(
+                DifficultyCurve.healthGrowthForTier(tier) / DifficultyCurve.healthGrowthForTier(0),
+                DifficultyCurve.secondHalfHealthGrowthForTier(tier)
+                    / DifficultyCurve.secondHalfHealthGrowthForTier(0),
+                0.000001f
+            );
+            assertEquals(
+                DifficultyCurve.damageGrowthForTier(tier) / DifficultyCurve.damageGrowthForTier(0),
+                DifficultyCurve.secondHalfDamageGrowthForTier(tier)
+                    / DifficultyCurve.secondHalfDamageGrowthForTier(0),
+                0.000001f
+            );
+            assertEquals(
+                DifficultyCurve.healthGrowthForTier(tier) / DifficultyCurve.healthGrowthForTier(0),
+                DifficultyCurve.finalQuarterHealthGrowthForTier(tier)
+                    / DifficultyCurve.finalQuarterHealthGrowthForTier(0),
+                0.000001f
+            );
+            assertEquals(
+                DifficultyCurve.damageGrowthForTier(tier) / DifficultyCurve.damageGrowthForTier(0),
+                DifficultyCurve.finalQuarterDamageGrowthForTier(tier)
+                    / DifficultyCurve.finalQuarterDamageGrowthForTier(0),
+                0.000001f
+            );
+        }
+    }
+
+    @Test
+    void wavesBeforeTheMiddleSegmentKeepTheBaseFirstHalfFormula() {
+        assertEquals(
+            DifficultyCurve.BASE_ENEMY_HEALTH * Math.pow(DifficultyCurve.ENEMY_HEALTH_GROWTH, 24),
+            curve.baselineRegularHealth(24),
+            0.001f
+        );
+        assertEquals(
+            DifficultyCurve.BASE_ENEMY_HEALTH * DifficultyCurve.ENEMY_HEALTH_GROWTH,
+            curve.baselineRegularHealth(1),
+            0.0001f
+        );
+        assertEquals(
+            DifficultyCurve.BASE_ENEMY_DAMAGE * Math.pow(DifficultyCurve.ENEMY_DAMAGE_GROWTH, 23),
+            curve.baselineRegularDamage(24),
+            0.000001f
+        );
+        assertEquals(DifficultyCurve.BASE_ENEMY_DAMAGE, curve.baselineRegularDamage(1), 0.0f);
+    }
+
+    @Test
+    void middleSegmentCompoundsItsOwnRateAcrossWavesTwentyFiveToEighty() {
+        assertEquals(
+            Math.pow(DifficultyCurve.MIDDLE_HEALTH_GROWTH, 56),
+            curve.baselineRegularHealth(80) / curve.baselineRegularHealth(24),
+            0.0001f
+        );
+        assertEquals(
+            Math.pow(DifficultyCurve.MIDDLE_DAMAGE_GROWTH, 56),
+            curve.baselineRegularDamage(80) / curve.baselineRegularDamage(24),
+            0.0001f
+        );
+        assertTrue(curve.baselineRegularHealth(25) > curve.baselineRegularHealth(24));
+        assertTrue(curve.baselineRegularHealth(80) > curve.baselineRegularHealth(79));
+        assertTrue(curve.baselineRegularDamage(25) > curve.baselineRegularDamage(24));
+        assertTrue(curve.baselineRegularDamage(80) > curve.baselineRegularDamage(79));
+    }
+
+    @Test
+    void lateFirstHalfResumesTheBaseRateFromTheHotterWaveEightyValue() {
+        assertEquals(
+            Math.pow(DifficultyCurve.ENEMY_HEALTH_GROWTH, 20),
+            curve.baselineRegularHealth(100) / curve.baselineRegularHealth(80),
+            0.0001f
+        );
+        assertEquals(
+            Math.pow(DifficultyCurve.ENEMY_DAMAGE_GROWTH, 20),
+            curve.baselineRegularDamage(100) / curve.baselineRegularDamage(80),
+            0.0001f
+        );
+        assertTrue(curve.baselineRegularHealth(81) > curve.baselineRegularHealth(80));
+        assertTrue(curve.baselineRegularDamage(81) > curve.baselineRegularDamage(80));
+    }
+
+    @Test
+    void middleSegmentTakesTheSameRelativeAscensionBumpAsTheBaseRate() {
+        assertEquals(
+            DifficultyCurve.MIDDLE_HEALTH_GROWTH, DifficultyCurve.middleHealthGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.MIDDLE_DAMAGE_GROWTH, DifficultyCurve.middleDamageGrowthForTier(0), 0.0f);
+        assertEquals(
+            DifficultyCurve.MIDDLE_HEALTH_GROWTH
+                * (1f + DifficultyCurve.ASCENSION_HEALTH_BUMP_PER_TIER * 10),
+            DifficultyCurve.middleHealthGrowthForTier(10),
+            0.000001f
+        );
+        assertEquals(
+            DifficultyCurve.healthGrowthForTier(6) / DifficultyCurve.healthGrowthForTier(0),
+            DifficultyCurve.middleHealthGrowthForTier(6) / DifficultyCurve.middleHealthGrowthForTier(0),
+            0.000001f
+        );
+        assertEquals(
+            DifficultyCurve.damageGrowthForTier(6) / DifficultyCurve.damageGrowthForTier(0),
+            DifficultyCurve.middleDamageGrowthForTier(6) / DifficultyCurve.middleDamageGrowthForTier(0),
+            0.000001f
+        );
+    }
+
+    @Test
+    void waveSpawnerAppliesCurrentWaveStats() {
+        GameState state = GameState.newRun(77L);
+        EnemyWaveSpawner spawner = new EnemyWaveSpawner(new EnemyFactory());
+        spawner.spawnRegularEnemies(state, 40, 3);
+        Enemy first = state.aliveEnemies.get(0);
+        EnemyType type = first.type();
+        assertEquals(curve.regularHealth(type, 40), first.maxHealth, 0.001f);
+        assertEquals(curve.regularDamage(type, 40), first.damage, 0.001f);
+    }
+}

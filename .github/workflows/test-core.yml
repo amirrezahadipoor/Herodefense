@@ -1,0 +1,192 @@
+name: Test core logic
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      GRADLE_USER_HOME: /tmp/herodefense-gradle
+      HERO_PROJECT_CACHE_DIR: /tmp/herodefense-project-cache
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          # The composed-tier check reads the asset manifest as the render batch committed it, so it needs the
+          # commit that manifest lives in; a one-commit checkout is what broke it in CI on 2026-09-17.
+          fetch-depth: 0
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Test deterministic atlas page planning
+        run: python3 -m unittest discover -s tools/blender/tests -v
+
+      - name: Install Pillow for review-strip tests
+        run: python3 -m pip install --break-system-packages pillow numpy
+
+      - name: Test review-strip helpers
+        run: python3 -m unittest discover -s tools/visual/tests -v
+
+      - name: Validate generated assets (edge safety, pivot stability, silhouette + grade — fail fast)
+        run: python3 tools/visual/validate_generated_assets.py android/assets/generated
+
+      # R5.2: the composed tier is re-derived from the master commit's own pixels and the review that binds it
+      # by hash is re-checked against the tree, so a composed sheet cannot drift away from what was accepted.
+      - name: Re-check the composed master tier and its review
+        run: |
+          python3 tools/visual/compose_master_tier.py --check
+          python3 tools/visual/create_master_tier_review.py --check
+      - name: Re-derive the material maps from their masters
+        run: python3 tools/visual/validate_material_maps.py
+      # Phase 97's re-audit cites a frozen fact sheet, and a fact sheet that can drift from the tree it claims to
+      # describe is worse than no fact sheet: these run the tool itself -- the sections it produces, the JUnit
+      # totals it parses, the missing-results case, and that it needs no network to produce a number.
+      - name: Test the audit's measuring tool
+        run: python3 -m unittest discover -s tools/audit/tests -v
+      - name: Test the ETC2 encoder and the KTX container it writes
+        run: python3 -m unittest discover -s tools/texture/tests -v
+      # R8.1's device fixture: the container the on-device upload test hands to a GPU is rebuilt here, so the
+      # bytes a device decodes cannot drift away from the encoder that claims to have written them.
+      - name: Rebuild the device fixture the upload test reads
+        run: python3 tools/texture/make_device_fixture.py --check
+      # R8.1's payload half, measured in CI on a representative slice of the live combat set. Report-only on
+      # purpose: the tool writes a container only when a sheet clears its quality bar, so this step's job is to
+      # keep the numbers current and to fail loudly if the tool itself breaks -- not to ship a payload nobody
+      # has looked at.
+      - name: Measure what the combat sheets would cost encoded
+        run: |
+          python3 tools/texture/encode_textures.py --keys rootling stonekin ancient_golem ember_wyrm --report-only
+
+      - name: Test the render hash log (roadmap R5.3 -- resumable, comparable renders)
+        run: python3 -m unittest discover -s tools/render/tests -v
+
+      - name: Validate the playtest ledger
+        run: |
+          python3 tools/playtests/validate_playtest_ledger.py
+          python3 -m unittest discover -s tools/playtests/tests -t .
+
+      # Roadmap R8.4/R8.5: the performance gates are Python because they measure artifacts (an APK, a logcat
+      # capture, the asset tree) rather than run the game. Their own tests run here, with the negative controls.
+      - name: Test the performance gates (roadmap R8.4/R8.5 -- APK budget, startup, logged runs)
+        run: python3 -m unittest discover -s tools/perf/tests -v
+
+      - name: Check that every documented performance number comes from a logged run (roadmap R8.5)
+        run: |
+          python3 tools/perf/render_performance_doc.py --check
+          python3 tools/perf/check_perf_provenance.py
+
+      # Roadmap R6.2: every committed audio file is decoded and measured here. The gate asks two things --
+      # nothing clips (peak <= 0.94, about -0.5 dBFS) and nothing is inaudible -- and it regenerates
+      # docs/audio/LEVELS.md so the measurement in the repository is the measurement of these bytes.
+      - name: Install soundfile for the audio level gate
+        run: python3 -m pip install --break-system-packages soundfile numpy
+
+      - name: Test the audio tools (roadmap R6.2 -- generator contract, measured document)
+        run: python3 -m unittest discover -s tools/audio/tests -v
+
+      - name: Measure every committed sound and gate its level (roadmap R6.2)
+        run: python3 tools/audio/check_audio_levels.py --check
+
+      # R7.3: the Persian shaper is held to evidence this repository did not invent. Both halves of that evidence
+      # are re-derived here — the 245 golden vectors from arabic_reshaper and python-bidi, and the three lookup
+      # tables the Java shaper reads out of those same two libraries. Either one drifting means `PersianShaperTest`
+      # would be checking the shaper against stale evidence, which is worse than not checking it. The versions are
+      # pinned here and asserted again inside both scripts, so a wheel that quietly changes the answers fails.
+      # The vectors' header names the interpreter that produced them, so this check has to run on that
+      # interpreter and not on whatever the runner image happens to carry (3.12 on ubuntu-24.04, which is why
+      # four pushes in a row went red on a comment line while every vector matched). It is pinned here, after
+      # every other python gate in this job, so no other step's interpreter changes.
+      - name: Use the interpreter the golden vectors were made with (roadmap R7.3)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install the Persian shaping references (roadmap R7.3)
+        run: python3 -m pip install --break-system-packages arabic-reshaper==3.0.1 python-bidi==0.6.11
+
+      - name: Re-derive the shaping vectors and the tables they are read from (roadmap R7.3)
+        run: |
+          python3 tools/i18n/make_shaping_vectors.py --check
+          python3 tools/i18n/make_shaping_tables.py --check
+
+      - name: Run the unit-test loop (the balance sweeps are the balance-gate job below)
+        run: ./scripts/gradle.sh :core:test --stacktrace
+
+      - name: Static analysis (roadmap R2.5 -- PMD + SpotBugs, findings triaged not silenced)
+        run: ./scripts/gradle.sh :core:ciStaticAnalysis
+
+      - name: Upload static-analysis reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-static-analysis
+          path: |
+            core/build/reports/pmd/
+            core/build/reports/spotbugs/
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Upload test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-test-report
+          path: core/build/reports/tests/test/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  # Roadmap R4.5: the balance gates sweep whole runs, so they are their own job with their own timeout and report.
+  # A curve that leaves its band, a trial pair that spikes, or a tier that stops charging for itself fails a job
+  # called "balance gate" instead of one line inside the unit run. The same suites run once -- they are tagged
+  # `balance` and excluded from the unit loop -- so nothing here duplicates work.
+  balance-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      GRADLE_USER_HOME: /tmp/herodefense-gradle
+      HERO_PROJECT_CACHE_DIR: /tmp/herodefense-project-cache
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Balance gate on the fixed seeds (curve, ascension, trials, reward cards, non-optimiser band)
+        run: ./scripts/gradle.sh :core:balanceGate --stacktrace
+
+      - name: Upload balance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-balance-report
+          path: core/build/reports/tests/balanceGate/
+          if-no-files-found: ignore
+          retention-days: 14

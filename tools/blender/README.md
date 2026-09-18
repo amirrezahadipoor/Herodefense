@@ -1,0 +1,146 @@
+# Temporary Blender Tooling
+
+Blender is a generation-time dependency, never a game dependency and never a tracked repository artifact.
+
+Run:
+
+```sh
+./scripts/install-blender-temp.sh
+```
+
+The pinned, checksum-verified Blender 4.2 LTS binary is extracted below `${TMPDIR:-/tmp}/hero-defense-tools`. Keep Blender, display helpers, render intermediates, and dependency caches in `/tmp` or an ephemeral CI runner; never extract them into the repository. On a constrained runner, clear stale `/tmp` data and render category batches sequentially rather than retaining a second tool installation.
+
+Render the exact premium UI batch—16 semantic control medallions plus normal, pressed,
+selected, and disabled variants of the reusable button, panel, and slot nine-patches—into a
+disposable candidate directory:
+
+```sh
+blender --background --factory-startup --python tools/blender/generate_assets.py -- \
+  --batch ui --output /tmp/hero-defense-ui-candidate --isolate-frames
+python3 tools/visual/create_ui_batch_review.py \
+  android/assets/generated /tmp/hero-defense-ui-candidate \
+  docs/art_reviews/ui_assets_premium_v2
+python3 tools/visual/promote_ui_batch.py \
+  /tmp/hero-defense-ui-candidate android/assets/generated
+```
+
+## Premium-v2 pilot
+
+Render the guarded pilot into a disposable candidate directory, not directly over reviewed runtime assets:
+
+```sh
+blender --background --factory-startup --python tools/blender/generate_assets.py -- \
+  --batch premium-pilot --output /tmp/hero-defense-premium-pilot --isolate-frames
+python3 tools/visual/validate_generated_assets.py /tmp/hero-defense-premium-pilot
+python3 tools/visual/create_premium_pilot_review.py \
+  /tmp/hero-defense-premium-baseline \
+  /tmp/hero-defense-premium-pilot \
+  /tmp/hero-defense-premium-review
+```
+
+Only after opening and accepting all three contact sheets should the exact-key guarded promotion run:
+
+```sh
+python3 tools/visual/promote_premium_pilot.py \
+  /tmp/hero-defense-premium-pilot android/assets/generated
+```
+
+For a complete character-category review, generate the reusable native-size motion and readability sheets, inspect both, write the review document, and only then record acceptance in the catalog:
+
+```sh
+python3 tools/visual/create_character_animation_review.py \
+  /tmp/hero-defense-baseline android/assets/generated \
+  hero "Elf Hero" /tmp/hero-defense-hero-review
+python3 tools/visual/record_category_review.py \
+  android/assets/generated docs/art_reviews/HERO_PREMIUM_V2_REVIEW.md hero hero
+```
+
+For the complete equipment category, render all 40 entries into a disposable candidate,
+audit every overlay against all 28 finalized Hero frames, and inspect the four icon plus
+five equipped-motion sheets. The promotion command refuses any unreviewed, clipped,
+detached, extra, missing, or hash-mismatched payload:
+
+```sh
+python3 tools/visual/create_equipment_batch_review.py \
+  /tmp/hero-defense-equipment-baseline \
+  /tmp/hero-defense-equipment-candidate \
+  android/assets/generated \
+  tools/blender/equipment_visuals.json \
+  docs/art_reviews/equipment_premium_v2
+python3 tools/visual/promote_equipment_batch.py \
+  /tmp/hero-defense-equipment-candidate android/assets/generated
+```
+
+For all eight regular enemies, dispatch or locally render the exact `enemies` batch into a
+disposable directory. The batch review audits every pixel of all 112 runtime frames, the
+25-bone rig, distinct motion profiles, material/mesh budgets, alpha margins, and the exact
+candidate payload. Inspect the eight per-enemy sheets plus the shared lineup before writing
+the acceptance document and promoting:
+
+```sh
+python3 tools/visual/create_enemy_batch_review.py \
+  android/assets/generated \
+  /tmp/hero-defense-enemy-candidate \
+  docs/art_reviews/regular_enemies_premium_v2
+python3 tools/visual/promote_enemy_batch.py \
+  /tmp/hero-defense-enemy-candidate android/assets/generated
+```
+
+For all four Bosses, use the exact `bosses` batch. The exhaustive review locks each runtime
+identity to its signature attack—ground slam, thorn cage, flame sweep, or void charge—and
+audits all 112 native 256 px frames, single-page atlases, 25-bone rigs, purposeful geometry,
+material grouping, motion diversity, and safe alpha margins. Inspect the shared lineup and
+all eight per-Boss sheets before recording acceptance and running the hash-gated promotion:
+
+```sh
+python3 tools/visual/create_boss_batch_review.py \
+  android/assets/generated \
+  /tmp/hero-defense-boss-candidate \
+  docs/art_reviews/bosses_premium_v2
+python3 tools/visual/promote_boss_batch.py \
+  /tmp/hero-defense-boss-candidate android/assets/generated
+```
+
+For the defended World Tree, render the exact `world-tree` batch into a disposable directory.
+The audit decodes all six healthy Idle frames, six wounded Idle frames, and all ten one-shot
+Destroy frames; locks the shared 13-bone segmented rig and state identity; measures collapse
+continuity, final hold, alpha safety, geometry, materials, and decoded memory; and generates
+six sheets including 720×1280 reference-scale Hero composition. Open every sheet before
+writing the hash-bound acceptance document and running promotion:
+
+```sh
+python3 tools/visual/create_world_tree_batch_review.py \
+  android/assets/generated \
+  /tmp/hero-defense-world-tree-candidate \
+  docs/art_reviews/world_tree_premium_v2
+python3 tools/visual/promote_world_tree_batch.py \
+  /tmp/hero-defense-world-tree-candidate android/assets/generated
+```
+
+For the complete arena environment, render the exact `arena` batch. It contains one
+360×640 portrait backdrop, all three 192×192 overlapping ground patches, and all three
+identity-specific crystal landmarks—nothing from unrelated consumable or UI categories.
+The audit must verify full-bleed backdrop coverage, transparent prop/tile margins, geometry
+budgets, restrained value hierarchy, and a 720×1280 integrated composition before promotion:
+
+```sh
+python3 tools/visual/create_arena_batch_review.py \
+  android/assets/generated \
+  /tmp/hero-defense-arena-candidate \
+  docs/art_reviews/arena_premium_v2
+python3 tools/visual/promote_arena_batch.py \
+  /tmp/hero-defense-arena-candidate android/assets/generated
+```
+
+Premium-v2 renders at 2× the unchanged runtime dimensions, uses 16 EEVEE samples for opaque assets and 8 for transparent equipment overlays, downsamples in linear premultiplied-alpha space, and applies the deterministic outline afterward.
+
+Every animated batch is packed by the deterministic premium-v2 planner. Runtime pages are capped at 2048×2048; oversized or 2× working batches spill into additional libGDX atlas pages without changing clip keys, frame order, dimensions, or pivots.
+
+Validate any generated output before review:
+
+```sh
+python3 -m unittest discover -s tools/blender/tests -v
+python3 tools/visual/validate_generated_assets.py android/assets/generated
+```
+
+The validator has no third-party dependency. The deterministic contact-sheet and legacy repack utilities use Pillow; normal asset generation remains Blender/bpy-only. `tools/visual/repack_committed_assets.py` exists only for the reviewed one-time migration of legacy pages and is not a substitute for rerendering premium-v2 assets.

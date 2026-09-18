@@ -1,0 +1,203 @@
+{
+  "alphaMode": "STRAIGHT_RGBA",
+  "animationProfile": "wounded-collapse-v2",
+  "armature": "world_tree_armature",
+  "atlas": "sprites/world_tree_damaged.atlas",
+  "boneAnimated": true,
+  "bones": [
+    "bough.L",
+    "bough.R",
+    "branch.L",
+    "branch.R",
+    "canopy.L",
+    "canopy.R",
+    "crown",
+    "debris.L",
+    "debris.R",
+    "heart",
+    "root",
+    "trunk.lower",
+    "trunk.upper"
+  ],
+  "categoryReview": {
+    "category": "world_tree",
+    "document": "docs/art_reviews/WORLD_TREE_PREMIUM_V2_REVIEW.md",
+    "status": "accepted"
+  },
+  "clips": {
+    "destroy": [
+      {
+        "height": 256,
+        "index": 0,
+        "page": 0,
+        "width": 256,
+        "x": 1536,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 1,
+        "page": 0,
+        "width": 256,
+        "x": 1792,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 2,
+        "page": 0,
+        "width": 256,
+        "x": 0,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 3,
+        "page": 0,
+        "width": 256,
+        "x": 256,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 4,
+        "page": 0,
+        "width": 256,
+        "x": 512,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 5,
+        "page": 0,
+        "width": 256,
+        "x": 768,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 6,
+        "page": 0,
+        "width": 256,
+        "x": 1024,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 7,
+        "page": 0,
+        "width": 256,
+        "x": 1280,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 8,
+        "page": 0,
+        "width": 256,
+        "x": 1536,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 9,
+        "page": 0,
+        "width": 256,
+        "x": 1792,
+        "y": 256
+      }
+    ],
+    "idle": [
+      {
+        "height": 256,
+        "index": 0,
+        "page": 0,
+        "width": 256,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 1,
+        "page": 0,
+        "width": 256,
+        "x": 256,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 2,
+        "page": 0,
+        "width": 256,
+        "x": 512,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 3,
+        "page": 0,
+        "width": 256,
+        "x": 768,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 4,
+        "page": 0,
+        "width": 256,
+        "x": 1024,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 5,
+        "page": 0,
+        "width": 256,
+        "x": 1280,
+        "y": 0
+      }
+    ]
+  },
+  "destructionClip": "destroy",
+  "engineVersion": "33.0-studio-v3-3x36-full",
+  "family": "world_tree",
+  "frameClass": "tree",
+  "frameRate": 12,
+  "frameSize": 256,
+  "key": "world_tree_damaged",
+  "materialCount": 12,
+  "meshParts": 129,
+  "modelRevision": "heartwood-sanctum-wounded-v2",
+  "pivot": {
+    "units": "normalized-bottom-left",
+    "x": 0.5,
+    "y": 0.06
+  },
+  "renderSamples": 36,
+  "renderSupersample": 3,
+  "reviewDocument": "docs/art_reviews/WORLD_TREE_PREMIUM_V2_REVIEW.md",
+  "rigBoneCount": 13,
+  "rigProfile": "segmented-world-tree-v2",
+  "rigged": true,
+  "sheet": "sprites/world_tree_damaged.png",
+  "sheetHeight": 512,
+  "sheetWidth": 2048,
+  "sheets": [
+    {
+      "decodedBytes": 4194304,
+      "file": "sprites/world_tree_damaged.png",
+      "height": 512,
+      "width": 2048
+    }
+  ],
+  "silhouetteLandmarks": [
+    "radial buttress roots",
+    "carved heart aperture",
+    "paired guardian boughs",
+    "tiered leaf crown"
+  ],
+  "state": "damaged",
+  "surfaceLanguage": "charred heartwood, broken bough, sparse wilted crown, restrained wound runes",
+  "triangles": 4180,
+  "visualQuality": "studio-v3"
+}

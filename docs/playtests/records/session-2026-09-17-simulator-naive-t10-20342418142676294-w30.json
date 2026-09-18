@@ -1,0 +1,15 @@
+{
+"schema": "herodefense.run-record/1",
+"source": "simulator",
+"platform": "headless",
+"appVersion": 0,
+"mode": "BRIEF",
+"ascensionTier": 10,
+"runSeed": 20342418142676294,
+"wavesCleared": 30,
+"runCompleted": true,
+"heroDied": false,
+"activeTrials": "",
+"recordedAtMillis": 1789595692310,
+"measurements": { "averageDamageFraction": "0.0020503814", "policy": "NAIVE", "tier": "10", "waves": "30", "survived": "true" }
+}

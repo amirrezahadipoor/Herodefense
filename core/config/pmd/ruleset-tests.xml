@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  PMD ruleset for the :core TEST source set (roadmap R2.5).
+
+  Same three categories and same exclusions as `ruleset.xml`, plus four rules that do not fit a test suite. The
+  reasons are below; the triage record is in docs/STATIC_ANALYSIS.md. Test sources are analysed because a broken
+  test is as expensive as a broken system: the rules that stay enabled are the correctness ones (unused members,
+  resource leaks, float loop indices, enum collections, comparison order).
+-->
+<ruleset name="HeroDefenseTests"
+         xmlns="http://pmd.sourceforge.net/ruleset/2.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://pmd.sourceforge.net/ruleset/2.0.0 https://pmd.sourceforge.net/ruleset_2_0_0.xsd">
+    <description>Hero Defense test rules</description>
+
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="AvoidFieldNameMatchingMethodName"/>
+        <exclude name="AvoidLiteralsInIfCondition"/>
+        <exclude name="NullAssignment"/>
+        <exclude name="CompareObjectsWithEquals"/>
+        <!-- The flagged loops are seed sweeps whose body ends in `return` when the case is found; the explicit
+             early return states "this is the case, stop sweeping" more clearly than a found-flag plus break. -->
+        <exclude name="AvoidBranchingStatementAsLastInLoop"/>
+        <!-- 52 reports in test code: a seed, a wave number or an id is spelled out at its use, which is what makes
+             a failing message readable. Sharing them into constants would hide which case failed. -->
+        <exclude name="AvoidDuplicateLiterals"/>
+        <!-- Two tests read a private member through reflection to assert layer ordering; the alternative is
+             widening production visibility for a test's sake. -->
+        <exclude name="AvoidAccessibilityAlteration"/>
+    </rule>
+    <rule ref="category/java/bestpractices.xml">
+        <exclude name="UnusedAssignment"/>
+        <exclude name="AbstractClassWithoutAbstractMethod"/>
+        <!-- Every test in the suite carries a message on the assertions that matter, but the sweeps assert a
+             property per seed/wave (2,500 reports); a message per assertion would restate the seed already in the
+             loop. The gates that fail a build print their measurement table instead. -->
+        <exclude name="UnitTestAssertionsShouldIncludeMessage"/>
+        <!-- 553 reports: the balance and contract tests deliberately check several properties of one object in
+             one test, because they are asserting a single contract (a wave's roster, a sheet's metadata). -->
+        <exclude name="UnitTestContainsTooManyAsserts"/>
+        <!-- 28 reports: several contract tests assert a boolean property (a glow flag, a distinct-art check)
+             rather than equality, so the suggested assertEquals would change what is being documented. -->
+        <exclude name="SimplifiableTestAssertion"/>
+        <!-- The sweeping gates print their CSV tables into the CI log on purpose; those lines are the evidence
+             that a band was measured rather than asserted. -->
+        <exclude name="SystemPrintln"/>
+    </rule>
+    <rule ref="category/java/performance.xml">
+        <exclude name="AvoidInstantiatingObjectsInLoops"/>
+    </rule>
+</ruleset>

@@ -1,0 +1,64 @@
+{
+  "findings": [
+    {
+      "id": "finding-brief-vigil-has-no-teeth",
+      "session": "session-2026-09-17-simulator-20342418142676294-w30",
+      "date": "2026-09-17",
+      "severity": "high",
+      "summary": "the thirty-wave vigil can be completed without ever being in danger: the simulator's policy ends wave 30 with 82 percent of its health left and never loses more than 17.56 percent in a single wave",
+      "evidence": "the session record docs/playtests/records/session-2026-09-17-simulator-20342418142676294-w30.json: 30/30 waves cleared, average damage fraction 0.0511, peak 0.1756, reachedFinalWave true, heroDied false \u2014 measured on build ef55da9, and reproducible with the same seed, but measured for the optimiser policy. It was re-measured for the player this finding was afraid of, with NonOptimiserBandTest over twelve seeds at tiers 0, 3, 6 and 10: the non-optimiser wins 12/12 brief runs at every tier, so the brief vigil cannot be lost by neglecting the systems \u2014 it is a floor. Accepted rather than fixed because the opening thirty waves are meant to be that floor: the first session of the game is the one that must not punish a new player for not knowing a talent tree exists, and a policy with no skill at all finishing it is the feature, not the defect. The band that catches a careless player lives on the long vigil instead (average reach between 55 and 90 waves, measured 69.7), and R4.1 ships both: the floor at a 90 percent win rate and the range that opens as the run goes on. The brief vigil's numbers at tiers 0/3/6/10 (mean pressure 0.0918 / 0.0199 / 0.0089 / 0.0019) also produced R4.7.",
+      "roadmapItem": "R4.1",
+      "status": "accepted"
+    },
+    {
+      "id": "finding-first-run-has-no-recorded-human-session",
+      "session": "session-2026-09-17-simulator-20342418142676294-w30",
+      "date": "2026-09-17",
+      "severity": "medium",
+      "summary": "every recorded session so far was played by a script; the device path that pulls a human session off the app has been unit-tested but has not yet carried a real one, so the protocol's human half is unproven end to end",
+      "evidence": "docs/playtests/sessions.json holds one session and its kind is automated; the adb commands in docs/PLAYTEST_PROTOCOL.md have not yet been run against a played build",
+      "roadmapItem": "R3.6",
+      "status": "open"
+    },
+    {
+      "id": "finding-second-half-plateau",
+      "session": "session-2026-09-17-simulator-20342418142676294-w200",
+      "date": "2026-09-17",
+      "severity": "medium",
+      "summary": "the run does rise after wave 40, but the step into the second half is the shallowest in the curve: waves 101-150 are only 4.7 percent heavier than waves 51-100, against 71 percent for the step before them",
+      "evidence": "closed by 50bde24: the second half now climbs in two spans (waves 101-150 at 1.026/1.0085, waves 151-200 at 1.018/1.0065) and the second half's elite contact multiplier is 1.2 against the flat 1.5. Measured on the five fixed seeds of WavePressureCurveTest: quarter means 0.0576 / 0.0986 / 0.1142 / 0.1298, steps x1.712 / x1.158 / x1.136 against the reported x1.712 / x1.047 / x1.191, every seed inside the 0.05-0.15 band, and the worst trial-pair median spike 0.382 against the 0.40 ceiling. The reason the earlier candidates failed is recorded with them: the second half's heat is the run's spike carrier and the spikes sit on elite waves (126, 133, 154, 182, 196), so the entry was paid for by the elite multiplier and the cooler final quarter. docs/BALANCE.md carries the table; the two honest caveats (one seed spends 4.9% of its five percent dip allowance, the reward-card matrix keeps 2.5% of headroom) are in it as well.",
+      "roadmapItem": "R4.6",
+      "status": "fixed"
+    },
+    {
+      "id": "finding-ascension-inverts-for-non-optimiser",
+      "session": "session-2026-09-17-simulator-naive-t10-20342418142676294-w30",
+      "date": "2026-09-17",
+      "severity": "high",
+      "summary": "the ascension ladder works backwards for a player who does not optimise: mean pressure in the brief vigil falls from 0.0918 at tier 0 to 0.0019 at tier 10 and the long-run reach rises from 69.7 to 102.3 waves, so each tier bought so far makes the game easier for that player",
+      "evidence": "NonOptimiserBandTest over twelve seeds at tiers 0, 3, 6 and 10 (see docs/BALANCE.md): the tier hands the hero flat bonuses at run start (+10 strength, +20 health, +500 coins, +5 talent points and a wider Focus pool at tier 10) while the enemy growth is 0.0004 health and 0.00025 damage per tier compounding per wave, which is about four percent health by wave 200; the reward is large and the charge is nearly nothing. The tier-10 brief record is filed as session-2026-09-17-simulator-naive-t10-20342418142676294-w30. Filed as R4.7, which has to be fixed without spending the spike headroom R4.6 is also looking for. The telegraph contract adds a third measurement to the same story: BossTelegraphContractTest holds the hero at 1000 health precisely because a float at 100000 has a spacing of 1/128, and at that spacing the ten-tier damage bonus at the first encounters is invisible \u2014 the ladder's own growth is smaller than the rounding error of a large health pool, which is the same finding from a different side. Closed by the R4.7 commit (the hash is in the evidence table of docs/ROADMAP_TO_1000.md): every tier now scales the enemy's baseline health (22 percent) and damage (30 percent), fading linearly over the first hundred and forty waves, so a tier charges in the waves where its flat starting power is worth anything. Measured on six seeds per tier: tier-10 mean brief pressure 0.0507 against 0.0901 at tier 0 (56 percent of the tier-0 value where this finding measured 2 percent), long-vigil reach 77.3 waves against 71.3, and the optimiser finishes every run with an average rising 0.1035 to 0.1750. The search behind those numbers is in docs/BALANCE.md: damage alone cannot open the ladder (0.0039 brief pressure at tier 10, still inverted), a sixty-wave fade fixes the brief and leaves the reach inverted (103.8 waves), and a health-heavy charge holds the same ladder numbers at a 63 percent longer tier-10 session against 35 percent for the shipped mix.",
+      "roadmapItem": "R4.7",
+      "status": "fixed"
+    },
+    {
+      "id": "finding-menu-rows-had-two-stale-readers",
+      "session": "session-2026-09-17-simulator-20342418142676294-w30",
+      "date": "2026-09-17",
+      "severity": "high",
+      "summary": "R3.5's six-row menu left two readers of the old five-row table behind \u2014 the renderer's press feedback and the device journeys' menu taps \u2014 so the Android job failed nine of eleven journeys for eleven pushes behind a tap that landed on nothing, and a press lit the wrong button",
+      "evidence": "read out of the failing job's own logs rather than guessed: run 35154533580 on 3d48f7c (artifact 10470349026) fails touchRestartsFromPremiumDefeatSummary, touchTogglesSettingsFromMainMenu, touchSpendsTalentPointsFromPremiumLevelUp, touchSelectsComparesAndSellsFromPremiumInventory, touchContinuesIntoBossEntranceAndCombatVfx, touchReviewsAffordabilityAndPurchasesFromPausedShop, touchWatchesAndSkipsThePlantingCeremony, touchRestartsFromPremiumVictorySummary and touchContinuesIntoAndSelectsExactlyOneRewardCard, every one of them at an await after a Continue tap (y=680 against a row at 576-672) or the Settings tap (y=200 against a row at 222-318), while the only two journeys that pass never tap Continue; the same artifact shows the renderer resolving press states at the old 780/620/460/300/140. This session is the ledger's anchor for a finding whose evidence is a continuous-integration run rather than a played one. Fixed in 398e149, which makes the renderer resolve per row and the journey ask MainMenuTouchLayout for the row that carries an action; the device half is confirmed by the Android job on that commit.",
+      "roadmapItem": "R7.7",
+      "status": "fixed"
+    },
+    {
+      "id": "finding-economy-cannot-move-until-the-trial-ceiling-has-headroom",
+      "session": "session-2026-09-17-simulator-20342418142676294-w200",
+      "date": "2026-09-17",
+      "severity": "medium",
+      "summary": "no change to the drop economy can ship at the shipped numbers: three versions of R4.3's pity rule were measured, including one that spawns no item and spends no draw, and each one pushed a shipped balance ceiling out of its band",
+      "evidence": "recorded in docs/BALANCE.md and in the R4.3 roadmap note: a guaranteed common after thirty dry kills put the brief vigil's average pressure at 0.0346 against its 0.035 floor, a trial pair at 0.4196 against 0.40 at wave 182 and one sweep seed's third quarter 6.5% below its second against a 5% allowance; a guaranteed legendary drop every twenty boss kills reached 0.4574 at wave 196, dipped a quarter 5.9% and ran tier-6 sessions 20.3% faster than tier 0; and the promotion-only version -- no extra item, no extra draw -- still landed BOSS_BOUNTY + FAMISHED_EARTH at 0.4386 and MISERS_PACT + BLOOD_PRICE at 0.4146 at wave 196. The ledger session here is the anchor for the long-vigil run these numbers were measured against; the evidence itself is the three gate runs. The same missing headroom is what finding-second-half-plateau describes from the curve's side, so both are R4.6's to buy before either can land.",
+      "roadmapItem": "R4.3",
+      "status": "open"
+    }
+  ]
+}

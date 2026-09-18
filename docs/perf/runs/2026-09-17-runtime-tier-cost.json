@@ -1,0 +1,24 @@
+{
+  "id": "2026-09-17-runtime-tier-cost",
+  "date": "2026-09-17",
+  "commit": "949fd68",
+  "command": "python3 - <<'PY' (the arithmetic below over the 27 rows of docs/art_reviews/MASTER_TIER_PROVENANCE.md 'Independent renders')",
+  "note": "What composing the runtime tier from the 27 genuine masters would cost, against the committed catalog budget: the extra decoded bytes are (render px - reviewed px) x 4 per sheet, summed",
+  "metrics": [
+    {
+      "name": "tierExtraBytes",
+      "value": 134418432,
+      "unit": "bytes"
+    },
+    {
+      "name": "catalogHeadroomBytes",
+      "value": 5127552,
+      "unit": "bytes"
+    },
+    {
+      "name": "overBudgetBytes",
+      "value": 129290880,
+      "unit": "bytes"
+    }
+  ]
+}

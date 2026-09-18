@@ -1,0 +1,144 @@
+#!/usr/bin/env python3
+"""Fast source-level guards for the regular-enemy premium render contract."""
+from __future__ import annotations
+
+import ast
+import sys
+import re
+import unittest
+from pathlib import Path
+
+BLENDER_ROOT = Path(__file__).resolve().parents[1]
+REPOSITORY_ROOT = BLENDER_ROOT.parents[1]
+sys.path.insert(0, str(BLENDER_ROOT))
+
+from hd_pipeline.config import REGULAR_CHARACTERS  # noqa: E402
+
+EXPECTED = {
+    "rootling": ("rootling-thorn-scout-v2", "premium-humanoid-v2", "rootling-skirmisher-v2"),
+    "stonekin": ("stonekin-rune-bulwark-v2", "premium-heavy-humanoid-v2", "stonekin-juggernaut-v2"),
+    "gloom_wolf": ("gloom-wolf-shadow-stalker-v2", "premium-quadruped-mapped-v2", "gloom-wolf-pouncer-v2"),
+    "fungal_brute": ("fungal-brute-spore-bruiser-v2", "premium-heavy-humanoid-v2", "fungal-brute-brawler-v2"),
+    # R3.4: the roster doubles. Each addition names its own model revision, reuses the rig
+    # family its body plan belongs to, and authors its own four-clip motion language.
+    "bark_stalker": ("bark-stalker-moss-climber-v2", "premium-humanoid-v2", "bark-stalker-lurker-v2"),
+    "sap_hound": ("sap-hound-resin-runner-v2", "premium-quadruped-mapped-v2", "sap-hound-runner-v2"),
+    "husk_warden": ("husk-warden-shield-bearer-v2", "premium-heavy-humanoid-v2", "husk-warden-bulwark-v2"),
+    "bramble_thrall": ("bramble-thrall-thorn-lumberer-v2", "premium-heavy-humanoid-v2", "bramble-thrall-lumber-v2"),
+}
+
+
+class EnemyPremiumSourceTest(unittest.TestCase):
+    def test_runtime_enemy_render_set_is_exact(self) -> None:
+        configured = {asset.key: asset for asset in REGULAR_CHARACTERS if asset.family == "enemy"}
+        self.assertEqual(set(EXPECTED), set(configured))
+        for key, asset in configured.items():
+            self.assertEqual(key, asset.builder)
+            self.assertEqual("character", asset.frame_class)
+
+    def test_every_enemy_builder_declares_locked_v2_provenance(self) -> None:
+        source = (BLENDER_ROOT / "hd_pipeline" / "models.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        functions = {node.name: node for node in tree.body if isinstance(node, ast.FunctionDef)}
+        for key, provenance in EXPECTED.items():
+            name = f"build_{key}"
+            self.assertIn(name, functions)
+            segment = ast.get_source_segment(source, functions[name]) or ""
+            self.assertIn('"visualQuality": "studio-v3"', segment)
+            for value in provenance:
+                self.assertIn(value, segment)
+
+    def test_every_configured_enemy_is_a_registered_builder(self) -> None:
+        """The pipeline dispatches through BUILDERS; authoring a function is not enough.
+
+        The first R3.4 render attempt failed in CI with "Unknown character builder: bark_stalker" because the
+        four builders existed and the batch listed them, but the registry dict was not updated. This case is
+        the guard for that mistake.
+        """
+        models = (BLENDER_ROOT / "hd_pipeline" / "models.py").read_text(encoding="utf-8")
+        registry_start = models.index("BUILDERS: dict[str, Callable[[], BuiltModel]] = {")
+        registry = models[registry_start : models.index("}", registry_start)]
+        for asset in REGULAR_CHARACTERS:
+            if asset.family != "enemy":
+                continue
+            self.assertIn(f'"{asset.builder}": build_{asset.builder}', registry)
+
+    def test_every_enemy_idle_keys_a_moving_beat(self) -> None:
+        """Proxy guard for the review gate's motion floor, checked at the source.
+
+        `create_enemy_batch_review.py` requires five distinct rendered frames out of the six an idle clip holds.
+        The first eight-enemy batch failed on exactly that: the bark stalker keyed its crouch twice in a row, so
+        the last three frames rendered identically and the audit counted four. Whether rendered frames differ
+        can only be measured on pixels, but the authored keys can be read here: a repeated consecutive key is
+        always a dead beat, and it is what the mistake looked like in source.
+        """
+        source = (BLENDER_ROOT / "hd_pipeline" / "rig.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        functions = {node.name: node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
+        authors = {
+            "rootling": "_author_rootling_idle",
+            "stonekin": "_author_stonekin_idle",
+            "gloom_wolf": "_author_gloom_wolf_idle",
+            "fungal_brute": "_author_fungal_brute_idle",
+            "bark_stalker": "_author_bark_stalker_idle",
+            "sap_hound": "_author_sap_hound_idle",
+            "husk_warden": "_author_husk_warden_idle",
+            "bramble_thrall": "_author_bramble_thrall_idle",
+        }
+        for key, name in authors.items():
+            self.assertIn(name, functions, f"{key}: no idle author")
+            poses = [
+                ast.get_source_segment(source, node.args[2])
+                for node in ast.walk(functions[name])
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "_key"
+                and len(node.args) >= 3
+            ]
+            self.assertGreaterEqual(len(poses), 3, f"{key}: idle needs at least three keys")
+            self.assertGreaterEqual(len(set(poses)), 2, f"{key}: idle never moves")
+            for first, second in zip(poses, poses[1:]):
+                self.assertNotEqual(first, second, f"{key}: idle keys the same pose twice in a row")
+
+    def test_new_enemy_clips_keep_the_ground_line(self) -> None:
+        """Proxy guard for the frame-border rule the validator enforces on rendered pixels.
+
+        The R3.4 batch was rejected once because two attack poses reached the frame's bottom row: a 0.10 root
+        drop under a 0.64 arm slam (bramble thrall) and a 0.30 leg extension on a 0.10-low body (sap hound).
+        Rendering cannot be checked from source, but the authored *extremes* can: every root drop in the four
+        new attack clips stays shallow, which is what keeps the lowest pixel off the cell border. The measured
+        gate stays `validate_generated_assets.py` edge safety; this stops the same mistake being re-authored.
+        """
+        source = (BLENDER_ROOT / "hd_pipeline" / "rig.py").read_text(encoding="utf-8")
+        drops: list[tuple[str, float]] = []
+        for function in ("_author_bark_stalker_attack", "_author_sap_hound_attack",
+                         "_author_husk_warden_attack", "_author_bramble_thrall_attack"):
+            body = source[source.index(f"def {function}(") :]
+            body = body[: body.index("\ndef ")]
+            for drop in re.findall(r'\{"root": \([-0-9.]+, [-0-9.]+, (-[0-9.]+)\)\}', body):
+                drops.append((function, float(drop)))
+        self.assertTrue(drops, "no root drops found: the guard is not looking at the clips any more")
+        for function, drop in drops:
+            self.assertGreaterEqual(drop, -0.06,
+                                    f"{function} drops the root {drop} below the authored safe depth")
+
+    def test_every_enemy_profile_authors_all_four_clips(self) -> None:
+        source = (BLENDER_ROOT / "hd_pipeline" / "rig.py").read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        function_names = {node.name for node in tree.body if isinstance(node, ast.FunctionDef)}
+        for key, (_revision, _rig, profile) in EXPECTED.items():
+            self.assertIn(profile, source)
+            prefix = "_author_" + key
+            for clip in ("idle", "attack", "hit", "death"):
+                self.assertIn(f"{prefix}_{clip}", function_names)
+
+    def test_exact_enemy_batch_is_available_in_ci(self) -> None:
+        generator = (BLENDER_ROOT / "generate_assets.py").read_text(encoding="utf-8")
+        workflow = (REPOSITORY_ROOT / ".github" / "workflows" / "generate-visual-assets.yml").read_text(encoding="utf-8")
+        self.assertIn('args.batch == "enemies"', generator)
+        self.assertIn("for asset in REGULAR_CHARACTERS[1:]", generator)
+        self.assertIn("          - enemies\n", workflow)
+
+
+if __name__ == "__main__":
+    unittest.main()

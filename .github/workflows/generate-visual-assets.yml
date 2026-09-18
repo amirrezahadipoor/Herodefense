@@ -1,0 +1,212 @@
+name: Generate visual asset batch
+
+on:
+  workflow_dispatch:
+    inputs:
+      batch:
+        description: Procedural Blender asset batch
+        required: true
+        default: pilot
+        type: choice
+        options:
+          - pilot
+          - premium-pilot
+          - enemies
+          - bosses
+          - characters
+          - world-tree
+          - equipment
+          - arena
+          - environment
+          - ui
+          - ui-supplement
+          - skill-icons
+          - ceremony
+          - vfx
+          - projectile
+          - equipment-overlay
+          - all
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      HERO_TOOLS_ROOT: /tmp/hero-defense-tools
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install transient headless-render libraries
+        run: >-
+          sudo apt-get update -qq &&
+          sudo apt-get install -y --no-install-recommends
+          libxkbcommon0 libgl1-mesa-dri libegl1 xvfb xauth
+
+      - name: Install checksum-pinned Blender outside repository
+        id: blender
+        run: |
+          path=$(./scripts/install-blender-temp.sh | tail -n 1)
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+
+      # Roadmap R5.3. A render is the most expensive thing this repository does, and it used to be
+      # all-or-nothing: a job that timed out at minute 100 threw away everything it had packed, and a batch
+      # whose code had not changed re-rendered from nothing. The masters directory is now cached under a key
+      # that includes every file the masters depend on, and a restored batch asks the hash log what it still
+      # owes. `--only` restricts the generator to those keys, which is exactly the unfinished work: the
+      # manifest in the cache lists the batch's whole key set, so anything the manifest does not mention is
+      # either new (a change to tools/blender, which invalidates the cache and renders everything) or not part
+      # of this batch.
+      - name: Restore the masters this batch already rendered
+        id: masters
+        uses: actions/cache/restore@v4
+        with:
+          path: /tmp/hero-defense-rendered
+          key: render-masters-${{ inputs.batch }}-${{ hashFiles('tools/blender/**', 'tools/render/**', 'scripts/install-blender-temp.sh') }}
+
+      - name: Work out what this render still owes
+        id: resume
+        run: |
+          mkdir -p /tmp/hero-defense-rendered
+          # Keep the restored log before it is rewritten: it is the record of the last render of this batch,
+          # and the difference against it is what this run changed.
+          if [ -f /tmp/hero-defense-rendered/render_hash_log.json ]; then
+            cp /tmp/hero-defense-rendered/render_hash_log.json /tmp/previous-render-log.json
+          fi
+          python3 tools/render/render_hash_log.py write /tmp/hero-defense-rendered
+          print_owed() {
+            python3 tools/render/render_hash_log.py resume \
+              /tmp/hero-defense-rendered/asset_manifest.json \
+              /tmp/hero-defense-rendered/render_hash_log.json \
+              --root /tmp/hero-defense-rendered $@ || true
+          }
+          owed=$(print_owed --keys)
+          print_owed
+          echo "only=$owed" >> "$GITHUB_OUTPUT"
+          if [ -n "$owed" ]; then
+            echo "Resuming: $(echo "$owed" | wc -w) key(s) still owed by this batch."
+          else
+            echo "No restored manifest: this batch renders from the start."
+          fi
+
+      - name: Render requested batch headlessly
+        run: |
+          extra=()
+          if [ -n "${{ steps.resume.outputs.only }}" ]; then
+            extra=(--only ${{ steps.resume.outputs.only }})
+          fi
+          xvfb-run -a -s "-screen 0 640x480x24" "${{ steps.blender.outputs.path }}" \
+            --background --factory-startup \
+            --python tools/blender/generate_assets.py \
+            -- \
+            --batch "${{ inputs.batch }}" \
+            --output /tmp/hero-defense-rendered \
+            "${extra[@]}"
+
+      # A master render is not the shipped tier. Blender now renders premium characters onto 384 px frames at
+      # 3x/32 while the reviewed runtime tier is 192 px at 2x/28, exactly half and on the same grid, so the batch
+      # that ships is the *published* tier. This step is exactly the LOD the promotion tools consume; the
+      # publisher refuses geometry it cannot halve or a master grid that disagrees with the reviewed one, so a
+      # batch that cannot become the reviewed tier fails here rather than at promotion time. (Batches whose class
+      # has no published tier definition yet -- bosses, the world tree -- are refused by the same tool.)
+      - name: Install Pillow for the runtime-tier publisher
+        run: python3 -m pip install --break-system-packages pillow
+
+      - name: Publish the reviewed runtime tier of the rendered batch
+        run: >-
+          python3 tools/visual/publish_runtime_tier.py
+          /tmp/hero-defense-rendered
+          /tmp/hero-defense-runtime
+          --reviewed-manifest android/assets/generated/asset_manifest.json
+
+      # Validated against the tier that ships, not against the master render: the R3.4 batch failed this step
+      # for a real reason (masters are 3x/32, the reviewed tier is 2x/28) and the fix was to validate the thing
+      # that is actually promoted. The ledger gate recognises a candidate batch and skips its exact-hash half.
+      - name: Validate frame, pivot, alpha, page, and decoded-memory contracts
+        run: python3 tools/visual/validate_generated_assets.py /tmp/hero-defense-runtime
+
+      # The budget applies to the reviewable payload: sheets, atlases, per-asset metadata, manifest. The
+      # working frames under _frames/ are intermediates (every frame they contain is in the packed sheet at
+      # 1x, and their alpha/pivot contracts are validated by the step above), and with the doubled R3.4
+      # roster they would have eaten most of the 100 MB artifact cap for no review value.
+      - name: Enforce generated-artifact size budget
+        run: |
+          size=$(du -sb --exclude=_frames /tmp/hero-defense-rendered | cut -f1)
+          test "$size" -lt 100000000
+          echo "Reviewable payload bytes (working frames excluded): $size"
+
+      # The hash log is what a render is comparable by: it names every sheet, atlas and descriptor the batch
+      # wrote, with the hash of each, and nothing that changes between two runs of the same bytes (no
+      # timestamp, no commit, no absolute path). It is written even when a step above failed, because a
+      # partial render is exactly the thing that has to be diffable.
+      - name: Write the render hash log
+        if: always()
+        run: |
+          python3 tools/render/render_hash_log.py write /tmp/hero-defense-rendered || true
+          if [ -f /tmp/previous-render-log.json ]; then
+            python3 tools/render/render_hash_log.py diff \
+              /tmp/previous-render-log.json \
+              /tmp/hero-defense-rendered/render_hash_log.json | tee -a "$GITHUB_STEP_SUMMARY"
+          else
+            echo "No previous log for this batch: this run has nothing to compare against." \
+              | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
+
+      # Roadmap R5.6: the review evidence regenerates per batch instead of being written once by hand. The
+      # batch's own generator runs here with the committed tree as the baseline and the tree this run just
+      # rendered as the candidate, so the contact sheets and the audit JSON attached to the run describe the
+      # bytes that were actually produced. It runs even when an earlier step failed: a batch that failed
+      # validation is exactly the batch somebody has to look at.
+      - name: Regenerate this batch's review evidence
+        if: always()
+        run: |
+          python3 tools/visual/regenerate_batch_review.py \
+            --batch "${{ inputs.batch }}" \
+            --candidate /tmp/hero-defense-runtime \
+            --output /tmp/hero-defense-review || true
+
+      - name: Upload this batch's regenerated review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-defense-${{ inputs.batch }}-review
+          path: /tmp/hero-defense-review/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Upload the render hash log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-defense-${{ inputs.batch }}-hash-log
+          path: /tmp/hero-defense-rendered/render_hash_log.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      # Only a batch that got through the render step is worth caching: a failed render's directory is
+      # still diffable (the log above) but it is not a resumable state.
+      - name: Cache the masters of a completed render
+        if: success()
+        uses: actions/cache/save@v4
+        with:
+          path: /tmp/hero-defense-rendered
+          key: render-masters-${{ inputs.batch }}-${{ hashFiles('tools/blender/**', 'tools/render/**', 'scripts/install-blender-temp.sh') }}
+
+      # A failed validation must not throw away the render that produced it: the R3.4 render was lost this
+      # way once (the ledger gate rejected a partial batch after ~35 minutes of rendering), and the only way
+      # to look at the failure was to render again. The job still fails; the artifact is just evidence.
+      - name: Upload reviewable render batch
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hero-defense-${{ inputs.batch }}-sprites
+          path: |
+            /tmp/hero-defense-rendered/
+            /tmp/hero-defense-runtime/
+            !/tmp/hero-defense-rendered/_frames/
+          if-no-files-found: error
+          retention-days: 14

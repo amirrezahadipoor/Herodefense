@@ -1,0 +1,19 @@
+{
+  "id": "2026-09-17-apk-size",
+  "date": "2026-09-17",
+  "commit": "7329f4b",
+  "command": "CI Android job 105120923106 (run 35196492084): tools/perf/check_apk_budget.py android/build/outputs/apk/debug/android-debug.apk",
+  "note": "the debug APK CI builds on every push, against the committed 120 MB ceiling",
+  "metrics": [
+    {
+      "name": "apkBytes",
+      "value": 20872599,
+      "unit": "bytes"
+    },
+    {
+      "name": "budgetBytes",
+      "value": 120000000,
+      "unit": "bytes"
+    }
+  ]
+}

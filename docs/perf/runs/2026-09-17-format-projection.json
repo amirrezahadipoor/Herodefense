@@ -1,0 +1,59 @@
+{
+  "id": "2026-09-17-format-projection",
+  "date": "2026-09-17",
+  "commit": "8a2e05f",
+  "command": "./gradlew :core:residencyReport",
+  "note": "The shipped catalog in every format this game could hold it in, computed from android/assets/generated/asset_manifest.json by TextureFormatPlan. A projection rather than a device measurement: the encoded containers are not in the APK yet (roadmap R8.1). The RGBA8888 base-level row reproduces the decoded catalog the residency gate already enforces, and a test asserts that equality, which is what makes the other rows worth reading.",
+  "metrics": [
+    {
+      "name": "catalogRgba8888Bytes",
+      "value": 384872448,
+      "unit": "bytes"
+    },
+    {
+      "name": "catalogRgba8888WithMipsBytes",
+      "value": 513163261,
+      "unit": "bytes"
+    },
+    {
+      "name": "catalogEtc2Rgba8Bytes",
+      "value": 96218112,
+      "unit": "bytes"
+    },
+    {
+      "name": "catalogEtc2Rgba8WithMipsBytes",
+      "value": 128290813,
+      "unit": "bytes"
+    },
+    {
+      "name": "catalogAstc6x6Bytes",
+      "value": 42763608,
+      "unit": "bytes"
+    },
+    {
+      "name": "catalogAstc6x6WithMipsBytes",
+      "value": 57018092,
+      "unit": "bytes"
+    },
+    {
+      "name": "liveCombatRgba8888Bytes",
+      "value": 80740352,
+      "unit": "bytes"
+    },
+    {
+      "name": "liveCombatEtc2Rgba8Bytes",
+      "value": 20185088,
+      "unit": "bytes"
+    },
+    {
+      "name": "liveCombatAstc6x6Bytes",
+      "value": 8971152,
+      "unit": "bytes"
+    },
+    {
+      "name": "decodedCatalogMbSavedByEtc2",
+      "value": 288.7,
+      "unit": "MB"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "id": "2026-09-17-wave50-residency",
+  "date": "2026-09-17",
+  "commit": "7329f4b",
+  "command": "CI Android job 105120923106 (run 35196492084): connectedDebugAndroidTest, WaveFiftyMemoryTest, then tools/perf/check_wave50_memory.py on the captured logcat",
+  "note": "the first green emulator run of the wave-50 measurement: one stable line, source=debug.MemoryInfo; graphics reads 0 because the process's own MemoryInfo does not expose the GL heap and the shell dump's App Summary reports 0 for the software stack",
+  "metrics": [
+    {
+      "name": "totalPssMiB",
+      "value": 148.3,
+      "unit": "MiB"
+    },
+    {
+      "name": "totalRssMiB",
+      "value": 267.2,
+      "unit": "MiB"
+    },
+    {
+      "name": "graphicsMiB",
+      "value": 0.0,
+      "unit": "MiB"
+    },
+    {
+      "name": "budgetMiB",
+      "value": 400.0,
+      "unit": "MiB"
+    }
+  ]
+}

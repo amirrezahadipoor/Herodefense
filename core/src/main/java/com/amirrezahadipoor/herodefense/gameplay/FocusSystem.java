@@ -1,0 +1,56 @@
+package com.amirrezahadipoor.herodefense.gameplay;
+
+import com.amirrezahadipoor.herodefense.items.MythicEffects;
+import com.amirrezahadipoor.herodefense.model.GameState;
+
+/**
+ * The Hero's Focus meter (Phase 24.1): every landed hit charges it, critical
+ * hits charge double, and a full meter unlocks the Ultimate. All math is
+ * deterministic; rendering reads {@link #ratio} for the ring around the Hero.
+ */
+public final class FocusSystem {
+    public static final float FOCUS_PER_HIT = 0.1f;
+    public static final float CRITICAL_FOCUS_MULTIPLIER = 2f;
+    /** +2% fill per Hero level above 1, +10% per equipped Mythic. */
+    public static final float FILL_LEVEL_BONUS = 0.02f;
+    public static final float FILL_MYTHIC_BONUS = 0.10f;
+
+    private FocusSystem() {
+    }
+
+    /** Charges Focus for one volley's landed hits; chain arcs count as hits. */
+    public static void addHits(GameState state, int hits, int criticalHits, int chainArcs) {
+        if (state == null) return;
+        float max = state.focusMax > 0f && Float.isFinite(state.focusMax) ? state.focusMax : 100f;
+        if (state.focus >= max) return;
+        int normal = Math.max(0, hits - Math.max(0, criticalHits));
+        float gain = (normal + Math.max(0, criticalHits) * CRITICAL_FOCUS_MULTIPLIER
+            + Math.max(0, chainArcs)) * FOCUS_PER_HIT * fillRateMultiplier(state);
+        state.focus = Math.min(max, Math.max(0f, state.focus) + Math.max(0f, gain));
+    }
+
+    /**
+     * Fill-rate multiplier from Hero level and equipped Mythics; 1 for null
+     * or degenerate state so unscaled callers stay exact.
+     */
+    public static float fillRateMultiplier(GameState state) {
+        if (state == null) return 1f;
+        int levels = Math.max(0, state.heroLevel - 1);
+        return (1f + levels * FILL_LEVEL_BONUS)
+            * (1f + MythicEffects.equippedMythicCount(state) * FILL_MYTHIC_BONUS);
+    }
+
+    /** 0..1 charge of the Focus meter; 0 for null or degenerate state. */
+    public static float ratio(GameState state) {
+        if (state == null || !(state.focusMax > 0f) || !Float.isFinite(state.focusMax)) return 0f;
+        if (!Float.isFinite(state.focus)) return 0f;
+        return Math.max(0f, Math.min(1f, state.focus / state.focusMax));
+    }
+
+    /** True once the meter is full and the Ultimate tap target should show. */
+    public static boolean isFull(GameState state) {
+        return state != null && Float.isFinite(state.focus)
+            && Float.isFinite(state.focusMax) && state.focusMax > 0f
+            && state.focus >= state.focusMax;
+    }
+}

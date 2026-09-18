@@ -1,0 +1,317 @@
+{
+  "alphaMode": "STRAIGHT_RGBA",
+  "animationProfile": "husk-warden-bulwark-v2",
+  "armature": "husk_warden_armature",
+  "atlas": "sprites/husk_warden.atlas",
+  "boneAnimated": true,
+  "bones": [
+    "armor_socket",
+    "boot_socket.L",
+    "boot_socket.R",
+    "chest",
+    "foot.L",
+    "foot.R",
+    "forearm.L",
+    "forearm.R",
+    "hand.L",
+    "hand.R",
+    "head",
+    "helmet_socket",
+    "neck",
+    "pelvis",
+    "ring_socket.L",
+    "ring_socket.R",
+    "root",
+    "shin.L",
+    "shin.R",
+    "spine",
+    "thigh.L",
+    "thigh.R",
+    "upper_arm.L",
+    "upper_arm.R",
+    "weapon_socket"
+  ],
+  "builder": "husk_warden",
+  "categoryReview": {
+    "category": "regular-enemies",
+    "document": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
+    "status": "accepted"
+  },
+  "clips": {
+    "attack": [
+      {
+        "height": 192,
+        "index": 0,
+        "page": 0,
+        "width": 192,
+        "x": 0,
+        "y": 192
+      },
+      {
+        "height": 192,
+        "index": 1,
+        "page": 0,
+        "width": 192,
+        "x": 192,
+        "y": 192
+      },
+      {
+        "height": 192,
+        "index": 2,
+        "page": 0,
+        "width": 192,
+        "x": 384,
+        "y": 192
+      },
+      {
+        "height": 192,
+        "index": 3,
+        "page": 0,
+        "width": 192,
+        "x": 576,
+        "y": 192
+      },
+      {
+        "height": 192,
+        "index": 4,
+        "page": 0,
+        "width": 192,
+        "x": 768,
+        "y": 192
+      },
+      {
+        "height": 192,
+        "index": 5,
+        "page": 0,
+        "width": 192,
+        "x": 960,
+        "y": 192
+      },
+      {
+        "height": 192,
+        "index": 6,
+        "page": 0,
+        "width": 192,
+        "x": 1152,
+        "y": 192
+      },
+      {
+        "height": 192,
+        "index": 7,
+        "page": 0,
+        "width": 192,
+        "x": 1344,
+        "y": 192
+      }
+    ],
+    "death": [
+      {
+        "height": 192,
+        "index": 0,
+        "page": 0,
+        "width": 192,
+        "x": 0,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 1,
+        "page": 0,
+        "width": 192,
+        "x": 192,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 2,
+        "page": 0,
+        "width": 192,
+        "x": 384,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 3,
+        "page": 0,
+        "width": 192,
+        "x": 576,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 4,
+        "page": 0,
+        "width": 192,
+        "x": 768,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 5,
+        "page": 0,
+        "width": 192,
+        "x": 960,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 6,
+        "page": 0,
+        "width": 192,
+        "x": 1152,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 7,
+        "page": 0,
+        "width": 192,
+        "x": 1344,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 8,
+        "page": 0,
+        "width": 192,
+        "x": 1536,
+        "y": 576
+      },
+      {
+        "height": 192,
+        "index": 9,
+        "page": 0,
+        "width": 192,
+        "x": 1728,
+        "y": 576
+      }
+    ],
+    "hit": [
+      {
+        "height": 192,
+        "index": 0,
+        "page": 0,
+        "width": 192,
+        "x": 0,
+        "y": 384
+      },
+      {
+        "height": 192,
+        "index": 1,
+        "page": 0,
+        "width": 192,
+        "x": 192,
+        "y": 384
+      },
+      {
+        "height": 192,
+        "index": 2,
+        "page": 0,
+        "width": 192,
+        "x": 384,
+        "y": 384
+      },
+      {
+        "height": 192,
+        "index": 3,
+        "page": 0,
+        "width": 192,
+        "x": 576,
+        "y": 384
+      }
+    ],
+    "idle": [
+      {
+        "height": 192,
+        "index": 0,
+        "page": 0,
+        "width": 192,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "height": 192,
+        "index": 1,
+        "page": 0,
+        "width": 192,
+        "x": 192,
+        "y": 0
+      },
+      {
+        "height": 192,
+        "index": 2,
+        "page": 0,
+        "width": 192,
+        "x": 384,
+        "y": 0
+      },
+      {
+        "height": 192,
+        "index": 3,
+        "page": 0,
+        "width": 192,
+        "x": 576,
+        "y": 0
+      },
+      {
+        "height": 192,
+        "index": 4,
+        "page": 0,
+        "width": 192,
+        "x": 768,
+        "y": 0
+      },
+      {
+        "height": 192,
+        "index": 5,
+        "page": 0,
+        "width": 192,
+        "x": 960,
+        "y": 0
+      }
+    ]
+  },
+  "engineVersion": "33.0-studio-v3-3x36-full",
+  "family": "enemy",
+  "frameClass": "character",
+  "frameRate": 12,
+  "frameSize": 192,
+  "key": "husk_warden",
+  "masterRender": {
+    "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+    "frameSize": 384,
+    "lod": "lanczos-half onto the reviewed runtime grid",
+    "renderSamples": 32,
+    "renderSupersample": 3,
+    "sheetHeight": 1536,
+    "sheetWidth": 3840
+  },
+  "materialCount": 7,
+  "materialStory": "cool iron plates, one rust-red cloth note, brass rivets, and an ember visor slit",
+  "meshParts": 38,
+  "modelRevision": "husk-warden-shield-bearer-v2",
+  "pivot": {
+    "units": "normalized-bottom-left",
+    "x": 0.5,
+    "y": 0.12
+  },
+  "renderSamples": 28,
+  "renderSupersample": 2,
+  "reviewDocument": "docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md",
+  "rigBoneCount": 25,
+  "rigProfile": "premium-heavy-humanoid-v2",
+  "sheet": "sprites/husk_warden.png",
+  "sheetHeight": 768,
+  "sheetWidth": 1920,
+  "sheets": [
+    {
+      "decodedBytes": 5898240,
+      "file": "sprites/husk_warden.png",
+      "height": 768,
+      "width": 1920
+    }
+  ],
+  "silhouette": "short and wide, a full-height slab shield on the left, dome helmet, and a rust plume",
+  "triangles": 1416,
+  "visualQuality": "studio-v3"
+}
