@@ -35,11 +35,11 @@ public final class PostProcessRenderer implements AutoCloseable {
 
     /** Luma above which a pixel bleeds. The arena art is deliberately dark, so this sits above the
      *  stage grades and only hits, fire, gold and spell-light ever cross it. */
-    static final float BLOOM_THRESHOLD = 0.62f;
+    static final float BLOOM_THRESHOLD = 0.72f;
     /** How much of the blurred light comes back. A lens effect, not a fog. */
-    static final float BLOOM_INTENSITY = 0.38f;
+    static final float BLOOM_INTENSITY = 0.22f;
     /** Corner darkening at full radial falloff. */
-    static final float VIGNETTE_STRENGTH = 0.30f;
+    static final float VIGNETTE_STRENGTH = 0.16f;
 
     private final ShaderProgram brightShader;
     private final ShaderProgram blurShader;

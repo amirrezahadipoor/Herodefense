@@ -17,7 +17,8 @@ void main() {
     vec4 sceneColor = texture2D(u_texture, v_texCoords);
     vec3 bloom = texture2D(u_bloom, v_texCoords).rgb;
     vec2 offset = v_texCoords - vec2(0.5);
-    float falloff = clamp(dot(offset, offset) * 1.6, 0.0, 1.0);
+    float dist = length(offset);
+    float falloff = smoothstep(0.48, 0.75, dist);
     vec3 rgb = (sceneColor.rgb + bloom * u_bloomIntensity) * (1.0 - u_vignette * falloff);
     gl_FragColor = vec4(rgb, sceneColor.a);
 }

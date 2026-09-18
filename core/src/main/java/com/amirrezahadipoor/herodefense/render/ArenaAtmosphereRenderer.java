@@ -34,7 +34,7 @@ public final class ArenaAtmosphereRenderer implements AutoCloseable {
     static final float AURA_WIDTH = 300f;
     static final float AURA_HEIGHT = 110f;
     /** Master opacity of the veil. The shader clamps again; this is the look dial. */
-    static final float VEIL_STRENGTH = 0.5f;
+    static final float VEIL_STRENGTH = 0.12f;
 
     private final ShaderProgram veilShader;
     private final ShaderProgram auraShader;
