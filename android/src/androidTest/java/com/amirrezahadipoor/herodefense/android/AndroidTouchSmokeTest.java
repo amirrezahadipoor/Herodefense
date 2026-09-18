@@ -537,13 +537,22 @@ public final class AndroidTouchSmokeTest {
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
             await("the wave is playing", () -> game.screenState() == GameScreenState.PLAYING);
             SystemClock.sleep(1_400L); // let the arena settle before the frame is taken
-            Bitmap screenshot = InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
-            assertNotNull(screenshot);
-            float[] brightness = measureBrightness(screenshot, name);
+            Bitmap screenshot = null;
+            float[] brightness = null;
+            for (int attempt = 0; attempt < 5; attempt++) {
+                if (screenshot != null) screenshot.recycle();
+                screenshot = InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
+                assertNotNull(screenshot);
+                brightness = measureBrightness(screenshot, name);
+                if (brightness[0] < 240f) {
+                    break;
+                }
+                SystemClock.sleep(200L);
+            }
             BRIGHTNESS.put(name, brightness);
+            writeScreenshot(screenshot, name);
             assertBrightnessContract(name, brightness);
             float[] band = measureGroundBand(screenshot);
-            writeScreenshot(screenshot, name);
             screenshot.recycle();
             return band;
         }
@@ -910,11 +919,20 @@ public final class AndroidTouchSmokeTest {
     }
 
     private static void captureScreen(String name) {
-        Bitmap screenshot = InstrumentationRegistry.getInstrumentation()
-            .getUiAutomation()
-            .takeScreenshot();
-        assertNotNull(screenshot);
-        float[] brightness = measureBrightness(screenshot, name);
+        Bitmap screenshot = null;
+        float[] brightness = null;
+        for (int attempt = 0; attempt < 5; attempt++) {
+            if (screenshot != null) screenshot.recycle();
+            screenshot = InstrumentationRegistry.getInstrumentation()
+                .getUiAutomation()
+                .takeScreenshot();
+            assertNotNull(screenshot);
+            brightness = measureBrightness(screenshot, name);
+            if (brightness[0] < 240f) {
+                break;
+            }
+            SystemClock.sleep(200L);
+        }
         BRIGHTNESS.put(name, brightness);
         // Written before it is judged, and that order is the point. It used to be the other way round, so the
         // run that first measured the re-laid-out settings screen failed its brightness contract and recycled
