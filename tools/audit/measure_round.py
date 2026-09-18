@@ -156,27 +156,79 @@ def performance_runs() -> dict:
     }
 
 
+BLOCK_COMMENT = re.compile(r"/\*.*?\*/", re.S)
+LINE_COMMENT = re.compile(r"//[^\n]*")
+
+
+def strip_comments(text: str) -> str:
+    """The same file with its comments blanked out, line numbering and length preserved.
+
+    Blanked rather than removed: a comment's characters become spaces and its newlines stay newlines, so
+    ``line 41`` still means line 41 afterwards. A ``//`` inside a string literal would blank the rest of that
+    line, which can only cause a flag to under-report, and every flag now names the lines it matched, so an
+    under-report is visible instead of silent.
+    """
+    def blank(match: re.Match) -> str:
+        return "".join("\n" if char == "\n" else " " for char in match.group(0))
+
+    return LINE_COMMENT.sub(blank, BLOCK_COMMENT.sub(blank, text))
+
+
+def code_matches(sources: dict, pattern: str, limit: int = 3) -> list:
+    """``file:line`` for the first ``limit`` code lines matching ``pattern``, comments excluded."""
+    found = []
+    compiled = re.compile(pattern, re.I)
+    for path in sorted(sources):
+        for number, line in enumerate(strip_comments(sources[path]).splitlines(), start=1):
+            if compiled.search(line):
+                found.append(f"{path.name}:{number}")
+                if len(found) >= limit:
+                    return found
+    return found
+
+
 def content_flags() -> dict:
-    """The presence of a feature is a fact; whether it is any good is the judge's problem, not the tool's."""
+    """Which features exist in the code, and which lines each claim rests on.
+
+    These flags used to be keyword searches over whole files, javadoc included. That is how this tool came to
+    report ``accessibility: true`` for a repository whose only match was the word "accessibility" in a
+    ``GameSettings`` javadoc line and which has no accessibility feature at all -- no colour-blind palette, no
+    screen-reader labels, no font size, no reduced-motion switch (roadmap item M1, from the 2026-09-18 audit).
+    A flag satisfied by a sentence is not a flag about the game.
+
+    So the search runs over code with comments stripped, and every flag is reported next to the lines that
+    produced it. ``flagEvidence`` exists so a reader can check a claim rather than trust it, and so that a flag
+    which is true for a weak reason says which reason: ``accessibility`` is now false, and a false flag with an
+    empty evidence list is a truer sentence than a true one with a javadoc behind it.
+    """
     main = ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense"
-    sources = {path: read(path) for path in java_files("core/src/main/java")}
-    joined = "\n".join(sources.values())
-    android = "\n".join(read(path) for path in
-                        java_files("android/src/main/java") + java_files("android/src/androidTest/java"))
+    core = {path: read(path) for path in java_files("core/src/main/java")}
+    android_paths = java_files("android/src/main/java") + java_files("android/src/androidTest/java")
+    android = {path: read(path) for path in android_paths}
+    everything = {**core, **android}
+
+    patterns = {
+        # A caught BACK key or an overridden Android callback: an API the platform calls, not a word.
+        "backButton": r"Keys\.BACK|onBackPressed|setCatchKey|keycode\.BACK",
+        # A locale the game can be set to, or Persian text in a string table.
+        "persian": r'"fa"|fa-IR|PERSIAN|[\u0600-\u06FF]',
+        # Mirroring is a call, not an aspiration.
+        "rightToLeft": r"rightToLeft|mirrored|\bRTL\b",
+        # A setting, a palette or a label a screen reader could read. None of these exist today.
+        "accessibility": r"colourBlind|colorBlind|screenReader|fontSize|reducedMotion|highContrast",
+        # A vibrator the platform exposes, reached from game code.
+        "haptics": r"Vibrator|hapticFeedback|vibrate\(",
+    }
+    evidence = {name: code_matches(everything, pattern) for name, pattern in patterns.items()}
+    flags = {name: bool(lines) for name, lines in evidence.items()}
     return {
         "packages": sorted(entry.name for entry in main.iterdir() if entry.is_dir()),
         "onboardingFiles": len(list((main / "onboarding").glob("*.java")))
         if (main / "onboarding").is_dir() else 0,
         "storyFiles": len(list((main / "story").glob("*.java"))) if (main / "story").is_dir() else 0,
-        "backButton": bool(re.search(r"Keys\.BACK|onBackPressed|keycode\.BACK",
-                                     joined + android, re.I)),
-        "persian": bool(re.search(r'"fa"|\bfa-IR\b|Locale\.fa|فارسی', joined + android)),
-        "rightToLeft": bool(re.search(r"rightToLeft|\bRTL\b", joined + android)),
-        "accessibility": bool(re.search(r"accessibil|colour[- ]?blind|colorBlind|screenReader",
-                                        joined + android, re.I)),
-        "haptics": bool(re.search(r"Vibration|haptic|vibrate", joined + android, re.I)),
-        "equipmentFiles": len(list((ROOT / "core/src/main/java/com/amirrezahadipoor/herodefense/items")
-                                   .rglob("*.java"))) if True else 0,
+        "equipmentFiles": len(list((main / "items").rglob("*.java"))) if (main / "items").is_dir() else 0,
+        **flags,
+        "flagEvidence": evidence,
     }
 
 

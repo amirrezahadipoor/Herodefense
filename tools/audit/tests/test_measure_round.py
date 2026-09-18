@@ -79,3 +79,68 @@ class FactSheetTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ContentFlagTest(unittest.TestCase):
+    """Roadmap M1: a flag that can be satisfied by a sentence is not a flag about the game."""
+
+    FLAGS = ("backButton", "persian", "rightToLeft", "accessibility", "haptics")
+
+    def test_a_feature_named_only_in_a_comment_is_not_reported(self) -> None:
+        source = (
+            "/** Device-local accessibility/audio/inventory preferences. */\n"
+            "public class Fake {\n"
+            "    // a colourBlind palette would go here\n"
+            "}\n"
+        )
+        self.assertEqual([], measure_round.code_matches(
+            {pathlib.Path("Fake.java"): source}, r"colourBlind|screenReader|accessibil"),
+            "the word appeared twice, both times in prose: this is the exact shape of the false positive that"
+            " made the tool report accessibility for a game that has none")
+
+    def test_the_same_feature_in_code_is_reported_with_its_line(self) -> None:
+        source = (
+            "/** preferences */\n"
+            "public class Fake {\n"
+            "    public boolean colourBlind;\n"
+            "}\n"
+        )
+        self.assertEqual(["Fake.java:3"], measure_round.code_matches(
+            {pathlib.Path("Fake.java"): source}, r"colourBlind"))
+
+    def test_stripping_comments_keeps_the_line_numbering_intact(self) -> None:
+        source = "first\n/* a comment\nspans two lines */\nfourth // and a trailing one\nfifth\n"
+        stripped = measure_round.strip_comments(source).splitlines()
+        self.assertEqual(5, len(stripped), "an evidence line that points at the wrong line is worse than none")
+        self.assertEqual("first", stripped[0].strip())
+        self.assertNotIn("spans", stripped[2])
+        self.assertEqual("fourth", stripped[3].strip())
+        self.assertEqual("fifth", stripped[4].strip())
+
+    def test_accessibility_is_false_because_no_accessibility_feature_exists(self) -> None:
+        content = measure_round.content_flags()
+        self.assertFalse(content["accessibility"],
+                         "a colour-blind palette, a screen-reader label, a font size or a reduced-motion switch"
+                         " appeared in code: roadmap item G3 has been started, and this assertion should be"
+                         " replaced by one that checks the feature works")
+        self.assertEqual([], content["flagEvidence"]["accessibility"])
+
+    def test_every_flag_is_its_own_evidence_and_the_evidence_still_exists(self) -> None:
+        content = measure_round.content_flags()
+        roots = [REPOSITORY / "core/src", REPOSITORY / "android/src"]
+        for flag in self.FLAGS:
+            evidence = content["flagEvidence"][flag]
+            self.assertEqual(content[flag], bool(evidence),
+                             f"{flag} and its evidence disagree, which means one of them is computed twice")
+            for entry in evidence:
+                name, _, line = entry.rpartition(":")
+                paths = [path for root in roots for path in root.rglob(name)]
+                self.assertTrue(paths, f"{flag} cites {name}, which is not in the tree")
+                length = len(paths[0].read_text(encoding="utf-8", errors="ignore").splitlines())
+                self.assertLessEqual(int(line), length,
+                                     f"{flag} cites {entry}, but that file is only {length} lines long")
+
+    def test_the_features_that_do_exist_are_still_reported_as_existing(self) -> None:
+        content = measure_round.content_flags()
+        for flag in ("backButton", "persian", "rightToLeft", "haptics"):
+            self.assertTrue(content[flag], f"{flag} stopped being detected: the pattern or the code moved")

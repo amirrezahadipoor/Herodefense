@@ -154,10 +154,18 @@ started, `[!]` attempted and failed, with the failure written down.
 
 ## M — the measuring tools (unscored)
 
-- [ ] **M1 `measure_round.py` reports features it has not seen.** Its content flags are keyword regexes, so
-      `accessibility: true` came from one javadoc word in `GameSettings` and `haptics: true` from a manifest
-      permission. A tool that over-reports is worse than no tool, because it is trusted. Either make each flag
-      detect structure (a settings field, a code path) or rename the flags to say they count mentions.
+- [x] **M1 `measure_round.py` reported features it had not seen.** Its five content flags were keyword regexes
+      over whole files, javadoc included, so `accessibility: true` came from one word in a `GameSettings`
+      javadoc line and no accessibility feature at all. A tool that over-reports is worse than no tool, because
+      it is trusted. Fixed by searching code with comments blanked out (line numbers preserved, so an evidence
+      line still points where it says), and by reporting `flagEvidence` — the `file:line` list each flag rests
+      on — so a reader can check a claim instead of trusting it. `accessibility` is now `false` with an empty
+      evidence list, which is a truer sentence than the old one; `backButton`, `persian`, `rightToLeft` and
+      `haptics` stay `true` and now name the lines that make them true. Six tests in
+      `tools/audit/tests/test_measure_round.py` hold it: a feature named only in a comment is not reported, the
+      same feature in code is reported with its line, comment stripping keeps the numbering, `accessibility` is
+      false until G3 makes it true, every flag equals its own evidence and that evidence still exists in the
+      tree at a line the file actually has, and the four real features keep being detected.
 
 ## P — release and store (34/100, 66 points deducted) — PARKED
 
