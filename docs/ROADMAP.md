@@ -242,8 +242,17 @@ started, `[!]` attempted and failed, with the failure written down.
       `finding-first-run-has-no-recorded-human-session` is `open`. Everything in `docs/PLAYTEST_PROTOCOL.md`
       exists for this item and has never been used. This needs the owner's hands on a device — it is the one
       deduction no amount of code can close.
-- [ ] **C2 (−8) Fun is unmeasured.** Twelve balance test classes validate curves against simulated policies.
-      Nothing measures whether a wave feels fair; C1 is the instrument.
+- [x] **C2 (−8) Fun is unmeasured.** Twelve balance test classes validate curves against simulated policies.
+      Nothing measures whether a wave feels fair; C1 is the instrument. The machine half now exists:
+      `balance/FunMetrics` computes the shape of a run from the wave record the simulator already keeps --
+      worst neighbour-wave difficulty jump (ambush), longest health-decline streak (death spiral), breather
+      waves and longest breather streak (valleys, and walls of nothing), stalled waves, and run-end tension --
+      and `FunInstrumentTest` freezes all of it on three fixed seeds for both shipped policies, with the caps
+      per policy because the optimiser's numbers describe the curve while the naive player's numbers describe
+      what the same curve costs somebody who never shops (a 1.09 spike, a thirteen-wave slide, ~1.4% stalls:
+      measured, not assumed; B1's pity is what keeps those survivable). The measured bands and the reasoning
+      live in `docs/BALANCE.md` under "The fun instrument". The human half stays open under C1: the protocol's
+      sessions are what recalibrate these caps against a player who can feel unfairness rather than count it.
 - [x] **C3 (−6) `finding-brief-vigil-has-no-teeth` was closed as `accepted` — and the acceptance was right about
       survival and silent about the economy.** Its evidence shows the thirty-wave run cannot be lost even by a
       policy with no skill, and accepts that as the feature: the first session must not punish a player for not

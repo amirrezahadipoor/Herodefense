@@ -731,3 +731,34 @@ kill income moved 80143 -> 81199 across the sweep, exactly the +5 coins per spli
 against the thrall's 19) the design promised -- the split pays for itself and not a coin more. That loop is the
 item working as intended: A3 is the one deduction whose resolution cannot be asserted, only measured -- three
 times, on the fixed seeds, before it shipped.
+
+## The fun instrument: what the curve feels like (roadmap C2)
+
+Every other number in this document asks whether the curve lands inside a band. `balance/FunMetrics` asks the
+questions a band cannot see, computed from the same `WaveSample` record the simulator already keeps, and
+`FunInstrumentTest` freezes the answers on three fixed seeds, two hundred waves, for both shipped policies.
+
+Five measurements, and what they found on the shipped curve:
+
+| metric | optimiser (measured) | naive (measured) | frozen cap (opt / naive) |
+| --- | --- | --- | --- |
+| worst neighbour-wave difficulty jump | 0.18–0.30 | 0.87–1.09 | 0.35 / 1.25 |
+| longest health-decline streak (waves) | 1–4 | 5–13 | 6 / 16 |
+| breather waves (<2% of max HP cost) | 13–17 | 3–5 | ≥10 / ≥2 |
+| longest breather streak (a wall of nothing) | 4 | ≤4 | 6 / 6 |
+| stalled (timed-out) waves | 0 | ~1.4% | 0 / 3% |
+
+The per-policy split is the finding. The optimiser's numbers describe the curve: it ramps without ambushes,
+breathes between pressures, and never stalls. The naive player's numbers describe what the same curve costs
+somebody who never shops, never reforges and takes the first card offered: a single wave can cost almost
+their whole health bar (1.09), pressure can slide for thirteen waves without a window, and roughly three
+waves per run outlast their damage. That is not a bug to gate away -- B1's pity and the brief-vigil floor
+exist so this player survives anyway -- but it is now measured instead of assumed, and the day a change moves
+these numbers, the instrument says which experience moved.
+
+Both policies end the full run at full health (`final=1.000`): the last wave's recovery lands before the
+final sample, so run-end health separates nobody; the skill margin lives in `averageDamageFraction` instead,
+and `skillBuysAMeasurableMargin` pins that the same curve costs the passive player strictly more.
+
+This is the machine half of C2. The human half is C1: `docs/PLAYTEST_PROTOCOL.md` sessions recalibrate these
+caps against a player who can feel unfairness rather than only count it.
