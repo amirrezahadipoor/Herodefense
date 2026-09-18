@@ -41,6 +41,10 @@
          is created there, replaced there when a new Application starts, and released from close(). A lock would
          protect nothing, and the class documents the lifecycle it implements. -->
     <Match>
+        <Class name="com.amirrezahadipoor.herodefense.render.GameFonts"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
+    <Match>
         <Bug pattern="LI_LAZY_INIT_STATIC"/>
     </Match>
     <Match>

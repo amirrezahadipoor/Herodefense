@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.input;
 
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.render.GameFonts;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
 /** Applies device-setting taps, drag-scrolls the list, and reports close separately. */
@@ -70,15 +71,7 @@ public final class SettingsTouchController {
             case TOGGLE_REDUCED_MOTION -> settings.reducedMotion = !settings.reducedMotion;
             case CYCLE_TEXT_SIZE -> {
                 settings.cycleTextSize();
-                try {
-                    Class<?> fontsClass = Class.forName(
-                        "com.amirrezahadipoor.herodefense.render.GameFonts");
-                    java.lang.reflect.Method apply = fontsClass.getMethod("applyTextScale", float.class);
-                    apply.invoke(null, settings.textSizeScale());
-                } catch (Exception ignored) {
-                    // Headless unit tests have no GL context and no GameFonts; the scale is still persisted
-                    // and applied on next launch via LocalSettingsRepository.load().
-                }
+                GameFonts.applyTextScale(settings.textSizeScale());
             }
             case TOGGLE_COLOUR_BLIND_RARITY -> settings.colourBlindRarity = !settings.colourBlindRarity;
             default -> {

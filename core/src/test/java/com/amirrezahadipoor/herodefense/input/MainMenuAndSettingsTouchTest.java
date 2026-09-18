@@ -69,14 +69,14 @@ final class MainMenuAndSettingsTouchTest {
         // G3b: text-size row cycles through 3 steps, scrolls into view
         touch.open();
         touch.drag(60f, SettingsTouchLayout.TOTAL_ROWS);
-        float slot0Y = SettingsTouchLayout.slotY(0) + 40f;
         // After scrolling 1 step, slot 5 is the new text-size row (index 6)
         float textSizeSlotY = SettingsTouchLayout.slotY(5) + 40f;
         assertEquals(SettingsTouchLayout.Action.CYCLE_TEXT_SIZE,
             SettingsTouchLayout.actionAt(centreX, textSizeSlotY, 1));
         int before = settings.textSizeIndex;
         touch.tap(settings, centreX, textSizeSlotY);
-        assertTrue(settings.textSizeIndex != before || SettingsTouchLayout.TOTAL_ROWS == 8);
+        assertEquals((before + 1) % GameSettings.textSizeCount(), settings.textSizeIndex,
+            "tapping text-size row cycles the text scale step");
     }
 
     @Test

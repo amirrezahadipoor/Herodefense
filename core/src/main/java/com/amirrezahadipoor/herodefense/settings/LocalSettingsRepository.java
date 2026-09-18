@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.settings;
 
 import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.render.GameFonts;
 import com.badlogic.gdx.Preferences;
 
 /** Persists main-menu settings immediately in device-local preferences. */
@@ -48,15 +49,7 @@ public final class LocalSettingsRepository {
         settings.normalizeTextSize();
         settings.language = GameLanguage.fromCode(preferences.getString(LANGUAGE_KEY, settings.language.code()));
         GameLocale.use(settings.language);
-        try {
-            Class<?> fontsClass = Class.forName(
-                "com.amirrezahadipoor.herodefense.render.GameFonts");
-            java.lang.reflect.Method apply = fontsClass.getMethod("applyTextScale", float.class);
-            apply.invoke(null, settings.textSizeScale());
-        } catch (Exception ignored) {
-            // Headless tests and early startup have no GL context; the scale is still remembered and will
-            // be applied when GameFonts.shared() is first created via its DisplayMetrics path.
-        }
+        GameFonts.applyTextScale(settings.textSizeScale());
         return settings;
     }
 

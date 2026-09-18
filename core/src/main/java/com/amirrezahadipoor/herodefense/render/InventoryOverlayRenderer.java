@@ -36,7 +36,6 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
     private static final Color NEGATIVE = Color.valueOf("DF6A65");
     private static final Color MUTED = Color.valueOf("777D76");
     private static final Color FORGE = Color.valueOf("E08A4C");
-    private static final Color MYTHIC = Color.valueOf("C77DFF");
 
     private final ShapeRenderer shapes = new ShapeRenderer();
     private final OverlayText text = new OverlayText();
@@ -483,10 +482,6 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         shapes.rect(x, y, width, height);
     }
 
-    private void rarityAccent(float x, float y, float width, float height, String rarity) {
-        rarityAccent(x, y, width, height, rarity, false);
-    }
-
     private void drawCentered(
         SpriteBatch batch, String label, float centerX, float y, float scale, Color color
     ) {
@@ -514,10 +509,6 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
 
     private static Color rarityColor(String rarity, boolean colourBlind) {
         return VisualRarity.colorForTier(rarity, colourBlind);
-    }
-
-    private static Color rarityColor(String rarity) {
-        return rarityColor(rarity, false);
     }
 
     private static String signed(float value) {
