@@ -11,13 +11,13 @@ package com.amirrezahadipoor.herodefense.model;
  */
 public enum HeroPath {
     /** The classic vigil, unchanged: no bonus and no price. */
-    UNBOUND("hero"),
+    UNBOUND("strength"),
     /** Deep and slow: more health to stand in, less damage to finish with. */
-    ROOT("equipment_heartwood_aegis"),
+    ROOT("health"),
     /** Fast and fragile: more attacks per second, less health per hit taken. */
-    WIND("equipment_boots_of_three_winds"),
+    WIND("speed"),
     /** Focused and measured: the ultimate charges faster, the bow strings slower. */
-    STAR("equipment_starfall_bow");
+    STAR("general_power");
 
     private static final float ROOT_MAX_HEALTH = 1.25f;
     private static final float ROOT_DAMAGE = 0.90f;
@@ -32,7 +32,10 @@ public enum HeroPath {
         this.iconKey = iconKey;
     }
 
-    /** The reviewed premium icon this path's card wears -- the manifest keys already ship, no new art. */
+    /**
+     * The reviewed premium icon this path's card wears -- a bare key into the {@code ui_*} icon set the
+     * trials already draw from, so the file is pinned to exist by the same asset check that pins theirs.
+     */
     public String iconKey() {
         return iconKey;
     }

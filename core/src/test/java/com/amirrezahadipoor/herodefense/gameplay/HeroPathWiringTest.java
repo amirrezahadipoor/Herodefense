@@ -1,8 +1,14 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.HeroPath;
+import com.amirrezahadipoor.herodefense.render.UiIconRenderer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -50,6 +56,17 @@ final class HeroPathWiringTest {
         assertEquals(stats.maxHealth(plain) * 0.90f, stats.maxHealth(wind), TOLERANCE);
         assertEquals(stats.damage(plain), stats.damage(wind), TOLERANCE);
         assertEquals(FocusSystem.fillRateMultiplier(plain), FocusSystem.fillRateMultiplier(wind), TOLERANCE);
+    }
+
+    @Test
+    void everyPathDrawsACommittedIcon() {
+        // The draft screen draws these keys through UiIconRenderer, which resolves "ui_" + key + ".png" at
+        // runtime -- a key with no committed file is a crash on the device, not a blank on a test (roadmap B3).
+        Path assets = Paths.get("..", "android", "assets").normalize();
+        for (HeroPath path : HeroPath.values()) {
+            Path icon = assets.resolve(UiIconRenderer.assetPath(path.iconKey()));
+            assertTrue(Files.isRegularFile(icon), path + " draws " + icon + ", which does not exist");
+        }
     }
 
     @Test
