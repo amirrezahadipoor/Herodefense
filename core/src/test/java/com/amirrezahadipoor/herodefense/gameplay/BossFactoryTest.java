@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 final class BossFactoryTest {
     @Test
-    void catalogContainsFourDistinctDesignAndAttackIdentities() {
+    void catalogContainsEightDistinctDesignAndAttackIdentities() {
         GameState state = GameState.newRun(9L);
         BossFactory factory = new BossFactory();
         Set<String> assets = new HashSet<>();
@@ -27,9 +27,9 @@ final class BossFactoryTest {
             attacks.add(type.uniqueAttack());
         }
 
-        assertEquals(4, BossType.values().length);
-        assertEquals(4, assets.size());
-        assertEquals(4, attacks.size());
+        assertEquals(8, BossType.values().length);
+        assertEquals(8, assets.size());
+        assertEquals(8, attacks.size());
         assertNotEquals(BossType.ANCIENT_GOLEM.assetKey(), BossType.EMBER_WYRM.assetKey());
     }
 

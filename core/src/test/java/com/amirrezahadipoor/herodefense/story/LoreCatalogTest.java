@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 final class LoreCatalogTest {
     @Test
     void definesExactlyThirtySequentiallyNumberedUniqueEntries() {
-        assertEquals(30, LoreCatalog.all().size());
+        assertEquals(34, LoreCatalog.all().size());
         Set<String> ids = new HashSet<>();
         int expected = 1;
         for (LoreEntry entry : LoreCatalog.all()) {
@@ -27,9 +27,9 @@ final class LoreCatalogTest {
             assertFalse(entry.triggerParam().isBlank());
             expected++;
         }
-        assertEquals(30, ids.size());
+        assertEquals(34, ids.size());
         assertNotNull(LoreCatalog.byId("codex_01"));
-        assertNotNull(LoreCatalog.byId("codex_30"));
+        assertNotNull(LoreCatalog.byId("codex_34"));
     }
 
     @Test
@@ -39,7 +39,7 @@ final class LoreCatalogTest {
             counts.put(entry.trigger(), counts.getOrDefault(entry.trigger(), 0) + 1);
         }
         assertEquals(8, counts.get(LoreTrigger.WAVE_MILESTONE));
-        assertEquals(4, counts.get(LoreTrigger.BOSS_FIRST_KILL));
+        assertEquals(8, counts.get(LoreTrigger.BOSS_FIRST_KILL));
         assertEquals(3, counts.get(LoreTrigger.ELITE_KILL));
         assertEquals(5, counts.get(LoreTrigger.ASCENSION));
         assertEquals(10, counts.get(LoreTrigger.SECRET));
@@ -51,10 +51,12 @@ final class LoreCatalogTest {
         assertEquals("100", LoreCatalog.byId("codex_08").triggerParam());
         assertEquals("ANCIENT_GOLEM", LoreCatalog.byId("codex_09").triggerParam());
         assertEquals("VOID_KNIGHT", LoreCatalog.byId("codex_12").triggerParam());
-        assertEquals("blightburst", LoreCatalog.byId("codex_13").triggerParam());
-        assertEquals("rootward_ward", LoreCatalog.byId("codex_14").triggerParam());
-        assertEquals("weeping_rot", LoreCatalog.byId("codex_15").triggerParam());
-        assertEquals("10", LoreCatalog.byId("codex_20").triggerParam());
+        assertEquals("FROST_TITAN", LoreCatalog.byId("codex_13").triggerParam());
+        assertEquals("BLOODROOT_AVATAR", LoreCatalog.byId("codex_16").triggerParam());
+        assertEquals("blightburst", LoreCatalog.byId("codex_17").triggerParam());
+        assertEquals("rootward_ward", LoreCatalog.byId("codex_18").triggerParam());
+        assertEquals("weeping_rot", LoreCatalog.byId("codex_19").triggerParam());
+        assertEquals("10", LoreCatalog.byId("codex_24").triggerParam());
     }
 
     @Test
@@ -70,7 +72,7 @@ final class LoreCatalogTest {
             LoreCatalog.byId("codex_11").body());
         assertEquals(
             "The first time was survival. I suspect you already know what the second time was. Say it to yourself, if not to me.",
-            LoreCatalog.byId("codex_30").body());
+            LoreCatalog.byId("codex_34").body());
         for (LoreEntry entry : LoreCatalog.all()) {
             assertTrue(entry.body().length() >= 30, entry.id());
         }

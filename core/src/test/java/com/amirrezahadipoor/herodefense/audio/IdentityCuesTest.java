@@ -28,12 +28,12 @@ final class IdentityCuesTest {
     @Test
     void everyBossBodyAnnouncesItselfInItsOwnVoice() {
         Set<AudioCue> entrances = EnumSet.noneOf(AudioCue.class);
-        for (String body : new String[] {"ANCIENT_GOLEM", "THORN_MATRIARCH", "EMBER_WYRM", "VOID_KNIGHT"}) {
+        for (String body : new String[] {"ANCIENT_GOLEM", "THORN_MATRIARCH", "EMBER_WYRM", "VOID_KNIGHT", "FROST_TITAN", "SHADOW_LICH", "STORM_COLOSSUS", "BLOODROOT_AVATAR"}) {
             GameState state = GameState.newRun(5L);
             state.aliveBosses.add(new Boss(state.allocateEntityId(), body, 10f, 10f, 1));
             entrances.add(IdentityCues.bossEntranceFor(state));
         }
-        assertEquals(4, entrances.size(), "four bodies, four voices");
+        assertEquals(8, entrances.size(), "eight bodies, eight voices — D3");
         assertEquals(AudioCue.BOSS_ENTRANCE, IdentityCues.bossEntranceFor(GameState.newRun(5L)),
             "no boss on the field falls back to the shipped horn");
         assertEquals(AudioCue.BOSS_ENTRANCE, IdentityCues.bossEntranceFor(null));

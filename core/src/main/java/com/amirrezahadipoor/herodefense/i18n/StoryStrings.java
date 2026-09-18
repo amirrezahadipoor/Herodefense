@@ -21,7 +21,7 @@ package com.amirrezahadipoor.herodefense.i18n;
  */
 public enum StoryStrings implements Translated {
 
-    /** First-encounter boss title cards: one line per identity, shown once ever. */
+    /** First-encounter boss title cards: one line per identity, shown once ever. D3 adds 4 more. */
     BOSS_ANCIENT_GOLEM("ANCIENT GOLEM — old guard who still stands.",
         "گولم باستانی — نگهبان کهنه‌کاری که هنوز ایستاده است."),
     BOSS_THORN_MATRIARCH("THORN MATRIARCH — she grew half your foes.",
@@ -30,6 +30,14 @@ public enum StoryStrings implements Translated {
         "اژدر اخگر — آتشی که هرگز خاموش نشد."),
     BOSS_VOID_KNIGHT("VOID KNIGHT — he fell and forgot the rest.",
         "شوالیهٔ تهی — افتاد و بقیه را فراموش کرد."),
+    BOSS_FROST_TITAN("FROST TITAN — winter that learned to walk.",
+        "غول یخبندان — زمستانی که راه رفتن آموخت."),
+    BOSS_SHADOW_LICH("SHADOW LICH — keeper of the second fall.",
+        "لیچ سایه — نگهبان سقوط دوم."),
+    BOSS_STORM_COLOSSUS("STORM COLOSSUS — thunder in a stone chest.",
+        "غول توفان — تندر در سینه‌ای سنگی."),
+    BOSS_BLOODROOT_AVATAR("BLOODROOT AVATAR — the grove's own wound.",
+        "آواتار خون‌ریشه — زخم خود بیشه."),
 
     /** The planting ceremony's five beats, in the order the ceremony walks through them. */
     CEREMONY_WALK_OUT("One root should not hold this alone.",

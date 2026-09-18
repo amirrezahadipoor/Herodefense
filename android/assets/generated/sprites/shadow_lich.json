@@ -1,0 +1,314 @@
+{
+  "alphaMode": "STRAIGHT_RGBA",
+  "animationProfile": "shadow-lich-soul-drain-v1",
+  "armature": "void_knight_armature",
+  "atlas": "sprites/shadow_lich.atlas",
+  "boneAnimated": true,
+  "bones": [
+    "armor_socket",
+    "boot_socket.L",
+    "boot_socket.R",
+    "chest",
+    "foot.L",
+    "foot.R",
+    "forearm.L",
+    "forearm.R",
+    "hand.L",
+    "hand.R",
+    "head",
+    "helmet_socket",
+    "neck",
+    "pelvis",
+    "ring_socket.L",
+    "ring_socket.R",
+    "root",
+    "shin.L",
+    "shin.R",
+    "spine",
+    "thigh.L",
+    "thigh.R",
+    "upper_arm.L",
+    "upper_arm.R",
+    "weapon_socket"
+  ],
+  "builder": "shadow_lich",
+  "categoryReview": {
+    "category": "bosses",
+    "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+    "status": "accepted"
+  },
+  "clips": {
+    "attack": [
+      {
+        "height": 256,
+        "index": 0,
+        "page": 0,
+        "width": 256,
+        "x": 1536,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 1,
+        "page": 0,
+        "width": 256,
+        "x": 1792,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 2,
+        "page": 0,
+        "width": 256,
+        "x": 0,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 3,
+        "page": 0,
+        "width": 256,
+        "x": 256,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 4,
+        "page": 0,
+        "width": 256,
+        "x": 512,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 5,
+        "page": 0,
+        "width": 256,
+        "x": 768,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 6,
+        "page": 0,
+        "width": 256,
+        "x": 1024,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 7,
+        "page": 0,
+        "width": 256,
+        "x": 1280,
+        "y": 256
+      }
+    ],
+    "death": [
+      {
+        "height": 256,
+        "index": 0,
+        "page": 0,
+        "width": 256,
+        "x": 512,
+        "y": 512
+      },
+      {
+        "height": 256,
+        "index": 1,
+        "page": 0,
+        "width": 256,
+        "x": 768,
+        "y": 512
+      },
+      {
+        "height": 256,
+        "index": 2,
+        "page": 0,
+        "width": 256,
+        "x": 1024,
+        "y": 512
+      },
+      {
+        "height": 256,
+        "index": 3,
+        "page": 0,
+        "width": 256,
+        "x": 1280,
+        "y": 512
+      },
+      {
+        "height": 256,
+        "index": 4,
+        "page": 0,
+        "width": 256,
+        "x": 1536,
+        "y": 512
+      },
+      {
+        "height": 256,
+        "index": 5,
+        "page": 0,
+        "width": 256,
+        "x": 1792,
+        "y": 512
+      },
+      {
+        "height": 256,
+        "index": 6,
+        "page": 0,
+        "width": 256,
+        "x": 0,
+        "y": 768
+      },
+      {
+        "height": 256,
+        "index": 7,
+        "page": 0,
+        "width": 256,
+        "x": 256,
+        "y": 768
+      },
+      {
+        "height": 256,
+        "index": 8,
+        "page": 0,
+        "width": 256,
+        "x": 512,
+        "y": 768
+      },
+      {
+        "height": 256,
+        "index": 9,
+        "page": 0,
+        "width": 256,
+        "x": 768,
+        "y": 768
+      }
+    ],
+    "hit": [
+      {
+        "height": 256,
+        "index": 0,
+        "page": 0,
+        "width": 256,
+        "x": 1536,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 1,
+        "page": 0,
+        "width": 256,
+        "x": 1792,
+        "y": 256
+      },
+      {
+        "height": 256,
+        "index": 2,
+        "page": 0,
+        "width": 256,
+        "x": 0,
+        "y": 512
+      },
+      {
+        "height": 256,
+        "index": 3,
+        "page": 0,
+        "width": 256,
+        "x": 256,
+        "y": 512
+      }
+    ],
+    "idle": [
+      {
+        "height": 256,
+        "index": 0,
+        "page": 0,
+        "width": 256,
+        "x": 0,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 1,
+        "page": 0,
+        "width": 256,
+        "x": 256,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 2,
+        "page": 0,
+        "width": 256,
+        "x": 512,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 3,
+        "page": 0,
+        "width": 256,
+        "x": 768,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 4,
+        "page": 0,
+        "width": 256,
+        "x": 1024,
+        "y": 0
+      },
+      {
+        "height": 256,
+        "index": 5,
+        "page": 0,
+        "width": 256,
+        "x": 1280,
+        "y": 0
+      }
+    ]
+  },
+  "engineVersion": "33.0-studio-v3-3x36-full",
+  "family": "boss",
+  "frameClass": "boss",
+  "frameRate": 12,
+  "frameSize": 256,
+  "key": "shadow_lich",
+  "materialCount": 10,
+  "meshParts": 61,
+  "modelRevision": "shadow-lich-v1",
+  "pivot": {
+    "units": "normalized-bottom-left",
+    "x": 0.5,
+    "y": 0.12
+  },
+  "renderSamples": 36,
+  "renderSupersample": 3,
+  "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+  "rigBoneCount": 25,
+  "rigProfile": "premium-armored-humanoid-v2",
+  "sheet": "sprites/shadow_lich.png",
+  "sheetHeight": 1024,
+  "sheetWidth": 2048,
+  "sheets": [
+    {
+      "decodedBytes": 8388608,
+      "file": "sprites/shadow_lich.png",
+      "height": 1024,
+      "width": 2048
+    }
+  ],
+  "silhouetteLandmarks": [
+    "forked void horns",
+    "asymmetric pauldrons",
+    "split torn cape",
+    "socket-driven greatblade"
+  ],
+  "surfaceLanguage": "layered gunmetal plate, silver edges, old gold, restrained violet abyss glow",
+  "triangles": 2082,
+  "unique_attack": "soul_drain",
+  "visualQuality": "studio-v3"
+}

@@ -39,6 +39,14 @@ public final class BossLore {
             "When the Hollow first touched this ground, a thing here caught fire and never fully went out. The Wyrm is what that ember became once it learned to want more fuel.");
         map.put("VOID_KNIGHT",
             "No one here recalls what it looked like before. It does not either. It only recalls falling, and it has spent every year since trying to make another thing fall with it.");
+        map.put("FROST_TITAN",
+            "The frost came after the Hollow fell, not before. It kept what it touched. The Titan is what kept walking after everything else froze.");
+        map.put("SHADOW_LICH",
+            "It was not a boss before. It was a record keeper. Now it keeps the record of how many times the grove has fallen and how.");
+        map.put("STORM_COLOSSUS",
+            "Stone that learned to hold thunder instead of moss. It does not hurry. Thunder never does.");
+        map.put("BLOODROOT_AVATAR",
+            "The World Tree's own root, taken and twisted. It bleeds sap that never dries. The Tree knows its shape.");
         return Collections.unmodifiableMap(map);
     }
 }

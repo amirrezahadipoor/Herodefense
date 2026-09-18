@@ -41,6 +41,10 @@ public final class IdentityCues {
             case EMBER_WYRM -> AudioCue.BOSS_ENTRANCE_SHRIEK;
             case VOID_KNIGHT -> AudioCue.BOSS_ENTRANCE_VOID;
             case THORN_MATRIARCH -> AudioCue.BOSS_ENTRANCE;
+            case FROST_TITAN -> AudioCue.BOSS_ENTRANCE_DEEP;
+            case SHADOW_LICH -> AudioCue.BOSS_ENTRANCE_VOID;
+            case STORM_COLOSSUS -> AudioCue.BOSS_ENTRANCE_DEEP;
+            case BLOODROOT_AVATAR -> AudioCue.BOSS_ENTRANCE;
         };
     }
 

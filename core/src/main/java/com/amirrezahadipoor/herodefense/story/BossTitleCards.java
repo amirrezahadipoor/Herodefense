@@ -12,7 +12,7 @@ public final class BossTitleCards {
     private BossTitleCards() {
     }
 
-    /** Verbatim title line for an identity, or null for unknown identities. */
+    /** Verbatim title line for an identity, or null for unknown identities. D3 adds 4 more. */
     public static String titleFor(String bossType) {
         if (bossType == null) {
             return null;
@@ -22,6 +22,10 @@ public final class BossTitleCards {
             case "THORN_MATRIARCH" -> GameLocale.text(StoryStrings.BOSS_THORN_MATRIARCH);
             case "EMBER_WYRM" -> GameLocale.text(StoryStrings.BOSS_EMBER_WYRM);
             case "VOID_KNIGHT" -> GameLocale.text(StoryStrings.BOSS_VOID_KNIGHT);
+            case "FROST_TITAN" -> GameLocale.text(StoryStrings.BOSS_FROST_TITAN);
+            case "SHADOW_LICH" -> GameLocale.text(StoryStrings.BOSS_SHADOW_LICH);
+            case "STORM_COLOSSUS" -> GameLocale.text(StoryStrings.BOSS_STORM_COLOSSUS);
+            case "BLOODROOT_AVATAR" -> GameLocale.text(StoryStrings.BOSS_BLOODROOT_AVATAR);
             default -> null;
         };
     }

@@ -35,7 +35,8 @@ public final class RuntimeResidency {
 
     /** One boss is alive at a time; the worst single sheet is counted. */
     public static final List<String> BOSSES =
-        List.of("ancient_golem", "ember_wyrm", "thorn_matriarch", "void_knight");
+        List.of("ancient_golem", "ember_wyrm", "thorn_matriarch", "void_knight",
+            "frost_titan", "shadow_lich", "storm_colossus", "bloodroot_avatar");
 
     /** Equipment slots the hero can wear at once, as art sheets. */
     public static final int EQUIPPED_SHEETS = 6;

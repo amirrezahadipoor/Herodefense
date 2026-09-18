@@ -13,14 +13,14 @@ final class BossWaveSpawnerTest {
     private final BossWaveSpawner spawner = new BossWaveSpawner(new BossFactory());
 
     @Test
-    void rotatesFourBossesAcrossAllTwentyFifthWaveEncounters() {
+    void rotatesEightBossesAcrossAllTwentyFifthWaveEncounters() {
         GameState state = GameState.newRun(6L);
         BossType[] rotation = BossType.values();
         for (int bossNumber = 1; bossNumber <= 20; bossNumber++) {
             int wave = bossNumber * 5;
             Boss boss = spawner.spawn(state, wave);
             assertEquals(bossNumber, boss.bossNumber);
-            assertEquals(rotation[(bossNumber - 1) % 4], boss.bossDefinition());
+            assertEquals(rotation[(bossNumber - 1) % rotation.length], boss.bossDefinition());
         }
         assertEquals(20, state.aliveBosses.size());
     }

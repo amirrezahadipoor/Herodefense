@@ -18,7 +18,7 @@ final class StoryLayoutTest {
             checkBody(e.id(), e.body());
         }
         // Boss bios
-        for (String id : new String[]{"ANCIENT_GOLEM","THORN_MATRIARCH","EMBER_WYRM","VOID_KNIGHT"}) {
+        for (String id : new String[]{"ANCIENT_GOLEM","THORN_MATRIARCH","EMBER_WYRM","VOID_KNIGHT","FROST_TITAN","SHADOW_LICH","STORM_COLOSSUS","BLOODROOT_AVATAR"}) {
             String bio = BossLore.bioFor(id);
             if (bio != null) checkBody("boss:" + id, bio);
         }
