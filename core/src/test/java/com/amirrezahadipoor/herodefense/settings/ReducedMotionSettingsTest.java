@@ -126,6 +126,6 @@ final class ReducedMotionSettingsTest {
         @Override public boolean contains(String key) { return values.containsKey(key); }
         @Override public void clear() { values.clear(); }
         @Override public void remove(String key) { values.remove(key); }
-        @Override public Preferences flush() { return this; }
+        @Override public void flush() { }
     }
 }
