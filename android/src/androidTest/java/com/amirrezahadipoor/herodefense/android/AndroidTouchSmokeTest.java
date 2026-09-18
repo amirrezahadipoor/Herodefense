@@ -767,7 +767,12 @@ public final class AndroidTouchSmokeTest {
         ref("vfx-tree-collapse-premium-v2.png", 37.14f, 0.9840f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("defeat-premium-v2.png", 37.28f, 0.9786f),
         ref("trial-draft-premium-v2.png", 43.44f, 0.9737f),
-        ref("settings-premium-v2.png", 35.98f, 0.9770f),
+        // Re-measured on 2026-09-18 after roadmap G3a put a sixth row on this screen: the rows went from 150f
+        // on a 150f pitch to 130f on a 140f pitch, which is more frame and text and less empty backdrop, so the
+        // screen is genuinely brighter. Both numbers are from run 35296081592's own
+        // brightness-measurements.txt (mean=44.40 lit=0.9553), not estimated from the failure message, which
+        // carries the mean and not the lit fraction.
+        ref("settings-premium-v2.png", 44.40f, 0.9553f),
         ref("level-up-premium-v2.png", 41.93f, 0.9741f),
         ref("inventory-details-premium-v2.png", 44.93f, 0.9644f),
         ref("inventory-sell-feedback-premium-v2.png", 43.94f, 0.9624f),
@@ -905,8 +910,13 @@ public final class AndroidTouchSmokeTest {
         assertNotNull(screenshot);
         float[] brightness = measureBrightness(screenshot, name);
         BRIGHTNESS.put(name, brightness);
-        assertBrightnessContract(name, brightness);
+        // Written before it is judged, and that order is the point. It used to be the other way round, so the
+        // run that first measured the re-laid-out settings screen failed its brightness contract and recycled
+        // the only image that could have explained the failure: the artifact had 29 screenshots and not the one
+        // anybody needed. A gate whose evidence is destroyed by the gate is a gate that can only be argued
+        // with, not checked.
         writeScreenshot(screenshot, name);
+        assertBrightnessContract(name, brightness);
         screenshot.recycle();
     }
 
