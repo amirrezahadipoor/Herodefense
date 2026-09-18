@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.audio;
 
+import com.amirrezahadipoor.herodefense.model.GameState;
+
 import com.amirrezahadipoor.herodefense.GameScreenState;
 
 /**
@@ -42,6 +44,39 @@ public final class MusicSelectionPolicy {
             || state == GameScreenState.SETTINGS
             || state == GameScreenState.TRIAL_DRAFT;
         return deciding ? DUCKED : 1f;
+    }
+
+    /** The wave the run's intensity layer starts to fade in at (roadmap F1). */
+    private static final int TENSION_FIRST_WAVE = 41;
+    private static final int TENSION_DEEP_WAVE = 101;
+    private static final int TENSION_FINAL_WAVE = 151;
+    private static final float TENSION_LOW_HEALTH_FRACTION = 0.30f;
+    private static final float TENSION_LOW_HEALTH_BONUS = 0.30f;
+
+    /**
+     * How hard the run is pressing right now, 0..1: the vigil bed's intensity layer rides this. It climbs in
+     * three steps with the wave tiers the difficulty curve itself uses, and a hero below 30% health adds
+     * urgency wherever the run is. Only the run screen asks: every other screen is 0, and a boss fight needs
+     * no layer because the whole bed changes to HOLLOW_MARCH.
+     */
+    public static float tensionFor(GameScreenState state, GameState run) {
+        if (state != GameScreenState.PLAYING || run == null) return 0f;
+        int wave = run.waveNumber;
+        float tension;
+        if (wave < TENSION_FIRST_WAVE) {
+            tension = 0f;
+        } else if (wave < TENSION_DEEP_WAVE) {
+            tension = 0.35f;
+        } else if (wave < TENSION_FINAL_WAVE) {
+            tension = 0.70f;
+        } else {
+            tension = 1f;
+        }
+        if (run.hero != null && run.hero.alive && run.hero.maxHealth > 0f
+            && run.hero.health / run.hero.maxHealth < TENSION_LOW_HEALTH_FRACTION) {
+            tension = Math.min(1f, tension + TENSION_LOW_HEALTH_BONUS);
+        }
+        return tension;
     }
 
     /**

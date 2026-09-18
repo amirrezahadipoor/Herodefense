@@ -13,6 +13,7 @@ not a cue.
 | `audio/music/hollow_march.ogg` | 18.44 | 44100 | 2 | 0.879 | -1.1 | 0.129 |
 | `audio/music/quiet_after.ogg` | 21.80 | 44100 | 2 | 0.721 | -2.8 | 0.114 |
 | `audio/music/vigil.ogg` | 22.84 | 44100 | 2 | 0.801 | -1.9 | 0.117 |
+| `audio/music/vigil_tension.ogg` | 22.84 | 44100 | 2 | 0.838 | -1.5 | 0.063 |
 | `audio/sfx/ambience_vigil.ogg` | 7.95 | 44100 | 1 | 0.414 | -7.7 | 0.095 |
 | `audio/sfx/boss_entrance.ogg` | 1.41 | 48000 | 2 | 0.898 | -0.9 | 0.047 |
 | `audio/sfx/boss_entrance_deep.ogg` | 1.30 | 44100 | 1 | 0.721 | -2.8 | 0.129 |

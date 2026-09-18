@@ -316,8 +316,19 @@ started, `[!]` attempted and failed, with the failure written down.
 
 ## F — audio (62/100, 38 points deducted)
 
-- [ ] **F1 (−18) Four static music tracks for a 2.2-hour run.** No adaptive or layered music, so hour two sounds
-      exactly like minute two.
+- [x] **F1 (−18) Four static music tracks for a 2.2-hour run.** No adaptive or layered music, so hour two sounds
+      exactly like minute two. The vigil now breathes with the run: `vigil_tension.ogg` is a fifth generated
+      track -- same key, tempo, bar count and chord progression as the vigil bed, no bass (the bed owns the
+      low end), double-time percussion and a low counter-lead -- authored as a spec in
+      `tools/audio/generate_music.py` like every other note in the game. `MusicSelectionPolicy.tensionFor`
+      maps the run to 0..1 in the difficulty curve's own tiers (silent to wave 40, 0.35 to 100, 0.70 to 150,
+      full after; a hero below 30% health adds 0.30 of urgency wherever the run is), and `MusicDeck` fades
+      the layer under the bed at that tension, ducked and levelled with it. Phase discipline is structural,
+      not hopeful: the layer opens on the same frame -- the same sample -- as the bed it rides, and any bed
+      change closes it outright rather than resuming it against a playhead it never started on. Boss fights
+      need no layer because the whole bed already changes to the march. The chain of evidence held: the level
+      gate re-measured all 30 files, the ledger carries the stem's SHA-256, and the policy's curve, the
+      red-health bonus and the one-bed-one-layer contract are all pinned in `MusicSelectionPolicyTest`.
 - [x] **F2 (−10) Twenty SFX** cover twelve enemy/boss identities plus every skill, which means audible reuse.
       The identity axis now has voices: five new cues, all generated in-repo by `tools/audio/generate_sfx.py`
       (an effect that is code is an effect whose licence, length and loudness are reviewable). Light bodies

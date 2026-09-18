@@ -27,19 +27,38 @@ final class MusicDeck {
     private Music ambience;
     private float ambienceGain;
     private float ambienceTarget;
+    private Music layer;
+    private float layerGain;
+    private float tension;
 
     /** Points the deck at a bed, opening it and fading the previous one out if it is a change. */
     void select(MusicBed bed) {
         if (bed == activeBed) return;
+        // The intensity layer belongs to its bed's playhead (roadmap F1): a bed change closes it outright,
+        // so a layer is only ever running when it started on the same frame -- and therefore the same
+        // sample -- as the bed under it. Two loops in the same tempo that did not start together are two
+        // loops drifting out of phase, and no fade hides that.
+        closeLayer();
         Music next = Gdx.audio.newMusic(Gdx.files.internal(bed.path()));
         next.setLooping(true);
         next.setVolume(0f);
         next.play();
+        if (bed.layerPath() != null) {
+            layer = Gdx.audio.newMusic(Gdx.files.internal(bed.layerPath()));
+            layer.setLooping(true);
+            layer.setVolume(0f);
+            layer.play();
+        }
         retireActive();
         active = next;
         activeBed = bed;
         bedGain = crossfade.incoming() * targetGain;
         crossfade.start();
+    }
+
+    /** The run's requested intensity, 0..1; the layer fades toward it (roadmap F1). */
+    void setTension(float wanted) {
+        tension = Math.max(0f, Math.min(1f, wanted));
     }
 
     /** The screen's requested gain, ramped rather than jumped so a pause is a breath and not a step. */
@@ -83,6 +102,14 @@ final class MusicDeck {
             ambience.dispose();
             ambience = null;
         }
+        boolean layered = activeBed != null && activeBed.layerPath() != null;
+        float layerTarget = layered ? tension : 0f;
+        layerGain = layerGain < layerTarget
+            ? Math.min(layerTarget, layerGain + ambienceStep)
+            : Math.max(layerTarget, layerGain - ambienceStep);
+        if (layer != null && layerTarget <= 0f && layerGain <= 0f) {
+            closeLayer();
+        }
         apply();
     }
 
@@ -91,6 +118,20 @@ final class MusicDeck {
         if (active != null) active.setVolume(activeBed == null ? 0f : activeBed.baseVolume() * gain * level);
         if (retiring != null) retiring.setVolume(0.35f * crossfade.outgoing() * level);
         if (ambience != null) ambience.setVolume(ambienceGain * level);
+        if (layer != null && activeBed != null) {
+            // The layer ducks with its bed: a paused game wants the intensity under the decision too.
+            layer.setVolume(activeBed.layerVolume() * layerGain * bedGain * level);
+        }
+    }
+
+    /** Closes the intensity layer immediately; it only ever runs phase-locked to the bed that opened it. */
+    private void closeLayer() {
+        if (layer != null) {
+            layer.stop();
+            layer.dispose();
+            layer = null;
+        }
+        layerGain = 0f;
     }
 
     /** Pauses every deck: the app went to the background, and silence is the only correct gain. */
@@ -99,6 +140,7 @@ final class MusicDeck {
         if (active != null && active.isPlaying()) active.pause();
         if (retiring != null && retiring.isPlaying()) retiring.pause();
         if (ambience != null && ambience.isPlaying()) ambience.pause();
+        if (layer != null && layer.isPlaying()) layer.pause();
     }
 
     /** Resumes whatever the deck was holding; the fade and duck it was in the middle of still apply. */
@@ -107,6 +149,7 @@ final class MusicDeck {
         if (active != null && !active.isPlaying()) active.play();
         if (retiring != null && !retiring.isPlaying()) retiring.play();
         if (ambience != null && !ambience.isPlaying()) ambience.play();
+        if (layer != null && !layer.isPlaying()) layer.play();
     }
 
     boolean backgrounded() {
@@ -114,6 +157,7 @@ final class MusicDeck {
     }
 
     void dispose() {
+        closeLayer();
         if (ambience != null) {
             ambience.stop();
             ambience.dispose();

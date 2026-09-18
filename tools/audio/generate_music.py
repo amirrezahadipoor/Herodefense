@@ -151,7 +151,7 @@ def render(spec: dict) -> np.ndarray:
         for beat_index in range(4):
             start = int(SAMPLE_RATE * (bar_index * bar + beat_index * beat))
             length_samples = int(SAMPLE_RATE * beat * 0.92)
-            voice = pluck(note(1, root), length_samples, decay=3.4) * 0.40
+            voice = pluck(note(1, root), length_samples, decay=3.4) * 0.40 * spec.get("bass_gain", 1.0)
             place(mix, voice.astype(np.float32), start)
 
     # pads: the chord held across the bar
@@ -162,7 +162,7 @@ def render(spec: dict) -> np.ndarray:
         for degree in chord:
             voice = oscillator(note(3, degree), length_samples, "saw")
             voice *= envelope(length_samples, 0.35, 0.5, sustain=0.5)
-            place(mix, (voice * 0.085).astype(np.float32), start)
+            place(mix, (voice * 0.085 * spec.get("pad_gain", 1.0)).astype(np.float32), start)
 
     # lead: the motif, which is what makes the track recognisable
     for bar_index, beat_offset, degree, beats in lead_pattern:
@@ -226,6 +226,23 @@ TRACKS = {
         "percussion": "x...x...x...x...",
         "reverb": 0.32,
         "percussion_gain": 0.35,
+    },
+    "vigil_tension": {
+        # Roadmap F1's intensity layer: same key, tempo, bar count and progression as vigil so the two loops
+        # stay in phase bar for bar. No bass (the bed owns the low end), a slightly thicker pad, double-time
+        # percussion and a low counter-lead. It is mixed to be faded in under the run's second hour, not to
+        # stand alone -- alone it is all rhythm and no melody, which is exactly what a layer wants to be.
+        "seed": 0x56494754,
+        "bpm": 84,
+        "bars": 8,
+        "progression": [(0, (0, 2, 4)), (5, (5, 0, 2)), (3, (3, 5, 0)), (6, (6, 1, 3))],
+        "lead": [(0, 2, 0, 2), (2, 2.5, 2, 1.5), (4, 2, 4, 2), (6, 2.5, 5, 1.5)],
+        "lead_high": False,
+        "percussion": "KKxSKKxSKKxS",
+        "percussion_gain": 0.9,
+        "bass_gain": 0.0,
+        "pad_gain": 0.7,
+        "reverb": 0.20,
     },
     "quiet_after": {
         # The results screens: sparse, unresolved, with no percussion at all.

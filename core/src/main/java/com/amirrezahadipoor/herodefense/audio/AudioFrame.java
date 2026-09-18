@@ -20,6 +20,14 @@ public interface AudioFrame {
      */
     void guideMusic(MusicBed bed, float screenGain, boolean ambience);
 
+    /**
+     * The run's current intensity, 0..1 (roadmap F1). The deck lays it under the bed that carries a layer
+     * and ignores it otherwise; a default because every fake that implements this port predates the layer
+     * and has no reason to know about it.
+     */
+    default void guideTension(float tension) {
+    }
+
     /** The platform told us something about who owns the speakers (roadmap R6.4). */
     void onAudioFocus(AudioFocusState.Event event);
 

@@ -126,6 +126,8 @@ public final class FrameDriver {
             MusicSelectionPolicy.gainFor(state),
             MusicSelectionPolicy.ambienceFor(state)
         );
+        // Roadmap F1: the vigil's intensity layer rides the run's own pressure, not the screen's.
+        audioManager.guideTension(MusicSelectionPolicy.tensionFor(state, host.gameState()));
     }
 
     /** Advances and draws one frame; {@code deltaSeconds} is already clamped by the caller. */

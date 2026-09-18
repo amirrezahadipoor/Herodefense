@@ -59,6 +59,12 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         music.select(bed);
     }
 
+    /** The run's intensity, forwarded to the deck (roadmap F1). */
+    @Override
+    public void guideTension(float tension) {
+        music.setTension(tension);
+    }
+
     @Override
     public void play(AudioCue cue) {
         if (cue == null || !AudioPlaybackPolicy.shouldPlayEffects(settings, appBackgrounded, focus)) return;

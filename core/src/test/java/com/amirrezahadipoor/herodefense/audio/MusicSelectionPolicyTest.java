@@ -3,9 +3,11 @@ package com.amirrezahadipoor.herodefense.audio;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.GameScreenState;
+import com.amirrezahadipoor.herodefense.model.GameState;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -124,6 +126,56 @@ final class MusicSelectionPolicyTest {
         assertEquals(1f, fade.incoming(), "the fade must end exactly full");
         assertFalse(fade.fading());
         assertEquals(1f, loudest, 1e-5f, "the two beds may never sum to more than one");
+    }
+
+    @Test
+    void theIntensityLayerFollowsTheRunAndOnlyTheRun() {
+        GameState run = GameState.newRun(21L);
+        for (GameScreenState screen : GameScreenState.values()) {
+            if (screen != GameScreenState.PLAYING) {
+                assertEquals(0f, MusicSelectionPolicy.tensionFor(screen, run),
+                    screen + " carries no intensity -- the layer belongs to the run screen");
+            }
+        }
+        assertEquals(0f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, null));
+        run.waveNumber = 12;
+        assertEquals(0f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, run),
+            "the first forty waves are the game teaching; the layer stays out of it");
+        run.waveNumber = 41;
+        assertEquals(0.35f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, run), 1e-6f);
+        run.waveNumber = 101;
+        assertEquals(0.70f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, run), 1e-6f);
+        run.waveNumber = 151;
+        assertEquals(1f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, run), 1e-6f);
+    }
+
+    @Test
+    void aHeroInTheRedAddsUrgencyAndNeverOvershootsFullTension() {
+        GameState run = GameState.newRun(21L);
+        run.hero.maxHealth = 100f;
+        run.hero.health = 25f;
+        run.waveNumber = 12;
+        assertEquals(0.30f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, run), 1e-6f);
+        run.waveNumber = 180;
+        assertEquals(1f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, run), 1e-6f,
+            "already at full tension, the red-health bonus has nowhere left to go");
+        run.hero.health = 100f;
+        assertEquals(1f, MusicSelectionPolicy.tensionFor(GameScreenState.PLAYING, run), 1e-6f);
+    }
+
+    @Test
+    void onlyTheVigilCarriesALayerAndTheLayerIsACommittedFile() {
+        for (MusicBed bed : MusicBed.values()) {
+            if (bed == MusicBed.VIGIL) {
+                assertNotNull(bed.layerPath(), "F1 gave the vigil its intensity layer");
+                assertTrue(bed.layerVolume() > 0f && bed.layerVolume() <= bed.baseVolume());
+                Path layer = Paths.get("..", "android", "assets", bed.layerPath());
+                assertTrue(Files.isRegularFile(layer), layer + " must be committed");
+            } else {
+                assertNull(bed.layerPath(), bed + " carries no layer");
+                assertEquals(0f, bed.layerVolume());
+            }
+        }
     }
 
     @Test

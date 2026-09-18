@@ -58,6 +58,7 @@ deleted from the ledger, and its row keeps the hash it shipped with.
 | Committed file | Original file | Source | Use | SHA-256 |
 |---|---|---|---|---|
 | `audio/music/vigil.ogg` | *(none)* | generated in-repo | Music bed | `731bc05cead8d719ccd53866f92bf4e0f832aff2648d2680101f92f64f59e852` |
+| `audio/music/vigil_tension.ogg` | *(none)* | generated in-repo | Vigil intensity layer (roadmap F1) | `0464d45ba5b76a8eede4e2f9bd8e7ba84b50e09b240c7ad412d50b636ffdd7f6` |
 | `audio/music/hollow_march.ogg` | *(none)* | generated in-repo | Music bed | `74b97655dc3470c5b16aadc2546a4ac9c131b8ac4bb19b54a009742d9791689f` |
 | `audio/music/heartwood_dawn.ogg` | *(none)* | generated in-repo | Music bed | `939f87b202fd98944ac69915a65d93a9c282edadd668e7852182e718c4da6fe9` |
 | `audio/music/quiet_after.ogg` | *(none)* | generated in-repo | Music bed | `4a2bba3c4927c72b06453135fec1ccc7dd6e43f27f26a11e6b55365604cf45a9` |
