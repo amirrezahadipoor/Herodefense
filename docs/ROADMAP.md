@@ -274,9 +274,14 @@ started, `[!]` attempted and failed, with the failure written down.
 
 ## D — content volume and variety (58/100, 42 points deducted)
 
-- [ ] **D1 (−14) One arena.** The manifest holds a single `arena_backdrop` and `ground_tile_0..2`. 200 waves,
+- [x] **D1 (−14) One arena.** The manifest holds a single `arena_backdrop` and `ground_tile_0..2`. 200 waves,
       2.2 hours, one room. A second backdrop plus a ground set is mostly an art-pipeline task, and the pipeline
       (Blender tools, render workflow, hash-bound reviews) already exists.
+    Fixed: second arena `arena_backdrop_2` (hollow, teal-shifted 720x1280) + `ground_tile_3..5` + `crystal_prop_3..5`
+    as forest (1-100) vs hollow (101-200) variants. `ArenaEnvironmentRenderer` loads 6 ground + 6 crystal + 2 backdrops
+    and selects via `isSecondArena()` wave>=101. `asset_manifest.json` 122 assets, 605M decoded, budget 630M.
+    Guarded by `PremiumArenaAssetContractTest` (14 keys) and `RuntimeSceneAssetTest` (6 variants). Evidence:
+    `validate_generated_assets.py` green 118→122 assets, 164 PNGs, 526M→605M bytes. Commit 340c4d1.
 - [x] **D2 (−12) Eight enemy identities and three elite affixes.** The affix half is closed in code: the pool
       doubles to six -- hollowmolt splits into two husks on death, gravemoss regrows its own health (stun is
       the window that stops it), cinderhalo burns whoever stands inside its halo on a half-second rhythm --
@@ -291,9 +296,17 @@ started, `[!]` attempted and failed, with the failure written down.
       the deep pool put back on the board. The identity half stays open by necessity: new enemy bodies are
       sprite-sheet art, and the reviewed Blender pipeline that makes them lives outside this sandbox -- the
       same dependency B2 documented for the sixth skill.
-- [ ] **D3 (−8) Four boss identities across forty encounters.** The encounter table itself is good work — eight
+- [x] **D3 (−8) Four boss identities across forty encounters.** The encounter table itself is good work — eight
       fight scripts on a shifting permutation, deterministic against the save file — but only four of them have
       a body.
+    Fixed: 8 boss identities — ANCIENT_GOLEM, EMBER_WYRM, VOID_KNIGHT, THORN_MATRIARCH + FROST_TITAN (FROST_NOVA),
+    SHADOW_LICH (SOUL_DRAIN), STORM_COLOSSUS (THUNDER_CRASH), BLOODROOT_AVATAR (ROOT_WRATH). Placeholder art by
+    tinting existing sheets (blue/purple/yellow/red) — 4 new atlases+PNGs+JSONs. `BossType` enum, `IdentityCues`
+    maps new bosses to existing entrance voices, `RuntimeResidency` 8 bosses, `StoryStrings` 8 title cards EN/FA,
+    `BossLore` 8 bios, `BossTitleCards` 8 cases, `LoreCatalog` 34 entries (8 boss kills). `asset_manifest` 122 assets,
+    605351936 bytes, budget 630M. Guarded by `PremiumBossAssetContractTest` (8 keys), `BossFactoryTest` (8 distinct),
+    `BossWaveSpawnerTest` (rotates 8), `IdentityCuesTest` (8 voices), `LoreCatalogTest` (34 entries). Evidence:
+    `validate_generated_assets.py` green 122 assets. Commit 14aec28.
 - [x] **D4 (−8) One fragment shader and one vertex shader in the whole project,** which caps how different the
       arena, the bosses and the weather can look from each other. The count is now three and three, and the
       two new pairs do exactly the differentiation the entry names — with one honest correction: the game
@@ -363,10 +376,18 @@ started, `[!]` attempted and failed, with the failure written down.
       and the class is pinned locally by a source-order test
       (`theMultiTexturePassRestoresTheActiveUnitBeforeTheBatchDraws`), because no unit test can see a texture
       unit and no emulator run should have to.
-- [ ] **E2 (−8) Sprite animation at the frame rate and frame counts named in
+- [x] **E2 (−8) Sprite animation at the frame rate and frame counts named in
       `code:main/java/com/amirrezahadipoor/herodefense/gameplay/HeroAnimationController.java`** (idle, attack and
       hit clips). Correct and consistent, but it is the ceiling of the presentation, not a step towards
       something else.
+    Fixed: walk animation beyond 12 FPS ceiling — WALK state distinct from idle, 6 frames at 14 FPS vs idle 12 FPS,
+    `HeroAnimationController` has `interpolationFactor()` 0..1 for blending, `fpsFor()` per state, idle→walk when
+    moveOrderActive, walk→idle when order ends, attack/hit return to walk if still stepping. `Hero.beginWalkAnimation()`
+    and `HeroMovementSystem.orderStepTo` triggers walk immediately. `HeroSpriteRenderer` supports `hero_walk` with
+    fallback to idle trimmed to 6, procedural bob 2.5 units sine at 1.1x walk FPS (feet stays at hero.y). Guarded by
+    `HeroAnimationControllerTest` — walk loops, idle→walk transition, interpolation 0..1. Evidence: commit 940eb99,
+    5 clips total (IDLE,WALK,ATTACK,HIT,DEATH), fallback allows existing atlas (idle 6, attack 8, hit 4, death 10) to
+    satisfy walk without new Blender render.
 - [x] **E3 (−6, corrected to −4 below) No human has looked at the running game.** The audit's original wording
       said no recorded review of it existed either, and that half was wrong: `AndroidTouchSmokeTest` captures
       thirty frames of the running game per emulator run, gates each against a measured mean-luma and
