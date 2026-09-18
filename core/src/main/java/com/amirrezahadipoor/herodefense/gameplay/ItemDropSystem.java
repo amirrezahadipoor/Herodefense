@@ -18,9 +18,19 @@ import java.util.Map;
  * Rolls at most one low-chance equipment drop per defeated enemy, modified by Luck.
  *
  * <p>Roadmap R4.3 wanted a pity rule here, and the three versions of it that were measured are recorded with
- * their prices in {@code docs/BALANCE.md}: the shipped game has none, because the balance sweep's ceilings sit
- * within a percent of their limits and every version of the rule moved one of them. The rule returns when R4.6
- * has bought the headroom it needs.
+ * their prices in {@code docs/BALANCE.md}: none of them could ship, because the balance sweep's ceilings sat
+ * within a percent of their limits and every version of the rule moved one of them. Roadmap A3 then bought the
+ * headroom -- the roles' tuning left the riskiest trial pair at 0.3815 against its 0.40 ceiling -- and the rule
+ * this file ships is the lightest of the three, gated where the measurement said it had to be:
+ *
+ * <ul>
+ *   <li><b>Guaranteed common after {@link #PITY_DRY_KILL_THRESHOLD} dry kills.</b> The streak is counted here,
+ *       in the roll that was already happening: no extra draw, no extra roll, no extra item until the streak
+ *       itself answers. A natural drop -- including an elite's rare floor -- resets the streak.</li>
+ *   <li><b>Never inside the brief vigil.</b> The first measured version broke the brief floor (average pressure
+ *       0.0346 against 0.035): the mode that must not punish a new player keeps exactly the economy its
+ *       evidence was measured on, so the rule arms from the wave after the vigil ends.</li>
+ * </ul>
  */
 public final class ItemDropSystem {
     public static final float COMMON_RATE = 0.06f;
@@ -29,6 +39,10 @@ public final class ItemDropSystem {
     public static final float LEGENDARY_RATE = 0.0015f;
     /** Share of the Legendary band that upgrades to a Mythic (~7.5e-5 per kill). */
     public static final float MYTHIC_SHARE_OF_LEGENDARY = 0.01f;
+    /** Dry kills after which the next empty roll is answered with a guaranteed common (R4.3's pity rule). */
+    public static final int PITY_DRY_KILL_THRESHOLD = 30;
+    /** The brief vigil's economy is measured without pity; the rule arms from the wave after its thirty. */
+    public static final int PITY_ARMING_WAVE = 31;
 
     private final HeroStatCalculator statCalculator;
     private final Map<ItemTier, List<EquipmentDefinition>> byTier = new EnumMap<>(ItemTier.class);
@@ -130,11 +144,24 @@ public final class ItemDropSystem {
         boolean crowned = enemy instanceof Boss
             && TrialEffects.bossAlwaysDropsRarePlus(state.activeTrials);
         boolean rareFloor = crowned || enemy.eliteAffix != null;
+        if (rareFloor && (tier == null || tier.ordinal() < ItemTier.RARE.ordinal())) {
+            tier = ItemTier.RARE;
+        }
         if (tier == null) {
-            if (!rareFloor) return 0;
-            tier = ItemTier.RARE;
-        } else if (rareFloor && tier.ordinal() < ItemTier.RARE.ordinal()) {
-            tier = ItemTier.RARE;
+            // The pity rule (roadmap B1): count the dry kill, and at the threshold answer it with a common.
+            // The count lives in the roll that was already happening -- the stream keeps its position, and a
+            // run that never goes dry never sees this rule at all.
+            if (state.waveNumber < PITY_ARMING_WAVE) {
+                return 0;
+            }
+            state.dryKillsSinceItemDrop++;
+            if (state.dryKillsSinceItemDrop < PITY_DRY_KILL_THRESHOLD) {
+                return 0;
+            }
+            state.dryKillsSinceItemDrop = 0;
+            tier = ItemTier.COMMON;
+        } else {
+            state.dryKillsSinceItemDrop = 0;
         }
 
         EquipmentDefinition selected = chooseFor(state, tier);

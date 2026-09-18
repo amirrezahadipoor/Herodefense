@@ -72,7 +72,7 @@ The simulator's spending policy models a thrifty player: talent points go to the
 | Skill shop | 30590 | 40 levels |
 | Anvil | 15980 | 28 steps |
 
-Across the 9 gate seeds the split is stable: stats 52-56%, skills 29-34%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 51-57%, skills 28-35%, Anvil 12-15% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -98,20 +98,20 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.0576 / 0.0986 / 0.1187 / 0.1338` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.712 / x1.204 / x1.127` | the same sweep |
-| Sweep average range | `0.0816 - 0.1214` | the same sweep, inside the 0.05-0.15 band |
-| Deepest single-seed quarter dip | `0.68%` against the `5.00%` allowance | the same sweep |
+| Quarter means (fixed sweep) | `0.0593 / 0.0970 / 0.1170 / 0.1417` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.636 / x1.206 / x1.211` | the same sweep |
+| Sweep average range | `0.0949 - 0.1151` | the same sweep, inside the 0.05-0.15 band |
+| Deepest single-seed quarter dip | `-5.95%` against the `5.00%` allowance | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `0.3791 / 0.3433 / 0.3815` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+| Riskiest trial pairs, median spike | `0.3791 / 0.3013 / 0.3815` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
 
 The three pairs are the ones this gate has caught above 0.38, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `BOSS_BOUNTY + BLOOD_PRICE`, `MISERS_PACT + BLOOD_PRICE` (the other eleven pairs of the matrix run in the gate, not here).
 | Reward-card spike, AGILITY forced at boss 1 | `0.28229` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
 <!-- balance:end second-half -->
 
-The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. Two honest caveats, both of them visible in the generated table above rather than buried: the deepest single-seed quarter dip spends most of the five percent the gate allows, and the reward-card matrix keeps very little headroom against its ceiling — so a later change that adds pressure to the *first* hundred waves has almost nothing to spend.
+The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. The caveats move with the measurements: since roadmap B1 shipped the pity rule below, no seed's quarter-to-quarter line dips at all — the deepest reading in the table is a **rise** of 5.95% — and the reward-card matrix sits at `0.28229` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3815` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first.
 
-**It is not enough for the blocked bad-luck rule.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 returned `0.01–0.03`, leaving the shipped worst pair at `0.382`. The rule stays deferred; see the economy section above.
+**What the headroom bought.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 alone returned `0.01–0.03` — not enough, which is what the open ledger finding said from the economy's side. Roadmap A3's role tuning then returned the rest (worst pair `0.3815`), and roadmap B1 spent it: the guaranteed common after thirty dry kills now ships, gated past the brief vigil, and every band above stayed green on the fixed seeds — the riskiest pair unchanged at `0.3815`, and the sweep average's floor raised from `0.0816` to `0.0949`, which is the rule doing exactly its job: the unluckiest runs are no longer the weakest measurements. See the economy section for the rule and its measured price.
 
 ## The ascension ladder in growth rates (Phase 91)
 
@@ -564,11 +564,11 @@ that much times its enemy count, and twenty kills are worth two items. Luck mult
 buys a longer stretch of the table rather than a different table; elites and (with `BOSS_BOUNTY`) bosses floor the
 tier at rare, which is the only way a roll that lands on nothing still drops something.
 
-### Bad-luck protection: three rules measured, none shipped
+### Bad-luck protection: three rules measured and refused, the fourth shipped
 
-Roadmap R4.3 asks for a pity rule and the honest state today is that the game has none, because the balance sweep's
-ceilings sit within a percent of their limits and every version of the rule was measured moving one of them. All
-three are recorded here with their prices, in the order they were tried:
+Roadmap R4.3 asked for a pity rule, and for three versions the honest answer was no: the balance sweep's ceilings
+sat within a percent of their limits and every version moved one of them. All three are recorded here with their
+prices, in the order they were tried — and then the fourth, which ships because A3 bought the headroom they needed:
 
 * **A guaranteed common after thirty kills with no item.** Fires about five times per run. Broke three gates: the
   brief vigil's average pressure fell to **0.0346** against its 0.035 floor, `BOSS_BOUNTY + FAMISHED_EARTH` spiked to
@@ -582,10 +582,20 @@ three are recorded here with their prices, in the order they were tried:
   and it still broke the trial gate: `BOSS_BOUNTY + FAMISHED_EARTH` at **0.4386** and `MISERS_PACT + BLOOD_PRICE` at
   **0.4146**, both at wave 196, against 0.40.
 
-The third line is the useful one. It says the blocker is not the size of the gift and not the extra randomness: a
-trial ceiling that a passing pair already sits within one percent of cannot absorb *any* economy change, which is the
-same missing headroom `R4.6` describes from the curve's side. The rule returns when that headroom exists; the table
-above is what it will be priced against.
+The third line was the useful one: the blocker was not the size of the gift and not the extra randomness — a trial
+ceiling that a passing pair sits within one percent of cannot absorb *any* economy change. That was the missing
+headroom `R4.6` described from the curve's side and the open ledger finding named from the economy's. A3's role
+tuning bought it (worst pair `0.3815` against `0.40`), and the rule returned through it:
+
+* **Shipped (roadmap B1): a guaranteed common after thirty dry kills, armed from wave 31.** The first version,
+  re-measured with the one gate its own evidence demanded — never inside the brief vigil, whose floor it had
+  broken at `0.0346` against `0.035`. The streak is counted inside the roll that already happens, so a miss still
+  spends exactly one draw; only an answered streak spends what a natural drop spends. Measured on the fixed
+  seeds: every band green, the riskiest trial pair unchanged at `0.3815`, quarter means
+  `0.0593 / 0.0970 / 0.1170 / 0.1417`, and the sweep average's floor raised from `0.0816` to `0.0949` — the
+  unlucky runs, the ones the rule exists for, are measurably no longer the weakest runs. `ItemDropPityTest` pins
+  the four promises: the thirtieth dry kill is answered with a common and not the thirty-first, the vigil never
+  even counts a drought, a natural drop resets the streak, and the streak survives a save.
 
 ## Stepping: the movement budget (roadmap A1)
 

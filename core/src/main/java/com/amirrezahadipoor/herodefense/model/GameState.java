@@ -43,6 +43,12 @@ public final class GameState {
     public int defeatedBosses;
     public int totalKills;
     public int totalKillCoinsEarned;
+    /**
+     * Consecutive kills whose drop roll came up empty (roadmap B1 / R4.3's pity rule). ItemDropSystem counts it,
+     * answers at the threshold with a guaranteed common, and any natural drop resets it. Encoded like every run
+     * counter, so a resumed run resumes its streak.
+     */
+    public int dryKillsSinceItemDrop;
     public float worldTreeHealth = 1000f;
     public float worldTreeMaxHealth = 1000f;
     public float simulationSpeed = 1f;

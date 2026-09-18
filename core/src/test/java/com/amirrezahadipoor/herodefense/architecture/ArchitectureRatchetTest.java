@@ -90,7 +90,10 @@ class ArchitectureRatchetTest {
         // keeps the three-argument call meaning STANDARD, which is what holds every older caller and the
         // progression equation still. If the formula grows again, extract it then and lower this number.
         "com/amirrezahadipoor/herodefense/model/GameState.java",
-        new ArchitectureRatchet.Frozen(635, 82)
+        // B1 raised the count by one field and six lines: the pity rule R4.3 wanted needs the dry-kill streak
+        // remembered across kills, waves and saves -- a run counter like totalKills beside it, encoded by the
+        // reflection codec like every other field. No method, no behaviour in the model itself.
+        new ArchitectureRatchet.Frozen(641, 83)
     );
 
     @Test
