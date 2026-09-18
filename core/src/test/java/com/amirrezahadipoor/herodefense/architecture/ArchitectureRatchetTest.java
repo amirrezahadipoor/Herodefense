@@ -74,8 +74,16 @@ class ArchitectureRatchetTest {
         // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (plus
         // `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one). R3.4 added
         // no field: wave omens are switched on by the trial the player drafted, and the trial list already exists.
+        //
+        // C3 raised the line count by 21 without adding a field: the heartwood formula
+        // gained a mode-aware overload that halves the brief vigil's pay, plus the javadoc explaining why a run
+        // that cannot be lost must not be the efficient way to earn. The formula was not extracted into a class
+        // of its own because its two call sites are this file's own award path and the death screen's preview of
+        // it, and a third home for a four-line equation would be a fourth place to keep in step; the overload
+        // keeps the three-argument call meaning STANDARD, which is what holds every older caller and the
+        // progression equation still. If the formula grows again, extract it then and lower this number.
         "com/amirrezahadipoor/herodefense/model/GameState.java",
-        new ArchitectureRatchet.Frozen(614, 82)
+        new ArchitectureRatchet.Frozen(635, 82)
     );
 
     @Test
