@@ -181,10 +181,16 @@ public final class HeroAutoAttackSystem {
             * (secondary ? SkillEffects.secondaryArrowShare(state) : 1f)
             * SkillEffects.deadeyeMultiplier(state, distance)
             * (target instanceof Boss ? AffixEffects.bossDamageMultiplier(state) : 1f)
+            * (isElite(target) ? AffixEffects.eliteDamageMultiplier(state) : 1f)
             * (FocusFireSystem.isMarked(target) ? FocusFireSystem.DAMAGE_MULTIPLIER : 1f);
         projectile.remainingLifetimeSeconds = distance / PROJECTILE_SPEED + 0.25f;
         setVelocityToward(projectile, target);
         state.projectiles.add(projectile);
+    }
+
+    /** Elites carry a spawner-assigned affix id; plain foes and bosses take no elite bonus. */
+    private static boolean isElite(Enemy target) {
+        return target != null && target.eliteAffix != null && !target.eliteAffix.isEmpty();
     }
 
     /** Fills {@link #scratchTargets} with living foes in range other than {@code exclude}, nearest first. */

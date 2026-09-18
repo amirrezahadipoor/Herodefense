@@ -3,7 +3,9 @@ package com.amirrezahadipoor.herodefense.items;
 /**
  * Minor random affixes rolled onto every Rare and Legendary drop. Each affix is a small
  * single-lane bonus; Common and Uncommon items stay affix-free so early loot stays simple.
- * Stun and Chain affixes only add chance while their skill is learned.
+ * Stun and Chain affixes only add chance while their skill is learned. Thorns reflects only
+ * melee swings that actually land, and stacked Swift Gather pieces never shrink the pickup
+ * delay below a quarter of its base.
  */
 public enum AffixId {
     CRIT_CHANCE("+3% Critical Chance", 0.03f),
@@ -20,7 +22,12 @@ public enum AffixId {
     STUN_CHANCE("+3% Stun Chance", 0.03f),
     CHAIN_CHANCE("+4% Chain Chance", 0.04f),
     MULTISHOT("+0.2 Extra Arrows", 0.20f),
-    BOSS_DAMAGE("+8% Boss Damage", 0.08f);
+    BOSS_DAMAGE("+8% Boss Damage", 0.08f),
+    ELITE_DAMAGE("+8% Elite Damage", 0.08f),
+    THORNS("Reflect 15% of Melee Damage", 0.15f),
+    POTION_FIND("+15% Potion Find", 0.15f),
+    FOCUS_GAIN("+10% Focus Gain", 0.10f),
+    SWIFT_GATHER("-20% Pickup Delay", 0.20f);
 
     private final String display;
     private final float value;

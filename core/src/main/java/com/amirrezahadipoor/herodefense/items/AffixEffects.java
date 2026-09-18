@@ -98,4 +98,26 @@ public final class AffixEffects {
     public static float bossDamageMultiplier(GameState state) {
         return 1f + sum(state, AffixId.BOSS_DAMAGE);
     }
+
+    public static float eliteDamageMultiplier(GameState state) {
+        return 1f + sum(state, AffixId.ELITE_DAMAGE);
+    }
+
+    /** Share of a landed melee swing Thorns reflects back at the attacker. */
+    public static float thornsShare(GameState state) {
+        return sum(state, AffixId.THORNS);
+    }
+
+    public static float potionFindMultiplier(GameState state) {
+        return 1f + sum(state, AffixId.POTION_FIND);
+    }
+
+    public static float focusGainMultiplier(GameState state) {
+        return 1f + sum(state, AffixId.FOCUS_GAIN);
+    }
+
+    /** Scales the ground delay of fresh drops; stacked pieces floor the delay at a quarter. */
+    public static float gatherDelayMultiplier(GameState state) {
+        return Math.max(0.25f, 1f - sum(state, AffixId.SWIFT_GATHER));
+    }
 }

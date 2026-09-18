@@ -283,9 +283,9 @@ final class EnemyRoleSystemTest {
                 throw new UncheckedIOException("cannot walk the main sources", e);
             }
         }
-        assertEquals(3, callSites,
-            "arrow impact, chain arc and ultimate are the three ways an enemy takes damage; a fourth call site"
-                + " means this scan has to look at it before the ward can be trusted");
+        assertEquals(4, callSites,
+            "arrow impact, chain arc, ultimate and the thorns reflection are the four ways an enemy takes"
+                + " damage; a fifth call site means this scan has to look at it before the ward can be trusted");
         assertTrue(unwarded.isEmpty(),
             "damage that skips the ward is a shield that works only against arrows: " + unwarded);
     }

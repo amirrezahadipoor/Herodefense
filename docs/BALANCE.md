@@ -66,13 +66,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 81199 | |
-| Item sales | 24873 | |
-| Stat shop | 58990 | 135 levels |
-| Skill shop | 30590 | 40 levels |
-| Anvil | 15980 | 28 steps |
+| Kill income | 91984 | |
+| Item sales | 24639 | |
+| Stat shop | 63280 | 137 levels |
+| Skill shop | 37175 | 43 levels |
+| Anvil | 16130 | 29 steps |
 
-Across the 9 gate seeds the split is stable: stats 51-57%, skills 28-35%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 54-57%, skills 28-35%, Anvil 11-16% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -98,20 +98,20 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.0593 / 0.0970 / 0.1170 / 0.1417` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.636 / x1.206 / x1.211` | the same sweep |
-| Sweep average range | `0.0949 - 0.1151` | the same sweep, inside the 0.05-0.15 band |
-| Deepest single-seed quarter dip | `-5.95%` against the `5.00%` allowance | the same sweep |
+| Quarter means (fixed sweep) | `0.0531 / 0.0990 / 0.1128 / 0.1467` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.864 / x1.139 / x1.300` | the same sweep |
+| Sweep average range | `0.0757 - 0.1190` | the same sweep, inside the 0.05-0.15 band |
+| Deepest single-seed quarter dip | `-4.38%` against the `5.00%` allowance | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `0.3791 / 0.3013 / 0.3815` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+| Riskiest trial pairs, median spike | `0.3671 / 0.3914 / 0.3702` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
 
 The three pairs are the ones this gate has caught above 0.38, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `BOSS_BOUNTY + BLOOD_PRICE`, `MISERS_PACT + BLOOD_PRICE` (the other eleven pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.28229` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.26535` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
 <!-- balance:end second-half -->
 
-The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. The caveats move with the measurements: since roadmap B1 shipped the pity rule below, no seed's quarter-to-quarter line dips at all — the deepest reading in the table is a **rise** of 5.95% — and the reward-card matrix sits at `0.28229` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3815` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first.
+The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. The caveats move with the measurements: since roadmap B1 shipped the pity rule below, no seed's quarter-to-quarter line dips at all — the deepest reading in the table is a **rise** of 4.38% — and the reward-card matrix sits at `0.26535` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3914` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first.
 
-**What the headroom bought.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 alone returned `0.01–0.03` — not enough, which is what the open ledger finding said from the economy's side. Roadmap A3's role tuning then returned the rest (worst pair `0.3815`), and roadmap B1 spent it: the guaranteed common after thirty dry kills now ships, gated past the brief vigil, and every band above stayed green on the fixed seeds — the riskiest pair unchanged at `0.3815`, and the sweep average's floor raised from `0.0816` to `0.0949`, which is the rule doing exactly its job: the unluckiest runs are no longer the weakest measurements. See the economy section for the rule and its measured price.
+**What the headroom bought.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 alone returned `0.01–0.03` — not enough, which is what the open ledger finding said from the economy's side. Roadmap A3's role tuning then returned the rest (worst pair `0.3815`), and roadmap B1 spent it: the guaranteed common after thirty dry kills now ships, gated past the brief vigil, and every band above stayed green on the fixed seeds — the riskiest pair unchanged at `0.3815`, and the sweep average's floor raised from `0.0816` to `0.0949`, which is the rule doing exactly its job: the unluckiest runs are no longer the weakest measurements. See the economy section for the rule and its measured price. Roadmap B2a then widened the affix pool from fifteen to twenty — Elite Damage, Thorns, Potion Find, Focus Gain and Swift Gather, each wired to exactly one shipped system — and the fixed seeds absorbed the widening: the riskiest pair moved `0.3815` → `0.3914` against `0.40`, the sweep average's floor settled at `0.0757` inside its `0.05–0.15` band, and kill income rose `81199` → `91984` across the gate seeds as reflected and elite-focused damage shortened fights — the wider pool paying for itself without a single band moving red.
 
 ## The ascension ladder in growth rates (Phase 91)
 

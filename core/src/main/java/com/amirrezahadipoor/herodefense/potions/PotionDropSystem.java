@@ -1,12 +1,16 @@
 package com.amirrezahadipoor.herodefense.potions;
 
+import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.DropEntity;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 
-/** Rolls an approximately eight-percent, wave-weighted potion reward per defeat. */
+/**
+ * Rolls a wave-weighted potion reward per defeat at roughly eight percent, raised by the
+ * Potion Find affix.
+ */
 public final class PotionDropSystem {
     public static final float DROP_RATE = 0.08f;
 
@@ -23,6 +27,11 @@ public final class PotionDropSystem {
             throw new IllegalArgumentException("Potion roll must be in [0, 1)");
         }
         return roll < DROP_RATE;
+    }
+
+    /** Base rate scaled by the Potion Find affix; exactly {@link #DROP_RATE} without it. */
+    public float effectiveDropRate(GameState state) {
+        return DROP_RATE * AffixEffects.potionFindMultiplier(state);
     }
 
     /** Unlocks stronger tiers over the run, with higher unlocked tiers weighted more. */
@@ -46,13 +55,15 @@ public final class PotionDropSystem {
         enemy.potionDropRolled = true;
         if (enemy.silentWatcher) return 0;
         if (!TrialEffects.potionsDrop(state.activeTrials)) return 0;
-        if (!isDrop(state.nextCombatRandomFloat())) return 0;
+        // One draw, compared against the Potion Find-scaled rate; without the affix this is
+        // bit-identical to the old isDrop check, so seeded runs do not shift.
+        if (state.nextCombatRandomFloat() >= effectiveDropRate(state)) return 0;
         PotionTier tier = tierForRoll(state.waveNumber, state.nextCombatRandomFloat());
         DropEntity drop = new DropEntity(
             state.allocateEntityId(), "POTION", enemy.x, enemy.y, 1
         );
         drop.itemId = tier.name();
-        drop.pickupDelaySeconds = 2.6f;
+        drop.pickupDelaySeconds = 2.6f * AffixEffects.gatherDelayMultiplier(state);
         state.drops.add(drop);
         return 1;
     }

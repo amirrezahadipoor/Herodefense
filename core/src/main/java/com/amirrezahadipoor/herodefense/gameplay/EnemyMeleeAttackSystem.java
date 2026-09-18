@@ -1,8 +1,10 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.IncomingHitResult;
 
 /** Resolves in-range melee swings through the Hero Dodge/damage pipeline. */
 public final class EnemyMeleeAttackSystem {
@@ -87,9 +89,26 @@ public final class EnemyMeleeAttackSystem {
         while (enemy.attackCooldownSeconds <= 0f
             && attacks < MAX_ATTACKS_PER_UPDATE
             && state.hero.alive) {
-            heroDamageSystem.applyIncomingHit(state, enemy.damage);
+            IncomingHitResult hit = heroDamageSystem.applyIncomingHit(state, enemy.damage);
+            reflectThorns(state, enemy, hit);
             enemy.attackCooldownSeconds += interval;
             attacks++;
         }
+    }
+
+    /**
+     * Thorns reflects a share of every melee swing that actually lands (dodges and the
+     * killing blow reflect nothing), through the same ward-wrapped path arrows use, so a
+     * shielded elite shrugs the reflection exactly like it shrugs arrows.
+     */
+    private void reflectThorns(GameState state, Enemy enemy, IncomingHitResult hit) {
+        if (hit != IncomingHitResult.DAMAGED) {
+            return;
+        }
+        float share = AffixEffects.thornsShare(state);
+        if (share <= 0f) {
+            return;
+        }
+        enemy.receiveDamage(EnemyRoleSystem.damageTo(state, enemy, enemy.damage * share));
     }
 }

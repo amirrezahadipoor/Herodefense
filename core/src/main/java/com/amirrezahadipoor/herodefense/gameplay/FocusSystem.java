@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.items.MythicEffects;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
@@ -30,14 +31,15 @@ public final class FocusSystem {
     }
 
     /**
-     * Fill-rate multiplier from Hero level and equipped Mythics; 1 for null
-     * or degenerate state so unscaled callers stay exact.
+     * Fill-rate multiplier from Hero level, equipped Mythics and the Focus Gain affix;
+     * 1 for null or degenerate state so unscaled callers stay exact.
      */
     public static float fillRateMultiplier(GameState state) {
         if (state == null) return 1f;
         int levels = Math.max(0, state.heroLevel - 1);
         return (1f + levels * FILL_LEVEL_BONUS)
-            * (1f + MythicEffects.equippedMythicCount(state) * FILL_MYTHIC_BONUS);
+            * (1f + MythicEffects.equippedMythicCount(state) * FILL_MYTHIC_BONUS)
+            * AffixEffects.focusGainMultiplier(state);
     }
 
     /** 0..1 charge of the Focus meter; 0 for null or degenerate state. */

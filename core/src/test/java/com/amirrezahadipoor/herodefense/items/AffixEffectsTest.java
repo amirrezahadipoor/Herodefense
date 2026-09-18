@@ -11,8 +11,9 @@ import org.junit.jupiter.api.Test;
 
 final class AffixEffectsTest {
     @Test
-    void fifteenAffixesCarryDistinctDisplays() {
-        assertEquals(15, AffixId.values().length);
+    void twentyAffixesCarryDistinctDisplays() {
+        assertEquals(20, AffixId.values().length,
+            "the B2a expansion grew the pool from fifteen to twenty; every affix must stay a distinct lane");
         for (AffixId affix : AffixId.values()) {
             assertTrue(affix.display() != null && !affix.display().isBlank());
             assertEquals(affix, AffixId.forName(affix.name()));
@@ -36,6 +37,11 @@ final class AffixEffectsTest {
         assertEquals(0f, AffixEffects.chainChanceBonus(null), 0f);
         assertEquals(0f, AffixEffects.extraArrowsBonus(null), 0f);
         assertEquals(1f, AffixEffects.bossDamageMultiplier(null), 0f);
+        assertEquals(1f, AffixEffects.eliteDamageMultiplier(null), 0f);
+        assertEquals(0f, AffixEffects.thornsShare(null), 0f);
+        assertEquals(1f, AffixEffects.potionFindMultiplier(null), 0f);
+        assertEquals(1f, AffixEffects.focusGainMultiplier(null), 0f);
+        assertEquals(1f, AffixEffects.gatherDelayMultiplier(null), 0f);
 
         GameState bare = GameState.newRun(1L);
         assertEquals(1f, AffixEffects.damageMultiplier(bare), 0f);
@@ -59,6 +65,11 @@ final class AffixEffectsTest {
         assertEquals(0.04f, with(AffixId.CHAIN_CHANCE, AffixEffects::chainChanceBonus), 0f);
         assertEquals(0.20f, with(AffixId.MULTISHOT, AffixEffects::extraArrowsBonus), 0f);
         assertEquals(1.08f, with(AffixId.BOSS_DAMAGE, AffixEffects::bossDamageMultiplier), 0.0001f);
+        assertEquals(1.08f, with(AffixId.ELITE_DAMAGE, AffixEffects::eliteDamageMultiplier), 0.0001f);
+        assertEquals(0.15f, with(AffixId.THORNS, AffixEffects::thornsShare), 0f);
+        assertEquals(1.15f, with(AffixId.POTION_FIND, AffixEffects::potionFindMultiplier), 0.0001f);
+        assertEquals(1.10f, with(AffixId.FOCUS_GAIN, AffixEffects::focusGainMultiplier), 0.0001f);
+        assertEquals(0.80f, with(AffixId.SWIFT_GATHER, AffixEffects::gatherDelayMultiplier), 0.0001f);
     }
 
     @Test
