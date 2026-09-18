@@ -38,6 +38,14 @@ final class PremiumArenaAssetContractTest {
     private static final Set<String> EXPECTED_KEYS = Set.of(
         "arena_backdrop",
         "ground_tile_0", "ground_tile_1", "ground_tile_2",
+        "crystal_prop_0", "crystal_prop_1", "crystal_prop_2",
+        "arena_backdrop_2",
+        "ground_tile_3", "ground_tile_4", "ground_tile_5",
+        "crystal_prop_3", "crystal_prop_4", "crystal_prop_5"
+    );
+    private static final Set<String> ORIGINAL_KEYS = Set.of(
+        "arena_backdrop",
+        "ground_tile_0", "ground_tile_1", "ground_tile_2",
         "crystal_prop_0", "crystal_prop_1", "crystal_prop_2"
     );
 
@@ -76,7 +84,9 @@ final class PremiumArenaAssetContractTest {
         JsonValue manifest = json(MANIFEST);
         Map<String, JsonValue> byKey = assetsByKey(manifest);
         Map<String, JsonValue> audited = assetsByKey(json(AUDIT));
-        assertEquals(EXPECTED_KEYS, audited.keySet());
+        // D1: second arena adds 7 more keys; original audit still covers the first 7.
+        assertEquals(ORIGINAL_KEYS, audited.keySet());
+        assertTrue(byKey.keySet().containsAll(EXPECTED_KEYS), "manifest must contain both arenas");
 
         for (String key : EXPECTED_KEYS) {
             JsonValue asset = byKey.get(key);
@@ -169,6 +179,8 @@ final class PremiumArenaAssetContractTest {
             "core/src/main/java/com/amirrezahadipoor/herodefense/render/ArenaEnvironmentRenderer.java"
         ));
         assertTrue(source.contains("generated/environment/arena_backdrop.png"));
+        assertTrue(source.contains("generated/environment/arena_backdrop_2.png"), "D1 second arena backdrop must be loaded");
+        assertTrue(source.contains("isSecondArena"), "D1 second arena selector must exist");
         // R5.4 gave drawGround the wave it is graded by, so the call site is what this ordering check reads.
         assertTrue(source.indexOf("ScreenEdges.drawCover(batch, backdrop)")
             < source.indexOf("drawGround(batch,"));

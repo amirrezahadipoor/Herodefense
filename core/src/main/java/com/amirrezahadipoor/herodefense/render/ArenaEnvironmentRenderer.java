@@ -34,8 +34,9 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     };
 
     private final Texture backdrop;
-    private final Texture[] ground = new Texture[3];
-    private final Texture[] crystals = new Texture[3];
+    private final Texture backdrop2;
+    private final Texture[] ground = new Texture[6];
+    private final Texture[] crystals = new Texture[6];
     private final TextureAtlas healthyTreeAtlas;
     private final TextureAtlas damagedTreeAtlas;
     private final Array<TextureAtlas.AtlasRegion> healthyTreeFrames;
@@ -47,7 +48,8 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
 
     public ArenaEnvironmentRenderer() {
         backdrop = texture("generated/environment/arena_backdrop.png");
-        for (int index = 0; index < 3; index++) {
+        backdrop2 = texture("generated/environment/arena_backdrop_2.png");
+        for (int index = 0; index < 6; index++) {
             ground[index] = texture("generated/environment/ground_tile_" + index + ".png");
             crystals[index] = texture("generated/environment/crystal_prop_" + index + ".png");
         }
@@ -81,19 +83,28 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         float presentationDeltaSeconds,
         boolean motionSuppressed
     ) {
-        ScreenEdges.drawCover(batch, backdrop);
+        // D1: second arena — forest for waves 1-100, hollow for 101-200, matching StageGrade TEAL/HOLLOW.
+        Texture activeBackdrop = state.waveNumber >= 101 ? backdrop2 : backdrop;
+        ScreenEdges.drawCover(batch, activeBackdrop);
         drawGround(batch, state.waveNumber);
-        drawCrystals(batch);
+        drawCrystals(batch, state.waveNumber);
         drawWorldTree(batch, state, runTimeSeconds, presentationDeltaSeconds);
         // D4: the air and the bosses' ground auras, over the finished arena and under the actors.
         // A suppressed-motion frame gets a frozen clock, which holds both effects on a calm still.
         atmosphere.draw(batch, state, motionSuppressed ? 0f : runTimeSeconds, motionSuppressed);
     }
 
+    /** Returns true for the second arena variant (hollow), used for waves 101-200. */
+    public static boolean isSecondArena(int wave) {
+        return wave >= 101;
+    }
+
     /** R5.4: the ground is drawn *under* the stage's grade, not filtered after the frame is finished. */
     private void drawGround(SpriteBatch batch, int wave) {
         StageGrade grade = StageGrade.forWave(wave);
         float originalColor = batch.getPackedColor();
+        boolean second = isSecondArena(wave);
+        int variantOffset = second ? 3 : 0;
         for (float[] placement : GROUND_PLACEMENTS) {
             float shade = placement[5];
             batch.setColor(
@@ -102,7 +113,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
                 grade.channel(shade * 0.97f, 2),
                 0.96f
             );
-            int variant = Math.round(placement[4]);
+            int variant = Math.round(placement[4]) + variantOffset;
             batch.draw(
                 ground[variant], placement[0], placement[1], placement[2], placement[3]
             );
@@ -110,12 +121,18 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         batch.setPackedColor(originalColor);
     }
 
-    private void drawCrystals(SpriteBatch batch) {
+    private void drawCrystals(SpriteBatch batch, int wave) {
+        boolean second = isSecondArena(wave);
+        int variantOffset = second ? 3 : 0;
         for (float[] placement : CRYSTAL_PLACEMENTS) {
             float size = placement[2];
-            int variant = Math.round(placement[3]);
+            int variant = Math.round(placement[3]) + variantOffset;
             batch.draw(crystals[variant], placement[0], placement[1], size, size);
         }
+    }
+
+    private void drawCrystals(SpriteBatch batch) {
+        drawCrystals(batch, 1);
     }
 
     private void drawWorldTree(
@@ -165,6 +182,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     @Override
     public void close() {
         backdrop.dispose();
+        backdrop2.dispose();
         for (Texture texture : ground) texture.dispose();
         for (Texture texture : crystals) texture.dispose();
         healthyTreeAtlas.dispose();

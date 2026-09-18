@@ -35,13 +35,16 @@ final class RuntimeSceneAssetTest {
         assertTrue(Files.isRegularFile(
             GENERATED.resolve("environment/arena_backdrop.png")
         ));
-        for (int variant = 0; variant < 3; variant++) {
+        assertTrue(Files.isRegularFile(
+            GENERATED.resolve("environment/arena_backdrop_2.png")
+        ), "D1 second arena backdrop must be packaged");
+        for (int variant = 0; variant < 6; variant++) {
             assertTrue(Files.isRegularFile(
                 GENERATED.resolve("environment/ground_tile_" + variant + ".png")
-            ));
+            ), "ground_tile_" + variant + " missing");
             assertTrue(Files.isRegularFile(
                 GENERATED.resolve("environment/crystal_prop_" + variant + ".png")
-            ));
+            ), "crystal_prop_" + variant + " missing");
         }
         Path healthyAtlas = GENERATED.resolve("sprites/world_tree_healthy.atlas");
         Path damagedAtlas = GENERATED.resolve("sprites/world_tree_damaged.atlas");

@@ -1,0 +1,63 @@
+{
+  "alphaMode": "STRAIGHT_RGBA",
+  "categoryReview": {
+    "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+    "category": "arena_environment",
+    "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+    "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+    "status": "accepted"
+  },
+  "clips": {
+    "idle": [
+      {
+        "height": 384,
+        "index": 0,
+        "page": 0,
+        "width": 384,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  "engineVersion": "33.0-studio-v3-3x36-full",
+  "family": "environment",
+  "frameClass": "environment",
+  "frameHeight": 384,
+  "frameSize": 384,
+  "frameWidth": 384,
+  "key": "crystal_prop_5",
+  "materialCount": 9,
+  "meshParts": 36,
+  "modelRevision": "arena-crystal-premium-v3-hollow-2",
+  "pivot": {
+    "units": "normalized-bottom-left",
+    "x": 0.5,
+    "y": 0.5
+  },
+  "prop": "amber-root-lantern",
+  "renderSamples": 28,
+  "renderSupersample": 2,
+  "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+  "runtimeGlow": false,
+  "sheet": "environment/crystal_prop_5.png",
+  "sheetHeight": 384,
+  "sheetWidth": 384,
+  "sheets": [
+    {
+      "decodedBytes": 589824,
+      "file": "environment/crystal_prop_5.png",
+      "height": 384,
+      "width": 384
+    }
+  ],
+  "silhouetteLandmarks": [
+    "faceted bedrock",
+    "guard ring",
+    "identity shard rhythm",
+    "moss grounding"
+  ],
+  "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
+  "triangles": 896,
+  "variant": 5,
+  "visualQuality": "studio-v3"
+}

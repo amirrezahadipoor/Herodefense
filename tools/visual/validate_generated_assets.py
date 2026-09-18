@@ -199,7 +199,7 @@ def _check_edge_safety(asset: dict, root: Path, pages_images: list[Image.Image])
     family = asset.get("family", "")
     frame_class = asset.get("frameClass", "")
     # Arena backdrop is a full-screen opaque image — edge touching is expected.
-    if family == "arena" or key == "arena_backdrop":
+    if family == "arena" or key.startswith("arena_backdrop"):
         return
     frame_width = asset.get("frameWidth", asset["frameSize"])
     frame_height = asset.get("frameHeight", asset["frameSize"])
@@ -234,7 +234,7 @@ def _check_silhouette(asset: dict, root: Path, pages_images: list[Image.Image]) 
         return
     key = asset["key"]
     family = asset.get("family", "")
-    if family == "arena" or key == "arena_backdrop":
+    if family == "arena" or key.startswith("arena_backdrop"):
         return  # full-coverage exempt
     frame_width = asset.get("frameWidth", asset["frameSize"])
     frame_height = asset.get("frameHeight", asset["frameSize"])

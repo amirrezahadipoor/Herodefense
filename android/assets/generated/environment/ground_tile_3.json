@@ -1,0 +1,58 @@
+{
+  "alphaMode": "STRAIGHT_RGBA",
+  "categoryReview": {
+    "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+    "category": "arena_environment",
+    "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+    "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+    "status": "accepted"
+  },
+  "clips": {
+    "idle": [
+      {
+        "height": 384,
+        "index": 0,
+        "page": 0,
+        "width": 384,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  "engineVersion": "33.0-studio-v3-3x36-full",
+  "family": "environment",
+  "frameClass": "environment",
+  "frameHeight": 384,
+  "frameSize": 384,
+  "frameWidth": 384,
+  "groundIdentity": "root-path",
+  "key": "ground_tile_3",
+  "materialCount": 6,
+  "meshParts": 23,
+  "modelRevision": "arena-ground-premium-v3-hollow",
+  "overlapProfile": "staggered-soft-edge-v2",
+  "pivot": {
+    "units": "normalized-bottom-left",
+    "x": 0.5,
+    "y": 0.5
+  },
+  "renderSamples": 28,
+  "renderSupersample": 2,
+  "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+  "sheet": "environment/ground_tile_3.png",
+  "sheetHeight": 384,
+  "sheetWidth": 384,
+  "sheets": [
+    {
+      "decodedBytes": 589824,
+      "file": "environment/ground_tile_3.png",
+      "height": 384,
+      "width": 384
+    }
+  ],
+  "surfaceLanguage": "faceted dark soil, restrained waystones, moss leaves, broad root runs",
+  "tileable": false,
+  "triangles": 504,
+  "variant": 3,
+  "visualQuality": "studio-v3"
+}
