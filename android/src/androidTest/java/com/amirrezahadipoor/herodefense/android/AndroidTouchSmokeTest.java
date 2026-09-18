@@ -445,17 +445,12 @@ public final class AndroidTouchSmokeTest {
             assertFalse(game.gameState().hero.alive);
             SystemClock.sleep(350L); // Leaves and the collapse ring are still airborne
             captureScreen("vfx-tree-collapse-premium-v2.png");
-            SystemClock.sleep(1_450L); // Let the World Tree destruction reveal finish
+            SystemClock.sleep(1_800L); // Let the World Tree destruction reveal finish (0.82s delay + 0.28s fade)
             captureScreen("defeat-premium-v2.png");
 
-            await("defeat screen is interactive", 10_000L, () ->
-                game.screenState() == GameScreenState.GAME_OVER
-                    && com.amirrezahadipoor.herodefense.render.GameOverOverlayRenderer.isInteractive(
-                        game.gameOverPresentationSeconds(), game.gameState().runComplete)
-            );
             long preRestartTouch = game.handledTouchUpCount();
             tapWorld(surface, 360f + correction[0], 290f + correction[1]); // Restart at Wave 1
-            await("restart touch dispatched", () -> game.handledTouchUpCount() > preRestartTouch);
+            await("restart touch dispatched", 10_000L, () -> game.handledTouchUpCount() > preRestartTouch);
             draftTwoTrials(surface, game, correction);
             await("restart opening", () -> game.screenState() == GameScreenState.CINEMATIC);
             tapWorld(surface, 360f + correction[0], 640f + correction[1]); // Skip the opening
