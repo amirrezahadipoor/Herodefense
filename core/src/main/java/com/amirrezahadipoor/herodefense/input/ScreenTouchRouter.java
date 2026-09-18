@@ -446,6 +446,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             if (host.flow().state() == GameScreenState.PLAYING
                 && BraceSystem.tapHitsHero(host.gameState(), worldX, worldY)) {
                 if (BraceSystem.tryBrace(host.gameState())) {
+                    host.flow().onboarding().notify(OnboardingAction.BRACE_RAISED);
                     host.hapticFeedback().tap();
                 }
                 return true;

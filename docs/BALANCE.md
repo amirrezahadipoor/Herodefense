@@ -633,8 +633,11 @@ What stepping actually buys is measured, not asserted: `EnemyMeleeAttackSystem` 
 live position, so a swing that lands at the arena centre lands nowhere once the Hero has stepped out of reach, and
 `HeroMovementSystemTest` plays exactly that out. What it does not buy is a dodge against a boss's special --
 `BossSpecialAttackSystem.executeOnce` hands the hit to the damage pipeline with no position test, so the telegraph
-warns about damage that stepping does not avoid. That gap is roadmap **A5**, and it is the one number in this
-section that no amount of movement tuning can fix.
+warns about damage that stepping does not avoid. That gap was roadmap **A5**, and A5 decided it: the special stays
+position-free, and the contract is now stated plainly where players will meet it -- the vigil's brace lesson and
+codex entry nine both say the great blow lands wherever the Hero stands and the shield is the answer. It is a
+documented rule, not a missing one, and it remains the one thing in this section no amount of movement tuning can
+change.
 
 ## The brace: one cast verb and its price (roadmap A2)
 
@@ -669,7 +672,9 @@ the sweeps have to run again -- `BraceSystemTest` fails first, on the simulator 
 
 What the brace deliberately does not do is dodge, and nothing in the game says otherwise: not the coaching, not
 the codex, not the Hero's javadoc, which names bracing as the answer to a telegraph precisely because stepping is
-not. That boundary is roadmap A5's to move, not this section's.
+not. That boundary was roadmap A5's to move, and A5 moved the words, not the mechanic: the coaching now teaches
+the brace as the answer to a special outright (the vigil's fourth step, `OnboardingStep.BRACE`), and the codex
+tells the first boss's killer that the arm "falls where you stood when the wind rose." The boundary stands.
 
 ## Late-wave roles: behaviour instead of bigger numbers (roadmap A3)
 

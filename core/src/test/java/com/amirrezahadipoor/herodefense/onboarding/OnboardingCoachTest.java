@@ -20,7 +20,8 @@ final class OnboardingCoachTest {
     @Test
     void theWholeLessonFitsInAMinute() {
         assertEquals(60f, OnboardingStep.totalSeconds(), 0.001f,
-            "the onboarding is a sixty-second lesson by definition: six steps, no slack");
+            "the onboarding is a sixty-second lesson by definition: seven steps, no slack -- A5 added the"
+                + " brace lesson and paid for it out of the passive steps' budgets, not out of the minute");
         assertTrue(OnboardingStep.values().length >= 4, "four or more distinct lessons, not one wall of text");
     }
 

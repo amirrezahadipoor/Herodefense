@@ -48,28 +48,35 @@ public enum OnboardingStep {
         OnboardingStrings.ULTIMATE_LINE,
         OnboardingStrings.ULTIMATE_HINT,
         OnboardingAction.ULTIMATE_FIRED,
-        12f
+        10f
+    ),
+    BRACE(
+        "brace",
+        OnboardingStrings.BRACE_LINE,
+        OnboardingStrings.BRACE_HINT,
+        OnboardingAction.BRACE_RAISED,
+        8f
     ),
     LOOT(
         "loot",
         OnboardingStrings.LOOT_LINE,
         OnboardingStrings.LOOT_HINT,
         OnboardingAction.PICKUP_COLLECTED,
-        8f
+        6f
     ),
     CARD(
         "card",
         OnboardingStrings.CARD_LINE,
         OnboardingStrings.CARD_HINT,
         OnboardingAction.CARD_TAKEN,
-        12f
+        10f
     ),
     SHOP(
         "shop",
         OnboardingStrings.SHOP_LINE,
         OnboardingStrings.SHOP_HINT,
         OnboardingAction.SHOP_OPENED,
-        8f
+        6f
     );
 
     private final String id;

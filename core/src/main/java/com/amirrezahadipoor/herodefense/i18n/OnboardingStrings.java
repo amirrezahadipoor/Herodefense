@@ -3,7 +3,7 @@ package com.amirrezahadipoor.herodefense.i18n;
 /**
  * The first-run vigil's coaching, in both languages (roadmap R7.3).
  *
- * <p>Six steps, one minute total, each a coached line plus the place the player is meant to look at. Both
+ * <p>Seven steps, one minute total, each a coached line plus the place the player is meant to look at. Both
  * halves are here rather than in {@code onboarding/OnboardingStep}'s constructor arguments, which is where that
  * enum's own javadoc said the locale work should put them: the budgets and the actions are gameplay data and
  * stay in the enum, the words are a language and come from a table that {@code TranslationTableTest} checks on
@@ -52,6 +52,15 @@ public enum OnboardingStrings implements Translated {
     ULTIMATE_LINE("When the focus meter fills, tap ULTIMATE to spend it",
         "وقتی نوار تمرکز پر شد، ضربهٔ نهایی را بزنید"),
     ULTIMATE_HINT("the ULTIMATE button", "دکمهٔ ضربهٔ نهایی"),
+
+    /**
+     * Step 4: brace, and with it the A5 contract -- a boss's special is not dodged. The line says so in the
+     * same breath as the gesture, because a player who learned to step in lesson two will otherwise spend the
+     * first boss telegraph discovering the exception the hard way.
+     */
+    BRACE_LINE("A boss's great blow finds you anywhere: tap the Hero to brace and shield it",
+        "ضربهٔ بزرگ غول هر جای میدان شما را پیدا می‌کند: روی قهرمان بزنید تا سپر بگیرد"),
+    BRACE_HINT("the Hero's own body", "تنِ خودِ قهرمان"),
 
     /** Step 4: collect. {@code DropPickupSystem} homes drops in after a short delay; nobody walks to them. */
     LOOT_LINE("Coins and drops reach the Hero on their own after a moment",

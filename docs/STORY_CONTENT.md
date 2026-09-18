@@ -139,9 +139,10 @@ implementation clarity only — display them unsorted-by-category once unlocked,
 
 ### 5.2 Boss-first-kill entries (unlock on first defeat of each identity)
 
-9. **"What the Golem Guarded."** *"Before there was a Tree to defend, there was a boundary stone.
-   The Golem was its keeper. I think, somewhere under the Hollow's grip, it still believes that is
-   all this is: a boundary, and a keeper."*
+9. **"What the Golem Guarded."** *"Before the Tree, there was a boundary stone, and the Golem was
+   its keeper. Under the Hollow's grip, it still believes this is a boundary and it a keeper. Its
+   great arm does not follow your feet: it falls where you stood when the wind rose. Set your
+   shield there, not your boots."*
 10. **"The Matriarch's Garden."** *"She is not attacking you with monsters. She is attacking you with her children. I do not say this to trouble you. I say it because you deserve to know what you are ending, and why it still might be a mercy."*
 11. **"An Ember That Refused."** *"Fire is supposed to go out. This one said no, and a no, given enough years, becomes a shape. The Wyrm is that no, wearing scales."*
 12. **"The Shape of Falling."** *"I asked the Void Knight, once, in the only language I have. Stillness, and time. What it wanted. It did not answer. I do not think it recalls the question anymore. I do not think it recalls much of anything except falling, and wanting company on the way down."*

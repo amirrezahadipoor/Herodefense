@@ -82,7 +82,7 @@ started, `[!]` attempted and failed, with the failure written down.
       `GameState` stayed at 635 lines because `Hero.keepAt` — the anchor — now voids a pending step order itself,
       which is also the correct semantics: a ceremony or a save repair puts the Hero somewhere the player did not
       ask for, and a stale order should not resume afterwards.
-- [ ] **A5 (no deduction; found while building A1) A boss's special lands wherever the Hero is standing when the
+- [x] **A5 (no deduction; found while building A1) A boss's special lands wherever the Hero is standing when the
       telegraph ends.** `BossSpecialAttackSystem.executeOnce` applies all four identities' hits through the damage
       pipeline with no position test, and `VOID_KNIGHT`'s charge re-places the boss at melee range of the Hero at
       telegraph time. That was invisible while the Hero could not move; now that it can, a player who learns to
@@ -91,6 +91,16 @@ started, `[!]` attempted and failed, with the failure written down.
       test (which re-opens every boss-fight measurement in this file's Phase 91 sections and the 40-encounter
       table), or state plainly in the coaching and the codex that a special is not dodged and is only braced for.
       Nothing may claim the step is a dodge until that decision is made.
+      **Decided: the words, not the mechanic.** A landed-position test would re-open every boss measurement for
+      a verb the brace already answers, and a dodge that only works against bosses would make the shield the
+      wrong button exactly when the game is loudest. So the contract is now stated in both places the item named:
+      the vigil grew a fourth step -- BRACE, "a boss's great blow finds you anywhere: tap the Hero to brace and
+      shield it", advanced only when `BraceSystem.tryBrace` actually raises the shield, and paid for out of the
+      passive steps' budgets (ULTIMATE 12→10, LOOT 8→6, CARD 12→10, SHOP 8→6) so the lesson still fits its
+      pinned sixty seconds at seven steps -- and codex entry nine tells the first boss's killer that the arm
+      "falls where you stood when the wind rose. Set your shield there, not your boots." (entry and
+      `docs/STORY_CONTENT.md` stay verbatim twins, inside the 300-character body budget). BALANCE.md's two
+      A5-flagged paragraphs now carry the decision.
 - [x] **A2 (−8) Nothing is actively cast.** All five skills are passive upgrade cards; the only player verbs were
       marking a target and the ultimate. The verb that landed is the **brace**: tap the Hero's own body and the
       shield goes up for three seconds -- everything that hurts, melee swings, boss specials and the rot nobody

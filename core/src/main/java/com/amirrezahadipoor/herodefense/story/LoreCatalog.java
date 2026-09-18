@@ -37,7 +37,7 @@ public final class LoreCatalog {
             "I did not ask for a second trunk, nor a third. I am glad of both regardless. Grief is lighter, split three ways. And so, it turns out, is standing guard.",
             LoreTrigger.WAVE_MILESTONE, "100"),
         entry(9, "What the Golem Guarded.",
-            "Before there was a Tree to defend, there was a boundary stone. The Golem was its keeper. I think, somewhere under the Hollow's grip, it still believes that is all this is: a boundary, and a keeper.",
+            "Before the Tree, there was a boundary stone, and the Golem was its keeper. Under the Hollow's grip, it still believes this is a boundary and it a keeper. Its great arm does not follow your feet: it falls where you stood when the wind rose. Set your shield there, not your boots.",
             LoreTrigger.BOSS_FIRST_KILL, "ANCIENT_GOLEM"),
         entry(10, "The Matriarch's Garden.",
             "She is not attacking you with monsters. She is attacking you with her children. I do not say this to trouble you. I say it because you deserve to know what you are ending, and why it still might be a mercy.",

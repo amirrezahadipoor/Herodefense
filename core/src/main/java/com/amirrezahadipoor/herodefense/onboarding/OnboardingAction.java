@@ -17,6 +17,14 @@ public enum OnboardingAction {
      * rename from a claim to a description stayed correct when roadmap A1 gave the Hero its legs. Neither the
      * name nor the step id is persisted, so no save file notices either change.
      */
+    /**
+     * The player tapped the Hero's own body and {@code BraceSystem.tryBrace} raised the shield (roadmap A5).
+     *
+     * <p>Reported only when the brace actually comes up -- a tap on a Hero mid-cooldown is consumed by the
+     * router but teaches nothing, and a lesson that fired on a refused shield would be the same lie the
+     * honesty pass of 2026-09-18 removed from the drag step.
+     */
+    BRACE_RAISED,
     TAP_GROUND,
     /**
      * The player dragged inside the arena and the Hero took a step order (roadmap A1).
