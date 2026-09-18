@@ -211,7 +211,10 @@ started, `[!]` attempted and failed, with the failure written down.
       build.gradle comment says why in the same words the roadmap uses: a gate set before anyone has seen the
       number is a gate set to a guess, and a blanket percentage over a suite full of source-scanning tests would
       measure how much of a test helper ran. The first gate gets its own commit and its own measured baseline,
-      with the classes it excludes named. Three tests hold the sentence to the report: the LINE counter is the
+      with the classes it excludes named. Measured baseline, from the first CI run of this change:
+      **core line coverage 61.0% (6,852 of 11,229 lines)** -- that is the number a first gate would be set
+      against, and it is recorded here rather than in a chat message so the next person sees it without a CI run.
+      Three tests hold the sentence to the report: the LINE counter is the
       one reported, a report with no LINE counter exits non-zero instead of reading as zero, and the summary
       file carries the same sentence and the same "reported, not gated" heading the log does.
 - [ ] **I2 (−6) Device evidence is a headless x86 emulator.** Real Adreno/Mali GPUs, real touch latency and
