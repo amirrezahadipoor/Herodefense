@@ -37,6 +37,13 @@ public class Enemy extends ArenaEntity {
     public float affixShieldRemainingSeconds;
     /** The elite's death has been resolved (blight blast, if any, already fired). */
     public boolean affixResolved;
+    /**
+     * Roadmap A3: the late-wave brute's berserk latch. Nothing in the game heals a regular enemy, so the latch
+     * only ever sets, and the multipliers are applied once at the transition rather than recomputed per tick --
+     * a per-tick recompute would have to remember the spawn-time trial and omen multipliers it had already
+     * folded into {@code movementSpeed}.
+     */
+    public boolean enraged;
     /** The elite kill has been claimed for counts, codex, and its lore fragment. */
     public boolean eliteKillClaimed;
 

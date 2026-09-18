@@ -113,9 +113,22 @@ started, `[!]` attempted and failed, with the failure written down.
       a player discover otherwise. The published bands did not move: `BalanceSimulator` never names
       `BraceSystem`, a test pins that, and another pins that the shield's clocks age before the bow and the
       damage resolve inside `CombatSystem.update`.
-- [ ] **A3 (−8) Eight enemy types carry 200 waves.** The second half scales numbers rather than behaviour, which
+- [~] **A3 (−8) Eight enemy types carry 200 waves.** The second half scaled numbers rather than behaviour, which
       is what the open playtest finding about the plateau was describing before it was marked fixed by curve
-      changes alone.
+      changes alone. First half of the answer, landed: two **roles**. From wave 101 a living HUSK_WARDEN projects
+      a ward -- every living enemy within 150 units, itself included, takes ×0.75 damage -- so the shielded
+      mid-weight becomes a body the wave is organised around, and the counter is a verb the game already teaches
+      (mark the warden; the ward dies with it in the same tick). From wave 121 a FUNGAL_BRUTE below 40% health
+      latches into a berserk -- closing ×1.4, swing interval ×0.6 -- so the heaviest regular body stops being a
+      sponge and becomes a clock, with the brace from A2 as one of the answers. Both gates sit far past the brief
+      vigil's thirtieth wave, so the first session keeps exactly the roster its evidence was measured on.
+      The ward enters damage through one function every enemy-damaging call site passes through, and a source
+      scan fails the build if a fourth call site skips it; the berserk latches once at the transition, because
+      nothing heals a regular enemy. The simulator drives the real `CombatSystem`, so the balance gate on this
+      commit is the re-measurement of every band against the roles -- A3 is the one deduction whose resolution
+      cannot be asserted, only measured, and the measured table lands in `docs/BALANCE.md` with the gate's verdict.
+      Still owed (second half): the thrall's split and the hound's lunge, the two roles that give the deepest
+      waves their own silhouette; this item closes when they land and the gate has spoken.
 - [ ] **A4 (−4) Five wave modifiers, one of which is `NONE`.** Four real modifiers across 200 waves.
 
 ## B — depth and progression (66/100, 34 points deducted)

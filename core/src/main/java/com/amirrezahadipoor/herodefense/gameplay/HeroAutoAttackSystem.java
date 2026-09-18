@@ -237,10 +237,10 @@ public final class HeroAutoAttackSystem {
                 projectile.x = target.x;
                 projectile.y = target.y;
                 float healthBefore = target.health;
-                target.receiveDamage(
+                target.receiveDamage(EnemyRoleSystem.damageTo(state, target,
                     projectile.damage * MythicEffects.crownMarkDamageMultiplier(target)
                         * SkillEffects.starfallVictimMultiplier(state, target)
-                );
+                ));
                 target.hitFlashSeconds = 0.14f;
                 hits++;
                 impactX = target.x;
@@ -311,8 +311,9 @@ public final class HeroAutoAttackSystem {
         for (int index = 0; index < arcs; index++) {
             Enemy victim = scratchTargets.get(index);
             float healthBefore = victim.health;
-            victim.receiveDamage(arcDamage * MythicEffects.crownMarkDamageMultiplier(victim)
-                * SkillEffects.starfallVictimMultiplier(state, victim));
+            victim.receiveDamage(EnemyRoleSystem.damageTo(state, victim,
+                arcDamage * MythicEffects.crownMarkDamageMultiplier(victim)
+                    * SkillEffects.starfallVictimMultiplier(state, victim)));
             float dealt = Math.max(0f, healthBefore - victim.health);
             if (vampiricShare > 0f && dealt > 0f && state.hero.alive) {
                 state.hero.health = Math.min(

@@ -55,8 +55,8 @@ public final class HeroUltimateSystem {
             }
         }
         for (Enemy foe : foes) {
-            foe.receiveDamage(damage * MythicEffects.crownMarkDamageMultiplier(foe)
-                * SkillEffects.starfallVictimMultiplier(state, foe));
+            foe.receiveDamage(EnemyRoleSystem.damageTo(state, foe, damage * MythicEffects.crownMarkDamageMultiplier(foe)
+                * SkillEffects.starfallVictimMultiplier(state, foe)));
         }
         foes.sort(Comparator.comparingDouble(
             foe -> distanceSquared(state.hero.x, state.hero.y, foe.x, foe.y)

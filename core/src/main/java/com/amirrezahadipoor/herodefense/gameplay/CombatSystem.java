@@ -96,6 +96,8 @@ public final class CombatSystem {
         // this frame has already expired when the specials and the swings are resolved, and one raised by a tap
         // between frames is up for all of them.
         BraceSystem.update(state, simulationDelta);
+        // The late-wave roles adjust the bodies before this tick's arrows, movement and melee read them (A3).
+        EnemyRoleSystem.update(state, simulationDelta);
         int livingBeforeAttack = state.livingEnemyCount();
         int bossesBeforeAttack = ArenaQueries.livingBossCount(state);
         float enemyHealthBeforeAttack = ArenaQueries.totalEnemyHealth(state);

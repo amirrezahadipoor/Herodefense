@@ -660,3 +660,29 @@ the sweeps have to run again -- `BraceSystemTest` fails first, on the simulator 
 What the brace deliberately does not do is dodge, and nothing in the game says otherwise: not the coaching, not
 the codex, not the Hero's javadoc, which names bracing as the answer to a telegraph precisely because stepping is
 not. That boundary is roadmap A5's to move, not this section's.
+
+## Late-wave roles: behaviour instead of bigger numbers (roadmap A3, first half)
+
+The audit's line about the second half was that eight enemy types carry two hundred waves and the late ones scale
+numbers rather than behaviour. This section is the first half of the answer: two roles, same sprites, same spawn
+lanes, different jobs.
+
+| role | body | from wave | behaviour | counter |
+| --- | --- | --- | --- | --- |
+| the ward | HUSK_WARDEN | **101** | living enemies within **150** units take **×0.75** damage, warden included | mark the warden; the ward dies with it in the same tick |
+| the berserk | FUNGAL_BRUTE | **121** | below **40%** health, latches: closing **×1.4**, swing interval **×0.6** | burst it, or brace (A2) the three seconds it takes to arrive |
+
+Both gates sit far past the brief vigil's thirtieth wave on purpose: the first session of the game keeps exactly
+the roster its balance evidence was measured on, while the two-hundred-wave sweep now fights roles from its
+middle onwards. The ward enters damage at the single function every enemy-damaging call site passes through
+(`EnemyRoleSystem.damageTo`: arrow impact, chain arc, ultimate), and `EnemyRoleSystemTest` scans the main sources
+for a fourth call site that skips it -- a ward that worked only against arrows would be a shield with a hole in
+its contract. The berserk latches once, at the transition, because nothing heals a regular enemy and a per-tick
+recompute would have to remember spawn-time trial and omen multipliers it had already folded into the speed.
+
+**The bands below this section were measured before the roles existed, and the balance gate on this commit is
+the re-measurement.** The simulator drives the real `CombatSystem`, so its policies fight the ward and the berserk
+from wave 101 and 121 without knowing their names; if the tier deltas or the non-optimiser's margins move outside
+their gates, the curve answers for it in a follow-up commit and this section gains the measured before/after
+table, from the gate's own log rather than from an estimate. That loop is the item working as intended: A3 is the
+one deduction whose resolution cannot be asserted, only measured.
