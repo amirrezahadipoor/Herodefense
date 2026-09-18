@@ -163,9 +163,20 @@ started, `[!]` attempted and failed, with the failure written down.
 
 ## B — depth and progression (66/100, 34 points deducted)
 
-- [ ] **B1 (−12) Open ledger finding: the economy cannot move until the trial ceiling has headroom.**
-      `finding-economy-cannot-move-until-the-trial-ceiling-has-headroom` is still `open` in
-      `docs/playtests/findings.json`. An open finding the owner has read is a debt with a name; this is that one.
+- [x] **B1 (−12) Open ledger finding: the economy cannot move until the trial ceiling has headroom.**
+      `finding-economy-cannot-move-until-the-trial-ceiling-has-headroom` was `open` in
+      `docs/playtests/findings.json` -- an open finding the owner has read is a debt with a name, and this was
+      that one. The finding's own evidence held the key: three versions of R4.3's pity rule were measured and
+      each broke a ceiling, and the blocker was not the gift's size but a trial ceiling with no room to absorb
+      any economy change. A3 bought the room (worst pair 0.3815 against 0.40) and B1 spent it: the guaranteed
+      common after thirty dry kills ships (`0d992b3`), armed from wave 31 only, because the first measured
+      version's one untunable failure was the brief vigil's floor. The streak is counted inside the roll that
+      already happens -- a miss still spends exactly one draw -- lives in `GameState` like every run counter,
+      and survives saves. Re-measured on the fixed seeds with every band green: riskiest pair unchanged,
+      quarter means 0.0593/0.0970/0.1170/0.1417, and the sweep average's floor raised 0.0816 -> 0.0949 -- the
+      unlucky runs the rule exists for are measurably no longer the weakest runs. `ItemDropPityTest` pins the
+      four promises; the ledger finding is `fixed` citing the implementation commit, and BALANCE.md's bad-luck
+      section now carries the shipped rule beside the three measured refusals.
 - [ ] **B2 (−10) Build space is narrow:** 5 skills, 10 evolutions, 15 affixes. Two runs at the same tier can and
       do converge on the same build.
 - [ ] **B3 (−8) No choice of hero, class or playstyle.** One defender, one weapon, one 50-hour line.
