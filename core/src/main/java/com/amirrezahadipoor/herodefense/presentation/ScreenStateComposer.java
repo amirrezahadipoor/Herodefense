@@ -21,6 +21,7 @@ import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
 import com.amirrezahadipoor.herodefense.render.CeremonyHeroRenderer;
 import com.amirrezahadipoor.herodefense.render.CodexOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.CombatEntityRenderer;
+import com.amirrezahadipoor.herodefense.render.PostProcessRenderer;
 import com.amirrezahadipoor.herodefense.render.EquipmentSpriteRenderer;
 import com.amirrezahadipoor.herodefense.render.FloatingCoinTextRenderer;
 import com.amirrezahadipoor.herodefense.render.FloatingDamageTextRenderer;
@@ -96,6 +97,9 @@ public final class ScreenStateComposer {
         CodexTouchController codexTouchController();
 
         CombatEntityRenderer combatEntityRenderer();
+
+        /** The E1 chain the in-run frame renders into; HUD and overlays stay out of it. */
+        PostProcessRenderer postProcessRenderer();
 
         boolean continueAvailable();
 
@@ -217,6 +221,10 @@ Gdx.gl.glClearColor(tint * 0.55f, tint, tint * 0.78f, 1f);
 Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameScreenState.SETTINGS) {
+    // E1: the in-run world renders into the post chain's scene target; the composite returns it
+    // below, and everything after that -- HUD, overlays, whispers -- stays on the screen itself,
+    // because interface text must never pass through a blur.
+    host.postProcessRenderer().beginScene(tint * 0.55f, tint, tint * 0.78f);
     float baseCameraX = WorldLayout.REFERENCE_WIDTH * 0.5f;
     float baseCameraY = WorldLayout.REFERENCE_HEIGHT * 0.5f;
     boolean opening = host.flow().state() == GameScreenState.CINEMATIC && host.openingCinematic().isActive();
@@ -301,6 +309,7 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
             );
         }
     }
+    host.postProcessRenderer().endSceneAndComposite();
 }
 boolean openingActive = host.flow().state() == GameScreenState.CINEMATIC && host.openingCinematic().isActive();
 if (host.flow().state() == GameScreenState.PLAYING

@@ -5,6 +5,7 @@ precision mediump float;
 varying vec4 v_color;
 varying vec2 v_texCoords;
 
+uniform sampler2D u_texture;
 uniform float u_time;
 uniform vec3 u_color;
 uniform float u_pulse;
@@ -20,5 +21,7 @@ void main() {
     float core = exp(-5.5 * r * r) * 0.4;
     float breath = 0.78 + 0.22 * sin(u_time * 1.9) * u_pulse;
     float alpha = clamp((ring * 0.5 + core) * breath, 0.0, 0.5) * v_color.a;
-    gl_FragColor = vec4(u_color, alpha);
+    // White-pixel quad: the batch sampler multiplies by one. See arena-veil.frag for why it is
+    // declared and read rather than merely declared.
+    gl_FragColor = vec4(u_color, alpha) * texture2D(u_texture, v_texCoords);
 }

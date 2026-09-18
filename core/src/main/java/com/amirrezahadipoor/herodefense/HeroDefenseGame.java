@@ -92,6 +92,7 @@ import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
 import com.amirrezahadipoor.herodefense.render.CodexOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.IdleWhisperRenderer;
 import com.amirrezahadipoor.herodefense.render.CombatEntityRenderer;
+import com.amirrezahadipoor.herodefense.render.PostProcessRenderer;
 import com.amirrezahadipoor.herodefense.render.DisplayMetrics;
 import com.amirrezahadipoor.herodefense.render.GameFonts;
 import com.amirrezahadipoor.herodefense.render.ScreenEdges;
@@ -727,6 +728,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public CodexOverlayRenderer codexOverlayRenderer() { return renderers.codexOverlayRenderer; }
         @Override public CodexTouchController codexTouchController() { return codexTouchController; }
         @Override public CombatEntityRenderer combatEntityRenderer() { return renderers.combatEntityRenderer; }
+        @Override public PostProcessRenderer postProcessRenderer() { return renderers.postProcessRenderer; }
         @Override public boolean continueAvailable() { return continueAvailable; }
         @Override public EquipmentSpriteRenderer equipmentSpriteRenderer() { return renderers.equipmentSpriteRenderer; }
         @Override public FloatingCoinTextRenderer floatingCoinTextRenderer() { return renderers.floatingCoinTextRenderer; }

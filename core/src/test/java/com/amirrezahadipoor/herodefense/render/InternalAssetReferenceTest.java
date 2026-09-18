@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.render;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,10 +56,22 @@ class InternalAssetReferenceTest {
     }
 
     @Test
-    void theDeadPostProcessRendererIsGone() {
-        Path dead = REPOSITORY.resolve(
+    void theResurrectedPostProcessRendererIsWiredAndItsShadersShip() throws IOException {
+        // The old guard here was a tombstone: a dead PostProcessRenderer once referenced two shaders
+        // that never shipped, and the test pinned the class's absence. E1 resurrected the name for
+        // real, so the tombstone becomes the property it was actually defending -- a post-process
+        // renderer may exist only if something calls it and every asset it names ships. The literal
+        // scan above proves the four shaders exist in android/assets; this proves the chain is not
+        // dead code: the composer wraps the in-run frame with it and the game answers the port.
+        Path renderer = REPOSITORY.resolve(
             "core/src/main/java/com/amirrezahadipoor/herodefense/render/PostProcessRenderer.java");
-        assertFalse(Files.exists(dead),
-            "the dead post-process stub is back; it referenced two shaders that never shipped");
+        assertTrue(Files.exists(renderer), "E1's chain lives here");
+        Path composer = REPOSITORY.resolve(
+            "core/src/main/java/com/amirrezahadipoor/herodefense/presentation/ScreenStateComposer.java");
+        String composerSource = java.nio.file.Files.readString(composer);
+        assertTrue(composerSource.contains("host.postProcessRenderer().beginScene("),
+            "the composer sends the in-run world into the chain");
+        assertTrue(composerSource.contains("host.postProcessRenderer().endSceneAndComposite()"),
+            "and returns the processed frame to the screen");
     }
 }

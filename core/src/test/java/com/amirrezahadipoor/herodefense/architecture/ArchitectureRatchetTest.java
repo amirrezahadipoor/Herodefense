@@ -61,7 +61,12 @@ class ArchitectureRatchetTest {
         // F4 raised this by two lines and no fields: the frame host answers hapticFeedback() so the run
         // watcher can reach the device's hands. The vocabulary, the watcher and every pattern live in files
         // the ratchet does not hold; this file only owns the seam, as it owns every other port.
-        new ArchitectureRatchet.Frozen(777, 63),
+        //
+        // E1 raised it by two more, the same shape of seam: one import and one host override answering
+        // postProcessRenderer(). The chain, its shaders and its fallback live in render/PostProcessRenderer
+        // and the composer wraps the world pass with it; the game class only owns the port, and its field
+        // count did not move because the instance lives in RenderStack like every other renderer.
+        new ArchitectureRatchet.Frozen(779, 63),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.

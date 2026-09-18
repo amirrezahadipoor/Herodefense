@@ -320,11 +320,38 @@ started, `[!]` attempted and failed, with the failure written down.
       renderer, every set name is declared, the vertex stages speak the SpriteBatch contract verbatim,
       the clamps and the reduced-motion multiplier live in the GLSL itself, and the aura/feet/tint
       arithmetic is held by pure-helper tests. 929/929 green locally, PMD and SpotBugs clean.
+      **Correction of record, found by the CI emulator the same day:** the two procedural fragments crashed
+      every in-run frame on a real GL stack — `SpriteBatch.setupMatrices` sets `u_texture` on whatever shader
+      is current and libGDX throws when the program has no such uniform, and shaders that sample nothing
+      declare no sampler. The unit tests could not catch it (no GL context), the shaders compiled fine, and
+      the smoke run died on the first frame with `No uniform with name 'u_texture'`. Both fragments now
+      declare the batch sampler and read it — declaring alone is not enough, because the GLSL optimizer
+      strips an unread uniform and restores the crash — and
+      `everyFragmentShaderInTheDirectoryDeclaresAndUsesTheBatchSampler` now walks the whole shader directory
+      pinning the contract for every frag that ever ships, so this crash class is closed locally after all.
 
 ## E — visuals and presentation (70/100, 30 points deducted)
 
-- [ ] **E1 (−12) No post-processing.** No bloom, no AA, no depth, no vignette: the frame is the sprites and the
-      clear colour.
+- [x] **E1 (−12) No post-processing.** No bloom, no AA, no depth, no vignette: the frame is the sprites and the
+      clear colour. It is not anymore. `render/PostProcessRenderer` — the name is a deliberate resurrection of
+      the dead stub `InternalAssetReferences` was born from, and the guard test that pinned the class's absence
+      now pins the stronger property: it may exist only because the composer calls it and its shaders ship. The
+      in-run world (arena, atmosphere, actors, particles, floating text, ceremony whispers) renders into a scene
+      target; a bright pass keeps only the light above a luma threshold that sits above the deliberately dark
+      arena art, so only hits, fire, gold and spell-light ever bleed; a separable nine-texel Gaussian blurs that
+      light at half resolution in two five-tap passes; and a composite returns the frame with the bloom added
+      where it was born and a radial vignette darkening the corners. The HUD and every overlay are drawn after
+      the composite, straight to the screen — interface text never passes through a blur. Two of the audit's
+      four nouns are recorded as considered rejections rather than silently dropped: no depth pass, because a
+      defocused background would defocus the telegraphs the game is played on, and no AA pass, because the bloom
+      already softens the aliasing sprite edges and an FXAA smear over one-pixel telegraph rings would cost more
+      readability than it returns. Failure is a fallback, not a crash: a device that cannot give the chain its
+      buffers disables it for good and the world draws exactly as it did before E1. The buffers cost a scene
+      target at device resolution plus two half-resolution bloom targets, comfortably inside the wave-50 memory
+      budget the CI emulator measures against. `PostProcessShaderTest` pins the uniform vocabulary in both
+      directions (the silent-failure class), the SpriteBatch vertex contract, the restraint ceilings and the
+      fallback arithmetic; the chain's real compilation happens where it matters — the CI emulator's GL stack,
+      in pedantic mode, at construction. 933/933 green locally, PMD and SpotBugs clean.
 - [ ] **E2 (−8) Sprite animation at the frame rate and frame counts named in
       `code:main/java/com/amirrezahadipoor/herodefense/gameplay/HeroAnimationController.java`** (idle, attack and
       hit clips). Correct and consistent, but it is the ceiling of the presentation, not a step towards

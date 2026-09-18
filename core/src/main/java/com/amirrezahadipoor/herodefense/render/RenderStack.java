@@ -18,6 +18,7 @@ public final class RenderStack {
     public final SpriteBatch spriteBatch = new SpriteBatch();
     public final ArenaEnvironmentRenderer arenaEnvironmentRenderer = new ArenaEnvironmentRenderer();
     public final CombatEntityRenderer combatEntityRenderer = new CombatEntityRenderer();
+    public final PostProcessRenderer postProcessRenderer = new PostProcessRenderer();
     public final FloatingCoinTextRenderer floatingCoinTextRenderer = new FloatingCoinTextRenderer();
     public final FloatingDamageTextRenderer floatingDamageTextRenderer = new FloatingDamageTextRenderer();
     public final GameOverOverlayRenderer gameOverOverlayRenderer = new GameOverOverlayRenderer();
@@ -47,6 +48,7 @@ public final class RenderStack {
     public void close() {
         arenaEnvironmentRenderer.close();
         combatEntityRenderer.close();
+        postProcessRenderer.close();
         floatingDamageTextRenderer.close();
         floatingCoinTextRenderer.close();
         gameOverOverlayRenderer.close();

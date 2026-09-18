@@ -73,6 +73,7 @@ public final class ArenaAtmosphereRenderer implements AutoCloseable {
         StageGrade grade = StageGrade.forWave(wave);
         float[] bounds = ScreenEdges.coverBounds(ScreenEdges.height());
         batch.setShader(veilShader);
+        veilShader.bind();
         veilShader.setUniformf("u_time", motionSeconds);
         float[] tint = veilTint(grade);
         veilShader.setUniformf("u_tint", tint[0], tint[1], tint[2]);
@@ -91,6 +92,7 @@ public final class ArenaAtmosphereRenderer implements AutoCloseable {
             BossType type = boss.bossDefinition();
             float[] bounds = auraBounds(boss.x, boss.y);
             batch.setShader(auraShader);
+            auraShader.bind();
             auraShader.setUniformf("u_time", motionSeconds);
             auraShader.setUniformf(
                 "u_color", type.telegraphRed(), type.telegraphGreen(), type.telegraphBlue());

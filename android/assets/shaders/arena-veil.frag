@@ -5,6 +5,7 @@ precision mediump float;
 varying vec4 v_color;
 varying vec2 v_texCoords;
 
+uniform sampler2D u_texture;
 uniform float u_time;
 uniform vec3 u_tint;
 uniform float u_aspect;
@@ -28,5 +29,9 @@ void main() {
     float verticalFade = smoothstep(0.0, 0.55, v_texCoords.y);
 
     float alpha = clamp((mist * 0.5 + shaft * 0.4) * u_strength * verticalFade, 0.0, 0.14);
-    gl_FragColor = vec4(u_tint, alpha) * v_color;
+    // The quad is a white pixel, so the batch sampler multiplies by one -- but SpriteBatch sets
+    // u_texture on every flush and throws when a bound shader does not declare it, and a declared
+    // sampler nothing reads is stripped by the GLSL optimizer. Declaring AND reading it is the
+    // only shape that survives both. The emulator run of D4's first push is the evidence.
+    gl_FragColor = vec4(u_tint, alpha) * v_color * texture2D(u_texture, v_texCoords);
 }

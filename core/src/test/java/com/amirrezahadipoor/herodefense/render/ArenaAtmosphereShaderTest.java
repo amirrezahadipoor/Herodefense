@@ -44,7 +44,11 @@ final class ArenaAtmosphereShaderTest {
         Set<String> declared = new TreeSet<>();
         declared.addAll(uniforms(SHADERS.resolve("arena-veil.frag"), FRAGMENT_UNIFORM));
         declared.addAll(uniforms(SHADERS.resolve("boss-aura.frag"), FRAGMENT_UNIFORM));
+        // u_texture belongs to SpriteBatch: the batch binds and sets it on every flush, and no
+        // application code may touch it -- but every shader must declare it, which the next test pins.
+        assertTrue(declared.remove("u_texture"), "both stages declare the batch's own sampler");
         Set<String> set = new TreeSet<>(uniforms(RENDERER, JAVA_UNIFORM));
+        assertTrue(!set.contains("u_texture"), "and the renderer never sets it by hand");
 
         List<String> unset = new ArrayList<>(declared);
         unset.removeAll(set);
@@ -79,6 +83,26 @@ final class ArenaAtmosphereShaderTest {
         String aura = Files.readString(SHADERS.resolve("boss-aura.frag"));
         assertTrue(aura.contains("clamp(") && aura.contains("0.0, 0.5"), "the aura keeps its ceiling");
         assertTrue(aura.contains("* u_pulse"), "the breath answers to the reduced-motion multiplier");
+    }
+
+    @Test
+    void everyFragmentShaderInTheDirectoryDeclaresAndUsesTheBatchSampler() throws IOException {
+        // The crash class D4's first emulator run proved: SpriteBatch.setupMatrices calls
+        // setUniformi("u_texture", 0) on whatever shader is current and throws when the program has
+        // no such uniform -- so a procedural shader that declares no sampler crashes the frame on a
+        // real device while compiling perfectly. And a declared-but-unread sampler is dead code the
+        // GLSL optimizer strips, restoring the crash. So the contract is: declare it AND read it.
+        try (var paths = Files.list(SHADERS)) {
+            List<Path> fragments = paths.filter(path -> path.toString().endsWith(".frag")).sorted().toList();
+            assertTrue(fragments.size() >= 6, "expected the shipped fragment shaders, got " + fragments);
+            for (Path fragment : fragments) {
+                String source = Files.readString(fragment);
+                assertTrue(source.contains("uniform sampler2D u_texture;"),
+                    fragment.getFileName() + " must declare the batch sampler");
+                assertTrue(source.contains("texture2D(u_texture"),
+                    fragment.getFileName() + " must read it, or the optimizer strips the declaration");
+            }
+        }
     }
 
     @Test
