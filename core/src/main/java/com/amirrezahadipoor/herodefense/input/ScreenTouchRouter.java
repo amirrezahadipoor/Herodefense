@@ -180,9 +180,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             int pointer
         ) {
             host.uiFrameRenderer().movePress(worldX, worldY);
-            if (host.flow().state() == GameScreenState.PLAYING) {
-                host.flow().onboarding().notify(OnboardingAction.DRAG_FIRE);
-            }
+            // A drag during a wave moves the press marker and nothing else: it does not aim, fire or walk, so it
+            // is not reported to the first-run coach. The coach used to have a step that waited for exactly this
+            // gesture, and the step could therefore only be completed by accident or by its budget expiring.
             if (host.flow().state() == GameScreenState.INVENTORY
                 && host.inventoryTouchController().isOpen()) {
                 host.inventoryTouchController().drag(host.gameState(), deltaY);
@@ -403,6 +403,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             if (host.flow().state() == GameScreenState.PLAYING
                 && HudTouchLayout.ultimateAt(worldX, worldY)) {
                 if (FocusSystem.isFull(host.gameState())) {
+                    host.flow().onboarding().notify(OnboardingAction.ULTIMATE_FIRED);
                     host.fireUltimate();
                     host.saveNow();
                 }

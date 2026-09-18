@@ -11,27 +11,33 @@ import com.amirrezahadipoor.herodefense.i18n.OnboardingStrings;
  * budget, and the coach advances when the budget runs out even if the player never performed the action —
  * a player who ignores the coach entirely must never be trapped by it, which is also what makes the
  * sequence's total a hard sixty seconds. And a step only ever completes on <em>its</em> action: taking a
- * card early does not tick off the walk lesson.
+ * card early does not tick off the targeting lesson.
  *
  * <p>The words are {@link OnboardingStrings} entries rather than fields of this enum, which is where the
  * locale work (R7.3) said they would end up: the action and the budget are gameplay data and stay here, while
  * the line and the hint are a language and live where both of them exist and {@code GameFonts} can see the
  * glyphs they need. The stable {@link #id()} is untouched, so nothing that logs or tests a step depends on
  * display text.
+ *
+ * <p>What each step waits for is what the game actually does, which is a rule rather than a coincidence:
+ * {@code OnboardingClaimsTest} fails if a coached line claims movement or aiming in either language, and fails
+ * if anyone ever makes the Hero move without coming back here to teach it. The step that used to wait for a
+ * drag now waits for the ultimate, because a drag during a wave aims nothing, fires nothing and moves nothing,
+ * and a lesson that can only be completed by its own budget expiring teaches the player that the coach lies.
  */
 public enum OnboardingStep {
-    WALK(
-        "walk",
-        OnboardingStrings.WALK_LINE,
-        OnboardingStrings.WALK_HINT,
+    TARGET(
+        "target",
+        OnboardingStrings.TARGET_LINE,
+        OnboardingStrings.TARGET_HINT,
         OnboardingAction.TAP_GROUND,
         12f
     ),
-    FIRE(
-        "fire",
-        OnboardingStrings.FIRE_LINE,
-        OnboardingStrings.FIRE_HINT,
-        OnboardingAction.DRAG_FIRE,
+    ULTIMATE(
+        "ultimate",
+        OnboardingStrings.ULTIMATE_LINE,
+        OnboardingStrings.ULTIMATE_HINT,
+        OnboardingAction.ULTIMATE_FIRED,
         12f
     ),
     LOOT(

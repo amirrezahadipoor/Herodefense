@@ -9,6 +9,13 @@ package com.amirrezahadipoor.herodefense.i18n;
  * stay in the enum, the words are a language and come from a table that {@code TranslationTableTest} checks on
  * both sides.
  *
+ * <p>Three of these lines were rewritten on 2026-09-18 because they described mechanics the game does not have:
+ * the Hero cannot move (nothing in {@code core/src/main} writes {@code hero.x} or {@code hero.y}), a drag during
+ * a wave only moves a press marker and aims nothing, and drops are auto-collected by {@code DropPickupSystem}
+ * rather than walked over. A translation table faithfully carrying a false sentence ships the same falsehood in
+ * every language, so both sides changed together and {@code OnboardingClaimsTest} now fails if a coached line
+ * claims movement or aiming again.
+ *
  * <p>The shop hint names no side in either language. The English it replaces said "bottom left", which is only
  * roughly true of a button at x=375 of a 720-unit-wide screen, and a side would have to be reworded again once
  * the HUD mirrors for RTL. An inaccuracy that changes with the language is worse than one that does not.
@@ -19,19 +26,23 @@ public enum OnboardingStrings implements Translated {
     TITLE("YOUR FIRST VIGIL", "نخستین پاسداری شما"),
     SKIP("SKIP", "رد کردن"),
 
-    /** Step 1: move. */
-    WALK_LINE("Tap empty ground and the Hero walks there",
-        "روی زمین خالی بزنید تا قهرمان به آنجا برود"),
-    WALK_HINT("the arena floor", "کف میدان"),
+    /** Step 1: choose a target. The Hero stays where it stands; the mark is what the player controls. */
+    TARGET_LINE("Tap an enemy and the bow focuses it",
+        "روی دشمن بزنید تا کمان روی او متمرکز شود"),
+    TARGET_HINT("an enemy in the arena", "یک دشمن در میدان"),
 
-    /** Step 2: shoot. */
-    FIRE_LINE("Hold and drag to aim - the bow fires while you hold",
-        "نگه دارید و بکشید تا نشانه بروید - کمان تا وقتی نگه داشته‌اید شلیک می‌کند"),
-    FIRE_HINT("anywhere on the arena", "هر نقطهٔ میدان"),
+    /**
+     * Step 2: the one verb the player triggers by hand. The bow itself is automatic, so the lesson is the
+     * button, and it is worded conditionally because focus may not be full inside this step's budget -- the
+     * budget exists for exactly that, and a line promising a full meter would be a second false claim.
+     */
+    ULTIMATE_LINE("When the focus meter fills, tap ULTIMATE to spend it",
+        "وقتی نوار تمرکز پر شد، ضربهٔ نهایی را بزنید"),
+    ULTIMATE_HINT("the ULTIMATE button", "دکمهٔ ضربهٔ نهایی"),
 
-    /** Step 3: collect. */
-    LOOT_LINE("Coins and drops come to you when you walk near them",
-        "سکه‌ها و غنیمت‌ها وقتی نزدیکشان شوید به سمت شما می‌آیند"),
+    /** Step 3: collect. {@code DropPickupSystem} homes drops in after a short delay; nobody walks anywhere. */
+    LOOT_LINE("Coins and drops reach the Hero on their own after a moment",
+        "سکه‌ها و غنیمت‌ها بعد از یک لحظه خودشان به قهرمان می‌رسند"),
     LOOT_HINT("a drop on the ground", "یک غنیمت روی زمین"),
 
     /** Step 4: choose a card. */

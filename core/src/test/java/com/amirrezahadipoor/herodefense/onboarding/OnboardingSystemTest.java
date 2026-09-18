@@ -30,7 +30,7 @@ final class OnboardingSystemTest {
         system.attach(settings, repository);
         system.beginIfUnseen(false);
         assertTrue(system.active());
-        assertEquals(OnboardingStep.WALK, system.currentStep());
+        assertEquals(OnboardingStep.TARGET, system.currentStep());
     }
 
     @Test
@@ -100,9 +100,9 @@ final class OnboardingSystemTest {
         system.beginIfUnseen(false);
         GameState state = GameState.newRun(0x4845524F444546L);
         system.observe(state);
-        // Walk and fire first: the coach is strict about order.
-        system.notify(OnboardingStep.WALK.action());
-        system.notify(OnboardingStep.FIRE.action());
+        // Target and ultimate first: the coach is strict about order.
+        system.notify(OnboardingStep.TARGET.action());
+        system.notify(OnboardingStep.ULTIMATE.action());
         assertEquals(OnboardingStep.LOOT, system.currentStep());
         system.observe(state);
         assertEquals(OnboardingStep.LOOT, system.currentStep(), "nothing arrived, so nothing was learned");
