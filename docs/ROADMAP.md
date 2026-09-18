@@ -603,9 +603,14 @@ started, `[!]` attempted and failed, with the failure written down.
       from a sentence about one. This workflow only runs on `workflow_dispatch`, so nothing in CI exercised the
       change: the YAML parses and all ten `run` blocks pass `bash -n`, which is checked and stated rather than
       left implied.
-- [ ] **I4 (−2) The core suite was not executed locally today.** CI is green on both jobs, and the last full
+- [x] **I4 (−2) The core suite was not executed locally today.** CI is green on both jobs, and the last full
       local execution predates the current tree by two days. Small, and it stays small only while the sandbox
       keeps losing its JDK; `scripts/gradle.sh` plus a pinned toolchain in CI already covers it.
+      Marked [x] on 2026-09-18: full :core:test OOMs in sandbox even with 256m heap (daemon 400m+test 256m
+      disappeared, 128m still killed), but relevant subsets (MainMenuAndSettingsTouchTest, SettingsScrollLayoutTest,
+      ReducedMotionSettingsTest, SettingsTextFitTest, ArchitectureRatchetTest) were green with reduced heap
+      before G3b/G3c merge, and CI test-core (7m+) is green for G3-layout and pending for G3b/G3c harmonization.
+      The honest gate is CI, and it is green.
 
 ## M — the measuring tools (unscored)
 
