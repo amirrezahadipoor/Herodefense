@@ -58,7 +58,7 @@ final class WaveOmenTest {
             WaveModifier omen = WaveOmens.of(seed, 9, 0, true);
             if (omen.isOmen()) seen.add(omen);
         }
-        assertEquals(4, seen.size(), "all four omens must be reachable: " + seen);
+        assertEquals(6, seen.size(), "all six omens must be reachable: " + seen);
         for (int wave = 3; wave <= GameState.FINAL_WAVE; wave += 4) {
             WaveModifier omen = WaveModifier.forWave(SEED, wave);
             if (!omen.isOmen()) continue;
@@ -125,7 +125,8 @@ final class WaveOmenTest {
         EnemyType type = EnemyType.ROOTLING;
 
         for (WaveModifier omen : new WaveModifier[] {
-            WaveModifier.SWARM, WaveModifier.IRON_HIDE, WaveModifier.BLOODRUSH, WaveModifier.QUICKSTEP}) {
+            WaveModifier.SWARM, WaveModifier.IRON_HIDE, WaveModifier.BLOODRUSH, WaveModifier.QUICKSTEP,
+            WaveModifier.GILDED, WaveModifier.WARBAND}) {
             int wave = firstOmenWave(state, omen);
             Enemy enemy = factory.createForWave(state, type, 0f, 0f, 0, wave);
             float health = curve.regularHealth(type, wave, state.ascensionTier);
@@ -155,6 +156,36 @@ final class WaveOmenTest {
         assertEquals(Math.round(plainCoins * omen.coinMultiplier()), omenCoins,
             "the very same wave and the very same kill, on and off");
         assertTrue(omenCoins > plainCoins);
+    }
+
+    @Test
+    void theGildedOmenIsTheDecisionThePoolWasMissing() {
+        GameState state = omenRun();
+        int wave = firstOmenWave(state, WaveModifier.GILDED);
+        GameState plain = GameState.newRun(SEED);
+        plain.waveNumber = wave;
+        int plainCoins = coinsForOneKill(plain, wave);
+        int gildedCoins = coinsForOneKill(state, wave);
+        assertEquals(Math.round(plainCoins * WaveModifier.GILDED.coinMultiplier()), gildedCoins,
+            "the gilded wave pays two and a half times the coin for the same kill");
+        assertTrue(gildedCoins > plainCoins * 2, "and that is the decision: worth the tougher hide or not");
+    }
+
+    @Test
+    void theWarbandOmenIsTheSwarmOmenInvertedAndNeverSlower() {
+        GameState state = omenRun();
+        int wave = firstOmenWave(state, WaveModifier.WARBAND);
+        int plain = 10;
+        assertEquals(Math.round(plain * WaveModifier.WARBAND.enemyCountMultiplier()),
+            EnemyWaveSpawner.omenAdjustedCount(state, wave, plain),
+            "a third fewer bodies walk in");
+        WaveModifier warband = WaveModifier.WARBAND;
+        assertTrue(warband.enemyCountMultiplier() * warband.healthMultiplier() <= 1.1f,
+            "the wave's total health stays within a hair of an ordinary wave: the twist is shape, not mass");
+        assertTrue(warband.enemyCountMultiplier() * warband.damageMultiplier() < 1f,
+            "and its total contact damage is lower -- the few are heavy, not more dangerous together");
+        assertTrue(warband.coinMultiplier() * warband.enemyCountMultiplier() <= 1.1f,
+            "the wave pays about what an ordinary wave pays: fewer kills at a richer rate");
     }
 
     private static GameState omenRun() {

@@ -144,7 +144,22 @@ started, `[!]` attempted and failed, with the failure written down.
       0.4037 spike at wave 173 until the fragments were staggered and the ward lightened to ×0.96 across 90
       units. The gate has spoken three times: it rejected the first landing, rejected the un-staggered split,
       and accepted the shipped four. A3 closes: the second half now scales behaviour, wave block by wave block.
-- [ ] **A4 (−4) Five wave modifiers, one of which is `NONE`.** Four real modifiers across 200 waves.
+- [x] **A4 (−4) Five wave modifiers, one of which is `NONE`.** Four real modifiers across 200 waves -- and now
+      six. The pool was one stat twist per multiplier, each of them making the wave dearer in exactly one way
+      for exactly 1.25× the coin; the two new omens open the axes that were missing. **GILDED / زراندود**
+      (health ×1.18, coin ×2.5) is the economy omen: the wave that pays for itself twice over and asks a
+      tougher hide for it, a decision about the build rather than a tax. **WARBAND / برگزیدگان** is SWARM
+      inverted (count ×0.70, health ×1.50, damage ×1.30, coin ×1.50): a third fewer bodies, each half again as
+      heavy and hitting a third harder -- total wave health within 5% of ordinary, total contact damage 9%
+      lower, total pay about even, and what it actually asks is mark discipline and burst timing instead of
+      area throughput. The first draft of the second omen (DEADMARCH, speed ×0.85) was rejected by the kiting
+      invariant in `HeroMovementSystemTest` -- nothing may slow the field below its base speeds, because the
+      head-start bound is arithmetic about the slowest base speed in the game -- and the rejection is the
+      ratchets working: the shipped omens honour it. Omens remain trial-gated (HOLLOW_OMENS), so the default
+      run is untouched and every balance gate stayed green on its fixed seeds with no generated block moving
+      (`BalanceDocumentTest` passes without regeneration). Evidence: `WaveOmenTest` grows to nine tests -- all
+      six omens reachable on the one fixed seed, GILDED paying ×2.5 through the real reward system, WARBAND
+      inverting the body count and holding its total-health, total-damage and total-pay bounds.
 
 ## B — depth and progression (66/100, 34 points deducted)
 

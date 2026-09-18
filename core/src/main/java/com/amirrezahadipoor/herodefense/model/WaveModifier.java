@@ -8,8 +8,9 @@ import com.amirrezahadipoor.herodefense.i18n.RunStrings;
  *
  * <p>Every wave already differs by its spawn count and its place on the curve, but nothing ever surprised a player
  * twice: wave 43 and wave 143 are the same wave with bigger numbers. An omen makes a subset of the regular waves
- * play differently without adding a single new asset -- more of them, harder to fell, hitting harder, or closing
- * faster -- and pays a little more for the trouble, so an omen wave is a decision rather than a punishment.
+ * play differently without adding a single new asset -- more of them, harder to fell, hitting harder, closing
+ * faster, fewer and heavier, or gilded and worth twice the coin -- and every one of them pays for the
+ * trouble, so an omen wave is a decision rather than a punishment.
  *
  * <p>Omens are derived, never stored: {@link #forWave} is a pure function of the run seed and the wave number, so a
  * save that resumes mid-run resumes the same omen, and nothing has to be encoded or repaired. Boss waves and the
@@ -21,7 +22,18 @@ public enum WaveModifier {
     SWARM(RunStrings.OMEN_SWARM, RunStrings.OMEN_SWARM_DETAIL, 1.25f, 1f, 1f, 1f, 1.25f),
     IRON_HIDE(RunStrings.OMEN_IRON_HIDE, RunStrings.OMEN_IRON_HIDE_DETAIL, 1f, 1.15f, 1f, 1f, 1.25f),
     BLOODRUSH(RunStrings.OMEN_BLOODRUSH, RunStrings.OMEN_BLOODRUSH_DETAIL, 1f, 1f, 1.12f, 1f, 1.25f),
-    QUICKSTEP(RunStrings.OMEN_QUICKSTEP, RunStrings.OMEN_QUICKSTEP_DETAIL, 1f, 1f, 1f, 1.10f, 1.25f);
+    QUICKSTEP(RunStrings.OMEN_QUICKSTEP, RunStrings.OMEN_QUICKSTEP_DETAIL, 1f, 1f, 1f, 1.10f, 1.25f),
+    // Roadmap A4: the pool was four stat twists, one per multiplier, and every one of them made the wave
+    // dearer in exactly one way for exactly 1.25 times the coin. GILDED opens a second axis -- the wave that
+    // pays for itself twice over and asks a tougher hide for it, which is a decision about the build rather
+    // than a tax. WARBAND inverts SWARM: a third fewer bodies, each half again as heavy and hitting a third
+    // harder, for one and a half times the coin a kill pays -- the wave's total health is within a few percent
+    // of an ordinary one, its total contact damage is lower, and what it actually asks is mark discipline and
+    // burst timing instead of area throughput. Nothing here may slow the field: the kiting bound in
+    // HeroMovementSystemTest is arithmetic about the slowest base speed in the game, and an omen that lowered
+    // one would quietly rewrite it.
+    GILDED(RunStrings.OMEN_GILDED, RunStrings.OMEN_GILDED_DETAIL, 1f, 1.18f, 1f, 1f, 2.5f),
+    WARBAND(RunStrings.OMEN_WARBAND, RunStrings.OMEN_WARBAND_DETAIL, 0.70f, 1.50f, 1.30f, 1f, 1.50f);
 
     /** One omen wave every six waves, on top of the pre-existing elite cadence. */
     public static final int OMEN_PERIOD = 6;
@@ -107,7 +119,7 @@ public enum WaveModifier {
         if (!omensEnabled || !isOmenWave(waveNumber)) {
             return NONE;
         }
-        WaveModifier[] omens = {SWARM, IRON_HIDE, BLOODRUSH, QUICKSTEP};
+        WaveModifier[] omens = {SWARM, IRON_HIDE, BLOODRUSH, QUICKSTEP, GILDED, WARBAND};
         return omens[Math.floorMod(mix(seed, waveNumber), omens.length)];
     }
 

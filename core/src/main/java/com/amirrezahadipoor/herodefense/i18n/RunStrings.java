@@ -25,6 +25,10 @@ public enum RunStrings implements Translated {
     OMEN_BLOODRUSH_DETAIL("heavier blows", "ضربه‌هایشان سنگین‌تر است"),
     OMEN_QUICKSTEP("QUICKSTEP", "گام‌تند"),
     OMEN_QUICKSTEP_DETAIL("they close faster", "تندتر نزدیک می‌شوند"),
+    OMEN_GILDED("GILDED", "زراندود"),
+    OMEN_GILDED_DETAIL("tougher, and worth more", "هم جان‌سخت‌ترند، هم پرسودتر"),
+    OMEN_WARBAND("WARBAND", "برگزیدگان"),
+    OMEN_WARBAND_DETAIL("fewer, and heavier", "کمترند، ولی هرکدام سنگین‌تر است"),
 
     /** Run lengths (R3.5): the same run, ended at wave two hundred or at wave thirty. */
     MODE_STANDARD("The Long Vigil", "پاسداری بلند"),
