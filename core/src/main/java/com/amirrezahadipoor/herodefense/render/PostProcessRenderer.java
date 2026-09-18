@@ -143,7 +143,8 @@ public final class PostProcessRenderer implements AutoCloseable {
         Gdx.gl.glActiveTexture(GL20.GL_TEXTURE0);
         batch.draw(
             scene.getColorBufferTexture(),
-            0f, 0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+            0f, 0f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight(),
+            0, 0, sceneWidth, sceneHeight, false, true);
         batch.setShader(null);
         batch.end();
     }
