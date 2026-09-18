@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
+import com.amirrezahadipoor.herodefense.audio.IdentityCues;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -132,7 +133,8 @@ public final class CombatSystem {
             audioManager.play(AudioCue.HIT);
         }
         if (state.livingEnemyCount() < livingBeforeAttack) {
-            audioManager.play(AudioCue.DEATH);
+            // F2: the freshest corpse names the body class, so small and heavy deaths sound different.
+            audioManager.play(IdentityCues.deathFor(IdentityCues.newestCorpseType(state)));
             audioManager.play(AudioCue.KILL);
         }
         if (ArenaQueries.livingBossCount(state) < bossesBeforeAttack) {

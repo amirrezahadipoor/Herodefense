@@ -87,10 +87,15 @@ vigil to sound like a place. Measured peaks are in `LEVELS.md`, generated from t
 | Committed file | Original file | Source | Use | SHA-256 |
 |---|---|---|---|---|
 | `audio/sfx/ambience_vigil.ogg` | *(none)* | generated in-repo | Wind under a run (ambience loop) | `1a979610ad4d07a69ef5de21e4219ebab76cc4d2abac4c1d0571f16f04768c3f` |
+| `audio/sfx/boss_entrance_deep.ogg` | *(none)* | generated in-repo | Ancient Golem entrance (roadmap F2) | `07d67c2a2e6db355869bcd8a689d3879caa5898d08abd9e571ae76d87ae021d3` |
+| `audio/sfx/boss_entrance_shriek.ogg` | *(none)* | generated in-repo | Ember Wyrm entrance (roadmap F2) | `8f7f4db042fcf66053bf82456182fd989ee3e5749c0ab05d0dd0c409e361e888` |
+| `audio/sfx/boss_entrance_void.ogg` | *(none)* | generated in-repo | Void Knight entrance (roadmap F2) | `0220c8e488027ab09a892385ae64bee6b1368726d79e1710895573cef52fbb6a` |
 | `audio/sfx/bow_release.ogg` | *(none)* | generated in-repo | Release of a single arrow | `7e5ff569b80718b301b7e889435d6ac6e95e2671d4109c35440c01b41e929a28` |
 | `audio/sfx/bow_release_heavy.ogg` | *(none)* | generated in-repo | Ultimate release | `be43271a0ffd385aa34d44051ca0ef11a635acd0099042cd48eb94b9829f6da9` |
 | `audio/sfx/bow_release_light.ogg` | *(none)* | generated in-repo | Extra arrows of a volley | `d99055f589d9ccda67534d33345f510c7393f25701ba0443e494c619730e5761` |
 | `audio/sfx/coin_pickup.ogg` | *(none)* | generated in-repo | Coins from a kill | `15ab667e920c595aaa2f12a65e7e8c11dc6ff023ba6b8d192f2aecb35e8ccbae` |
+| `audio/sfx/death_heavy.ogg` | *(none)* | generated in-repo | Heavy body collapse (roadmap F2) | `ca28bb04500c509628840ff9a191a2234da7edafa2742ada2ae9a2c130f8c47e` |
+| `audio/sfx/death_light.ogg` | *(none)* | generated in-repo | Light body death (roadmap F2) | `44410b0026c337505f1a6393fd9f43639b0538dc98b56acc53fb01d97f6b7497` |
 | `audio/sfx/telegraph_warning.ogg` | *(none)* | generated in-repo | A boss special is coming | `332ec7dc42f71bc180fabd78fe38b4b987d78ccc679463c028e4b848778fd663` |
 | `audio/sfx/ui_close.ogg` | *(none)* | generated in-repo | Closing an overlay | `756eb67c92e06f9f08b7504e7d395c1f9f1e0450e9f4893f06095aa269da940a` |
 | `audio/sfx/ui_tap.ogg` | *(none)* | generated in-repo | Menu and overlay button | `87637004ecad74dffe8abca58fb4613800caa2b3c230f7ee48704c7dd420d955` |

@@ -103,6 +103,49 @@ def build(name: str) -> np.ndarray:
         start = len(first)
         out[start:] += second[: length - start] * 0.45
         return out
+    if name == "death_light":
+        # Swift small bodies (rootling, wolf, stalker, hound) fall quick and breathy (roadmap F2).
+        length = seconds(0.24)
+        breath = highpass(lowpass(noise(length, 23), 2600.0), 700.0) * decay(length, 9.0)
+        yelp = sweep(520.0, 180.0, length, "triangle") * decay(length, 8.0) * 0.7
+        return breath * 0.5 + yelp
+    if name == "death_heavy":
+        # Armoured bodies (stonekin, brute, warden, thrall) collapse: sub thud under gravel.
+        length = seconds(0.42)
+        thud = sweep(130.0, 48.0, length) * decay(length, 5.0)
+        rubble = lowpass(noise(length, 29), 520.0) * decay(length, 6.5) * 0.8
+        return thud * 0.75 + rubble * 0.5
+    if name == "boss_entrance_deep":
+        # The Ancient Golem wakes: stone cracks over a sub that will not stop falling.
+        length = seconds(1.30)
+        sub = sweep(80.0, 32.0, length) * decay(length, 1.8)
+        rumble = lowpass(noise(length, 31), 180.0) * decay(length, 2.2) * 0.9
+        crack = highpass(noise(seconds(0.09), 37), 1800.0) * decay(seconds(0.09), 14.0)
+        out = np.zeros(length, dtype=np.float32)
+        for onset, gain in ((0.0, 0.8), (0.22, 0.5)):
+            start = seconds(onset)
+            out[start:start + len(crack)] += crack * gain
+        return sub * 0.8 + rumble * 0.5 + out
+    if name == "boss_entrance_shriek":
+        # The Ember Wyrm screams: a two-part rise-and-fall with hot air under it.
+        rise = seconds(0.34)
+        fall = seconds(0.66)
+        voiced = np.concatenate([
+            sweep(700.0, 1500.0, rise, "triangle") * decay(rise, 1.2),
+            sweep(1500.0, 620.0, fall, "triangle") * decay(fall, 3.0),
+        ])
+        air = highpass(noise(len(voiced), 41), 2200.0) * decay(len(voiced), 3.5) * 0.5
+        return voiced * 0.7 + air * 0.4
+    if name == "boss_entrance_void":
+        # The Void Knight arrives: a hollow fifth collapsing inward, a swell cut short, a sub that lands.
+        length = seconds(1.20)
+        hollow = sweep(440.0, 110.0, length) * decay(length, 2.6) * 0.8
+        swell = lowpass(noise(length, 43), 900.0) * np.linspace(0.0, 1.0, length, dtype=np.float32)
+        swell[seconds(0.85):] = 0.0
+        drop = sweep(110.0, 40.0, seconds(0.35)) * decay(seconds(0.35), 5.0)
+        out = np.zeros(length, dtype=np.float32)
+        out[seconds(0.85):seconds(0.85) + len(drop)] += drop * 0.9
+        return hollow * 0.6 + swell * 0.35 + out
     if name == "ui_tap":
         length = seconds(0.09)
         click = highpass(lowpass(noise(length, 17), 5000.0), 1200.0) * decay(length, 12.0)
@@ -157,6 +200,13 @@ EFFECTS = {
     "telegraph_warning": 0.72,
     "wave_clear": 0.68,
     "ambience_vigil": 0.40,
+    # Roadmap F2: identity variants -- small deaths, heavy deaths, and three of the four boss bodies
+    # get their own entrance voice (the Thorn Matriarch keeps the shipped horn).
+    "death_light": 0.55,
+    "death_heavy": 0.68,
+    "boss_entrance_deep": 0.72,
+    "boss_entrance_shriek": 0.70,
+    "boss_entrance_void": 0.70,
 }
 
 

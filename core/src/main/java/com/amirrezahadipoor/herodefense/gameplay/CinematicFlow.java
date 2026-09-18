@@ -3,6 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
+import com.amirrezahadipoor.herodefense.audio.IdentityCues;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
@@ -119,7 +120,7 @@ public final class CinematicFlow {
             waveLifecycleSystem.completePlantingCeremony(state);
             flow.transitionTo(GameScreenState.PLAYING);
             if (ArenaQueries.livingBossCount(state) > bossesBefore) {
-                audioManager.play(AudioCue.BOSS_ENTRANCE);
+                audioManager.play(IdentityCues.bossEntranceFor(state));
                 presentationSystem.presentBossEntrance(state);
             }
             host.saveNow();

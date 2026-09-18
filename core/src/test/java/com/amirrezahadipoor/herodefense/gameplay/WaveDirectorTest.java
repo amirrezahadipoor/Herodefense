@@ -122,7 +122,12 @@ final class WaveDirectorTest {
 
         assertEquals(1, host.reflections);
         assertEquals(1, host.saves, "a completed wave moves the run forward and persists it");
-        assertTrue(audio.cues.contains(AudioCue.BOSS_ENTRANCE), "wave 20 announces its boss");
+        assertTrue(
+            audio.cues.contains(AudioCue.BOSS_ENTRANCE)
+                || audio.cues.contains(AudioCue.BOSS_ENTRANCE_DEEP)
+                || audio.cues.contains(AudioCue.BOSS_ENTRANCE_SHRIEK)
+                || audio.cues.contains(AudioCue.BOSS_ENTRANCE_VOID),
+            "wave 20 announces its boss in that body's own entrance voice (roadmap F2)");
         assertEquals(20, state.waveNumber, "the run rolled into the boss wave");
         assertEquals(0, host.ceremonies, "the planting ceremony is reserved for waves 50, 100 and 150");
     }

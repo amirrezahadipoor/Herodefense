@@ -12,7 +12,8 @@ import org.junit.jupiter.api.Test;
 final class AudioContractTest {
     @Test
     void everyRequiredCueHasAUniqueOggAssetAndSafeVolume() {
-        assertEquals(19, AudioCue.values().length, "R6.2 added eight cues to the eleven");
+        assertEquals(24, AudioCue.values().length,
+            "R6.2 added eight cues to the eleven; roadmap F2 added five identity variants");
         assertEquals(
             AudioCue.values().length,
             new HashSet<>(Arrays.stream(AudioCue.values()).map(AudioCue::path).toList()).size()

@@ -318,7 +318,19 @@ started, `[!]` attempted and failed, with the failure written down.
 
 - [ ] **F1 (−18) Four static music tracks for a 2.2-hour run.** No adaptive or layered music, so hour two sounds
       exactly like minute two.
-- [ ] **F2 (−10) Twenty SFX** cover twelve enemy/boss identities plus every skill, which means audible reuse.
+- [x] **F2 (−10) Twenty SFX** cover twelve enemy/boss identities plus every skill, which means audible reuse.
+      The identity axis now has voices: five new cues, all generated in-repo by `tools/audio/generate_sfx.py`
+      (an effect that is code is an effect whose licence, length and loudness are reviewable). Light bodies
+      (rootling, gloom wolf, bark stalker, sap hound) die with a quick breathy yelp; heavy bodies (stonekin,
+      fungal brute, husk warden, bramble thrall) collapse under a sub thud and gravel; and three of the four
+      boss bodies announce themselves -- the Ancient Golem in falling stone, the Ember Wyrm in a two-part
+      shriek, the Void Knight as a hollow fifth collapsing inward -- while the Thorn Matriarch keeps the
+      shipped horn. `audio/IdentityCues` owns the mapping and falls back to a shipped cue for any state it
+      cannot read, so nothing that played before F2 can go silent. The whole contract chain held: the level
+      gate re-measured every file (`LEVELS.md` regenerated, 29 files, loudest peak 0.900 against the 0.94
+      ceiling), the license ledger carries each new hash, and `AudioContractTest` pins the cue count at 24.
+      `WaveDirectorTest` now accepts any of the four entrance voices, because wave 20's boss has a body and
+      the body has a voice.
 - [ ] **F3 (−6) No voice or narration,** including for the 31 lore entries and the boss title cards that are
       written as if they were being read aloud.
 - [ ] **F4 (−4) Haptics are the `VIBRATE` permission** and a couple of trigger points.

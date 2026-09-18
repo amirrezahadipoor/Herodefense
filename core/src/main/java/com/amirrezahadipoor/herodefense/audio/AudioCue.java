@@ -28,7 +28,14 @@ public enum AudioCue {
     WAVE_CLEAR("audio/sfx/wave_clear.ogg", 0.46f, 1.20f),
     TELEGRAPH_WARNING("audio/sfx/telegraph_warning.ogg", 0.52f, 0.60f),
     UI_TAP("audio/sfx/ui_tap.ogg", 0.26f, 0.06f),
-    UI_CLOSE("audio/sfx/ui_close.ogg", 0.28f, 0.10f);
+    UI_CLOSE("audio/sfx/ui_close.ogg", 0.28f, 0.10f),
+    // Roadmap F2: identity variants, all generated in-repo. Light and heavy bodies die differently, and
+    // three of the four boss bodies announce themselves in their own voice (the Matriarch keeps the horn).
+    DEATH_LIGHT("audio/sfx/death_light.ogg", 0.40f, 0.05f),
+    DEATH_HEAVY("audio/sfx/death_heavy.ogg", 0.46f, 0.06f),
+    BOSS_ENTRANCE_DEEP("audio/sfx/boss_entrance_deep.ogg", 0.44f, 0.50f),
+    BOSS_ENTRANCE_SHRIEK("audio/sfx/boss_entrance_shriek.ogg", 0.42f, 0.50f),
+    BOSS_ENTRANCE_VOID("audio/sfx/boss_entrance_void.ogg", 0.42f, 0.50f);
 
     private final String path;
     private final float volume;

@@ -15,6 +15,9 @@ not a cue.
 | `audio/music/vigil.ogg` | 22.84 | 44100 | 2 | 0.801 | -1.9 | 0.117 |
 | `audio/sfx/ambience_vigil.ogg` | 7.95 | 44100 | 1 | 0.414 | -7.7 | 0.095 |
 | `audio/sfx/boss_entrance.ogg` | 1.41 | 48000 | 2 | 0.898 | -0.9 | 0.047 |
+| `audio/sfx/boss_entrance_deep.ogg` | 1.30 | 44100 | 1 | 0.721 | -2.8 | 0.129 |
+| `audio/sfx/boss_entrance_shriek.ogg` | 1.00 | 44100 | 1 | 0.678 | -3.4 | 0.141 |
+| `audio/sfx/boss_entrance_void.ogg` | 1.20 | 44100 | 1 | 0.703 | -3.1 | 0.141 |
 | `audio/sfx/bow_release.ogg` | 0.28 | 44100 | 1 | 0.612 | -4.3 | 0.081 |
 | `audio/sfx/bow_release_heavy.ogg` | 0.34 | 44100 | 1 | 0.683 | -3.3 | 0.088 |
 | `audio/sfx/bow_release_light.ogg` | 0.24 | 44100 | 1 | 0.571 | -4.9 | 0.062 |
@@ -22,6 +25,8 @@ not a cue.
 | `audio/sfx/coin_pickup.ogg` | 0.30 | 44100 | 1 | 0.603 | -4.4 | 0.114 |
 | `audio/sfx/critical.ogg` | 0.21 | 44100 | 2 | 0.893 | -1.0 | 0.086 |
 | `audio/sfx/death.ogg` | 0.42 | 48000 | 2 | 0.877 | -1.1 | 0.052 |
+| `audio/sfx/death_heavy.ogg` | 0.42 | 44100 | 1 | 0.673 | -3.4 | 0.134 |
+| `audio/sfx/death_light.ogg` | 0.24 | 44100 | 1 | 0.519 | -5.7 | 0.058 |
 | `audio/sfx/hit.ogg` | 0.24 | 48000 | 2 | 0.876 | -1.2 | 0.076 |
 | `audio/sfx/item_drop.ogg` | 0.19 | 44100 | 2 | 0.885 | -1.1 | 0.102 |
 | `audio/sfx/kill.ogg` | 0.46 | 44100 | 2 | 0.894 | -1.0 | 0.148 |

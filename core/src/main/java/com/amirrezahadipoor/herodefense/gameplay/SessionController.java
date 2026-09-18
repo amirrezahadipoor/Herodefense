@@ -4,6 +4,7 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
+import com.amirrezahadipoor.herodefense.audio.IdentityCues;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.items.StarterLoadoutSystem;
 import com.amirrezahadipoor.herodefense.model.GameMode;
@@ -162,7 +163,7 @@ public final class SessionController {
             int bossesBefore = ArenaQueries.livingBossCount(state);
             waveLifecycleSystem.startCurrentWave(state);
             if (ArenaQueries.livingBossCount(state) > bossesBefore) {
-                audioManager.play(AudioCue.BOSS_ENTRANCE);
+                audioManager.play(IdentityCues.bossEntranceFor(state));
                 presentationSystem.presentBossEntrance(state);
             }
             host.showWaveReflection();

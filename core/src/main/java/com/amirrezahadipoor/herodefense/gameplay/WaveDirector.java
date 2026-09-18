@@ -3,6 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.WorldLayout;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
+import com.amirrezahadipoor.herodefense.audio.IdentityCues;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -104,7 +105,7 @@ public final class WaveDirector {
         int bossesBeforeWaveAdvance = ArenaQueries.livingBossCount(state);
         WaveCompletion waveCompletion = waveLifecycleSystem.updateAfterCombat(state);
         if (ArenaQueries.livingBossCount(state) > bossesBeforeWaveAdvance) {
-            audioManager.play(AudioCue.BOSS_ENTRANCE);
+            audioManager.play(IdentityCues.bossEntranceFor(state));
             presentationSystem.presentBossEntrance(state);
         }
         host.showWaveReflection();
