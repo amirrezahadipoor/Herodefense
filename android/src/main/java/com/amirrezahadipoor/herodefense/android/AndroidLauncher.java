@@ -25,6 +25,7 @@ public final class AndroidLauncher extends AndroidApplication {
     private HeroDefenseGame game;
     private AudioManager audioManager;
     private AudioFocusRequest focusRequest;
+    private AndroidTtsProvider ttsProvider;
 
     private final AudioManager.OnAudioFocusChangeListener focusListener = change -> {
         if (game == null) return;
@@ -51,6 +52,12 @@ public final class AndroidLauncher extends AndroidApplication {
         configuration.useCompass = false;
         game = new HeroDefenseGame();
         initialize(game, configuration);
+        // F3: TTS for lore and boss title narration
+        ttsProvider = new AndroidTtsProvider(this);
+        // Game's audioManager is created inside game.create(); post a runnable to set provider once ready
+        postRunnable(() -> {
+            if (game != null) game.setTtsProvider(ttsProvider);
+        });
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
@@ -86,6 +93,15 @@ public final class AndroidLauncher extends AndroidApplication {
         } else {
             audioManager.abandonAudioFocus(focusListener);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (ttsProvider != null) {
+            ttsProvider.shutdown();
+            ttsProvider = null;
+        }
+        super.onDestroy();
     }
 
     HeroDefenseGame gameForTests() {
