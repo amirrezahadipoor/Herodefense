@@ -8,6 +8,11 @@ The score this file came from: **626 / 1000**, measured on commit `bae7238` by r
 tests, the CI logs and `docs/playtests/findings.json`. The audit could not play the game — no human ever has
 (item C1) — so every deduction below is traceable to something in the repository, not to an impression.
 
+The table is the audit's baseline, frozen, not a live scoreboard: items done since (G1, H1, I3, G3a, G5a and the
+E3 correction) change six of the ten areas and the running total, and re-measuring the whole game after a batch
+is cheaper and more honest than editing ten numbers after every commit. The next full re-measure happens when
+the current order of work reaches its first checkpoint, and it will be presented with the list of what moved it.
+
 This file is governed by `docs/RULES.md`, including the two rules that shape it most: one item per commit,
 pushed immediately (rule 4), and a failure recorded as `[!]` rather than quietly dropped (rule 5). Numbers about
 performance and size are **not** copied here; they live in `docs/perf/` where a logged run stands behind them
@@ -25,7 +30,7 @@ added to it. Letters here match the audit's ten scored areas:
 | B | depth and progression | 66/100 |
 | C | balance and fairness | 66/100 |
 | D | content volume and variety | 58/100 |
-| E | visuals and presentation | 70/100 |
+| E | visuals and presentation | 70/100 at audit, 72/100 after the E3 correction |
 | F | audio | 62/100 |
 | G | UI, UX and readability | 54/100 |
 | H | localisation and Persian quality | 74/100 |
@@ -96,8 +101,13 @@ started, `[!]` attempted and failed, with the failure written down.
       `code:main/java/com/amirrezahadipoor/herodefense/gameplay/HeroAnimationController.java`** (idle, attack and
       hit clips). Correct and consistent, but it is the ceiling of the presentation, not a step towards
       something else.
-- [ ] **E3 (−6) No recorded review of the running game on a device screen.** CI validates assets (edge safety,
-      pivot, silhouette, grade) and runs a headless emulator smoke test; nobody has looked at the game playing.
+- [ ] **E3 (−6, corrected to −4 below) No human has looked at the running game.** The audit's original wording
+      said no recorded review of it existed either, and that half was wrong: `AndroidTouchSmokeTest` captures
+      thirty frames of the running game per emulator run, gates each against a measured mean-luma and
+      lit-fraction reference, and uploads the frames as artifacts. What does not exist is a person looking at
+      them -- the audit found G5a's three text collisions only because a brightness failure made it open the
+      artifact, and nothing before that had. The deduction stays, smaller: a machine that notices a screen went
+      dark is not a reviewer who notices a subtitle ran into a hint, but it is not nothing either.
       `docs/art_reviews/` is offline render evidence and stays as it is.
 - [ ] **E4 (−4) The interface is text-heavy** for a game played on a phone at arm's length.
 
@@ -235,6 +245,21 @@ not mistaken for forgotten ones. Nothing here may be started without the owner l
 Already in place, and not deducted: the signed Cafe Bazaar APK workflow with its four secrets and `always()`
 cleanup, the APK measured against a committed budget in CI, cold start measured from logcat, wave-50 residency
 checked, packaged natives verified per ABI.
+
+## Corrections to the audit itself
+
+Three so far. Each is a wrong fact in the audit rather than a wrong fact in the game, and each is recorded here
+rather than silently edited, because a reader of this file has to be able to tell the audit from its
+corrections.
+
+- **H4: two languages, not three.** `GameLanguage` is `ENGLISH` and `PERSIAN`.
+- **E3: the running game is recorded in CI.** Thirty captures per emulator run with per-screen brightness
+  references, see above. The deduction narrows from 6 to 4; the missing half is a human, and that is C1.
+- **A citation in commit `39ce834` names the wrong CI run.** Its message says the settings brightness reference
+  came from run 35297444725; the run that measured `mean=44.40 lit=0.9553` is **35296081592**, which is what the
+  code comment in `AndroidTouchSmokeTest` cites. The message was written before the run id was fetched and not
+  checked afterwards. Left as pushed and corrected here rather than rewriting history over a number, because
+  the wrong number is in a public commit and the correction belongs next to it.
 
 ## Order of work
 
