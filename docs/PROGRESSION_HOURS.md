@@ -13,7 +13,9 @@ re-derived.
   tier (26.2b). Humans slower than the sim pace push every total below upward. Phase 32's grove (plantings at 50/100/150, short at 50/150) adds 8.9 s of ceremony presentation only — simulator ceremonies remain instant, so the median re-verified at 7970 s on 2026-09-15 and the 50-hour equation is unchanged.
 - **Root Network:** 23 nodes costing **1350 Heartwood** total (15 → 200 each).
 - **Heartwood income** per ascension (`peakWave/5 + (peakWave>=200 ? 50 : 0) +
-  tier×10 + (flawless ? 20 : 0)`, × trial multiplier): a flawless full clear at
+  tier×10 + (flawless ? 20 : 0)`, × trial multiplier, **halved on the brief
+  vigil** since roadmap C3 -- a run that cannot be lost must not be the efficient
+  way to earn): a flawless full clear at
   tier `t` pays `110 + 10t`; non-flawless pays `90 + 10t`. Deaths pay less (no
   +50 completion bonus). `BOSS_BOUNTY` multiplies income ×1.3.
 - **Codex:** 30 entries — 8 wave milestones (waves 1–100), 4 boss first-kills,

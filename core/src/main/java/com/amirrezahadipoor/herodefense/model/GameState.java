@@ -453,10 +453,33 @@ public final class GameState {
     }
 
     public static int calculateHeartwoodReward(int peakWave, int ascensionTier, boolean flawless) {
+        return calculateHeartwoodReward(peakWave, ascensionTier, flawless, GameMode.STANDARD);
+    }
+
+    /**
+     * Heartwood for finishing a run, by mode (roadmap C3).
+     *
+     * <p>The formula is the one the progression equation is built from -- {@code peakWave / 5}, plus fifty for
+     * reaching wave 200, plus ten a tier, plus twenty for a flawless run -- and the brief vigil takes half of
+     * whatever it produces. That halving is the whole of C3's fix, and it is not a punishment for playing short:
+     * the thirty-wave vigil is a floor by design, measured and accepted as one in
+     * {@code finding-brief-vigil-has-no-teeth}, because the first session of the game must not punish a player
+     * for not knowing a talent tree exists. A floor is fine. A floor that pays more heartwood per wave than the
+     * run which can actually kill you is a farm, and a veteran farming an unloseable mode is the one player the
+     * floor was never meant to serve. Half puts the long vigil back on top of the economy -- 0.55 heartwood a
+     * wave flawless at tier zero against the brief run's 0.43 -- without touching a number the long run pays.
+     */
+    public static int calculateHeartwoodReward(
+        int peakWave,
+        int ascensionTier,
+        boolean flawless,
+        GameMode mode
+    ) {
         int base = peakWave / 5;
         if (peakWave >= FINAL_WAVE) base += 50;
         base += ascensionTier * 10;
         if (flawless) base += 20;
+        if (mode == GameMode.BRIEF) base /= 2;
         return Math.max(0, base);
     }
 
@@ -566,7 +589,7 @@ public final class GameState {
 
     public int ascendAndAwardHeartwood() {
         boolean flawless = !heroDiedThisRun;
-        int earned = Math.round(calculateHeartwoodReward(peakWaveReached, ascensionTier, flawless)
+        int earned = Math.round(calculateHeartwoodReward(peakWaveReached, ascensionTier, flawless, mode)
             * TrialEffects.heartwoodMultiplier(activeTrials));
         heartwood += earned;
         ascensionTier++;

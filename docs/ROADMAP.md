@@ -78,8 +78,23 @@ started, `[!]` attempted and failed, with the failure written down.
       deduction no amount of code can close.
 - [ ] **C2 (−8) Fun is unmeasured.** Twelve balance test classes validate curves against simulated policies.
       Nothing measures whether a wave feels fair; C1 is the instrument.
-- [ ] **C3 (−6) `finding-brief-vigil-has-no-teeth` was closed as `accepted`.** A known-toothless mode shipped
-      rather than being fixed or cut. Either give brief mode a reason to be played or remove it.
+- [x] **C3 (−6) `finding-brief-vigil-has-no-teeth` was closed as `accepted` — and the acceptance was right about
+      survival and silent about the economy.** Its evidence shows the thirty-wave run cannot be lost even by a
+      policy with no skill, and accepts that as the feature: the first session must not punish a player for not
+      knowing a talent tree exists. That is a floor, and the floor stays. What the acceptance never priced is
+      that at the old formula a flawless brief clear paid 26 heartwood for 30 waves while a flawless long clear
+      paid 110 for 200 — 0.87 a wave against 0.55 — so the mode that cannot kill you was the efficient earner,
+      and the player it served best was a veteran who had stopped being challenged. Neither "give it teeth" nor
+      "cut it" was the right instruction; the floor and the farm were the same code path, so the fix splits
+      them: the brief vigil's formula is halved (0.43 a wave flawless at tier zero, under the long run's 0.55),
+      the menu row says so in both languages ("Thirty waves | same vigil, half the heartwood"), the death
+      screen's preview and the award both pass their mode to the formula so the two numbers cannot disagree in
+      front of the player, and `docs/PROGRESSION_HOURS.md` carries the halving inside its income bullet because
+      an equation that omits a mode is an equation that lies by completeness. `BriefVigilEconomyTest` holds all
+      four edges: the long run pays exactly what it always did, the brief run pays half of the same formula
+      including the tier bonus, the dangerous run is the better earner per wave, and both call sites still name
+      their mode. The finding itself stays `accepted` — its rationale was about a new player's first hour and
+      that rationale still holds.
 
 ## D — content volume and variety (58/100, 42 points deducted)
 

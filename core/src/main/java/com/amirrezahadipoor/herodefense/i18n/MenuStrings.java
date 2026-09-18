@@ -29,8 +29,8 @@ public enum MenuStrings implements Translated {
 
     /** Row 2, present only when the thirty-wave vigil is unlocked. */
     BRIEF_VIGIL("BRIEF VIGIL", "پاسداری کوتاه"),
-    BRIEF_VIGIL_SUBTITLE("A full run in thirty waves | same tier, same grove",
-        "یک دور کامل در سی موج | همان رده، همان بیشه"),
+    BRIEF_VIGIL_SUBTITLE("Thirty waves | same vigil, half the heartwood",
+        "سی موج | همان پاسداری، نیم چوب دل"),
 
     /** Row 3, present only while a run is live. */
     CONTINUE("CONTINUE", "ادامه"),

@@ -148,7 +148,7 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
         float ascOffset = MainMenuRenderer.pressedOffset(ascendState);
         icons.draw(batch, "general_power", UiMirror.leadingOnScreen(152f, 56f),
             GameOverTouchLayout.ASCEND_Y + 20f + ascOffset, 56f, ascendState);
-        int heartwoodPreview = Math.round(GameState.calculateHeartwoodReward(state.peakWaveReached, state.ascensionTier, !state.heroDiedThisRun)
+        int heartwoodPreview = Math.round(GameState.calculateHeartwoodReward(state.peakWaveReached, state.ascensionTier, !state.heroDiedThisRun, state.mode)
             * TrialEffects.heartwoodMultiplier(state.activeTrials));
         text.drawLeading(batch,
             GameLocale.text(GameOverStrings.ASCEND, GameLocale.number(heartwoodPreview)),
