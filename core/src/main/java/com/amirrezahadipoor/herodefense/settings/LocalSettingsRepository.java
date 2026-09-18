@@ -5,7 +5,6 @@ import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.render.GameFonts;
 import com.badlogic.gdx.Preferences;
 
-/** Persists main-menu settings immediately in device-local preferences. */
 public final class LocalSettingsRepository {
     public static final String PREFERENCES_NAME = "hero-defense-settings";
     private static final String SOUND_KEY = "audio.sound";
@@ -16,6 +15,9 @@ public final class LocalSettingsRepository {
     private static final String TUTORIAL_SEEN_KEY = "onboarding.tutorialSeen";
     private static final String MUSIC_VOLUME_KEY = "audio.musicVolume";
     private static final String SOUND_VOLUME_KEY = "audio.soundVolume";
+    private static final String NARRATION_ENABLED_KEY = "audio.narrationEnabled";
+    private static final String NARRATION_VOLUME_KEY = "audio.narrationVolume";
+    private static final String SCREEN_READER_KEY = "accessibility.screenReader";
     private static final String LANGUAGE_KEY = "display.language";
     private static final String REDUCED_MOTION_KEY = "display.reducedMotion";
     private static final String COLOUR_BLIND_RARITY_KEY = "display.colourBlindRarity";
@@ -37,12 +39,10 @@ public final class LocalSettingsRepository {
         settings.tutorialSeen = preferences.getBoolean(TUTORIAL_SEEN_KEY, false);
         settings.musicVolume = preferences.getFloat(MUSIC_VOLUME_KEY, settings.musicVolume);
         settings.soundVolume = preferences.getFloat(SOUND_VOLUME_KEY, settings.soundVolume);
-        // A preference file can be edited by hand or written by an older build; the screen only knows the
-        // three named steps, so anything else is snapped to the closest one here rather than at draw time.
+        settings.narrationEnabled = preferences.getBoolean(NARRATION_ENABLED_KEY, settings.narrationEnabled);
+        settings.narrationVolume = preferences.getFloat(NARRATION_VOLUME_KEY, settings.narrationVolume);
+        settings.screenReaderEnabled = preferences.getBoolean(SCREEN_READER_KEY, settings.screenReaderEnabled);
         settings.normalizeVolumes();
-        // The same argument, for the same reason, in the same place: a code this build does not know becomes
-        // English here rather than at draw time. Loading the device's preferences is what makes the game speak
-        // them, and this is the only place it happens other than the settings row that changes it.
         settings.reducedMotion = preferences.getBoolean(REDUCED_MOTION_KEY, false);
         settings.colourBlindRarity = preferences.getBoolean(COLOUR_BLIND_RARITY_KEY, false);
         settings.textSizeIndex = preferences.getInteger(TEXT_SIZE_KEY, settings.textSizeIndex);
@@ -63,6 +63,9 @@ public final class LocalSettingsRepository {
         preferences.putBoolean(TUTORIAL_SEEN_KEY, settings.tutorialSeen);
         preferences.putFloat(MUSIC_VOLUME_KEY, settings.musicVolume);
         preferences.putFloat(SOUND_VOLUME_KEY, settings.soundVolume);
+        preferences.putBoolean(NARRATION_ENABLED_KEY, settings.narrationEnabled);
+        preferences.putFloat(NARRATION_VOLUME_KEY, settings.narrationVolume);
+        preferences.putBoolean(SCREEN_READER_KEY, settings.screenReaderEnabled);
         preferences.putBoolean(REDUCED_MOTION_KEY, settings.reducedMotion);
         preferences.putBoolean(COLOUR_BLIND_RARITY_KEY, settings.colourBlindRarity);
         preferences.putInteger(TEXT_SIZE_KEY, settings.textSizeIndex);

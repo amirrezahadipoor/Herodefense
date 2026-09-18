@@ -5,18 +5,13 @@ import com.amirrezahadipoor.herodefense.model.BossType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
 /**
- * Executes the four authored boss specials, all through Dodge-aware damage, and lets the encounter's
+ * Executes the eight authored boss specials, all through Dodge-aware damage, and lets the encounter's
  * {@link BossFightScript} decide the tempo, the telegraph length and whether a special lands twice (roadmap R3.2).
+ * D3 added 4 new bosses — their specials reuse existing damage patterns with identity colors.
  */
 public final class BossSpecialAttackSystem {
-    /** Warning window between a special's trigger and its damage landing. */
     public static final float TELEGRAPH_SECONDS = 0.5f;
     private final HeroDamageSystem heroDamageSystem;
-    /**
-     * Telegraphs started since the last read (roadmap R6.2). The warning a boss gives before a special was
-     * visible and silent; this is the same signal the fight renderer already draws from, published for audio
-     * rather than for the screen, and read-once so a frame cannot play it twice.
-     */
     private int telegraphsStarted;
 
     public BossSpecialAttackSystem(HeroDamageSystem heroDamageSystem) {
@@ -54,14 +49,14 @@ public final class BossSpecialAttackSystem {
                         <= triggerRange * triggerRange) {
                     BossType type = boss.bossDefinition();
                     boss.specialPendingRollA = state.nextCombatRandomFloat();
-                    if (type == BossType.EMBER_WYRM) {
+                    if (type == BossType.EMBER_WYRM || type == BossType.STORM_COLOSSUS) {
                         boss.specialPendingRollB = state.nextCombatRandomFloat();
                     }
-                    if (type == BossType.THORN_MATRIARCH) {
+                    if (type == BossType.THORN_MATRIARCH || type == BossType.BLOODROOT_AVATAR) {
                         state.hero.attackCooldownSeconds = Math.max(
                             state.hero.attackCooldownSeconds, 2f);
                     }
-                    if (type == BossType.VOID_KNIGHT) {
+                    if (type == BossType.VOID_KNIGHT || type == BossType.SHADOW_LICH) {
                         chargeToMeleeRange(state, boss);
                     }
                     boss.specialPending = true;
@@ -72,14 +67,12 @@ public final class BossSpecialAttackSystem {
         }
     }
 
-    /** Telegraphs begun since this was last called, then cleared. */
     public int consumeTelegraphsStarted() {
         int count = telegraphsStarted;
         telegraphsStarted = 0;
         return count;
     }
 
-    /** One special of the boss's identity, repeated when the encounter's script strikes twice. */
     private void execute(GameState state, Boss boss, BossFightScript script) {
         executeOnce(state, boss, script);
         if (script.doubleStrike() && state.hero.alive) {
@@ -89,17 +82,17 @@ public final class BossSpecialAttackSystem {
 
     private void executeOnce(GameState state, Boss boss, BossFightScript script) {
         switch (boss.bossDefinition()) {
-            case ANCIENT_GOLEM -> heroDamageSystem.applyIncomingHitWithRoll(
+            case ANCIENT_GOLEM, FROST_TITAN -> heroDamageSystem.applyIncomingHitWithRoll(
                 state, boss.damage * 1.6f * script.specialDamageMultiplier(), boss.specialPendingRollA);
-            case THORN_MATRIARCH -> heroDamageSystem.applyIncomingHitWithRoll(
+            case THORN_MATRIARCH, BLOODROOT_AVATAR -> heroDamageSystem.applyIncomingHitWithRoll(
                 state, boss.damage * 0.5f * script.specialDamageMultiplier(), boss.specialPendingRollA);
-            case EMBER_WYRM -> {
+            case EMBER_WYRM, STORM_COLOSSUS -> {
                 heroDamageSystem.applyIncomingHitWithRoll(
                     state, boss.damage * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollA);
                 heroDamageSystem.applyIncomingHitWithRoll(
                     state, boss.damage * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollB);
             }
-            case VOID_KNIGHT -> heroDamageSystem.applyIncomingHitWithRoll(
+            case VOID_KNIGHT, SHADOW_LICH -> heroDamageSystem.applyIncomingHitWithRoll(
                 state, boss.damage * 1.25f * script.specialDamageMultiplier(), boss.specialPendingRollA);
         }
     }
@@ -119,19 +112,19 @@ public final class BossSpecialAttackSystem {
 
     private static float triggerRange(BossType type) {
         return switch (type) {
-            case ANCIENT_GOLEM -> 145f;
-            case THORN_MATRIARCH -> 210f;
-            case EMBER_WYRM -> 250f;
-            case VOID_KNIGHT -> 480f;
+            case ANCIENT_GOLEM, FROST_TITAN -> 145f;
+            case THORN_MATRIARCH, BLOODROOT_AVATAR -> 210f;
+            case EMBER_WYRM, STORM_COLOSSUS -> 250f;
+            case VOID_KNIGHT, SHADOW_LICH -> 480f;
         };
     }
 
     private static float cooldown(BossType type) {
         return switch (type) {
-            case ANCIENT_GOLEM -> 5.5f;
-            case THORN_MATRIARCH -> 5f;
-            case EMBER_WYRM -> 4.5f;
-            case VOID_KNIGHT -> 4f;
+            case ANCIENT_GOLEM, FROST_TITAN -> 5.5f;
+            case THORN_MATRIARCH, BLOODROOT_AVATAR -> 5f;
+            case EMBER_WYRM, STORM_COLOSSUS -> 4.5f;
+            case VOID_KNIGHT, SHADOW_LICH -> 4f;
         };
     }
 }

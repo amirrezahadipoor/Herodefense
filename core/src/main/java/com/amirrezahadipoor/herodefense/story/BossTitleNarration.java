@@ -6,6 +6,7 @@ import java.util.Map;
 
 /**
  * F3: Boss title cards written as if being read aloud now have a voice.
+ * D3: 8 bosses — titles match BossType enum.
  */
 public final class BossTitleNarration {
     private static final Map<String, String> TITLE_CARDS = new HashMap<>();
@@ -15,9 +16,9 @@ public final class BossTitleNarration {
         TITLE_CARDS.put("VOID_KNIGHT", "Void Knight arrives. Light bends and breaks.");
         TITLE_CARDS.put("THORN_MATRIARCH", "Thorn Matriarch rises. Roots that bind, thorns that bleed.");
         TITLE_CARDS.put("FROST_TITAN", "Frost Titan marches. Winter that never ends.");
-        TITLE_CARDS.put("STORM_SERPENT", "Storm Serpent coils. Sky itself turns against you.");
-        TITLE_CARDS.put("PLAGUE_HERALD", "Plague Herald spreads. Decay given form.");
-        TITLE_CARDS.put("OBLIVION_CORE", "Oblivion Core pulses. The end of all songs.");
+        TITLE_CARDS.put("SHADOW_LICH", "Shadow Lich rises. Souls that never rest.");
+        TITLE_CARDS.put("STORM_COLOSSUS", "Storm Colossus thunders. Sky itself turns against you.");
+        TITLE_CARDS.put("BLOODROOT_AVATAR", "Bloodroot Avatar spreads. Decay given form, roots that drink.");
     }
 
     private BossTitleNarration() {}
