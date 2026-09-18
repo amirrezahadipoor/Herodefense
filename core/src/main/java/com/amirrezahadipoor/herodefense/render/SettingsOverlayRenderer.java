@@ -253,6 +253,28 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                 drawToggle(batch, SettingsStrings.COLOUR_BLIND_RARITY, SettingsStrings.COLOUR_BLIND_RARITY_SUBTITLE,
                     y, settings.colourBlindRarity, state, SettingsStrings.TAP_TO_RESTORE_RARITY);
             }
+            case 8 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.narrationEnabled, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.narrationEnabled);
+                drawToggle(batch, SettingsStrings.NARRATION, SettingsStrings.NARRATION_SUBTITLE,
+                    y, settings.narrationEnabled, state, SettingsStrings.TAP_TO_MUTE);
+            }
+            case 9 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.narrationVolume > 0f, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.narrationVolume > 0f);
+                drawLevel(batch, SettingsStrings.NARRATION_LEVEL, SettingsStrings.NARRATION_LEVEL_SUBTITLE,
+                    y, settings.narrationVolume, state);
+            }
             default -> {}
         }
     }

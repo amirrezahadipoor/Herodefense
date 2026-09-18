@@ -1,9 +1,12 @@
 package com.amirrezahadipoor.herodefense.presentation;
 
+import com.amirrezahadipoor.herodefense.audio.NarrationRequest;
+import com.amirrezahadipoor.herodefense.audio.NarrationSystem;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
 import com.amirrezahadipoor.herodefense.story.BossTitleCards;
+import com.amirrezahadipoor.herodefense.story.BossTitleNarration;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
 import com.amirrezahadipoor.herodefense.story.EliteFragments;
 import com.amirrezahadipoor.herodefense.story.ReflectionLines;
@@ -16,23 +19,13 @@ import com.amirrezahadipoor.herodefense.render.CombatEntityRenderer;
 
 /**
  * The presentation side of a run: what a defeat, a boss entrance, an elite kill or a freshly started wave
- * looks and sounds like.
- *
- * <p>Extracted from {@code HeroDefenseGame} (roadmap R2.2) because these are the methods that grow every
- * time a new effect is added, and they need nothing from the game class except the particle system, the
- * shake system, the codex and somewhere to put a story line. The game keeps the story line itself so the
- * HUD stays the only writer of that text.
- *
- * <p>Every method here is idempotent per entity through the existing claim flags
- * (`defeatParticlesEmitted`, `entrancePresented`, `eliteKillClaimed`, `collectionEffectEmitted`), which is
- * why they can be called from several places in the update loop without duplicating an effect.
+ * looks and sounds like. F3 adds narration for boss title cards.
  */
 public final class RunPresentationSystem {
 
     /** Where a story line and a save request go; implemented by the game. */
     public interface BeatSink {
         void showBeat(String line);
-
         void save();
     }
 
@@ -40,6 +33,7 @@ public final class RunPresentationSystem {
     private final ScreenShakeSystem screenShakeSystem;
     private final CodexSystem codexSystem;
     private final BeatSink beats;
+    private NarrationSystem narration;
 
     public RunPresentationSystem(ParticleSystem particleSystem, ScreenShakeSystem screenShakeSystem,
         CodexSystem codexSystem, BeatSink beats) {
@@ -47,6 +41,10 @@ public final class RunPresentationSystem {
         this.screenShakeSystem = screenShakeSystem;
         this.codexSystem = codexSystem;
         this.beats = beats;
+    }
+
+    public void setNarrationSystem(NarrationSystem narration) {
+        this.narration = narration;
     }
 
     public void emitDefeatParticles(GameState state) {
@@ -66,7 +64,6 @@ public final class RunPresentationSystem {
         if (boss) {
             particleSystem.emitBossDeath(enemy.x, enemy.y + 40f);
         } else {
-            // Per-type death burst for readability
             try {
                 particleSystem.emitDeath(enemy.x, enemy.y + 30f, enemy.enemyType);
             } catch (Exception ignored) {
@@ -77,18 +74,28 @@ public final class RunPresentationSystem {
     }
 
     public void presentBossEntrance(GameState state) {
+        String claimedBossType = null;
         for (Boss boss : state.aliveBosses) {
             if (boss == null || !boss.alive || boss.entrancePresented) {
                 continue;
             }
             boss.entrancePresented = true;
             particleSystem.emitBossEntrance(boss.x, boss.y + 10f);
+            if (claimedBossType == null) claimedBossType = boss.bossType;
         }
         screenShakeSystem.triggerBossEntrance();
         String titleCard = BossTitleCards.claimFirstUnencountered(state, state.aliveBosses);
         if (titleCard != null) {
             beats.showBeat(titleCard);
             beats.save();
+            // F3: narrate boss title card if TTS available
+            if (narration != null && claimedBossType != null) {
+                NarrationRequest req = BossTitleNarration.forBoss(claimedBossType);
+                if (req != null) narration.narrate(req);
+            } else if (narration != null) {
+                // fallback: narrate the title card line itself
+                narration.narrate(new NarrationRequest(NarrationRequest.Type.BOSS_TITLE, "boss", titleCard, 0.9f));
+            }
         }
     }
 
@@ -117,11 +124,6 @@ public final class RunPresentationSystem {
         }
     }
 
-    /**
-     * The reflection line for a freshly started wave, or {@code null} when a beat is already showing.
-     *
-     * @return the line to display, or {@code null}
-     */
     public String waveReflection(GameState state) {
         if (!state.waveActive) {
             return null;
@@ -129,7 +131,6 @@ public final class RunPresentationSystem {
         return ReflectionLines.lineForWave(state.waveNumber);
     }
 
-    /** Sparkles where a homing drop lands on the Inventory control, before the drop is removed. */
     public void emitCollectionSparkles(GameState state, float deltaSeconds) {
         for (DropEntity drop : state.drops) {
             if (drop == null || !drop.active

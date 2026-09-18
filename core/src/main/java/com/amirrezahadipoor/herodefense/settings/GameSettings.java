@@ -105,6 +105,9 @@ public final class GameSettings {
 
     public float musicVolume = LEVELS[LEVELS.length - 1];
     public float soundVolume = LEVELS[LEVELS.length - 1];
+    /** F3: voice/narration for lore and boss titles — device-local, off by default until TTS ready. */
+    public boolean narrationEnabled = true;
+    public float narrationVolume = LEVELS[LEVELS.length - 1];
 
     public static int levelCount() {
         return LEVELS.length;
@@ -155,6 +158,12 @@ public final class GameSettings {
     public void normalizeVolumes() {
         musicVolume = levelValue(levelIndex(musicVolume));
         soundVolume = levelValue(levelIndex(soundVolume));
+        narrationVolume = levelValue(levelIndex(narrationVolume));
+    }
+
+    public String cycleNarrationVolume() {
+        narrationVolume = LEVELS[(levelIndex(narrationVolume) + 1) % LEVELS.length];
+        return levelLabel(levelIndex(narrationVolume));
     }
 
     /** Legendary and Mythic items are never auto-sold; the toggle simply does not exist for them. */

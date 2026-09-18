@@ -7,20 +7,14 @@ import com.amirrezahadipoor.herodefense.render.UiMirror;
  * row, roadmap G3a added the sixth, and roadmap G3-layout turns the viewport into a scrolling list so additional
  * accessibility options fit without screen collisions).
  *
- * <p>Six rows fit comfortably between the footer panel at 260f and the header band at 1096f. With G3-layout,
- * additional options scroll into this viewport via touch drag, with {@link #VISIBLE_ROWS} visible at any time.
- * At scroll offset 0, the first six rows sit exactly at the historical coordinates, preserving visual stability.
- *
- * <p>R7.3 also mirrors the screen, and a mirrored drawing with an unmirrored tap target is a button the player
- * can see in one place and press in another. So the one element on this screen that is not symmetric -- the close
- * button in the top corner -- has its x come from {@link #closeX()}, the same {@link UiMirror} call the renderer
- * makes for the icon it draws. The rows need no such call: they span 100f..620f of a 720f screen, so their
- * margins are equal and mirroring leaves them exactly where they were.
+ * F3 adds narration rows (toggle + level) for lore and boss title voice.
  */
 public final class SettingsTouchLayout {
     public enum Action {
         NONE, TOGGLE_SOUND, TOGGLE_MUSIC, CYCLE_SOUND_LEVEL, CYCLE_MUSIC_LEVEL, CYCLE_LANGUAGE,
-        TOGGLE_REDUCED_MOTION, CYCLE_TEXT_SIZE, TOGGLE_COLOUR_BLIND_RARITY, CLOSE
+        TOGGLE_REDUCED_MOTION, CYCLE_TEXT_SIZE, TOGGLE_COLOUR_BLIND_RARITY,
+        TOGGLE_NARRATION, CYCLE_NARRATION_LEVEL,
+        CLOSE
     }
 
     public static final float ROW_X = 100f;
@@ -32,26 +26,22 @@ public final class SettingsTouchLayout {
     public static final float SOUND_LEVEL_ROW_Y = 680f;
     public static final float MUSIC_LEVEL_ROW_Y = 540f;
     public static final float LANGUAGE_ROW_Y = 400f;
-    /** The bottom visible slot that fits above the footer note panel. */
     public static final float REDUCED_MOTION_ROW_Y = 270f;
     public static final float CLOSE_X = 570f;
     public static final float CLOSE_Y = 1120f;
     public static final float CLOSE_SIZE = 100f;
-    /** How far the close box's trailing edge sits from the screen's trailing edge: 720f - 570f - 100f. */
     static final float CLOSE_INSET = 50f;
 
     public static final int VISIBLE_ROWS = 6;
-    public static final int TOTAL_ROWS = 8;
+    public static final int TOTAL_ROWS = 10;
 
     private SettingsTouchLayout() {
     }
 
-    /** The close box's left edge in the language in force; {@link #CLOSE_X} is the left-to-right one. */
     public static float closeX() {
         return UiMirror.trailingOnScreen(CLOSE_INSET, CLOSE_SIZE);
     }
 
-    /** Returns the Y coordinate of a visible slot (0 is top at 960f, 5 is bottom at 270f). */
     public static float slotY(int slot) {
         return switch (slot) {
             case 0 -> SOUND_ROW_Y;
@@ -64,7 +54,6 @@ public final class SettingsTouchLayout {
         };
     }
 
-    /** Which visible slot contains the vertical coordinate {@code y}, or -1 if outside. */
     public static int visibleSlotAt(float y) {
         for (int slot = 0; slot < VISIBLE_ROWS; slot++) {
             float bottom = slotY(slot);
@@ -75,7 +64,6 @@ public final class SettingsTouchLayout {
         return -1;
     }
 
-    /** Returns the Action mapped to logical row index {@code rowIndex}. */
     public static Action actionForRow(int rowIndex) {
         return switch (rowIndex) {
             case 0 -> Action.TOGGLE_SOUND;
@@ -86,6 +74,8 @@ public final class SettingsTouchLayout {
             case 5 -> Action.TOGGLE_REDUCED_MOTION;
             case 6 -> Action.CYCLE_TEXT_SIZE;
             case 7 -> Action.TOGGLE_COLOUR_BLIND_RARITY;
+            case 8 -> Action.TOGGLE_NARRATION;
+            case 9 -> Action.CYCLE_NARRATION_LEVEL;
             default -> Action.NONE;
         };
     }

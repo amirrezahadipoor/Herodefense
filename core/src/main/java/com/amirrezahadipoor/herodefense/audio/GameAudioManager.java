@@ -9,14 +9,13 @@ import java.util.Map;
 
 /**
  * Owns libGDX Sound resources, the music deck, the rate limiter, settings, and lifecycle pause.
- *
- * <p>Roadmap R6.3 moved the music out of this class and into {@link MusicDeck}: the frame passes the bed the
- * game state wants ({@link #guideMusic}) and the deck decides whether that means a crossfade.
+ * F3: also owns narration (TTS) for lore entries and boss title cards.
  */
 public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCloseable {
 
     private final Map<AudioCue, Sound> effects = new EnumMap<>(AudioCue.class);
     private final MusicDeck music = new MusicDeck();
+    private final NarrationSystem narration = new NarrationSystem();
     private GameSettings settings;
     private boolean appBackgrounded;
     private AudioFocusState focus = AudioFocusState.gained();
@@ -36,6 +35,8 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
     public void update(GameSettings updatedSettings) {
         settings = updatedSettings;
         music.setLevel(settings.musicVolume);
+        narration.setEnabled(settings.narrationEnabled);
+        narration.setVolume(settings.narrationVolume);
         if (AudioPlaybackPolicy.shouldPlayMusic(settings, appBackgrounded, focus)) {
             music.resume();
         } else {
@@ -84,6 +85,7 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         appBackgrounded = true;
         music.pause();
         for (Sound sound : effects.values()) sound.stop();
+        narration.stop();
     }
 
     public void resumeFromBackground() {
@@ -91,9 +93,18 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         update(settings);
     }
 
+    public NarrationSystem narration() {
+        return narration;
+    }
+
+    public void setTtsProvider(NarrationSystem.TtsProvider provider) {
+        narration.setTtsProvider(provider);
+    }
+
     @Override
     public void close() {
         music.dispose();
+        narration.stop();
         for (Sound sound : effects.values()) sound.dispose();
         effects.clear();
     }

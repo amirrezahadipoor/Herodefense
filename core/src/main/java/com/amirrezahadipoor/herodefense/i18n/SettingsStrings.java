@@ -54,6 +54,11 @@ public enum SettingsStrings implements Translated {
     COLOUR_BLIND_RARITY_SUBTITLE("High contrast loot hues", "رنگ‌های متمایز غنیمت"),
     TAP_TO_RESTORE_RARITY("tap for default colours", "برای رنگ‌های پیش‌فرض لمس کنید"),
 
+    NARRATION("NARRATION", "روایت"),
+    NARRATION_SUBTITLE("Lore and boss titles spoken", "خواندن داستان‌ها و عنوان باس‌ها"),
+    NARRATION_LEVEL("NARRATION LEVEL", "سطح روایت"),
+    NARRATION_LEVEL_SUBTITLE("How loud the voice sits", "بلندی صدای روایت"),
+
     TOUCH_ONLY("TOUCH ONLY", "فقط لمسی"),
 
     LANGUAGE("LANGUAGE", "زبان"),

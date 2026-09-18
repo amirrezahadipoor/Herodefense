@@ -43,6 +43,11 @@ import com.amirrezahadipoor.herodefense.skills.SkillEvolution;
 import com.amirrezahadipoor.herodefense.skills.SkillId;
 import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
+import com.amirrezahadipoor.herodefense.story.LoreCatalog;
+import com.amirrezahadipoor.herodefense.story.LoreEntry;
+import com.amirrezahadipoor.herodefense.story.LoreNarration;
+import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.audio.NarrationRequest;
 
 /**
  * Routes touch events by screen state: menu, run, overlays, shops, codex, ceremonies.
@@ -504,6 +509,27 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                     host.codexTouchController().close();
                     host.flow().returnFromOverlay();
                     host.saveNow();
+                } else if (action == CodexTouchController.Action.SELECTED) {
+                    host.audioManager().play(AudioCue.UI_TAP);
+                    // F3: narrate selected lore entry
+                    try {
+                        if (host.audioManager() instanceof GameAudioManager) {
+                            GameAudioManager gam = (GameAudioManager) host.audioManager();
+                            int idx = host.codexTouchController().selectedIndex();
+                            if (idx >= 0 && idx < LoreCatalog.all().size()) {
+                                LoreEntry entry = LoreCatalog.all().get(idx);
+                                if (entry != null && host.gameState() != null
+                                    && host.codexTouchController().tab() == CodexTouchLayout.Tab.LORE) {
+                                    // Only narrate if unlocked
+                                    boolean unlocked = host.codexSystem().isUnlocked(host.gameState(), entry.id());
+                                    if (unlocked) {
+                                        NarrationRequest req = LoreNarration.forEntry(entry);
+                                        if (req != null) gam.narration().narrate(req);
+                                    }
+                                }
+                            }
+                        }
+                    } catch (Exception ignored) {}
                 }
                 return true;
             }

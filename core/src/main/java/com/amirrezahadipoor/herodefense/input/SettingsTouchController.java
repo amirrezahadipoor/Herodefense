@@ -60,20 +60,15 @@ public final class SettingsTouchController {
             case TOGGLE_MUSIC -> settings.musicEnabled = !settings.musicEnabled;
             case CYCLE_SOUND_LEVEL -> settings.cycleSoundVolume();
             case CYCLE_MUSIC_LEVEL -> settings.cycleMusicVolume();
-            // The locale is switched here rather than when the settings are next saved, so the screen the
-            // player is looking at changes under their finger on the frame after the tap. That is the whole
-            // point of the row: a language you have to leave the screen to see is a language you cannot
-            // confirm you chose.
             case CYCLE_LANGUAGE -> GameLocale.use(settings.cycleLanguage());
-            // Read straight from the settings object by the composer on the frame after the tap, so the shake
-            // stops while the player is still looking at the row they pressed. That is the row's only proof:
-            // nothing else on the screen changes when motion is reduced.
             case TOGGLE_REDUCED_MOTION -> settings.reducedMotion = !settings.reducedMotion;
             case CYCLE_TEXT_SIZE -> {
                 settings.cycleTextSize();
                 GameFonts.applyTextScale(settings.textSizeScale());
             }
             case TOGGLE_COLOUR_BLIND_RARITY -> settings.colourBlindRarity = !settings.colourBlindRarity;
+            case TOGGLE_NARRATION -> settings.narrationEnabled = !settings.narrationEnabled;
+            case CYCLE_NARRATION_LEVEL -> settings.cycleNarrationVolume();
             default -> {
                 return action;
             }

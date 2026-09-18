@@ -425,6 +425,15 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         if (audioManager != null) audioManager.onAudioFocus(event);
     }
 
+    /** F3: platform TTS provider for lore and boss narration. */
+    public void setTtsProvider(com.amirrezahadipoor.herodefense.audio.NarrationSystem.TtsProvider provider) {
+        if (audioManager != null) audioManager.setTtsProvider(provider);
+    }
+
+    public com.amirrezahadipoor.herodefense.audio.NarrationSystem narrationSystem() {
+        return audioManager != null ? audioManager.narration() : null;
+    }
+
     @Override
     public void dispose() {
         saveNow();

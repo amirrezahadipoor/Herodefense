@@ -423,8 +423,19 @@ started, `[!]` attempted and failed, with the failure written down.
       ceiling), the license ledger carries each new hash, and `AudioContractTest` pins the cue count at 24.
       `WaveDirectorTest` now accepts any of the four entrance voices, because wave 20's boss has a body and
       the body has a voice.
-- [ ] **F3 (−6) No voice or narration,** including for the 31 lore entries and the boss title cards that are
+- [x] **F3 (−6) No voice or narration,** including for the 31 lore entries and the boss title cards that are
       written as if they were being read aloud.
+    Fixed: `audio/NarrationSystem` with `TtsProvider` interface (NoOp desktop, Android TTS via
+    `android/AndroidTtsProvider` using `TextToSpeech` QUEUE_FLUSH for boss 0.9 urgency, QUEUE_ADD for lore 0.4).
+    `LoreNarration.forEntry` trims each of 31+ entries to <=400 chars TTS-friendly, `BossTitleNarration`
+    owns 8 title cards (ANCIENT_GOLEM, EMBER_WYRM, VOID_KNIGHT, THORN_MATRIARCH, FROST_TITAN, STORM_SERPENT,
+    PLAGUE_HERALD, OBLIVION_CORE) with fallback. `RunPresentationSystem.presentBossEntrance` now narrates
+    claimed boss type via `BossTitleNarration.forBoss`, `ScreenTouchRouter` narrates unlocked lore on
+    SELECTED via `LoreNarration.forEntry`. `GameAudioManager` owns narration, `HeroDefenseGame.setTtsProvider`
+    wired in `AndroidLauncher.onCreate` with `postRunnable` and shutdown in `onDestroy`. Settings rows 8-9:
+    NARRATION toggle + NARRATION LEVEL (QUIET/NORMAL/FULL) via `GameSettings.narrationEnabled/volume` and
+    `SettingsTouchLayout` TOTAL_ROWS 10, rendered in `SettingsOverlayRenderer`. Guarded by `NarrationSystemTest`
+    — history, 31+ lore, 8 boss cards, disable, settings toggle exists.
 - [x] **F4 (−4) Haptics are the `VIBRATE` permission** and a couple of trigger points. The hands now speak
       the run's punctuation, not just the UI's: `HapticFeedback` grew five words -- a hit, a boss falling, a
       level, a wave rolling over, the ultimate going out -- as defaults, so every fake that predates the
