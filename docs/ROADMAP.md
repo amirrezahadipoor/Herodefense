@@ -293,8 +293,33 @@ started, `[!]` attempted and failed, with the failure written down.
 - [ ] **D3 (−8) Four boss identities across forty encounters.** The encounter table itself is good work — eight
       fight scripts on a shifting permutation, deterministic against the save file — but only four of them have
       a body.
-- [ ] **D4 (−8) One fragment shader and one vertex shader in the whole project,** which caps how different the
-      arena, the bosses and the weather can look from each other.
+- [x] **D4 (−8) One fragment shader and one vertex shader in the whole project,** which caps how different the
+      arena, the bosses and the weather can look from each other. The count is now three and three, and the
+      two new pairs do exactly the differentiation the entry names — with one honest correction: the game
+      has no weather system, so there was no weather to differentiate; inventing one under a shader item
+      would have been scope theatre, and the audit's third noun is recorded here as a fact that was wrong.
+      `shaders/arena-veil` is the air itself: two mist bands drifting against each other, a broad light
+      shaft breathing from the upper right, tinted per wave by the stage's own `StageGrade` and faded out
+      toward the bottom of the frame so the fight stays crisp, clamped to a whisper of alpha.
+      `shaders/boss-aura` is the ground a boss stands on: a soft torus of that boss's own telegraph
+      identity colour — the same colour its special-attack warnings use, so the aura and the telegraphs
+      read as one voice — quarter-sunk around the sprite's feet line, which is
+      `CombatEntityRenderer.BOSS_FEET_RATIO` of the 240-unit sprite below the anchor, read from the
+      renderer rather than guessed. Both passes are procedural: one generated white pixel stretched over
+      a quad, everything computed in the fragment stage, sampling no texture, so they cannot moire
+      against the reviewed backdrop art. `ArenaAtmosphereRenderer` owns both, compiles both in pedantic
+      mode at construction (a shader that does not compile throws at startup, and the CI emulator smoke
+      run is what proves they compile where it counts), and is owned in turn by
+      `ArenaEnvironmentRenderer` — drawn over the finished arena, under the actors — which kept every
+      frozen file untouched: no ratchet entry moved. Both effects are motion, so both answer to the G3a
+      gate: the composer hands the arena call the reduced-motion flag it already computed, a suppressed
+      frame gets a frozen clock and a zeroed breath multiplier, and the effects hold on a calm still
+      instead of disappearing. Because a mistyped uniform fails silently at the driver level — the exact
+      dead-asset class of mistake `InternalAssetReferences` was born from — `ArenaAtmosphereShaderTest`
+      pins the vocabulary in both directions by reading the sources: every fragment uniform is set by the
+      renderer, every set name is declared, the vertex stages speak the SpriteBatch contract verbatim,
+      the clamps and the reduced-motion multiplier live in the GLSL itself, and the aura/feet/tint
+      arithmetic is held by pure-helper tests. 929/929 green locally, PMD and SpotBugs clean.
 
 ## E — visuals and presentation (70/100, 30 points deducted)
 

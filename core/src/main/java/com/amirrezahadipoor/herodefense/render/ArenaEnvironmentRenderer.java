@@ -43,6 +43,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     private final Array<TextureAtlas.AtlasRegion> destroyedTreeFrames;
     private final WorldTreeAnimationController treeAnimation =
         new WorldTreeAnimationController();
+    private final ArenaAtmosphereRenderer atmosphere = new ArenaAtmosphereRenderer();
 
     public ArenaEnvironmentRenderer() {
         backdrop = texture("generated/environment/arena_backdrop.png");
@@ -77,12 +78,16 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         SpriteBatch batch,
         GameState state,
         float runTimeSeconds,
-        float presentationDeltaSeconds
+        float presentationDeltaSeconds,
+        boolean motionSuppressed
     ) {
         ScreenEdges.drawCover(batch, backdrop);
         drawGround(batch, state.waveNumber);
         drawCrystals(batch);
         drawWorldTree(batch, state, runTimeSeconds, presentationDeltaSeconds);
+        // D4: the air and the bosses' ground auras, over the finished arena and under the actors.
+        // A suppressed-motion frame gets a frozen clock, which holds both effects on a calm still.
+        atmosphere.draw(batch, state, motionSuppressed ? 0f : runTimeSeconds, motionSuppressed);
     }
 
     /** R5.4: the ground is drawn *under* the stage's grade, not filtered after the frame is finished. */
@@ -164,5 +169,6 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         for (Texture texture : crystals) texture.dispose();
         healthyTreeAtlas.dispose();
         damagedTreeAtlas.dispose();
+        atmosphere.close();
     }
 }
