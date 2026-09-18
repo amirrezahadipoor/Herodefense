@@ -153,6 +153,16 @@ started, `[!]` attempted and failed, with the failure written down.
 - [ ] **G4 (−4) The HUD does not mirror in RTL,** a documented and deliberate asymmetry, still an asymmetry a
       Persian player meets every wave.
 - [ ] **G5 (−2) Overlay text density** (inventory, codex, tooltips) leaves little room for a thumb.
+- [x] **G5a The settings screen's own text collided with itself, and only a screenshot could show it.** The CI
+      capture of the settings screen showed three subtitles ending under their rows' right-aligned tap hints
+      ("boss entrances" under "tap to step", "direction" under "tap to switch", the new row's "spores" under
+      "tap to enable") and the footer hint running out of the panel drawn around it. Two of the three
+      collisions predate G3a and had shipped in every build; nothing but a drawing could have caught them.
+      Fixed by shortening the three subtitles in both languages and stepping the footer hint down one text
+      size, and held by `SettingsTextFitTest`, which caps the six row subtitles and the footer lines by length
+      and says in its own javadoc that length is a proxy for width and the real gate is the CI screenshot.
+      This item exists because E3 was wrong in one direction too: the running game *is* captured in CI, thirty
+      frames of it, and the audit had not looked at those frames until a brightness failure made it.
 
 ## H — localisation and Persian quality (74/100, 26 points deducted)
 

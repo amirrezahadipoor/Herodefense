@@ -174,8 +174,10 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
 
         text.drawLeading(batch, GameLocale.text(SettingsStrings.TOUCH_ONLY), NOTE_PANEL_X,
             NOTE_PANEL_WIDTH, NOTE_INSET, 226f, 0.66f, OverlayText.GOLD);
+        // 0.66f, down from 0.74f: at the larger step this line ran past the panel's right border on the CI
+        // screenshot, and a note that overflows the box drawn around it is a box that is not framing anything.
         text.drawLeading(batch, GameLocale.text(SettingsStrings.HINT), NOTE_PANEL_X,
-            NOTE_PANEL_WIDTH, NOTE_INSET, 192f, 0.74f, OverlayText.IVORY);
+            NOTE_PANEL_WIDTH, NOTE_INSET, 192f, 0.66f, OverlayText.IVORY);
         text.drawLeading(batch, GameLocale.text(SettingsStrings.CLOSE_HINT), NOTE_PANEL_X,
             NOTE_PANEL_WIDTH, NOTE_INSET, 164f, 0.74f, OverlayText.SUBTLE);
         batch.end();

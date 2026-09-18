@@ -25,7 +25,7 @@ public enum SettingsStrings implements Translated {
     SOUND_EFFECTS("SOUND EFFECTS", "جلوه‌های صوتی"),
     SOUND_EFFECTS_SUBTITLE("Arrows, hits, loot", "تیرها، ضربه‌ها و غنیمت"),
     EFFECT_LEVEL("EFFECT LEVEL", "سطح جلوه‌ها"),
-    EFFECT_LEVEL_SUBTITLE("Hits, drops, level-ups, and boss entrances", "ضربه‌ها، غنیمت‌ها و ارتقای سطح"),
+    EFFECT_LEVEL_SUBTITLE("Hits, drops, level-ups", "ضربه‌ها، غنیمت و ارتقای سطح"),
 
     ON("ON", "روشن"),
     OFF("OFF", "خاموش"),
@@ -41,13 +41,13 @@ public enum SettingsStrings implements Translated {
 
     /** Roadmap G3a: the reduced-motion row. Its "on" hint is its own, because "tap to mute" is about sound. */
     REDUCED_MOTION("REDUCED MOTION", "حرکت کاهش‌یافته"),
-    REDUCED_MOTION_SUBTITLE("No camera shake, no drifting spores", "بدون لرزش دوربین و ذره‌های سرگردان"),
+    REDUCED_MOTION_SUBTITLE("No shake, no drifting spores", "بدون لرزش و ذره‌های سرگردان"),
     TAP_TO_RESTORE_MOTION("tap to restore motion", "برای بازگشت حرکت لمس کنید"),
 
     TOUCH_ONLY("TOUCH ONLY", "فقط لمسی"),
 
     LANGUAGE("LANGUAGE", "زبان"),
-    LANGUAGE_SUBTITLE("The screen's words and its direction", "واژه‌های صفحه و جهت آن"),
+    LANGUAGE_SUBTITLE("Words and direction", "واژه‌های صفحه و جهت آن"),
     LANGUAGE_ENGLISH("English", "انگلیسی"),
     LANGUAGE_PERSIAN("Persian", "فارسی"),
 
