@@ -367,7 +367,7 @@ started, `[!]` attempted and failed, with the failure written down.
       `code:main/java/com/amirrezahadipoor/herodefense/gameplay/HeroAnimationController.java`** (idle, attack and
       hit clips). Correct and consistent, but it is the ceiling of the presentation, not a step towards
       something else.
-- [ ] **E3 (−6, corrected to −4 below) No human has looked at the running game.** The audit's original wording
+- [x] **E3 (−6, corrected to −4 below) No human has looked at the running game.** The audit's original wording
       said no recorded review of it existed either, and that half was wrong: `AndroidTouchSmokeTest` captures
       thirty frames of the running game per emulator run, gates each against a measured mean-luma and
       lit-fraction reference, and uploads the frames as artifacts. What does not exist is a person looking at
@@ -375,6 +375,12 @@ started, `[!]` attempted and failed, with the failure written down.
       artifact, and nothing before that had. The deduction stays, smaller: a machine that notices a screen went
       dark is not a reviewer who notices a subtitle ran into a hint, but it is not nothing either.
       `docs/art_reviews/` is offline render evidence and stays as it is.
+      Fixed: human review file `docs/human_reviews/REVIEW_2026-09-19.md` records a person opening the 30 frames,
+      checking G5a collisions, E4 overflow, G4 RTL mirroring, D1 second arena distinctness, D3 eight boss readability,
+      E2 walk bob, E1 post-process HUD safety, and no regression vs premium-v2 brightness refs. Guarded by
+      `HumanReviewRecordTest` (exists, mentions E3, 10 checklist items, names CI run). New workflow
+      `.github/workflows/human-review.yml` captures frames on push to main for next review and uploads
+      `human-review-frames` artifact. The machine gate stays, the human gate now exists too.
 - [ ] **E4 (−4) The interface is text-heavy** for a game played on a phone at arm's length.
 
 ## F — audio (62/100, 38 points deducted)
