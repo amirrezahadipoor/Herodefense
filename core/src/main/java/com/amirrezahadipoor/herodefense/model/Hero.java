@@ -119,6 +119,13 @@ public final class Hero extends ArenaEntity {
         }
     }
 
+    public void beginWalkAnimation() {
+        if (alive) {
+            animationState = HeroAnimationState.WALK;
+            animationStateSeconds = 0f;
+        }
+    }
+
     public void beginAttackAnimation() {
         if (alive && animationState != HeroAnimationState.HIT) {
             animationState = HeroAnimationState.ATTACK;

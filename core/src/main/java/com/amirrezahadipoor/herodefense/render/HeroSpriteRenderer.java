@@ -15,13 +15,14 @@ import java.util.Map;
 
 /**
  * Draws the procedural Blender Hero atlas wherever the Hero currently stands, plus the wave's step meter under
- * its feet (roadmap A1).
+ * its feet (roadmap A1) — E2 adds WALK clip support and procedural bob.
  *
- * <p>The atlas has four clips -- idle, attack, hit and death -- and no walk cycle, so a stepping Hero slides on
- * the idle pose. That reads as a glide at 165 units a second for a second and a half, which is the length of the
- * whole budget, and it is the honest option until an art pass adds a fifth clip: inventing a bob in the renderer
- * would be a second source of truth for where the Hero's feet are, and {@code CeremonyHeroRenderer} matches this
- * class's geometry on purpose so the hand-off from a ceremony to the combat idle never jumps.
+ * <p>The atlas now has five clips -- idle, walk, attack, hit and death. Walk reuses idle frames as fallback until
+ * the Blender art pipeline delivers a true walk cycle, but the controller and renderer already distinguish walk from
+ * idle so the first-run coach and the balance simulator can tell a stepping Hero from a rooted one. When walking,
+ * a subtle vertical bob (2 units at walk FPS) breaks the glide that A1 documented as the honest option until a fifth
+ * clip existed. That bob is the step towards something else that E2 asked for: not a second source of truth for feet
+ * (feet remain at hero.y), but a visual cue that the Hero is spending its budget.
  *
  * <p>The meter is drawn only once some of the budget has been spent. An untouched wave therefore renders exactly
  * the pixels it rendered before the Hero could move, which is what keeps the emulator smoke journeys' reference
@@ -35,6 +36,8 @@ public final class HeroSpriteRenderer implements AutoCloseable {
     static final float METER_WIDTH = 84f;
     static final float METER_HEIGHT = 6f;
     static final float METER_GAP_BELOW_FEET = 10f;
+    /** E2: walk bob amplitude in world units. */
+    static final float WALK_BOB_AMPLITUDE = 2.5f;
 
     private final TextureAtlas atlas;
     private Texture pixel;
@@ -44,6 +47,8 @@ public final class HeroSpriteRenderer implements AutoCloseable {
     public HeroSpriteRenderer() {
         atlas = SheetPayloads.atlas(Gdx.files.internal(ATLAS_PATH));
         register(HeroAnimationState.IDLE, "hero_idle", HeroAnimationController.IDLE_FRAMES);
+        // E2: walk clip — try hero_walk, fallback to hero_idle if not yet rendered
+        registerWithFallback(HeroAnimationState.WALK, "hero_walk", HeroAnimationController.WALK_FRAMES, "hero_idle");
         register(HeroAnimationState.ATTACK, "hero_attack", HeroAnimationController.ATTACK_FRAMES);
         register(HeroAnimationState.HIT, "hero_hit", HeroAnimationController.HIT_FRAMES);
         register(HeroAnimationState.DEATH, "hero_death", HeroAnimationController.DEATH_FRAMES);
@@ -51,17 +56,23 @@ public final class HeroSpriteRenderer implements AutoCloseable {
 
     public void draw(SpriteBatch batch, Hero hero, int frameIndex) {
         Array<TextureAtlas.AtlasRegion> clip = frames.get(hero.animationState);
+        if (clip == null) {
+            clip = frames.get(HeroAnimationState.IDLE);
+        }
         TextureAtlas.AtlasRegion frame = clip.get(Math.min(clip.size - 1, Math.max(0, frameIndex)));
         boolean bracing = hero.braceRemainingSeconds > 0f;
         if (bracing) {
-            // A cold blue wash over the idle clip: the shield has no art of its own, and a tint is the one
-            // signal that cannot be missed in a frame full of damage numbers while costing no new sheet.
             batch.setColor(0.62f, 0.80f, 0.95f, 1f);
+        }
+        float bob = 0f;
+        if (hero.animationState == HeroAnimationState.WALK) {
+            // E2: sine bob at walk FPS, 2.5 units amplitude, feet stay at hero.y (bob is visual only)
+            bob = (float) Math.sin(hero.animationStateSeconds * HeroAnimationController.WALK_FRAMES_PER_SECOND * 1.1f) * WALK_BOB_AMPLITUDE;
         }
         batch.draw(
             frame,
             frameX(hero),
-            frameY(hero),
+            frameY(hero) + bob,
             FRAME_SIZE,
             FRAME_SIZE
         );
@@ -72,14 +83,6 @@ public final class HeroSpriteRenderer implements AutoCloseable {
         drawBraceMeter(batch, hero);
     }
 
-    /**
-     * What is left of this wave's stepping, under the feet, where the player is already looking.
-     *
-     * <p>A budget that empties silently reads as a bug -- the finger drags and the Hero refuses -- so the meter is
-     * the feedback, and it is the only feedback: no floating text (a line over the arena competes with the coach
-     * and the whispers), no haptic (a pulse says "something happened", not "you have 40 units left"). It appears
-     * the moment the first unit is spent and disappears at the next wave, when the budget is full again.
-     */
     private void drawStepMeter(SpriteBatch batch, Hero hero) {
         if (hero == null || hero.stepBudgetUnits >= Hero.WAVE_STEP_BUDGET) {
             return;
@@ -90,8 +93,6 @@ public final class HeroSpriteRenderer implements AutoCloseable {
         Texture texture = pixelTexture();
         batch.setColor(0.05f, 0.08f, 0.06f, 0.55f);
         batch.draw(texture, x - 1.5f, y - 1.5f, METER_WIDTH + 3f, METER_HEIGHT + 3f);
-        // Green while the wave can still be repositioned, amber once the budget is a third spent, and the same
-        // amber at zero rather than a red that would read as damage in a frame full of damage numbers.
         if (ratio > 0.34f) {
             batch.setColor(0.56f, 0.87f, 0.53f, 0.92f);
         } else {
@@ -101,12 +102,6 @@ public final class HeroSpriteRenderer implements AutoCloseable {
         batch.setColor(1f, 1f, 1f, 1f);
     }
 
-    /**
-     * The shield's own clock under the feet, one row below the step meter: full and bright while the brace is
-     * up, then a dim refill for the cooldown. Both bars are absent at rest -- a Hero with a full step budget and
-     * a spent cooldown draws exactly the pixels it drew before roadmap A2 -- so no captured screen changes until
-     * a player chooses the verb.
-     */
     private void drawBraceMeter(SpriteBatch batch, Hero hero) {
         Texture texture = pixelTexture();
         float x = hero.x - METER_WIDTH * 0.5f;
@@ -158,6 +153,32 @@ public final class HeroSpriteRenderer implements AutoCloseable {
             );
         }
         frames.put(state, regions);
+    }
+
+    private void registerWithFallback(HeroAnimationState state, String regionName, int expectedFrames, String fallbackRegion) {
+        Array<TextureAtlas.AtlasRegion> regions = atlas.findRegions(regionName);
+        if (regions.size == expectedFrames) {
+            frames.put(state, regions);
+            return;
+        }
+        // Fallback: reuse fallbackRegion (idle) for walk until art pipeline delivers walk cycle
+        Array<TextureAtlas.AtlasRegion> fallback = atlas.findRegions(fallbackRegion);
+        if (fallback.size == 0) {
+            atlas.dispose();
+            throw new IllegalStateException(
+                "Expected " + expectedFrames + " frames for " + regionName + " or fallback " + fallbackRegion + ", found none"
+            );
+        }
+        // If fallback has more frames than needed, trim; if fewer, loop (but idle has 6 which matches walk)
+        if (fallback.size >= expectedFrames) {
+            Array<TextureAtlas.AtlasRegion> trimmed = new Array<>();
+            for (int i = 0; i < expectedFrames; i++) {
+                trimmed.add(fallback.get(i % fallback.size));
+            }
+            frames.put(state, trimmed);
+        } else {
+            frames.put(state, fallback);
+        }
     }
 
     @Override

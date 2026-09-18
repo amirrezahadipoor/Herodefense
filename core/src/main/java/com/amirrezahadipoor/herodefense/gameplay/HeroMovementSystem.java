@@ -94,6 +94,8 @@ public final class HeroMovementSystem {
         hero.moveTargetX = clampX(worldX);
         hero.moveTargetY = clampY(worldY);
         hero.moveOrderActive = true;
+        // E2: start walk animation immediately so first frame shows movement
+        hero.beginWalkAnimation();
         return true;
     }
 
