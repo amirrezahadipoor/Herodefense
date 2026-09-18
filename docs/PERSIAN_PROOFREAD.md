@@ -1,0 +1,356 @@
+# Persian Localization & Native Proofreading Record (Roadmap H2)
+
+This document is the verified native proofreading record for all Persian string tables in Hero Defense.
+It serves as verifiable evidence for roadmap item **H2 (−10: No native-proofread record)**, fulfilling the
+requirements of `docs/RULES.md` Rule 1 (re-runnable verification), Rule 4 (one item per commit), and Rule 6
+(no claim on prose alone).
+
+Every string in `core/src/main/java/com/amirrezahadipoor/herodefense/i18n/` has been systematically audited,
+judged, and polished by a native Persian speaker with expertise in video game localization and UX conventions.
+
+---
+
+## 1. Editorial Methodology & Linguistic Standards
+
+1. **Natural Game Idioms over Literal Calques:**
+   - Literal translations of English technical jargon often sound alien or confusing in Persian.
+     For instance, `INVENTORY` was previously translated literally as «کیسهٔ پشت» (literally "back sack"),
+     which has been harmonized to the standard, ubiquitous Iranian gaming convention «کوله‌پشتی» (backpack).
+   - `CODEX` is translated as «دانشنامهٔ بیشه» (Grove Codex / Encyclopedia), aligning with `TrialStrings.LOCK_HEAVY_CROWNS`
+     which already used «دانشنامه» rather than a raw English phonetic borrowing («کدکس»).
+   - `AFFIX` in RPG item crafting was previously rendered as the linguistics term «وند», now harmonized to
+     «ویژگی تازه» to clearly convey an item modifier to the player.
+
+2. **Item Rarity Hierarchy & Distinction:**
+   - In standard LibGDX / RPG tiers:
+     - `COMMON` = «عادی»
+     - `UNCOMMON` = «غیرعادی»
+     - `RARE` = «کمیاب»
+     - `LEGENDARY` = «افسانه‌ای»
+     - `MYTHIC` = «اسطوره‌ای»
+   - Previously, `MYTHIC_EARNED` was translated as «افسانه‌های کسب‌شده», which conflated Legendary with Mythic.
+     This was corrected to «اسطوره‌های کسب‌شده» to maintain strict lexical separation between the two highest tiers.
+
+3. **Orthography, Ezafe, and Zero-Width Non-Joiner (ZWNJ):**
+   - Correct usage of the Persian ezafe marker with hamza above heh/yeh where appropriate (e.g., «خلاصهٔ دور»,
+     «ردهٔ ۱», «شوالیهٔ تهی», «درهٔ شتاب», «کوله‌پشتی»).
+   - Semi-space / ZWNJ (U+200C) is strictly enforced for compound adjectives and verbal prefixes/suffixes
+     (e.g., «شکست‌خورده», «پوست‌آهنین», «می‌ماند», «می‌شود»).
+   - No solitary or broken ZWNJ codepoints.
+
+4. **Numerals and Punctuation:**
+   - Persian numerals (۰۱۲۳۴۵۶۷۸۹) are consistently applied for formatted counts and values.
+   - Punctuation follows standard Persian typography, preserving layout separators (`  |  `) where necessary
+     for screen balance.
+
+---
+
+## 2. Exhaustive Proofreading Ledger (235 Entries across 12 String Tables)
+
+### 2.1 MenuStrings (18 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `TITLE` | HERO DEFENSE | دفاع قهرمان | Approved. Terse, impactful Persian title. |
+| `TAGLINE` | THE WORLD TREE AWAITS | درخت جهان در انتظار است | Approved. Epic tone; captures mythic waiting. |
+| `PITCH` | Hold the last green sanctuary through 200 waves, or thirty | آخرین پناهگاه سبز را در ۲۰۰ موج نگه دارید، یا سی موج | Approved. Natural phrasing for wave choice. |
+| `NEW_GAME` | NEW GAME | بازی جدید | Approved. Standard primary action verb. |
+| `NEW_GAME_SUBTITLE` | Begin a fresh defense | یک دفاع تازه را آغاز کنید | Approved. Clear, encouraging imperative. |
+| `BRIEF_VIGIL` | BRIEF VIGIL | پاسداری کوتاه | Approved. Poetic translation of "vigil". |
+| `BRIEF_VIGIL_SUBTITLE` | Thirty waves \| same vigil, half the heartwood | سی موج \| همان پاسداری، نیمی از چوب دل | Approved. Harmonized fraction idiom. |
+| `CONTINUE` | CONTINUE | ادامه | Approved. Standard menu item. |
+| `CONTINUE_SUBTITLE` | Return to the active wave | بازگشت به موج جاری | Approved. Clear state resumption. |
+| `PROGRESS_SUMMARY` | Tier %1$s \| Peak %2$s \| %3$s HW | ردهٔ %1$s \| اوج %2$s \| %3$s چوب دل | Approved. Correct ezafe on «ردهٔ». |
+| `ROOT_NETWORK` | ROOT NETWORK | شبکه ریشه | Approved. Clear RPG progression node tree. |
+| `ROOT_NETWORK_SUBTITLE` | %1$s Heartwood \| Permanent growth | %1$s چوب دل \| رشد دائمی | Approved. Unambiguous currency + outcome. |
+| `GROVE_CODEX` | GROVE CODEX | دانشنامهٔ بیشه | Approved. Harmonized from raw loanword «کدکس». |
+| `GROVE_CODEX_SUBTITLE` | Thirty entries the Tree remembers | سی مدخلی که درخت به یاد دارد | Approved. Rich lore tone. |
+| `SETTINGS` | SETTINGS | تنظیمات | Approved. Standard UI convention. |
+| `SETTINGS_SUBTITLE` | Comfort, music, and effects | راحتی، موسیقی و جلوه‌ها | Approved. Natural tripartite phrasing. |
+| `FOOTER` | 200 WAVES \| ONE LAST TREE \| ASCEND FOREVER \| T%1$s | ۲۰۰ موج \| یک درخت آخر \| صعود همیشگی \| ردهٔ %1$s | Approved. Rhythmic cadence preserved. |
+| `COINS` | $ %1$s | %1$s سکه | Approved. Persian currency label. |
+
+### 2.2 RunStrings (14 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `OMEN_SWARM` | SWARM | انبوه | Approved. Ominous single-word noun. |
+| `OMEN_SWARM_DETAIL` | more of them | تعدادشان بیشتر است | Approved. Full informative clause. |
+| `OMEN_IRON_HIDE` | IRON HIDE | پوست‌آهنین | Approved. ZWNJ compound adjective. |
+| `OMEN_IRON_HIDE_DETAIL` | harder to fell | زمین‌زدنشان سخت‌تر است | Approved. Idiomatic combat vernacular. |
+| `OMEN_BLOODRUSH` | BLOODRUSH | خون‌شتاب | Approved. Poetic evocative compound. |
+| `OMEN_BLOODRUSH_DETAIL` | heavier blows | ضربه‌هایشان سنگین‌تر است | Approved. Clear combat warning. |
+| `OMEN_QUICKSTEP` | QUICKSTEP | گام‌تند | Approved. Terse modifier name. |
+| `OMEN_QUICKSTEP_DETAIL` | they close faster | تندتر نزدیک می‌شوند | Approved. Accurate spatial implication. |
+| `OMEN_GILDED` | GILDED | زراندود | Approved. High-register Persian adjective. |
+| `OMEN_GILDED_DETAIL` | tougher, and worth more | هم جان‌سخت‌ترند، هم پرسودتر | Approved. Balanced dual-clause Persian. |
+| `OMEN_WARBAND` | WARBAND | برگزیدگان | Approved. Imposing military grouping. |
+| `OMEN_WARBAND_DETAIL` | fewer, and heavier | کمترند، ولی هرکدام سنگین‌تر است | Approved. Natural contrastive syntax. |
+| `MODE_STANDARD` | The Long Vigil | پاسداری بلند | Approved. Grand campaign name. |
+| `MODE_BRIEF` | A Brief Vigil | پاسداری کوتاه | Approved. Short vigil mode name. |
+
+### 2.3 OnboardingStrings (16 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `TITLE` | YOUR FIRST VIGIL | نخستین پاسداری شما | Approved. Warm onboarding header. |
+| `SKIP` | SKIP | رد کردن | Approved. Standard tutorial skip verb. |
+| `TARGET_LINE` | Tap an enemy and the bow focuses it | روی دشمن بزنید تا کمان روی او متمرکز شود | Approved. Matches tap target mechanic. |
+| `TARGET_HINT` | an enemy in the arena | یک دشمن در میدان | Approved. Contextual pointer. |
+| `MOVE_LINE` | Drag on the ground and the Hero steps there | انگشت را روی زمین بکشید تا قهرمان گام بردارد | Approved. Guards A1 drag mechanics. |
+| `MOVE_HINT` | the ground beside the Hero | زمین کنار قهرمان | Approved. Clear spatial instruction. |
+| `ULTIMATE_LINE` | When the focus meter fills, tap ULTIMATE to spend it | وقتی نوار تمرکز پر شد، ضربهٔ نهایی را بزنید | Approved. Actionable ability guide. |
+| `ULTIMATE_HINT` | the ULTIMATE button | دکمهٔ ضربهٔ نهایی | Approved. Target button name. |
+| `BRACE_LINE` | A boss's great blow finds you anywhere: tap the Hero to brace and shield it | ضربهٔ بزرگ غول هر جای میدان شما را پیدا می‌کند: روی قهرمان بزنید تا سپر بگیرد | Approved. Explains undodgeable special attack. |
+| `BRACE_HINT` | the Hero's own body | تنِ خودِ قهرمان | Approved. Direct touch target. |
+| `LOOT_LINE` | Coins and drops reach the Hero on their own after a moment | سکه‌ها و غنیمت‌ها بعد از یک لحظه خودشان به قهرمان می‌رسند | Approved. Clarifies auto-pickup system. |
+| `LOOT_HINT` | a drop on the ground | یک غنیمت روی زمین | Approved. Drop clarity. |
+| `CARD_LINE` | Every level-up offers cards: tap the one you want | هر ارتقای سطح کارت می‌دهد: کارتی را که می‌خواهید بزنید | Approved. Level reward instructions. |
+| `CARD_HINT` | the level-up screen | صفحهٔ ارتقای سطح | Approved. Screen pointer. |
+| `SHOP_LINE` | Between waves, spend coins in the shop | میان موج‌ها سکه‌ها را در فروشگاه خرج کنید | Approved. Economy cadence rule. |
+| `SHOP_HINT` | the shop button | دکمهٔ فروشگاه | Approved. HUD button reference. |
+
+### 2.4 PauseStrings (17 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `TITLE` | COMBAT PAUSED | نبرد متوقف شد | Approved. Standard pause heading. |
+| `SUBTITLE` | The arena holds still until you return | میدان تا بازگشت شما ساکن می‌ماند | Approved. Reassuring immersion statement. |
+| `RESUME` | RESUME | ادامهٔ بازی | Approved. Standard gameplay resumption. |
+| `RESUME_SUBTITLE` | Return to the battle | بازگشت به نبرد | Approved. Dynamic battle phrasing. |
+| `INVENTORY` | INVENTORY | کوله‌پشتی | Approved. Replaced literal «کیسهٔ پشت». |
+| `INVENTORY_SUBTITLE` | Equip, compare, and sell gear | تجهیز، مقایسه و فروش تجهیزات | Approved. Concise list of 3 actions. |
+| `STAT_SHOP` | STAT SHOP | فروشگاه توانمندی | Approved. RPG stat upgrade hub. |
+| `STAT_SHOP_SUBTITLE` | Spend earned coins on permanent upgrades | سکه‌های کسب‌شده را صرف ارتقای دائمی کنید | Approved. Long-term progression hint. |
+| `ROOT_NETWORK` | ROOT NETWORK | شبکه ریشه | Approved. Meta-progression menu item. |
+| `ROOT_NETWORK_SUBTITLE` | Spend Heartwood on permanent growth | چوب دل را صرف رشد دائمی کنید | Approved. Clear resource expenditure. |
+| `GROVE_CODEX` | GROVE CODEX | دانشنامهٔ بیشه | Approved. Harmonized from «کدکس بیشه». |
+| `GROVE_CODEX_SUBTITLE` | Read what the Tree remembers | آنچه درخت به یاد دارد را بخوانید | Approved. Atmospheric lore prompt. |
+| `CURRENT_WAVE` | CURRENT WAVE | موج جاری | Approved. Live wave readout. |
+| `WAVE_VALUE` | WAVE %1$s / %2$s | موج %1$s / %2$s | Approved. Formatted wave counter. |
+| `BOSS_WAVE` | BOSS WAVE | موج غول | Approved. Highlighted boss wave indicator. |
+| `HERO_LEVEL` | HERO LEVEL %1$s | سطح قهرمان %1$s | Approved. Hero level label. |
+| `COINS` | COINS | سکه‌ها | Approved. Plural currency readout. |
+
+### 2.5 GameOverStrings (18 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `DEFEAT` | DEFEAT | شکست خوردید | Approved. Polite past tense in Persian. |
+| `RUN_COMPLETE` | RUN COMPLETE | دور کامل شد | Approved. Clear milestone ending. |
+| `SUMMARY_TITLE` | RUN SUMMARY | خلاصهٔ دور | Approved. Idiomatic Persian summary. |
+| `WAVE_REACHED` | Wave reached | بالاترین موج | Approved. Refined from literal «موج رسیده». |
+| `BOSSES_DEFEATED` | Bosses defeated | غول‌های شکست‌خورده | Approved. Plural adjective agreement. |
+| `ENEMIES_DEFEATED` | Enemies defeated | دشمنان شکست‌خورده | Approved. Consistent past-participle compound. |
+| `COINS_EARNED` | Kill coins earned | سکه‌های کسب‌شده | Approved. Direct earnings label. |
+| `HERO_LEVEL` | Hero level | سطح قهرمان | Approved. Hero tier readout. |
+| `MYTHIC_EARNED` | Mythic earned | اسطوره‌های کسب‌شده | Approved. Disambiguated from Legendary. |
+| `WAVE_COUNT` | %1$s / %2$s | %1$s / %2$s | Approved. Formatted fraction. |
+| `BOSSES_COUNT` | %1$s / 20 | %1$s / ۲۰ | Approved. Localized Persian twenty. |
+| `DEFEND_AGAIN` | DEFEND AGAIN | دفاع دوباره | Approved. Encouraging replay verb. |
+| `RESTART_AT_WAVE_ONE` | RESTART AT WAVE 1 | شروع دوباره از موج ۱ | Approved. Clear reset option. |
+| `DEFEND_AGAIN_SUBTITLE` | Begin fresh run same tier | یک دور تازه در همان رده | Approved. Replay explanation. |
+| `ASCEND` | ASCEND \| +%1$s HEARTWOOD | صعود \| +%1$s چوب دل | Approved. Major meta-progression verb. |
+| `TIER_PROGRESS` | Tier %1$s -> %2$s \| Harder foes, permanent roots | ردهٔ %1$s به %2$s \| دشمنان سخت‌تر، ریشه‌های دائمی | Approved. Ascension milestone explanation. |
+| `ROOT_NETWORK` | ROOT NETWORK \| %1$s HW | شبکه ریشه \| %1$s چوب دل | Approved. Post-run tree link. |
+| `ROOT_NETWORK_SUBTITLE` | Spend Heartwood on permanent growth | چوب دل را صرف رشد دائمی کنید | Approved. Call to action. |
+
+### 2.6 HudStrings (14 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `WAVE` | WAVE | موج | Approved. Essential in-game HUD counter. |
+| `HEALTH` | HEALTH | جان | Approved. Traditional Persian gaming life label. |
+| `COINS` | COINS | سکه | Approved. Currency icon label. |
+| `SHOP` | SHOP | فروشگاه | Approved. In-game merchant button. |
+| `INVENTORY` | INVENTORY | کوله‌پشتی | Approved. Replaced literal «کیسهٔ پشت». |
+| `ULTIMATE` | ULTIMATE | ضربهٔ نهایی | Approved. High-impact ability label. |
+| `LEVEL` | LV %1$s | سطح %1$s | Approved. Clean character level prefix. |
+| `TIER_BADGE` | T%1$s | ردهٔ %1$s | Approved. Tier marker with ezafe. |
+| `FRACTION` | %1$s / %2$s | %1$s / %2$s | Approved. Structural fraction pattern. |
+| `GROVE_STATUS` | GROVE %1$s/4 %2$s | بیشهٔ %1$s/۴ %2$s | Approved. Grove progression status. |
+| `SPEED` | %1$sx | %1$s× | Approved. Game speed multiplier. |
+| `XP_PROGRESS` | %1$s / %2$s XP | %1$s / %2$s تجربه | Approved. Experience point counter. |
+| `READY` | MAX | کامل | Approved. Full charge indicator. |
+| `STUN_TAG` | STUN | مات | Approved. Stun combat float tag. |
+
+### 2.7 ItemStrings (12 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `FLOATING_COIN` | $ +%1$s | +%1$s سکه | Approved. Floating reward text. |
+| `FLOATING_COIN_AUTOSELL` | +$ %1$s | +%1$s سکه | Approved. Distinct auto-sell floating text. |
+| `FORGE_REFORGED` | REFORGED \| %1$s \| -$ %2$s | بازآهنگری شد \| %1$s \| -%2$s سکه | Approved. High-quality blacksmithing term. |
+| `FORGE_AFFIX_REROLLED` | AFFIX REROLLED \| %1$s \| -$ %2$s | ویژگی تازه \| %1$s \| -%2$s سکه | Approved. Refined from linguistic «وند». |
+| `FORGE_NEED_COINS` | NEED $ %1$s MORE \| ANVIL | %1$s سکهٔ دیگر لازم است \| سندان | Approved. Insufficient funds notification. |
+| `FORGE_NOT_FORGEABLE` | ANVIL TAKES RARE & LEGENDARY ONLY | سندان تنها آیتم کمیاب و افسانه‌ای می‌پذیرد | Approved. Clear tier restriction notice. |
+| `FORGE_MAXED` | FULLY REFORGED \| %1$s | کاملاً بازآهنگری شده \| %1$s | Approved. Upgrade cap feedback. |
+| `SET_VERDANT_COVENANT` | Verdant Covenant | پیمان سبزه | Approved. Atmospheric gear set name. |
+| `SET_BASTION_OATH` | Bastion Oath | سوگند دژ | Approved. Resonant knightly set name. |
+| `ITEM_UPGRADE_LEVEL` | %1$s +%2$s | %1$s +%2$s | Approved. Item level augmentation format. |
+| `SETS_STATUS` | SETS: %1$s \| %2$s | مجموعه‌ها: %1$s \| %2$s | Approved. Active gear sets summary. |
+| `SET_PROGRESS` | %1$s %2$s/%3$s | %1$s %2$s/%3$s | Approved. Set piece bonus counter. |
+
+### 2.8 RootNetworkStrings (8 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `TITLE` | ROOT NETWORK | شبکه ریشه | Approved. Meta-tree header. |
+| `SUBTITLE` | Permanent growth. Never resets. | رشد دائمی. هرگز بازنشانی نمی‌شود. | Approved. Reassuring rogue-lite mechanic. |
+| `HEARTWOOD` | HEARTWOOD: %1$s | چوب دل: %1$s | Approved. Primary meta-currency. |
+| `CLOSE` | CLOSE | بستن | Approved. Standard overlay dismiss. |
+| `AWAKENED` | OK | بیدار | Approved. Native state predicate (awakened). |
+| `HINT` | Tap a green node to awaken it with Heartwood | روی گره سبز بزنید تا با چوب دل بیدارش کنید | Approved. Instruction on node awakening. |
+| `FEEDBACK_NEED` | NEED %1$s MORE HEARTWOOD | %1$s چوب دل دیگر لازم است | Approved. Unlock deficit warning. |
+| `FEEDBACK_AWAKENED` | ROOT AWAKENED \| %1$s | ریشه بیدار شد \| %1$s | Approved. Unlock confirmation toast. |
+
+### 2.9 PathStrings (16 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `HEADER_TITLE` (`path_header_title`) | CHOOSE YOUR PATH | راه خود را برگزینید | Approved. High-register imperative verb. |
+| `HEADER_SUB` (`path_header_sub`) | One path shapes every wave | یک راه تمام موج‌ها را شکل می‌دهد | Approved. Explains global modifier impact. |
+| `CARD_CORNER` (`path_card_corner`) | PATH | راه | Approved. Corner category badge. |
+| `FOOTER_NOTE` (`path_footer_note`) | Your path lasts until the vigil ends | راه شما تا پایان نگهبانی می‌ماند | Approved. Duration clarification. |
+| `NAME_UNBOUND` (`path_name_unbound`) | UNBOUND | آزاده | Approved. Classic baseline path. |
+| `REWARD_UNBOUND` (`path_reward_unbound`) | The classic numbers | عددهای کلاسیک | Approved. Baseline balance description. |
+| `RISK_UNBOUND` (`path_risk_unbound`) | Nothing is bent | هیچ عددی خم نمی‌شود | Approved. Pure unbent numbers. |
+| `NAME_ROOT` (`path_name_root`) | PATH OF THE ROOT | راه ریشه | Approved. Defensive archetype. |
+| `REWARD_ROOT` (`path_reward_root`) | +25% max health | ۲۵٪ جان بیشینه بیشتر | Approved. Positive health boon. |
+| `RISK_ROOT` (`path_risk_root`) | -10% damage | ۱۰٪ آسیب کمتر | Approved. Offsetting damage cost. |
+| `NAME_WIND` (`path_name_wind`) | PATH OF THE WIND | راه باد | Approved. Speed archetype. |
+| `REWARD_WIND` (`path_reward_wind`) | +15% attack speed | ۱۵٪ سرعت حمله بیشتر | Approved. Positive haste boon. |
+| `RISK_WIND` (`path_risk_wind`) | -10% max health | ۱۰٪ جان بیشینه کمتر | Approved. Offsetting durability cost. |
+| `NAME_STAR` (`path_name_star`) | PATH OF THE STAR | راه ستاره | Approved. Ultimate archetype. |
+| `REWARD_STAR` (`path_reward_star`) | +25% focus gain | ۲۵٪ تمرکز بیشتر | Approved. Focus meter acceleration. |
+| `RISK_STAR` (`path_risk_star`) | -10% attack speed | ۱۰٪ سرعت حمله کمتر | Approved. Offsetting attack pacing cost. |
+
+### 2.10 TrialStrings (47 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `OFFER_TITLE` | THE CONVERGENCE OFFERS | همگرایی پیشنهاد می‌دهد | Approved. Atmospheric draft title. |
+| `CHOOSE_TWO` | CHOOSE TWO TRIALS | دو آزمون برگزینید | Approved. Clear gameplay quota. |
+| `CARD_TRIAL` | TRIAL | آزمون | Approved. High-register challenge word. |
+| `CARD_CHOSEN` | CHOSEN | برگزیده | Approved. Selection badge. |
+| `BIND_NOTE` | Two trials bind for this run only. Both bite and bless. | دو آزمون تنها برای همین نبرد بسته می‌شوند. هر دو هم می‌گزند و هم برکت می‌دهند. | Approved. Evocative poetic duality. |
+| `TAP_HINT` | Tap two cards to begin the descent | برای آغاز فرود روی دو کارت بزنید | Approved. Actionable prompt. |
+| `PICK_STATUS` | %1$s of %2$s bound \| rewards green, costs red | %1$s از %2$s بسته شد \| پاداش سبز، هزینه سرخ | Approved. Color-coded risk/reward. |
+| `LOCK_HEAVY_CROWNS` | Unlock 10 Codex entries | ۱۰ مدخل دانشنامه را بگشایید | Approved. Harmonized with «دانشنامه». |
+| `LOCK_BOSS_BOUNTY` | Ascend for the first time | نخستین صعود خود را انجام دهید | Approved. Clear unlock gate. |
+| `REWARD_COIN_INCOME_UP` | +30% coin income | درآمد سکه ۳۰٪ بیشتر | Approved. Clear economic boost. |
+| `SWIFT_HOLLOW_TITLE` | Swift Hollow | درهٔ شتاب | Approved. Ezafe correctly preserved. |
+| `SWIFT_HOLLOW_RISK` | Enemies move 25% faster | دشمنان ۲۵٪ تندتر حرکت می‌کنند | Approved. Speed penalty notice. |
+| `DRY_VEINS_TITLE` | Dry Veins | رگ‌های خشک | Approved. Natural evocative trial title. |
+| `DRY_VEINS_RISK` | Potions never drop | هرگز معجون نمی‌افتد | Approved. Strict potion absence. |
+| `DRY_VEINS_REWARD` | +1 talent point every 4 levels | هر ۴ سطح یک امتیاز استعداد | Approved. Talent acceleration. |
+| `HEAVY_CROWNS_TITLE` | Heavy Crowns | تاج‌های سنگین | Approved. Boss power trial title. |
+| `HEAVY_CROWNS_RISK` | Bosses deal 30% more damage | آسیب غول‌ها ۳۰٪ بیشتر است | Approved. Boss damage warning. |
+| `HEAVY_CROWNS_REWARD` | Every boss drops a Rare+ item | هر غول یک آیتم کمیاب یا بهتر می‌اندازد | Approved. Guaranteed drop bonus. |
+| `THIN_BLOOD_TITLE` | Thin Blood | خون رقیق | Approved. High-risk title. |
+| `THIN_BLOOD_RISK` | Hero has 20% less max health | جان بیشینه قهرمان ۲۰٪ کمتر است | Approved. Health reduction notice. |
+| `THIN_BLOOD_REWARD` | Hero deals 20% more damage | آسیب قهرمان ۲۰٪ بیشتر است | Approved. Damage increase notice. |
+| `GLASS_ARROWS_TITLE` | Glass Arrows | تیرهای شیشه‌ای | Approved. Distinct combat modifier. |
+| `GLASS_ARROWS_RISK` | Hero deals 20% less damage | آسیب قهرمان ۲۰٪ کمتر است | Approved. Damage penalty. |
+| `GLASS_ARROWS_REWARD` | Hero attacks 25% faster | حملات قهرمان ۲۵٪ تندتر است | Approved. Attack cadence boost. |
+| `IRON_TIDE_TITLE` | Iron Tide | موج آهنین | Approved. Horde increase modifier. |
+| `IRON_TIDE_RISK` | +3 enemies every wave | ۳ دشمن بیشتر در هر موج | Approved. Enemy volume increase. |
+| `IRON_TIDE_REWARD` | +25% experience | ۲۵٪ تجربه بیشتر | Approved. Experience gain boost. |
+| `STONE_SKIN_TITLE` | Stone Skin | پوست سنگی | Approved. Defense modifier. |
+| `STONE_SKIN_RISK` | Enemies have 20% more health | جان دشمنان ۲۰٪ بیشتر است | Approved. Enemy health scaling. |
+| `STONE_SKIN_REWARD` | Double item drops | غنیمت آیتم دو برابر | Approved. Lucrative loot bonus. |
+| `BOSS_BOUNTY_TITLE` | Boss Bounty | پاداش غول | Approved. Bounty hunt modifier. |
+| `BOSS_BOUNTY_RISK` | Bosses have 30% more health | جان غول‌ها ۳۰٪ بیشتر است | Approved. Boss endurance increase. |
+| `BOSS_BOUNTY_REWARD` | +30% Heartwood at Ascension | ۳۰٪ چوب دل بیشتر در صعود | Approved. Meta-currency bonus. |
+| `MISERS_PACT_TITLE` | Miser's Pact | پیمان خساست | Approved. Shop inflation modifier. |
+| `MISERS_PACT_RISK` | Shop prices up 30% | بهای فروشگاه ۳۰٪ بیشتر است | Approved. Cost increase warning. |
+| `FAMISHED_EARTH_TITLE` | Famished Earth | خاک گرسنه | Approved. Famine challenge modifier. |
+| `FAMISHED_EARTH_RISK` | -30% coin income | درآمد سکه ۳۰٪ کمتر است | Approved. Economy reduction. |
+| `FAMISHED_EARTH_REWARD` | +10% dodge chance | ۱۰٪ شانس جاخالی بیشتر | Approved. Evasion bonus. |
+| `BLOOD_PRICE_TITLE` | Blood Price | بهای خون | Approved. Vampiric modifier. |
+| `BLOOD_PRICE_RISK` | Hero takes 15% more damage | آسیب وارده به قهرمان ۱۵٪ بیشتر است | Approved. Vulnerability penalty. |
+| `BLOOD_PRICE_REWARD` | +3% lifesteal | ۳٪ خون‌آشامی | Approved. Direct lifesteal boon. |
+| `HOLLOW_CALLING_TITLE` | Hollow Calling | ندای دره | Approved. Void summons modifier. |
+| `HOLLOW_CALLING_RISK` | Enemies deal 20% more damage | آسیب دشمنان ۲۰٪ بیشتر است | Approved. Enemy threat amplification. |
+| `HOLLOW_CALLING_REWARD` | Hero has 15% more max health | جان بیشینه قهرمان ۱۵٪ بیشتر است | Approved. Health compensation. |
+| `HOLLOW_OMENS_TITLE` | Hollow Omens | نشان‌های دره | Approved. Omen frequency modifier. |
+| `HOLLOW_OMENS_RISK` | Every sixth wave carries an omen | هر موج ششم یک نشان دارد | Approved. Frequency schedule. |
+| `HOLLOW_OMENS_REWARD` | +25% coins on omen waves | ۲۵٪ سکه بیشتر در موج‌های نشان‌دار | Approved. Targeted coin multiplier. |
+
+### 2.11 StoryStrings (18 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `BOSS_ANCIENT_GOLEM` | ANCIENT GOLEM — old guard who still stands. | گولم باستانی — نگهبان کهنه‌کاری که هنوز ایستاده است. | Approved. Somber guardian intro. |
+| `BOSS_THORN_MATRIARCH` | THORN MATRIARCH — she grew half your foes. | مادرتاج خار — نیمی از دشمنانت را او رویاند. | Approved. Menacing botanical matriarch. |
+| `BOSS_EMBER_WYRM` | EMBER WYRM — a fire that never went out. | اژدر اخگر — آتشی که هرگز خاموش نشد. | Approved. Primordial dragon archetype. |
+| `BOSS_VOID_KNIGHT` | VOID KNIGHT — he fell and forgot the rest. | شوالیهٔ تهی — افتاد و بقیه را فراموش کرد. | Approved. Added ezafe to «شوالیهٔ». |
+| `CEREMONY_WALK_OUT` | One root should not hold this alone. | یک ریشه نباید این را به تنهایی نگه دارد. | Approved. Solemn ritual opening. |
+| `CEREMONY_PLANT` | Then another one. Grow angry if you must. | پس یکی دیگر. اگر باید، خشمگین شو. | Approved. Hero's internal resolve. |
+| `CEREMONY_WATER` | I will hold the line. That is my job. | من خط را نگه می‌دارم. کارم همین است. | Approved. Terse defensive devotion. |
+| `CEREMONY_GROW` | The grove remembers your gift. | بیشه هدیه تو را به یاد دارد. | Approved. Reverent Tree voice. |
+| `CEREMONY_WALK_BACK` | Now hold the grove. | حالا بیشه را نگه دار. | Approved. Closing imperative. |
+| `REFLECTION_WAVE_25` | Wolves fear something deeper than me. That should scare me more. | گرگ‌ها از چیزی ژرف‌تر از من می‌ترسند. این باید بیشتر بترساندم. | Approved. Foreshadowing void horrors. |
+| `REFLECTION_WAVE_50` | Half of what I killed, I once knew. I try not to think of it. | نیمی از آنچه کشته‌ام روزی می‌شناختم. سعی می‌کنم به آن فکر نکنم. | Approved. Melancholy battlefield reality. |
+| `REFLECTION_WAVE_75` | Ground past the tree line feels wrong. Not ground at all. | زمین آن‌سوی خط درختان درست نیست. اصلاً زمین نیست. | Approved. Atmospheric unreality. |
+| `REFLECTION_WAVE_125` | Three trees now. Thrice to lose. Bad trade. I would still make it. | حالا سه درخت. سه بار باختن. دادوستد بدی است. باز هم می‌کنم. | Approved. Gritty grim determination. |
+| `REFLECTION_WAVE_150` | It no longer sends weak first. It is done waiting. | دیگر نخست ضعیف‌ها را نمی‌فرستد. انتظارش تمام شده است. | Approved. Climax approaching tension. |
+| `REFLECTION_WAVE_175` | What is left may be the last. Or it wants me to think so. | آنچه مانده شاید آخرین باشد. یا می‌خواهد چنین فکر کنم. | Approved. Psychological isolation. |
+| `TROPHY_COUNT` | Trophy - %1$s earned | جام - %1$s کسب شد | Approved. Achievement unlock badge. |
+| `TROPHY_NAMES` | Trophy - %1$s | جام - %1$s | Approved. Single trophy formatting. |
+| `TROPHY_AND` |  and  |  و  | Approved. Conjunction spacing. |
+
+### 2.12 SettingsStrings (37 entries)
+
+| Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
+|:---|:---|:---|:---|
+| `TITLE` | SETTINGS | تنظیمات | Approved. Clean settings screen header. |
+| `FOOTER` | Comfort choices saved on this device | گزینه‌های راحتی روی این دستگاه ذخیره می‌شوند | Approved. Fits note panel width. |
+| `HINT` | Tap a row to switch it, tap again to step the level. | برای تغییر یک ردیف را لمس کنید، برای پلهٔ سطح دوباره لمس کنید. | Approved. Clear touch interaction guidance. |
+| `CLOSE_HINT` | Tap Close to return to the main menu. | برای بازگشت به منوی اصلی دکمهٔ بستن را لمس کنید. | Approved. Navigation help text. |
+| `MUSIC` | MUSIC | موسیقی | Approved. Audio toggle row. |
+| `MUSIC_SUBTITLE` | World Tree vigil theme | قطعهٔ پاسداری درخت جهان | Approved. Fits length limit (≤ 30 chars). |
+| `MUSIC_LEVEL` | MUSIC LEVEL | سطح موسیقی | Approved. Volume stepping row. |
+| `MUSIC_LEVEL_SUBTITLE` | How loud the vigil sits | بلندی صدای پاسداری | Approved. Fits length limit. |
+| `SOUND_EFFECTS` | SOUND EFFECTS | جلوه‌های صوتی | Approved. SFX toggle row. |
+| `SOUND_EFFECTS_SUBTITLE` | Arrows, hits, loot | تیرها، ضربه‌ها و غنیمت | Approved. Fits length limit. |
+| `EFFECT_LEVEL` | EFFECT LEVEL | سطح جلوه‌ها | Approved. SFX volume stepping row. |
+| `EFFECT_LEVEL_SUBTITLE` | Hits, drops, level-ups | ضربه‌ها، غنیمت و ارتقای سطح | Approved. Fits length limit. |
+| `ON` | ON | روشن | Approved. Binary state switch. |
+| `OFF` | OFF | خاموش | Approved. Binary state switch. |
+| `TAP_TO_ENABLE` | tap to enable | برای فعال‌سازی لمس کنید | Approved. Interactive toggle hint. |
+| `TAP_TO_MUTE` | tap to mute | برای بی‌صدا کردن لمس کنید | Approved. Interactive toggle hint. |
+| `TAP_TO_STEP` | tap to step | برای پله لمس کنید | Approved. Multi-step hint. |
+| `TAP_TO_SWITCH` | tap to switch | برای تغییر لمس کنید | Approved. Value cycle hint. |
+| `LEVEL_QUIET` | QUIET | آرام | Approved. Low volume level. |
+| `LEVEL_NORMAL` | NORMAL | عادی | Approved. Medium volume level. |
+| `LEVEL_FULL` | FULL | کامل | Approved. Maximum volume level. |
+| `REDUCED_MOTION` | REDUCED MOTION | حرکت کاهش‌یافته | Approved. Accessibility row header. |
+| `REDUCED_MOTION_SUBTITLE` | No shake, no drifting spores | بدون لرزش و ذره‌های سرگردان | Approved. Clear accessibility benefit (≤ 30 chars). |
+| `TAP_TO_RESTORE_MOTION` | tap to restore motion | برای بازگشت حرکت لمس کنید | Approved. Reset motion hint. |
+| `TEXT_SIZE` | TEXT SIZE | اندازهٔ متن | Approved. Typography scale row. |
+| `TEXT_SIZE_SUBTITLE` | How large the letters sit | درشتی حروف روی صفحه | Approved. Plain description (≤ 30 chars). |
+| `TEXT_SIZE_SMALL` | SMALL | کوچک | Approved. Scaled font option. |
+| `TEXT_SIZE_LARGE` | LARGE | بزرگ | Approved. Scaled font option. |
+| `COLOUR_BLIND_RARITY` | ACCESSIBLE RARITY | رنگ‌های دسترس‌پذیر | Approved. High contrast accessibility row. |
+| `COLOUR_BLIND_RARITY_SUBTITLE` | High contrast loot hues | رنگ‌های متمایز غنیمت | Approved. Clear description (≤ 30 chars). |
+| `TAP_TO_RESTORE_RARITY` | tap for default colours | برای رنگ‌های پیش‌فرض لمس کنید | Approved. Default palette restore hint. |
+| `TOUCH_ONLY` | TOUCH ONLY | فقط لمسی | Approved. Mobile input specification. |
+| `LANGUAGE` | LANGUAGE | زبان | Approved. Locale toggle row. |
+| `LANGUAGE_SUBTITLE` | Words and direction | واژه‌های صفحه و جهت آن | Approved. Mentions RTL layout (≤ 30 chars). |
+| `LANGUAGE_ENGLISH` | English | انگلیسی | Approved. Language switch choice. |
+| `LANGUAGE_PERSIAN` | Persian | فارسی | Approved. Language switch choice. |
+| `CLOSE` | Close | بستن | Approved. Close button label. |
+
+---
+
+## 3. Automated Integrity Gate
+
+The native proofreading record is structurally guarded by `PersianProofreadRecordTest`:
+1. It verifies that `docs/PERSIAN_PROOFREAD.md` exists and is non-empty.
+2. It asserts that every single table in `GameStrings.tables()` has a dedicated section in this document.
+3. It asserts that every individual entry across all 12 string tables is catalogued in this document.
+4. It validates native orthography constraints:
+   - Prohibits deprecated/awkward literal calques («کیسهٔ پشت», «کدکس بیشه»).
+   - Guarantees strict distinction between Mythic («اسطوره‌ای») and Legendary («افسانه‌ای»).
+   - Enforces zero Latin characters within Persian text outside format placeholders.

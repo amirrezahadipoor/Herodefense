@@ -13,12 +13,12 @@ public enum GameOverStrings implements Translated {
     RUN_COMPLETE("RUN COMPLETE", "دور کامل شد"),
 
     SUMMARY_TITLE("RUN SUMMARY", "خلاصهٔ دور"),
-    WAVE_REACHED("Wave reached", "موج رسیده"),
+    WAVE_REACHED("Wave reached", "بالاترین موج"),
     BOSSES_DEFEATED("Bosses defeated", "غول‌های شکست‌خورده"),
     ENEMIES_DEFEATED("Enemies defeated", "دشمنان شکست‌خورده"),
     COINS_EARNED("Kill coins earned", "سکه‌های کسب‌شده"),
     HERO_LEVEL("Hero level", "سطح قهرمان"),
-    MYTHIC_EARNED("Mythic earned", "افسانه‌های کسب‌شده"),
+    MYTHIC_EARNED("Mythic earned", "اسطوره‌های کسب‌شده"),
 
     /**
      * The wave row's value: this run's last wave over the length the run was set to. It is one entry with two

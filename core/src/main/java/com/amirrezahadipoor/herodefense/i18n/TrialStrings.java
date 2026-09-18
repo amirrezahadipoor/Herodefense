@@ -43,7 +43,7 @@ public enum TrialStrings implements Translated {
     REWARD_COIN_INCOME_UP("+30% coin income", "درآمد سکه ۳۰٪ بیشتر"),
 
     /** The thirteen trials: name, then the red line, then the green one -- the card's own reading order. */
-    SWIFT_HOLLOW_TITLE("Swift Hollow", "دره شتاب"),
+    SWIFT_HOLLOW_TITLE("Swift Hollow", "درهٔ شتاب"),
     SWIFT_HOLLOW_RISK("Enemies move 25% faster", "دشمنان ۲۵٪ تندتر حرکت می‌کنند"),
 
     DRY_VEINS_TITLE("Dry Veins", "رگ‌های خشک"),

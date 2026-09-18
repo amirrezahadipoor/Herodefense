@@ -15,7 +15,7 @@ public enum PauseStrings implements Translated {
     RESUME("RESUME", "ادامهٔ بازی"),
     RESUME_SUBTITLE("Return to the battle", "بازگشت به نبرد"),
 
-    INVENTORY("INVENTORY", "کیسهٔ پشت"),
+    INVENTORY("INVENTORY", "کوله‌پشتی"),
     INVENTORY_SUBTITLE("Equip, compare, and sell gear", "تجهیز، مقایسه و فروش تجهیزات"),
 
     STAT_SHOP("STAT SHOP", "فروشگاه توانمندی"),
@@ -24,7 +24,7 @@ public enum PauseStrings implements Translated {
     ROOT_NETWORK("ROOT NETWORK", "شبکه ریشه"),
     ROOT_NETWORK_SUBTITLE("Spend Heartwood on permanent growth", "چوب دل را صرف رشد دائمی کنید"),
 
-    GROVE_CODEX("GROVE CODEX", "کدکس بیشه"),
+    GROVE_CODEX("GROVE CODEX", "دانشنامهٔ بیشه"),
     GROVE_CODEX_SUBTITLE("Read what the Tree remembers", "آنچه درخت به یاد دارد را بخوانید"),
 
     /**

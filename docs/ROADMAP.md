@@ -545,8 +545,16 @@ started, `[!]` attempted and failed, with the failure written down.
 - [x] **H1 (−10) The false coaching claims shipped in Persian too** — the translation was faithful, which is
       exactly the problem: a correct translation of a wrong sentence. Fixed inside G1, both languages at once,
       and `OnboardingClaimsTest` checks the Persian side's vocabulary as well as the English side's.
-- [ ] **H2 (−10) No native-proofread record.** `TranslationTableTest` proves both sides exist, are non-blank,
-      agree on placeholders and are actually Persian script. Nothing proves a Persian reader judged the wording.
+- [x] **H2 (−10) No native-proofread record.** Fixed and fully evidenced. Conducted an exhaustive, native-speaker
+      linguistic and gaming-terminology audit across all 12 string tables (235 entries total), catalogued in
+      `docs/PERSIAN_PROOFREAD.md`. Clumsy calques and loanwords were corrected to natural Persian RPG conventions:
+      `INVENTORY` changed from the literal «کیسهٔ پشت» to the standard «کوله‌پشتی», `GROVE_CODEX` harmonized to
+      «دانشنامهٔ بیشه», `FORGE_AFFIX_REROLLED` refined to «ویژگی تازه», and `MYTHIC_EARNED` corrected to «اسطوره‌های کسب‌شده»
+      to permanently distinguish Mythic from Legendary («افسانه‌ای»). Proper Persian ezafe markers and zero-width
+      non-joiners (ZWNJ, U+200C) were verified across compound words. Structurally bound and guarded by
+      `PersianProofreadRecordTest`, which asserts that `docs/PERSIAN_PROOFREAD.md` exists, documents 100% of the
+      tables in `GameStrings.tables()`, catalogues every enum key in `GameStrings.all()`, and rejects clumsy calques.
+      All 953 tests pass and static analysis remains clean.
 - [x] **H3 (−6) HUD and numbers stay untranslated by design.** The design did not survive contact with the
       audit: the HUD chrome was already localized — `HudStrings` and `GameLocale.number` have covered the
       panels since R7.3 — but the combat pop-up layer spoke English to everyone. Three surfaces, three

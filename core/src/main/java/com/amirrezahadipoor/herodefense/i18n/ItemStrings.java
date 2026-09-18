@@ -25,7 +25,7 @@ public enum ItemStrings implements Translated {
 
     /** Anvil feedback: what happened, to what, and what it cost. */
     FORGE_REFORGED("REFORGED  |  %1$s  |  -$ %2$s", "بازآهنگری شد  |  %1$s  |  -%2$s سکه"),
-    FORGE_AFFIX_REROLLED("AFFIX REROLLED  |  %1$s  |  -$ %2$s", "وند تازه  |  %1$s  |  -%2$s سکه"),
+    FORGE_AFFIX_REROLLED("AFFIX REROLLED  |  %1$s  |  -$ %2$s", "ویژگی تازه  |  %1$s  |  -%2$s سکه"),
     FORGE_NEED_COINS("NEED $ %1$s MORE  |  ANVIL", "%1$s سکهٔ دیگر لازم است  |  سندان"),
     FORGE_NOT_FORGEABLE("ANVIL TAKES RARE & LEGENDARY ONLY", "سندان تنها آیتم کمیاب و افسانه‌ای می‌پذیرد"),
     FORGE_MAXED("FULLY REFORGED  |  %1$s", "کاملاً بازآهنگری شده  |  %1$s"),

@@ -29,7 +29,7 @@ public enum StoryStrings implements Translated {
     BOSS_EMBER_WYRM("EMBER WYRM — a fire that never went out.",
         "اژدر اخگر — آتشی که هرگز خاموش نشد."),
     BOSS_VOID_KNIGHT("VOID KNIGHT — he fell and forgot the rest.",
-        "شوالیه تهی — افتاد و بقیه را فراموش کرد."),
+        "شوالیهٔ تهی — افتاد و بقیه را فراموش کرد."),
 
     /** The planting ceremony's five beats, in the order the ceremony walks through them. */
     CEREMONY_WALK_OUT("One root should not hold this alone.",

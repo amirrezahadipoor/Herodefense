@@ -15,7 +15,7 @@ public enum HudStrings implements Translated {
     HEALTH("HEALTH", "جان"),
     COINS("COINS", "سکه"),
     SHOP("SHOP", "فروشگاه"),
-    INVENTORY("INVENTORY", "کیسهٔ پشت"),
+    INVENTORY("INVENTORY", "کوله‌پشتی"),
     ULTIMATE("ULTIMATE", "ضربهٔ نهایی"),
 
     LEVEL("LV %1$s", "سطح %1$s"),
