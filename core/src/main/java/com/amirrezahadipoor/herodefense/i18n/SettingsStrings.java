@@ -59,6 +59,9 @@ public enum SettingsStrings implements Translated {
     NARRATION_LEVEL("NARRATION LEVEL", "سطح روایت"),
     NARRATION_LEVEL_SUBTITLE("How loud the voice sits", "بلندی صدای روایت"),
 
+    SCREEN_READER("SCREEN READER", "صفحه‌خوان"),
+    SCREEN_READER_SUBTITLE("TalkBack labels for all buttons", "برچسب‌های دسترس‌پذیر برای دکمه‌ها"),
+
     TOUCH_ONLY("TOUCH ONLY", "فقط لمسی"),
 
     LANGUAGE("LANGUAGE", "زبان"),

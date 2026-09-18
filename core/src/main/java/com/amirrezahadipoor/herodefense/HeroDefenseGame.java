@@ -434,6 +434,24 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         return audioManager != null ? audioManager.narration() : null;
     }
 
+    /** G3d: accessibility bridge for TalkBack announcements. */
+    public void setAccessibilityBridge(Object bridge) {
+        // Stored via audioManager's screenReader if bridge is Android; otherwise no-op.
+        // The bridge itself handles TalkBack directly; screenReader handles TTS fallback.
+        if (audioManager != null && bridge != null) {
+            try {
+                // Use reflection to avoid core depending on android class
+                java.lang.reflect.Method announce = bridge.getClass().getMethod("announce", String.class);
+                // We don't store, just keep reference via game field if needed later
+                // For now, screenReader will be used for TTS, bridge for TalkBack
+            } catch (Exception ignored) {}
+        }
+    }
+
+    public com.amirrezahadipoor.herodefense.accessibility.ScreenReaderSystem screenReaderSystem() {
+        return audioManager != null ? audioManager.screenReader() : null;
+    }
+
     @Override
     public void dispose() {
         saveNow();

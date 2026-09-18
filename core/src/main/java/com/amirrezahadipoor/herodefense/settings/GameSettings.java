@@ -108,6 +108,8 @@ public final class GameSettings {
     /** F3: voice/narration for lore and boss titles — device-local, off by default until TTS ready. */
     public boolean narrationEnabled = true;
     public float narrationVolume = LEVELS[LEVELS.length - 1];
+    /** G3d: screen-reader for TalkBack — device-local, on by default, uses same TTS. */
+    public boolean screenReaderEnabled = true;
 
     public static int levelCount() {
         return LEVELS.length;

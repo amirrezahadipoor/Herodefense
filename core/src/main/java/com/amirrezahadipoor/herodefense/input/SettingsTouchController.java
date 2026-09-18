@@ -4,7 +4,6 @@ import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.render.GameFonts;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
-/** Applies device-setting taps, drag-scrolls the list, and reports close separately. */
 public final class SettingsTouchController {
 
     private static final float ROW_DRAG_THRESHOLD = 55f;
@@ -51,7 +50,6 @@ public final class SettingsTouchController {
         drag(deltaY, SettingsTouchLayout.TOTAL_ROWS);
     }
 
-    /** Applies the action to the settings and returns it, so the caller can play the right cue. */
     public SettingsTouchLayout.Action tap(GameSettings settings, float x, float y) {
         SettingsTouchLayout.Action action = SettingsTouchLayout.actionAt(x, y, firstVisibleIndex);
         if (settings == null) return SettingsTouchLayout.Action.NONE;
@@ -69,6 +67,7 @@ public final class SettingsTouchController {
             case TOGGLE_COLOUR_BLIND_RARITY -> settings.colourBlindRarity = !settings.colourBlindRarity;
             case TOGGLE_NARRATION -> settings.narrationEnabled = !settings.narrationEnabled;
             case CYCLE_NARRATION_LEVEL -> settings.cycleNarrationVolume();
+            case TOGGLE_SCREEN_READER -> settings.screenReaderEnabled = !settings.screenReaderEnabled;
             default -> {
                 return action;
             }

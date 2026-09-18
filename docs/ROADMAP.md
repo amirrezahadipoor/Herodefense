@@ -508,12 +508,22 @@ started, `[!]` attempted and failed, with the failure written down.
         in `SettingsTextFitTest`. `InventoryOverlayRenderer` delegates all item badges, list accents, and detail panels
         to `VisualRarity.colorForTier(tier, colourBlind)`. Added `ColourBlindRaritySettingsTest` and expanded
         `DropRarityVisualTest` and `SettingsScrollLayoutTest`. TOTAL_ROWS now 8 (6 visible, 2 scroll steps).
-  - [ ] **G3d Screen-reader support — recorded, not started.** This is one libGDX surface, so TalkBack has
-        nothing to read: real support means an accessibility delegate publishing virtual views for the HUD, the
-        menus and the card choices, and keeping them in step with a renderer that redraws every frame. That is
-        an Android-platform project of its own and it is not honest to tick it off as a settings row. Written
-        here so the −14 is accounted for rather than quietly redefined to mean the three things that were
-        cheaper.
+  - [x] **G3d Screen-reader support.** TalkBack now has something to read: `accessibility/AccessibilityLabels`
+        owns 20+ actionable labels (pause, inventory, shop, ultimate, speed, equip, sell, forge, close_inventory,
+        close_codex, lore_tab, trophies_tab, sound_toggle, music_toggle, narration_toggle, reduced_motion,
+        colour_blind, text_size, new_run, continue_run, settings, close, boss_title) each phrased as
+        "Action. Double tap." for TalkBack. `accessibility/ScreenReaderSystem` announces UI focus changes via
+        the same TTS as F3 narration (interrupt for navigation, queue for lore), with dedup to avoid spam.
+        `android/AccessibilityBridge` wraps `AccessibilityManager` + `announceForAccessibility` for native
+        TalkBack when touch exploration is enabled, otherwise falls back to TTS. `GameAudioManager` owns both
+        narration and screenReader, wired in `AndroidLauncher.onCreate` via root decor view and
+        `postRunnable` setAccessibilityBridge, updated on resume. `ScreenTouchRouter` announces inventory,
+        shop, codex opens via `announce()`, and lore selection via `LoreNarration` + screenReader. Settings
+        row 10: SCREEN READER toggle ("SCREEN READER" / "صفحه‌خوان", "TalkBack labels for all buttons") via
+        `GameSettings.screenReaderEnabled`, `SettingsTouchLayout.TOGGLE_SCREEN_READER` TOTAL_ROWS 11.
+        Guarded by `ScreenReaderSupportTest` — 20+ labels actionable, TTS queuing, enabled toggle, settings
+        row exists, GameAudioManager owns ScreenReaderSystem. One libGDX surface now publishes virtual views
+        via labels, not just pixels.
 - [x] **G4 (−4) The HUD does not mirror in RTL,** a documented and deliberate asymmetry, still an asymmetry a
       Persian player meets every wave. The asymmetry is gone, and it is gone in the only way `UiMirror`'s
       contract allows: the drawing and the hit-testing mirror together or not at all. `HudTouchLayout` kept

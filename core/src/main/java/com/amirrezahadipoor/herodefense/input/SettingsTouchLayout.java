@@ -3,17 +3,15 @@ package com.amirrezahadipoor.herodefense.input;
 import com.amirrezahadipoor.herodefense.render.UiMirror;
 
 /**
- * Tap and drag-scroll settings bounds shared with the renderer (roadmap R6.4 added the two level rows, R7.3 the language
- * row, roadmap G3a added the sixth, and roadmap G3-layout turns the viewport into a scrolling list so additional
- * accessibility options fit without screen collisions).
- *
- * F3 adds narration rows (toggle + level) for lore and boss title voice.
+ * Tap and drag-scroll settings bounds shared with the renderer.
+ * F3 adds narration rows, G3d adds screen-reader row.
  */
 public final class SettingsTouchLayout {
     public enum Action {
         NONE, TOGGLE_SOUND, TOGGLE_MUSIC, CYCLE_SOUND_LEVEL, CYCLE_MUSIC_LEVEL, CYCLE_LANGUAGE,
         TOGGLE_REDUCED_MOTION, CYCLE_TEXT_SIZE, TOGGLE_COLOUR_BLIND_RARITY,
         TOGGLE_NARRATION, CYCLE_NARRATION_LEVEL,
+        TOGGLE_SCREEN_READER,
         CLOSE
     }
 
@@ -33,7 +31,7 @@ public final class SettingsTouchLayout {
     static final float CLOSE_INSET = 50f;
 
     public static final int VISIBLE_ROWS = 6;
-    public static final int TOTAL_ROWS = 10;
+    public static final int TOTAL_ROWS = 11;
 
     private SettingsTouchLayout() {
     }
@@ -76,6 +74,7 @@ public final class SettingsTouchLayout {
             case 7 -> Action.TOGGLE_COLOUR_BLIND_RARITY;
             case 8 -> Action.TOGGLE_NARRATION;
             case 9 -> Action.CYCLE_NARRATION_LEVEL;
+            case 10 -> Action.TOGGLE_SCREEN_READER;
             default -> Action.NONE;
         };
     }

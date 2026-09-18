@@ -275,6 +275,17 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                 drawLevel(batch, SettingsStrings.NARRATION_LEVEL, SettingsStrings.NARRATION_LEVEL_SUBTITLE,
                     y, settings.narrationVolume, state);
             }
+            case 10 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.screenReaderEnabled, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.screenReaderEnabled);
+                drawToggle(batch, SettingsStrings.SCREEN_READER, SettingsStrings.SCREEN_READER_SUBTITLE,
+                    y, settings.screenReaderEnabled, state, SettingsStrings.TAP_TO_MUTE);
+            }
             default -> {}
         }
     }

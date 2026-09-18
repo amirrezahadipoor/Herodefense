@@ -6,26 +6,20 @@ import android.media.AudioFocusRequest;
 import android.media.AudioManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.View;
 
 import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.amirrezahadipoor.herodefense.HeroDefenseGame;
 import com.amirrezahadipoor.herodefense.audio.AudioFocusState;
 
-/**
- * The Android entry point, and the one place that knows Android's audio-focus codes (roadmap R6.4).
- *
- * <p>Focus is requested when the game comes to the foreground and abandoned when it leaves. While it is held,
- * a call, a navigation prompt or another app's music takes it away; the decision of what that costs us lives in
- * {@code AudioFocusState} in the core, and this class only translates: permanent loss and transient loss are
- * the two events it forwards.
- */
 public final class AndroidLauncher extends AndroidApplication {
 
     private HeroDefenseGame game;
     private AudioManager audioManager;
     private AudioFocusRequest focusRequest;
     private AndroidTtsProvider ttsProvider;
+    private AccessibilityBridge accessibilityBridge;
 
     private final AudioManager.OnAudioFocusChangeListener focusListener = change -> {
         if (game == null) return;
@@ -33,7 +27,6 @@ public final class AndroidLauncher extends AndroidApplication {
         postRunnable(() -> game.onAudioFocus(event));
     };
 
-    /** Android's codes, translated once: up to two kinds of loss and one gain (roadmap R6.4). */
     private static AudioFocusState.Event toEvent(int change) {
         if (change == AudioManager.AUDIOFOCUS_GAIN) return AudioFocusState.Event.GAIN;
         if (change == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT
@@ -54,10 +47,19 @@ public final class AndroidLauncher extends AndroidApplication {
         initialize(game, configuration);
         // F3: TTS for lore and boss title narration
         ttsProvider = new AndroidTtsProvider(this);
-        // Game's audioManager is created inside game.create(); post a runnable to set provider once ready
         postRunnable(() -> {
             if (game != null) game.setTtsProvider(ttsProvider);
         });
+        // G3d: TalkBack bridge — root view for announcements
+        try {
+            View root = getWindow().getDecorView().getRootView();
+            accessibilityBridge = new AccessibilityBridge(this, root);
+            postRunnable(() -> {
+                if (game != null && accessibilityBridge != null) {
+                    game.setAccessibilityBridge(accessibilityBridge);
+                }
+            });
+        } catch (Exception ignored) {}
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             focusRequest = new AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
@@ -74,6 +76,7 @@ public final class AndroidLauncher extends AndroidApplication {
     @Override
     protected void onResume() {
         super.onResume();
+        if (accessibilityBridge != null) accessibilityBridge.updateTalkBackState();
         if (audioManager == null) return;
         if (focusRequest != null) {
             audioManager.requestAudioFocus(focusRequest);

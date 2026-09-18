@@ -47,6 +47,7 @@ import com.amirrezahadipoor.herodefense.story.LoreCatalog;
 import com.amirrezahadipoor.herodefense.story.LoreEntry;
 import com.amirrezahadipoor.herodefense.story.LoreNarration;
 import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
+import com.amirrezahadipoor.herodefense.accessibility.ScreenReaderSystem;
 import com.amirrezahadipoor.herodefense.audio.NarrationRequest;
 
 /**
@@ -536,12 +537,14 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             if (host.flow().state() == GameScreenState.PAUSED
                 && PauseTouchLayout.shopAt(worldX, worldY)) {
                 host.flow().transitionTo(GameScreenState.SHOP);
+                announce(host.audioManager(), "shop");
                 return true;
             }
             if (host.flow().state() == GameScreenState.PAUSED
                 && PauseTouchLayout.inventoryAt(worldX, worldY)) {
                 host.flow().transitionTo(GameScreenState.INVENTORY);
                 host.inventoryTouchController().open();
+                announce(host.audioManager(), "inventory");
                 return true;
             }
             if (host.flow().state() == GameScreenState.PAUSED
@@ -553,6 +556,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 && PauseTouchLayout.codexAt(worldX, worldY)) {
                 host.flow().transitionTo(GameScreenState.CODEX);
                 host.codexTouchController().open();
+                announce(host.audioManager(), "close_codex");
                 return true;
             }
             if (host.flow().state() == GameScreenState.PAUSED) {
@@ -560,6 +564,16 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             }
             return true;
         }
+
+    private void announce(com.amirrezahadipoor.herodefense.audio.AudioPlayback playback, String key) {
+        try {
+            if (playback instanceof GameAudioManager) {
+                GameAudioManager gam = (GameAudioManager) playback;
+                ScreenReaderSystem sr = gam.screenReader();
+                if (sr != null) sr.announce(key);
+            }
+        } catch (Exception ignored) {}
+    }
 
     /**
      * Android's Back key (roadmap R7.4).

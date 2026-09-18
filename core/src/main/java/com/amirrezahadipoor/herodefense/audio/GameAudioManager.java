@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.audio;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Sound;
+import com.amirrezahadipoor.herodefense.accessibility.ScreenReaderSystem;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
 import java.util.EnumMap;
@@ -10,12 +11,14 @@ import java.util.Map;
 /**
  * Owns libGDX Sound resources, the music deck, the rate limiter, settings, and lifecycle pause.
  * F3: also owns narration (TTS) for lore entries and boss title cards.
+ * G3d: owns screen-reader for TalkBack.
  */
 public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCloseable {
 
     private final Map<AudioCue, Sound> effects = new EnumMap<>(AudioCue.class);
     private final MusicDeck music = new MusicDeck();
     private final NarrationSystem narration = new NarrationSystem();
+    private final ScreenReaderSystem screenReader = new ScreenReaderSystem();
     private GameSettings settings;
     private boolean appBackgrounded;
     private AudioFocusState focus = AudioFocusState.gained();
@@ -27,16 +30,17 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         for (AudioCue cue : AudioCue.values()) {
             effects.put(cue, Gdx.audio.newSound(Gdx.files.internal(cue.path())));
         }
+        screenReader.setTts(narration);
         update(settings);
     }
 
-    /** Applies the current settings; called each render so a toggle takes effect on the next frame. */
     @Override
     public void update(GameSettings updatedSettings) {
         settings = updatedSettings;
         music.setLevel(settings.musicVolume);
         narration.setEnabled(settings.narrationEnabled);
         narration.setVolume(settings.narrationVolume);
+        screenReader.setEnabled(settings.screenReaderEnabled);
         if (AudioPlaybackPolicy.shouldPlayMusic(settings, appBackgrounded, focus)) {
             music.resume();
         } else {
@@ -44,14 +48,12 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         }
     }
 
-    /** The platform's audio-focus event (roadmap R6.4); the state decides what it costs us. */
     @Override
     public void onAudioFocus(AudioFocusState.Event event) {
         focus = focus.apply(event);
         update(settings);
     }
 
-    /** Points the music at the bed the game state wants; a change fades rather than cuts (roadmap R6.3). */
     @Override
     public void guideMusic(MusicBed bed, float screenGain, boolean ambience) {
         if (bed == null) return;
@@ -60,7 +62,6 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         music.select(bed);
     }
 
-    /** The run's intensity, forwarded to the deck (roadmap F1). */
     @Override
     public void guideTension(float tension) {
         music.setTension(tension);
@@ -74,7 +75,6 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
         if (sound != null) sound.play(cue.volume() * settings.soundVolume);
     }
 
-    /** Advance the per-cue rate limiter and the music fade with real (not simulation) time. */
     @Override
     public void tick(float realDeltaSeconds) {
         throttle.advance(realDeltaSeconds);
@@ -95,6 +95,10 @@ public final class GameAudioManager implements AudioPlayback, AudioFrame, AutoCl
 
     public NarrationSystem narration() {
         return narration;
+    }
+
+    public ScreenReaderSystem screenReader() {
+        return screenReader;
     }
 
     public void setTtsProvider(NarrationSystem.TtsProvider provider) {
