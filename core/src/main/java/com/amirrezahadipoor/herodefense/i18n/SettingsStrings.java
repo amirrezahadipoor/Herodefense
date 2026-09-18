@@ -47,7 +47,6 @@ public enum SettingsStrings implements Translated {
     TEXT_SIZE("TEXT SIZE", "اندازهٔ متن"),
     TEXT_SIZE_SUBTITLE("How large the letters sit", "درشتی حروف روی صفحه"),
     TEXT_SIZE_SMALL("SMALL", "کوچک"),
-    TEXT_SIZE_NORMAL("NORMAL", "عادی"),
     TEXT_SIZE_LARGE("LARGE", "بزرگ"),
 
     /** Roadmap G3c: accessible colour-blind safe rarity palette. */

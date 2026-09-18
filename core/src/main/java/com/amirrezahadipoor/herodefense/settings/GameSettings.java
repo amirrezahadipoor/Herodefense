@@ -55,7 +55,7 @@ public final class GameSettings {
     private static final float[] TEXT_SCALES = {0.85f, 1.0f, 1.18f};
 
     private static final SettingsStrings[] TEXT_SIZE_LABELS = {
-        SettingsStrings.TEXT_SIZE_SMALL, SettingsStrings.TEXT_SIZE_NORMAL, SettingsStrings.TEXT_SIZE_LARGE
+        SettingsStrings.TEXT_SIZE_SMALL, SettingsStrings.LEVEL_NORMAL, SettingsStrings.TEXT_SIZE_LARGE
     };
 
     public int textSizeIndex = 1;

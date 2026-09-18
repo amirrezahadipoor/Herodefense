@@ -115,15 +115,15 @@ final class SettingsScrollLayoutTest {
     void scrollingExposesAndTogglesColourBlindRarityRow() {
         GameSettings settings = new GameSettings();
         SettingsTouchController controller = new SettingsTouchController();
-        assertEquals(7, SettingsTouchLayout.TOTAL_ROWS);
+        assertEquals(8, SettingsTouchLayout.TOTAL_ROWS);
 
         assertFalse(settings.colourBlindRarity);
 
-        // Drag up by 60f -> firstVisibleIndex becomes 1
-        controller.drag(60f);
-        assertEquals(1, controller.firstVisibleIndex());
+        // Drag up by 120f -> firstVisibleIndex becomes 2
+        controller.drag(120f);
+        assertEquals(2, controller.firstVisibleIndex());
 
-        // Slot 5 is the bottom visible row: 1 + 5 = row 6 (TOGGLE_COLOUR_BLIND_RARITY)
+        // Slot 5 is the bottom visible row: 2 + 5 = row 7 (TOGGLE_COLOUR_BLIND_RARITY)
         float cx = SettingsTouchLayout.ROW_X + 50f;
         float slot5Y = SettingsTouchLayout.slotY(5) + 20f;
         SettingsTouchLayout.Action action = controller.tap(settings, cx, slot5Y);

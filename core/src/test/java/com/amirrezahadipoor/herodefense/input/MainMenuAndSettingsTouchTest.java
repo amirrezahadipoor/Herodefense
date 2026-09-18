@@ -76,7 +76,7 @@ final class MainMenuAndSettingsTouchTest {
             SettingsTouchLayout.actionAt(centreX, textSizeSlotY, 1));
         int before = settings.textSizeIndex;
         touch.tap(settings, centreX, textSizeSlotY);
-        assertTrue(settings.textSizeIndex != before || SettingsTouchLayout.TOTAL_ROWS == 7);
+        assertTrue(settings.textSizeIndex != before || SettingsTouchLayout.TOTAL_ROWS == 8);
     }
 
     @Test
@@ -106,8 +106,8 @@ final class MainMenuAndSettingsTouchTest {
             SettingsTouchLayout.LANGUAGE_ROW_Y,
             SettingsTouchLayout.REDUCED_MOTION_ROW_Y
         };
-        // TOTAL_ROWS includes the text-size row added by G3b, which scrolls into the viewport
-        assertEquals(7, SettingsTouchLayout.TOTAL_ROWS, "G3b adds a seventh row");
+        // TOTAL_ROWS includes the text-size row (G3b) and accessible rarity row (G3c), scrolling into the viewport
+        assertEquals(8, SettingsTouchLayout.TOTAL_ROWS, "G3b and G3c add text size and colour-blind rows");
         for (int index = 0; index < rows.length; index++) {
             assertTrue(rows[index] > 260f, "a row must clear the footer note panel");
             if (index > 0) {

@@ -31,14 +31,14 @@ final class ColourBlindRaritySettingsTest {
     }
 
     @Test
-    void scrollingToRowSixTogglesColourBlindRarity() {
+    void scrollingToRowSevenTogglesColourBlindRarity() {
         GameSettings settings = new GameSettings();
         SettingsTouchController controller = new SettingsTouchController();
         float cx = SettingsTouchLayout.ROW_X + SettingsTouchLayout.ROW_WIDTH * 0.5f;
 
-        // Scrolled down by 1 row so row 6 appears in slot 5
-        controller.drag(60f);
-        assertEquals(1, controller.firstVisibleIndex());
+        // Scrolled down by 2 rows so row 7 appears in slot 5
+        controller.drag(120f);
+        assertEquals(2, controller.firstVisibleIndex());
 
         float slot5Y = SettingsTouchLayout.slotY(5) + 40f;
         assertEquals(SettingsTouchLayout.Action.TOGGLE_COLOUR_BLIND_RARITY, controller.tap(settings, cx, slot5Y));
