@@ -3,6 +3,9 @@ plugins {
     // Roadmap R2.5: static analysis, run as its own task so the test loop keeps its pace.
     id "com.github.spotbugs" version "6.0.26"
     id "pmd"
+    // Roadmap I1: coverage is measured and published, and deliberately not gated -- see the note on
+    // jacocoTestReport below for why a number with no gate is the honest first step.
+    id "jacoco"
 }
 
 java {
@@ -146,6 +149,23 @@ tasks.withType(Pmd).configureEach {
 // correctness rules -- unused members, resource leaks, float loop indices, collection choices -- stay on.
 tasks.named("pmdTest") {
     ruleSetFiles = files("config/pmd/ruleset-tests.xml")
+}
+
+// Roadmap I1: what 828 tests actually touch, as a number somebody can read. Not wired into `test`, for the same
+// reason the analysers are not: the local loop stays a loop. CI runs :core:jacocoTestReport as its own step.
+//
+// No threshold and no `violationRules` on purpose. A gate set before anyone has seen the number is a gate set
+// to a guess, and this suite is heavy on source-scanning and table tests -- classes whose "coverage" measures
+// how much of a test helper ran, not how much of the game is exercised -- so a blanket percentage would either
+// pass while the simulation stayed untested or fail on files that are not the game. The number goes to the step
+// summary and the report to an artifact; the first gate gets set from a measured baseline, in its own commit,
+// with the classes it excludes named.
+tasks.named("jacocoTestReport") {
+    reports {
+        xml.required = true
+        html.required = true
+        csv.required = false
+    }
 }
 
 tasks.register("ciStaticAnalysis") {

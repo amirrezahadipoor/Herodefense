@@ -203,8 +203,17 @@ started, `[!]` attempted and failed, with the failure written down.
 
 ## I — engineering, tests and integrity (80/100, 20 points deducted)
 
-- [ ] **I1 (−8) No coverage measurement.** 198 test files and 828 `@Test` methods, and no number for what they
-      touch. Jacoco or an equivalent, reported in CI, not gated at first.
+- [x] **I1 (−8) No coverage measurement.** 198 test files and 828 `@Test` methods, and no number for what they
+      touch. Now there is one: `:core:jacocoTestReport` runs as its own CI step after the unit loop, publishes a
+      line-coverage sentence to the step summary through `tools/audit/coverage_summary.py` (a script rather than
+      a shell heredoc, because a heredoc inside a YAML block scalar cannot end at column zero and an indented
+      terminator is a broken heredoc), and uploads the HTML/XML report as an artifact. Not gated, and the
+      build.gradle comment says why in the same words the roadmap uses: a gate set before anyone has seen the
+      number is a gate set to a guess, and a blanket percentage over a suite full of source-scanning tests would
+      measure how much of a test helper ran. The first gate gets its own commit and its own measured baseline,
+      with the classes it excludes named. Three tests hold the sentence to the report: the LINE counter is the
+      one reported, a report with no LINE counter exits non-zero instead of reading as zero, and the summary
+      file carries the same sentence and the same "reported, not gated" heading the log does.
 - [ ] **I2 (−6) Device evidence is a headless x86 emulator.** Real Adreno/Mali GPUs, real touch latency and
       thermal behaviour are untested. `docs/perf/` runs are emulator runs and should say so wherever they are
       quoted.

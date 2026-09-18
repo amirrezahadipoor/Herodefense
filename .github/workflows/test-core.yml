@@ -146,6 +146,24 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      # Roadmap I1: coverage is published, not gated. The summary line is the number a future gate gets set
+      # from, and the report is the artifact that number is checked against; a percentage without the report
+      # behind it is the same shape of claim this repository forbids for performance numbers.
+      - name: Measure how much of the game the tests touch
+        run: |
+          ./scripts/gradle.sh :core:jacocoTestReport
+          python3 tools/audit/coverage_summary.py \
+            core/build/reports/jacoco/test/jacocoTestReport.xml "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-coverage
+          path: core/build/reports/jacoco/
+          if-no-files-found: ignore
+          retention-days: 14
+
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
