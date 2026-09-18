@@ -8,12 +8,18 @@ public final class CodexTouchLayout {
 
     public static final float LIST_X = 40f;
     public static final float LIST_WIDTH = 640f;
-    public static final float LIST_TOP_Y = 1010f;
-    /** Top of the trophy shelf, which starts under the tab strip instead of under the header. */
-    public static final float TROPHY_LIST_TOP_Y = 978f;
-    public static final float LIST_ROW_HEIGHT = 74f;
-    public static final float LIST_ROW_STRIDE = 84f;
-    public static final int VISIBLE_ROWS = 6;
+    public static final float LIST_TOP_Y = 990f;
+    /** Top of the trophy shelf. Both shelves start under the tab strip with the same geometry (roadmap G5). */
+    public static final float TROPHY_LIST_TOP_Y = 990f;
+    /**
+     * Rows are 96 tall on a 108 stride: the codebase's own generous-target floor, the one HudTouchLayoutTest
+     * has always held the HUD to, and twelve units of gap a thumb can land between two rows without choosing
+     * the wrong one (roadmap G5). Five such rows fit the band between the tabs and the details panel; six of
+     * the old 74s did not leave room for either the height or the gap.
+     */
+    public static final float LIST_ROW_HEIGHT = 96f;
+    public static final float LIST_ROW_STRIDE = 108f;
+    public static final int VISIBLE_ROWS = 5;
 
     /** The two shelves: what the grove wrote, and what the Warden earned (roadmap R3.3). */
     public enum Tab {
@@ -21,8 +27,8 @@ public final class CodexTouchLayout {
         TROPHIES
     }
 
-    public static final float TAB_Y = 1020f;
-    public static final float TAB_HEIGHT = 74f;
+    public static final float TAB_Y = 998f;
+    public static final float TAB_HEIGHT = 96f;
     public static final float TAB_WIDTH = 312f;
     public static final float TAB_GAP = 16f;
     public static final float TAB_LEFT_X = LIST_X;

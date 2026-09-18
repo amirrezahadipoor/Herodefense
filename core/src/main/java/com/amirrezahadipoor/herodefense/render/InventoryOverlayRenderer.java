@@ -130,9 +130,9 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             float chipX = InventoryTouchLayout.autoSellChipX(index);
             float centerX = chipX + InventoryTouchLayout.AUTO_SELL_WIDTH * 0.5f;
             drawCentered(batch, autoSellChipLabel(tier, on), centerX,
-                InventoryTouchLayout.AUTO_SELL_Y + 52f, 0.56f, on ? rarityColor(tier.name()) : MUTED);
+                InventoryTouchLayout.AUTO_SELL_Y + 60f, 0.56f, on ? rarityColor(tier.name()) : MUTED);
             drawCentered(batch, on ? "ON" : "OFF", centerX,
-                InventoryTouchLayout.AUTO_SELL_Y + 26f, 0.60f, on ? POSITIVE : MUTED);
+                InventoryTouchLayout.AUTO_SELL_Y + 34f, 0.60f, on ? POSITIVE : MUTED);
         }
         drawText(batch, "EQUIPPED LOADOUT", 40f, 1023f, 0.72f, GOLD);
         drawText(
@@ -154,13 +154,13 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
                 - InventoryTouchLayout.SLOT_HEIGHT
                 - row * InventoryTouchLayout.SLOT_ROW_STRIDE;
             Item item = state.equippedItems.get(slot.name());
-            drawText(batch, pretty(slot.name()).toUpperCase(Locale.ROOT), x + 30f, y + 70f, 0.64f, GOLD);
+            drawText(batch, pretty(slot.name()).toUpperCase(Locale.ROOT), x + 30f, y + 73f, 0.64f, GOLD);
             if (item == null) {
-                drawText(batch, "Empty slot", x + 112f, y + 39f, 0.78f, MUTED);
+                drawText(batch, "Empty slot", x + 112f, y + 42f, 0.78f, MUTED);
             } else {
-                drawIcon(batch, item, x + 14f, y + 8f, 58f, visibleIcons);
-                drawText(batch, item.name, x + 80f, y + 41f, 0.78f, IVORY);
-                drawText(batch, prettyOrUnknown(item.tier), x + 220f, y + 66f, 0.58f, rarityColor(item.tier));
+                drawIcon(batch, item, x + 14f, y + 11f, 58f, visibleIcons);
+                drawText(batch, item.name, x + 80f, y + 44f, 0.78f, IVORY);
+                drawText(batch, prettyOrUnknown(item.tier), x + 220f, y + 69f, 0.58f, rarityColor(item.tier));
             }
         }
 
@@ -171,17 +171,17 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             float y = InventoryTouchLayout.LIST_TOP_Y
                 - InventoryTouchLayout.LIST_ROW_HEIGHT
                 - row * InventoryTouchLayout.LIST_ROW_STRIDE;
-            drawIcon(batch, item, InventoryTouchLayout.LIST_X + 12f, y + 9f, 70f, visibleIcons);
-            drawText(batch, item.name, InventoryTouchLayout.LIST_X + 92f, y + 61f, 0.79f, IVORY);
+            drawIcon(batch, item, InventoryTouchLayout.LIST_X + 12f, y + 12f, 70f, visibleIcons);
+            drawText(batch, item.name, InventoryTouchLayout.LIST_X + 92f, y + 64f, 0.79f, IVORY);
             drawText(
                 batch,
                 prettyOrUnknown(item.tier).toUpperCase(Locale.ROOT),
                 InventoryTouchLayout.LIST_X + 92f,
-                y + 29f,
+                y + 32f,
                 0.58f,
                 rarityColor(item.tier)
             );
-            drawText(batch, "$ " + item.sellPrice, InventoryTouchLayout.LIST_X + 247f, y + 29f, 0.62f, GOLD);
+            drawText(batch, "$ " + item.sellPrice, InventoryTouchLayout.LIST_X + 247f, y + 32f, 0.62f, GOLD);
         }
 
         drawDetails(batch, state, selected);
@@ -226,12 +226,12 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         drawCentered(batch, "SELL", sellCenterX, 158f + sellOffset, 0.86f, hasSelection ? GOLD : MUTED);
         drawCentered(batch, selected == null ? "--" : "$ " + selected.sellPrice,
             sellCenterX, 118f + sellOffset, 0.70f, hasSelection ? IVORY : MUTED);
-        drawText(batch, EquipmentSetBonus.statusLine(state), 40f, 208f, 0.62f, IVORY);
+        drawText(batch, EquipmentSetBonus.statusLine(state), 40f, 194f, 0.62f, IVORY);
         String feedback = controller.feedbackMessage();
         if (feedback != null) {
             Color feedbackColor = new Color(GOLD);
             feedbackColor.a = controller.feedbackAlpha();
-            drawCentered(batch, feedback, 360f, 234f, 0.82f, feedbackColor);
+            drawCentered(batch, feedback, 360f, 216f, 0.82f, feedbackColor);
         }
         batch.end();
         disposeHiddenIcons(visibleIcons);

@@ -425,7 +425,24 @@ started, `[!]` attempted and failed, with the failure written down.
       the English ones) and the new `HudRendererMirrorTest` (fill arithmetic both directions, full-bar
       identity, drop target following the button, and no locale residue after the switch). 920/920 green
       locally, PMD and SpotBugs clean.
-- [ ] **G5 (−2) Overlay text density** (inventory, codex, tooltips) leaves little room for a thumb.
+- [x] **G5 (−2) Overlay text density** (inventory, codex, tooltips) leaves little room for a thumb. The
+      codebase already had a thumb standard — `HudTouchLayoutTest` has always held the in-run HUD to
+      96-unit targets — the browsing overlays just never answered to it. They do now. The codex was the
+      worst offender: rows 74 tall on an 84 stride, ten units of gap between two lore entries; they are 96
+      on 108, and the band between the tab strip and the details panel fits five such rows instead of six
+      cramped ones, which is the trade this item exists to make — scrolling is cheap, mis-taps are not. The
+      codex tabs grew with the rows (74→96) and the two shelves, which used to start 32 units apart for a
+      reason nobody could reconstruct, now share one geometry under one strip. The inventory: loadout slots
+      and backpack rows to 96 (rows on a 104 stride), auto-sell chips 80→96, the slot column dropped six
+      units at the top to keep the backpack label clear, and the set-bonus line and feedback toast moved
+      down with the taller fourth row. The stat shop's tabs and root button were 68 — the rows there were
+      already generous at 136 — and are 96 now, the strip lowered so the tabs never reach the close button.
+      Every interior text and icon offset recentred with its box. Pinned twice over: the existing geometry
+      tests updated to the new coordinates, and a new `OverlayTouchDensityTest` holding the floor itself —
+      every target ≥96, every inter-row gap ≥8, and the clearances that keep taller geometry from sliding
+      under a neighbour (codex rows above the details panel, inventory rows above the set-bonus strip,
+      slots above the backpack list, chips under the header band, shop rows above the help panel). 924/924
+      green locally, PMD and SpotBugs clean.
 - [x] **G5a The settings screen's own text collided with itself, and only a screenshot could show it.** The CI
       capture of the settings screen showed three subtitles ending under their rows' right-aligned tap hints
       ("boss entrances" under "tap to step", "direction" under "tap to switch", the new row's "spores" under

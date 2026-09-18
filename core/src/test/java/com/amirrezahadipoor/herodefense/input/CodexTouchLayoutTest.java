@@ -8,14 +8,15 @@ import org.junit.jupiter.api.Test;
 
 final class CodexTouchLayoutTest {
     @Test
-    void sixVisibleRowsCoverTheListBandWithoutOverlap() {
-        assertEquals(6, CodexTouchLayout.VISIBLE_ROWS);
-        assertEquals(0, CodexTouchLayout.visibleRowAt(360f, 973f));
-        assertEquals(5, CodexTouchLayout.visibleRowAt(360f, 553f));
-        assertEquals(2, CodexTouchLayout.visibleRowAt(360f, 805f));
-        assertEquals(-1, CodexTouchLayout.visibleRowAt(10f, 973f));
-        assertEquals(-1, CodexTouchLayout.visibleRowAt(710f, 973f));
-        assertEquals(-1, CodexTouchLayout.visibleRowAt(360f, 500f));
+    void fiveVisibleRowsCoverTheListBandWithoutOverlap() {
+        // G5 geometry: rows are 96 tall on a 108 stride from 990, so row r spans 990-96-108r .. 990-108r.
+        assertEquals(5, CodexTouchLayout.VISIBLE_ROWS);
+        assertEquals(0, CodexTouchLayout.visibleRowAt(360f, 942f));
+        assertEquals(4, CodexTouchLayout.visibleRowAt(360f, 510f));
+        assertEquals(2, CodexTouchLayout.visibleRowAt(360f, 726f));
+        assertEquals(-1, CodexTouchLayout.visibleRowAt(10f, 942f));
+        assertEquals(-1, CodexTouchLayout.visibleRowAt(710f, 942f));
+        assertEquals(-1, CodexTouchLayout.visibleRowAt(360f, 440f), "the details panel is not a row");
     }
 
     @Test

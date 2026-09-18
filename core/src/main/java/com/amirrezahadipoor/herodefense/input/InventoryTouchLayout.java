@@ -11,16 +11,17 @@ public final class InventoryTouchLayout {
 
     public static final float SLOT_LEFT_X = 40f;
     public static final float SLOT_RIGHT_X = 380f;
-    public static final float SLOT_TOP_Y = 990f;
+    public static final float SLOT_TOP_Y = 984f;
     public static final float SLOT_WIDTH = 300f;
-    public static final float SLOT_HEIGHT = 90f;
+    /** Loadout slots, backpack rows and auto-sell chips all meet the 96-unit thumb floor (roadmap G5). */
+    public static final float SLOT_HEIGHT = 96f;
     public static final float SLOT_ROW_STRIDE = 110f;
 
     public static final float LIST_X = 40f;
     public static final float LIST_WIDTH = 320f;
     public static final float LIST_TOP_Y = 650f;
-    public static final float LIST_ROW_HEIGHT = 90f;
-    public static final float LIST_ROW_STRIDE = 100f;
+    public static final float LIST_ROW_HEIGHT = 96f;
+    public static final float LIST_ROW_STRIDE = 104f;
     public static final int VISIBLE_ROWS = 4;
 
     public static final float DETAILS_X = 380f;
@@ -41,7 +42,7 @@ public final class InventoryTouchLayout {
     public static final float AUTO_SELL_STRIDE = 120f;
     public static final float AUTO_SELL_Y = 1046f;
     public static final float AUTO_SELL_WIDTH = 110f;
-    public static final float AUTO_SELL_HEIGHT = 80f;
+    public static final float AUTO_SELL_HEIGHT = 96f;
     /** The auto-sell chips, in screen order. Immutable: callers may not swap a tier out from under the UI. */
     public static final java.util.List<ItemTier> AUTO_SELL_TIERS =
         java.util.List.of(ItemTier.COMMON, ItemTier.UNCOMMON, ItemTier.RARE);

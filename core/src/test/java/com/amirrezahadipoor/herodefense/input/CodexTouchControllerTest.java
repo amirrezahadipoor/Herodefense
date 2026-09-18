@@ -23,12 +23,13 @@ final class CodexTouchControllerTest {
         CodexTouchController controller = new CodexTouchController();
         controller.open();
         GameState state = GameState.newRun(31L);
-        assertEquals(CodexTouchController.Action.SELECTED, controller.tap(state, 360f, 973f));
+        // G5 geometry: row r spans 990 - 96 - 108r .. 990 - 108r, five rows, centres 942 down to 510.
+        assertEquals(CodexTouchController.Action.SELECTED, controller.tap(state, 360f, 942f));
         assertEquals(0, controller.selectedIndex());
-        assertEquals(CodexTouchController.Action.SELECTED, controller.tap(state, 360f, 553f));
-        assertEquals(5, controller.selectedIndex());
-        assertEquals(CodexTouchController.Action.NONE, controller.tap(state, 360f, 500f));
-        assertEquals(5, controller.selectedIndex());
+        assertEquals(CodexTouchController.Action.SELECTED, controller.tap(state, 360f, 510f));
+        assertEquals(4, controller.selectedIndex());
+        assertEquals(CodexTouchController.Action.NONE, controller.tap(state, 360f, 440f));
+        assertEquals(4, controller.selectedIndex());
     }
 
     @Test
@@ -38,7 +39,7 @@ final class CodexTouchControllerTest {
         GameState state = GameState.newRun(32L);
         assertEquals(CodexTouchController.Action.CLOSED, controller.tap(state, 620f, 1160f));
         assertFalse(controller.isOpen());
-        assertEquals(CodexTouchController.Action.NONE, controller.tap(state, 360f, 973f));
+        assertEquals(CodexTouchController.Action.NONE, controller.tap(state, 360f, 942f));
     }
 
     @Test
@@ -49,12 +50,12 @@ final class CodexTouchControllerTest {
         controller.drag(state, 55f);
         assertEquals(1, controller.firstVisibleIndex());
         controller.drag(state, 55f * 100f);
-        assertEquals(24, controller.firstVisibleIndex());
+        assertEquals(25, controller.firstVisibleIndex(), "30 lore entries minus the five visible rows");
         controller.drag(state, -55f * 100f);
         assertEquals(0, controller.firstVisibleIndex());
 
         controller.drag(state, 55f * 24f);
-        assertEquals(CodexTouchController.Action.SELECTED, controller.tap(state, 360f, 973f));
+        assertEquals(CodexTouchController.Action.SELECTED, controller.tap(state, 360f, 942f));
         assertEquals(24, controller.selectedIndex());
     }
 

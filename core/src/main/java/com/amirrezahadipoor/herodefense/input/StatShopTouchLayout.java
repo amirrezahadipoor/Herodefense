@@ -18,15 +18,15 @@ public final class StatShopTouchLayout {
     public static final float ROOT_X = 300f;
     public static final float ROOT_Y = 1120f;
     public static final float ROOT_WIDTH = 250f;
-    public static final float ROOT_HEIGHT = 68f;
-    public static final float TAB_Y = 1046f;
-    public static final float TAB_HEIGHT = 68f;
+    public static final float ROOT_HEIGHT = 96f;
+    public static final float TAB_Y = 1016f;
+    public static final float TAB_HEIGHT = 96f;
     public static final float TAB_STATS_X = 55f;
     public static final float TAB_SKILLS_X = 365f;
     public static final float TAB_WIDTH = 300f;
     public static final float ROW_X = 55f;
     public static final float ROW_WIDTH = 610f;
-    public static final float ROW_TOP = 1034f;
+    public static final float ROW_TOP = 1008f;
     public static final float ROW_HEIGHT = 136f;
     public static final float ROW_STRIDE = 150f;
 

@@ -83,7 +83,7 @@ final class CodexTrophyShelfTest {
     }
 
     @Test
-    void bothShelvesClearTheTabStripAndTheLoreRowsStayWhereTheyShipped() {
+    void bothShelvesClearTheTabStripAndShareOneGeometry() {
         float firstTrophyRow = CodexTouchLayout.rowBottom(CodexTouchLayout.Tab.TROPHIES, 0)
             + CodexTouchLayout.LIST_ROW_HEIGHT;
         assertTrue(firstTrophyRow <= CodexTouchLayout.TAB_Y,
@@ -92,8 +92,11 @@ final class CodexTrophyShelfTest {
         float firstLoreRow = CodexTouchLayout.rowBottom(CodexTouchLayout.Tab.LORE, 0)
             + CodexTouchLayout.LIST_ROW_HEIGHT;
         assertTrue(firstLoreRow <= CodexTouchLayout.TAB_Y, "the lore shelf is not covered by the tabs either");
-        assertEquals(CodexTouchLayout.LIST_TOP_Y, firstLoreRow, "and the lore shelf keeps the geometry it shipped with");
-        assertTrue(firstTrophyRow < firstLoreRow, "the trophy shelf starts below the strip that names it");
+        assertEquals(CodexTouchLayout.LIST_TOP_Y, firstLoreRow, "the lore top is the layout constant");
+        // G5 gave the rows the 96-unit thumb floor and the two shelves the same geometry: the old 32-unit
+        // stagger was a leftover of the lore shelf starting "under the header" and the trophies "under the
+        // tabs", and both readings were of the same strip. One top, one stride, one row height.
+        assertEquals(firstLoreRow, firstTrophyRow, "both shelves start under the strip that names them");
     }
 
     @Test

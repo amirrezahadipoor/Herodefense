@@ -113,10 +113,10 @@ public final class CodexOverlayRenderer implements AutoCloseable {
             String label = unlocked
                 ? String.format(Locale.ROOT, "%02d. %s", entry.number(), entry.title())
                 : "??. ??????";
-            text.draw(batch, label, CodexTouchLayout.LIST_X + 20f, bottom + 28f, 0.8f,
+            text.draw(batch, label, CodexTouchLayout.LIST_X + 20f, bottom + 38f, 0.8f,
                 unlocked ? OverlayText.IVORY : OverlayText.MUTED);
             if (selected && unlocked) {
-                icons.draw(batch, "continue", 606f, bottom + 15f, 44f, rowState);
+                icons.draw(batch, "continue", 606f, bottom + 26f, 44f, rowState);
             }
         }
 
@@ -153,9 +153,9 @@ public final class CodexOverlayRenderer implements AutoCloseable {
             x, CodexTouchLayout.TAB_Y, CodexTouchLayout.TAB_WIDTH, CodexTouchLayout.TAB_HEIGHT,
             true, active
         );
-        text.draw(batch, label, x + 22f, CodexTouchLayout.TAB_Y + 30f, TAB_SCALE,
+        text.draw(batch, label, x + 22f, CodexTouchLayout.TAB_Y + 46f, TAB_SCALE,
             active ? OverlayText.GOLD : OverlayText.MUTED);
-        text.draw(batch, active ? "showing" : "tap to show", x + 22f, CodexTouchLayout.TAB_Y + 10f, 0.5f,
+        text.draw(batch, active ? "showing" : "tap to show", x + 22f, CodexTouchLayout.TAB_Y + 18f, 0.5f,
             OverlayText.MUTED);
     }
 
@@ -178,10 +178,10 @@ public final class CodexOverlayRenderer implements AutoCloseable {
                 earned, selected
             );
             text.draw(batch, (earned ? "[*] " : "[ ] ") + trophy.title(),
-                CodexTouchLayout.LIST_X + 20f, bottom + 42f, 0.8f,
+                CodexTouchLayout.LIST_X + 20f, bottom + 54f, 0.8f,
                 earned ? OverlayText.GOLD : OverlayText.MUTED);
             text.draw(batch, progress + HALF_SEPARATOR + trophy.target(),
-                CodexTouchLayout.LIST_X + 20f, bottom + 14f, 0.62f,
+                CodexTouchLayout.LIST_X + 20f, bottom + 18f, 0.62f,
                 earned ? OverlayText.POSITIVE : OverlayText.SUBTLE);
         }
     }

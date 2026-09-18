@@ -137,7 +137,7 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
             StatShopTouchLayout.ROOT_WIDTH, StatShopTouchLayout.ROOT_HEIGHT
         );
         icons.draw(batch, "close", 588f, 1138f, 64f, closeState);
-        icons.draw(batch, "general_power", 312f, 1130f, 40f, rootBtnState);
+        icons.draw(batch, "general_power", 312f, 1148f, 40f, rootBtnState);
         drawText(batch, "ROOTS", 362f, 1166f, 0.72f, GOLD);
         drawText(batch, "WORLD TREE ARMORY", 40f, 1240f, 1.36f, GOLD);
         drawText(batch, tab == Tab.SKILLS
@@ -153,9 +153,9 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
             300f, 1152f, 0.62f, SUBTLE
         );
         drawCentered(batch, "STATS", StatShopTouchLayout.TAB_STATS_X + StatShopTouchLayout.TAB_WIDTH * 0.5f,
-            StatShopTouchLayout.TAB_Y + 44f, 0.96f, tab == Tab.STATS ? GOLD : SUBTLE);
+            StatShopTouchLayout.TAB_Y + 34f, 0.96f, tab == Tab.STATS ? GOLD : SUBTLE);
         drawCentered(batch, "SKILLS", StatShopTouchLayout.TAB_SKILLS_X + StatShopTouchLayout.TAB_WIDTH * 0.5f,
-            StatShopTouchLayout.TAB_Y + 44f, 0.96f, tab == Tab.SKILLS ? GOLD : SUBTLE);
+            StatShopTouchLayout.TAB_Y + 34f, 0.96f, tab == Tab.SKILLS ? GOLD : SUBTLE);
 
         for (int index = 0; index < rows.length; index++) {
             Row row = rows[index];
