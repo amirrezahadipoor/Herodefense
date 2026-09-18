@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.save;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.Boss;
@@ -46,6 +47,7 @@ final class GameStateCodecTest {
         source.healthPotions.set(2, 3);
         source.mode = GameMode.BRIEF;
         source.activeTrials.add("HOLLOW_OMENS");
+        source.heroPath = "STAR";
         source.trophies.recordWaveCleared();
         source.trophies.wavesCleared = 42;
         source.trophies.award(com.amirrezahadipoor.herodefense.progression.Trophy.BARE_HANDS);
@@ -67,7 +69,26 @@ final class GameStateCodecTest {
         assertEquals(GameMode.BRIEF, restored.mode, "the run length is part of the save");
         assertTrue(restored.activeTrials.contains("HOLLOW_OMENS"),
             "and so are the trials the player drafted");
+        assertEquals("STAR", restored.heroPath, "and so is the path the run walks (roadmap B3)");
         assertEquals(42, restored.trophies.wavesCleared, "and so is what the trophies remember");
         assertTrue(restored.trophies.isEarned(com.amirrezahadipoor.herodefense.progression.Trophy.BARE_HANDS));
+    }
+
+    @Test
+    void anUnknownPathRepairsToTheUnchosenPath() {
+        GameState source = GameState.newRun(90211L);
+        source.heroPath = "NOT_A_PATH";
+        GameState restored = new GameStateCodec().decode(new GameStateCodec().encode(source));
+        assertNull(restored.heroPath,
+            "a save that names no path decodes to no path, which is the classic run -- never a crash");
+    }
+
+    @Test
+    void aSaveFromBeforePathsDecodesToTheUnchosenPath() {
+        GameState source = GameState.newRun(90212L);
+        String json = new GameStateCodec().encode(source).replaceAll("\"heroPath\"\\s*:\\s*null,?", "");
+        GameState restored = new GameStateCodec().decode(json);
+        assertNull(restored.heroPath, "old saves have no path field and keep the classic numbers");
+        assertEquals(source.runSeed, restored.runSeed, "and otherwise decode exactly as before");
     }
 }

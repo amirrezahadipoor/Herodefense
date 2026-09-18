@@ -275,11 +275,18 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             }
             if (host.flow().state() == GameScreenState.TRIAL_DRAFT) {
                 int picksBefore = host.gameState().trialDraftPicks.size();
+                String pathBefore = host.gameState().heroPath;
                 if (host.trialDraftTouchController().tap(host.gameState(), worldX, worldY)) {
                     host.touchFeedbackSystem().triggerCardSelection(worldX, worldY);
                     host.hapticFeedback().cardSelection();
                     host.flow().transitionTo(GameScreenState.CINEMATIC);
                     host.beginOpening();
+                    host.saveNow();
+                } else if (pathBefore == null && host.gameState().heroPath != null) {
+                    // Binding a path (roadmap B3) carries the same weight as a draft pick: it is run
+                    // state, so a reload must not replay the choice the player just made.
+                    host.touchFeedbackSystem().triggerCardSelection(worldX, worldY);
+                    host.hapticFeedback().cardSelection();
                     host.saveNow();
                 } else {
                     host.touchFeedbackSystem().triggerTap(worldX, worldY);

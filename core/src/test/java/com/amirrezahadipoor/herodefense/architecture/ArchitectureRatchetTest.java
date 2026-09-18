@@ -93,7 +93,12 @@ class ArchitectureRatchetTest {
         // B1 raised the count by one field and six lines: the pity rule R4.3 wanted needs the dry-kill streak
         // remembered across kills, waves and saves -- a run counter like totalKills beside it, encoded by the
         // reflection codec like every other field. No method, no behaviour in the model itself.
-        new ArchitectureRatchet.Frozen(641, 83)
+        //
+        // B3 raised it by one field and five lines: the pre-run draft now opens on a hero-path choice, and the
+        // bound path is run state exactly like the trial picks -- encoded by the codec, transplanted by the
+        // new-run reset, nulled when the string does not name a path. The bends themselves live in HeroPath and
+        // its consumers, not here; the model only remembers the choice.
+        new ArchitectureRatchet.Frozen(646, 84)
     );
 
     @Test

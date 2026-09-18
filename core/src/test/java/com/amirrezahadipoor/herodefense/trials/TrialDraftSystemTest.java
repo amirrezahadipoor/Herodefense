@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.trials;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -46,6 +47,7 @@ final class TrialDraftSystemTest {
     void twoPicksBindThePairAndClearTheOffer() {
         GameState state = GameState.newRun(7L);
         draft.prepareOffer(state);
+        assertTrue(draft.choosePath(state, 0));
         String firstPick = state.pendingTrialOffer.get(0);
         String secondPick = state.pendingTrialOffer.get(1);
 
@@ -66,6 +68,7 @@ final class TrialDraftSystemTest {
     void duplicateAndOutOfRangePicksAreIgnored() {
         GameState state = GameState.newRun(8L);
         draft.prepareOffer(state);
+        assertTrue(draft.choosePath(state, 3));
         assertFalse(draft.chooseTrial(state, -1));
         assertFalse(draft.chooseTrial(state, TrialDraftSystem.OFFER_COUNT));
         assertFalse(draft.chooseTrial(state, 0));
@@ -78,10 +81,43 @@ final class TrialDraftSystemTest {
     void prepareOfferDiscardsAnyPreviousDraftState() {
         GameState state = GameState.newRun(9L);
         draft.prepareOffer(state);
+        draft.choosePath(state, 2);
         draft.chooseTrial(state, 0);
         draft.prepareOffer(state);
         assertEquals(TrialDraftSystem.OFFER_COUNT, state.pendingTrialOffer.size());
         assertTrue(state.trialDraftPicks.isEmpty());
         assertTrue(state.activeTrials.isEmpty());
+        assertNull(state.heroPath, "a fresh offer reopens the path phase");
+    }
+
+    @Test
+    void noTrialBindsBeforeThePathIsChosen() {
+        GameState state = GameState.newRun(11L);
+        draft.prepareOffer(state);
+        assertFalse(draft.chooseTrial(state, 0));
+        assertFalse(draft.chooseTrial(state, 1));
+        assertTrue(state.trialDraftPicks.isEmpty(), "the path phase gates every trial pick");
+        assertTrue(state.draftPending(), "the offer stays open across the path phase");
+
+        assertTrue(draft.choosePath(state, 1));
+        assertEquals("ROOT", state.heroPath);
+        assertTrue(state.draftPending(), "choosing a path does not close the draft");
+
+        assertFalse(draft.chooseTrial(state, 0));
+        assertTrue(draft.chooseTrial(state, 1));
+        assertEquals(2, state.activeTrials.size());
+    }
+
+    @Test
+    void thePathBindsOnceAndIgnoresGarbage() {
+        GameState state = GameState.newRun(12L);
+        draft.prepareOffer(state);
+        assertFalse(draft.choosePath(state, -1));
+        assertFalse(draft.choosePath(state, 4));
+        assertNull(state.heroPath);
+        assertTrue(draft.choosePath(state, 2));
+        assertEquals("WIND", state.heroPath);
+        assertFalse(draft.choosePath(state, 0), "a bound path is not re-chosen inside the run");
+        assertEquals("WIND", state.heroPath);
     }
 }

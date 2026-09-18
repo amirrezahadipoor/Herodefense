@@ -3,6 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.items.MythicEffects;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.HeroPath;
 import com.amirrezahadipoor.herodefense.skills.SkillEffects;
 
 /**
@@ -44,7 +45,8 @@ public final class FocusSystem {
         int levels = Math.max(0, state.heroLevel - 1);
         return (1f + levels * FILL_LEVEL_BONUS)
             * (1f + MythicEffects.equippedMythicCount(state) * FILL_MYTHIC_BONUS)
-            * AffixEffects.focusGainMultiplier(state);
+            * AffixEffects.focusGainMultiplier(state)
+            * HeroPath.focusGainMultiplier(state);
     }
 
     /** 0..1 charge of the Focus meter; 0 for null or degenerate state. */

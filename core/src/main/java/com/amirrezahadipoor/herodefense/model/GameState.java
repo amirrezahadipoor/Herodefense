@@ -35,6 +35,9 @@ public final class GameState {
     /** Which run the player started (roadmap R3.5); a brief run ends at 30 waves. */
     public GameMode mode = GameMode.STANDARD;
 
+    /** The hero path the run walks (roadmap B3); {@code null} until the pre-run draft binds one. */
+    public String heroPath;
+
     public int waveNumber = 1;
     public int coins;
     public int heroLevel = 1;
@@ -455,6 +458,7 @@ public final class GameState {
         pendingTrialOffer.removeIf(t -> TrialId.forName(t) == null);
         trialDraftPicks.removeIf(t -> TrialId.forName(t) == null);
         rotTrail.removeIf(segment -> segment == null);
+        if (HeroPath.forName(heroPath) == null) heroPath = null;
         eliteKillCounts.replaceAll((k, v) -> v == null ? 0 : Math.max(0, v));
     }
 
@@ -580,6 +584,7 @@ public final class GameState {
         this.activeTrials = fresh.activeTrials;
         this.pendingTrialOffer = fresh.pendingTrialOffer;
         this.trialDraftPicks = fresh.trialDraftPicks;
+        this.heroPath = fresh.heroPath;
         this.skillEvolutions = fresh.skillEvolutions;
         this.nextEntityId = 2L;
         this.mythicGrantTiers = fresh.mythicGrantTiers;

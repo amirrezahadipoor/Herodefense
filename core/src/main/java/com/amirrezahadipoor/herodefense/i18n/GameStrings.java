@@ -28,6 +28,7 @@ public final class GameStrings {
         HudStrings.values(),
         ItemStrings.values(),
         RootNetworkStrings.values(),
+        PathStrings.values(),
         TrialStrings.values(),
         StoryStrings.values(),
         SettingsStrings.values());

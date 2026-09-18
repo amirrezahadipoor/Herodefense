@@ -217,7 +217,20 @@ started, `[!]` attempted and failed, with the failure written down.
       ship; adding a sixth `SkillId` without a medallion fails `SkillIconContractTest`, and the Blender art
       review loop lives outside this sandbox. B2 closes with the two axes that are code: 15 evolutions, 20
       affixes, and a documented art-pipeline dependency for the third.
-- [ ] **B3 (−8) No choice of hero, class or playstyle.** One defender, one weapon, one 50-hour line.
+- [x] **B3 (−8) No choice of hero, class or playstyle.** One defender, one weapon, one 50-hour line.
+      Closed with the axis that is code: a hero-path choice as the first phase of the existing pre-run draft —
+      four cards in the trial cards' own grammar (icon, name, green bend, red price), trials dealt only after a
+      path binds. The four paths are zero-sum on purpose — UNBOUND bends nothing (the classic numbers), ROOT
+      trades −10% damage for +25% max health, WIND trades −10% max health for +15% attack speed, STAR trades
+      −10% attack speed for +25% focus gain — so there is no strongest path, only different runs, and no power
+      creep reaches the frozen balance baseline: the simulator builds states that never choose a path, a null
+      path decodes to identity multipliers, and `HeroPathWiringTest` pins both bit-for-bit. The bound path is
+      run state like the draft picks: encoded, re-dealt by `prepareOffer`, repaired on decode (old saves and
+      garbage strings decode to unchosen, never crash), and a mid-draft reload replays the path phase exactly
+      as it replays the trial phase (`draftPending()` holds across both — the offer is already dealt). The card
+      icons reuse four reviewed manifest keys (`hero`, the aegis, the wind boots, the starfall bow), so no art
+      contract moved. Still open by necessity: the hero model and the weapon themselves live in the Blender
+      art pipeline outside this sandbox; the path is the playstyle axis code can carry alone.
 - [ ] **B4 (−4) Ascension was inverted for non-optimiser players.** Fixed (`NonOptimiserBandTest` now guards the
       band), but it was found by a simulated policy, not by a player — re-validate against C1 when a human
       session exists.
