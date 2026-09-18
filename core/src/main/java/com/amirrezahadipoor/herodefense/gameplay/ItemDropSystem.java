@@ -1,6 +1,5 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
-import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.items.EquipmentDefinition;
 import com.amirrezahadipoor.herodefense.model.Boss;
@@ -170,7 +169,7 @@ public final class ItemDropSystem {
             state.allocateEntityId(), "ITEM", enemy.x, enemy.y, 1
         );
         drop.itemId = selected.id();
-        drop.pickupDelaySeconds = 2.6f * AffixEffects.gatherDelayMultiplier(state);
+        drop.pickupDelaySeconds = 2.6f;
         state.drops.add(drop);
         return 1;
     }

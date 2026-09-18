@@ -63,7 +63,7 @@ public final class PotionDropSystem {
             state.allocateEntityId(), "POTION", enemy.x, enemy.y, 1
         );
         drop.itemId = tier.name();
-        drop.pickupDelaySeconds = 2.6f * AffixEffects.gatherDelayMultiplier(state);
+        drop.pickupDelaySeconds = 2.6f;
         state.drops.add(drop);
         return 1;
     }

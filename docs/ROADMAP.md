@@ -179,16 +179,20 @@ started, `[!]` attempted and failed, with the failure written down.
       section now carries the shipped rule beside the three measured refusals.
 - [ ] **B2 (−10) Build space is narrow:** 5 skills, 10 evolutions, 15 affixes. Two runs at the same tier can and
       do converge on the same build.
-      **B2a landed (affix axis):** the pool is twenty — Elite Damage (the arrow formula's elite branch, mirroring
-      the boss lane), Thorns (melee swings that land reflect through the same ward-wrapped path arrows use; the
-      ward scan now pins four damage call sites), Potion Find (the drop rate, one draw, bit-identical without the
-      affix), Focus Gain (the fill-rate multiplier every charge passes through) and Swift Gather (the ground
-      delay of fresh drops, floored at a quarter when stacked). `AffixExpansionWiringTest` fires all five end to
-      end; 875 unit tests green and every balance band held on the fixed seeds — worst trial pair `0.3914`
-      against `0.40`, deepest quarter reading still a rise, kill income `81199 → 91984` as reflected and
-      elite-focused damage shortened fights. **B2b (skill axis) is blocked in-sandbox:** a new `SkillId` needs a
+      **B2a landed (affix axis):** the pool is twenty — Elite Damage (+10% against elites, the arrow formula's
+      elite branch mirroring the boss lane), Thorns (landed melee swings reflect 20% of themselves through the
+      same ward-wrapped path arrows use; the ward scan now pins four damage call sites), Potion Find (+15% drop
+      rate, one draw, bit-identical without the affix), Focus Gain (+12% fill rate, the single multiplier every
+      charge passes through) and Fortitude (-6% damage taken on both incoming-hit paths, stacked pieces floored
+      at half). The five expansion lanes roll on **Legendaries from wave 101 onward only**: the naive variant
+      (every Rare diluting across twenty lanes) was measured and refused — it remapped every Legendary loadout,
+      flipped the balanced run's middle-third shape gate and pushed the FAMISHED_EARTH pairs to `0.4536` against
+      the `0.40` ceiling — while the gated variant leaves every measured band bit-identical to B1's close and
+      puts the wider table exactly where runs used to converge. `AffixExpansionWiringTest` fires all five lanes
+      end to end; 881 unit tests green, balance suite green. **B2b (skill axis):** a new `SkillId` needs a
       reviewed premium-v2 medallion in the asset manifest (`SkillIconContractTest`), which needs the Blender art
-      pipeline; evolutions carry no icon contract, so a third fork per skill is the remaining in-reach lever.
+      pipeline and is blocked in-sandbox; evolutions carry no icon contract, so a third fork per skill is the
+      remaining in-reach lever.
 - [ ] **B3 (−8) No choice of hero, class or playstyle.** One defender, one weapon, one 50-hour line.
 - [ ] **B4 (−4) Ascension was inverted for non-optimiser players.** Fixed (`NonOptimiserBandTest` now guards the
       band), but it was found by a simulated policy, not by a player — re-validate against C1 when a human

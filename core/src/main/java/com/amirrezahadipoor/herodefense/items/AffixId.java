@@ -1,11 +1,13 @@
 package com.amirrezahadipoor.herodefense.items;
 
 /**
- * Minor random affixes rolled onto every Rare and Legendary drop. Each affix is a small
- * single-lane bonus; Common and Uncommon items stay affix-free so early loot stays simple.
- * Stun and Chain affixes only add chance while their skill is learned. Thorns reflects only
- * melee swings that actually land, and stacked Swift Gather pieces never shrink the pickup
- * delay below a quarter of its base.
+ * Random affixes rolled onto Rare and Legendary drops. Each affix is a single-lane bonus;
+ * Common and Uncommon items stay affix-free so early loot stays simple. The first fifteen
+ * lanes roll on any Rare; the five expansion lanes (Elite Damage onward) live on Legendaries
+ * from wave {@value #EXPANSION_FROM_WAVE} onward -- drops and Anvil rerolls both -- and carry
+ * heavier numbers to match. Stun and Chain affixes only
+ * add chance while their skill is learned. Thorns reflects only melee swings that actually
+ * land, and stacked Fortitude pieces never cut incoming damage by more than half.
  */
 public enum AffixId {
     CRIT_CHANCE("+3% Critical Chance", 0.03f),
@@ -23,11 +25,24 @@ public enum AffixId {
     CHAIN_CHANCE("+4% Chain Chance", 0.04f),
     MULTISHOT("+0.2 Extra Arrows", 0.20f),
     BOSS_DAMAGE("+8% Boss Damage", 0.08f),
-    ELITE_DAMAGE("+8% Elite Damage", 0.08f),
-    THORNS("Reflect 15% of Melee Damage", 0.15f),
+    ELITE_DAMAGE("+10% Elite Damage", 0.10f),
+    THORNS("Reflect 20% of Melee Damage", 0.20f),
     POTION_FIND("+15% Potion Find", 0.15f),
-    FOCUS_GAIN("+10% Focus Gain", 0.10f),
-    SWIFT_GATHER("-20% Pickup Delay", 0.20f);
+    FOCUS_GAIN("+12% Focus Gain", 0.12f),
+    FORTITUDE("-6% Damage Taken", 0.06f);
+
+    /** Lanes every Rare drop can roll: the original fifteen, in enum order. */
+    public static final int BASE_POOL_SIZE = 15;
+
+    /** Wave the expansion lanes join the Legendary pool: the second half of the run. */
+    public static final int EXPANSION_FROM_WAVE = 101;
+
+    private static final AffixId[] BASE_POOL = java.util.Arrays.copyOf(values(), BASE_POOL_SIZE);
+
+    /** The Rare pool; the B2a expansion lanes live on Legendaries alone. */
+    public static AffixId[] basePool() {
+        return BASE_POOL.clone();
+    }
 
     private final String display;
     private final float value;

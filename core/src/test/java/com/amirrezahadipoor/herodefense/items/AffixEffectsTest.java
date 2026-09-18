@@ -41,7 +41,7 @@ final class AffixEffectsTest {
         assertEquals(0f, AffixEffects.thornsShare(null), 0f);
         assertEquals(1f, AffixEffects.potionFindMultiplier(null), 0f);
         assertEquals(1f, AffixEffects.focusGainMultiplier(null), 0f);
-        assertEquals(1f, AffixEffects.gatherDelayMultiplier(null), 0f);
+        assertEquals(1f, AffixEffects.fortitudeDamageMultiplier(null), 0f);
 
         GameState bare = GameState.newRun(1L);
         assertEquals(1f, AffixEffects.damageMultiplier(bare), 0f);
@@ -65,11 +65,11 @@ final class AffixEffectsTest {
         assertEquals(0.04f, with(AffixId.CHAIN_CHANCE, AffixEffects::chainChanceBonus), 0f);
         assertEquals(0.20f, with(AffixId.MULTISHOT, AffixEffects::extraArrowsBonus), 0f);
         assertEquals(1.08f, with(AffixId.BOSS_DAMAGE, AffixEffects::bossDamageMultiplier), 0.0001f);
-        assertEquals(1.08f, with(AffixId.ELITE_DAMAGE, AffixEffects::eliteDamageMultiplier), 0.0001f);
-        assertEquals(0.15f, with(AffixId.THORNS, AffixEffects::thornsShare), 0f);
+        assertEquals(1.10f, with(AffixId.ELITE_DAMAGE, AffixEffects::eliteDamageMultiplier), 0.0001f);
+        assertEquals(0.20f, with(AffixId.THORNS, AffixEffects::thornsShare), 0f);
         assertEquals(1.15f, with(AffixId.POTION_FIND, AffixEffects::potionFindMultiplier), 0.0001f);
-        assertEquals(1.10f, with(AffixId.FOCUS_GAIN, AffixEffects::focusGainMultiplier), 0.0001f);
-        assertEquals(0.80f, with(AffixId.SWIFT_GATHER, AffixEffects::gatherDelayMultiplier), 0.0001f);
+        assertEquals(1.12f, with(AffixId.FOCUS_GAIN, AffixEffects::focusGainMultiplier), 0.0001f);
+        assertEquals(0.94f, with(AffixId.FORTITUDE, AffixEffects::fortitudeDamageMultiplier), 0.0001f);
     }
 
     @Test
@@ -98,6 +98,29 @@ final class AffixEffectsTest {
             assertTrue(AffixId.forName(rare) != null);
             assertTrue(AffixId.forName(legendary) != null);
         }
+    }
+
+    @Test
+    void expansionLanesJoinLegendaryDropsInTheSecondHalf() {
+        GameState state = GameState.newRun(6L);
+        state.waveNumber = AffixId.EXPANSION_FROM_WAVE - 1;
+        for (int i = 0; i < 300; i++) {
+            AffixId rare = AffixId.forName(AffixEffects.rollForDrop(state, ItemTier.RARE));
+            assertTrue(rare.ordinal() < AffixId.BASE_POOL_SIZE,
+                "a Rare rolled the expansion lane " + rare);
+            AffixId earlyLegendary =
+                AffixId.forName(AffixEffects.rollForDrop(state, ItemTier.LEGENDARY));
+            assertTrue(earlyLegendary.ordinal() < AffixId.BASE_POOL_SIZE,
+                "the first half must roll the original table bit-identically, got " + earlyLegendary);
+        }
+        state.waveNumber = AffixId.EXPANSION_FROM_WAVE;
+        boolean expansionFound = false;
+        for (int i = 0; i < 300 && !expansionFound; i++) {
+            AffixId legendary =
+                AffixId.forName(AffixEffects.rollForDrop(state, ItemTier.LEGENDARY));
+            expansionFound = legendary.ordinal() >= AffixId.BASE_POOL_SIZE;
+        }
+        assertTrue(expansionFound, "300 second-half Legendary rolls never reached an expansion lane");
     }
 
     private interface Query {

@@ -28,12 +28,17 @@ public final class AffixEffects {
     /**
      * Rolls one uniform affix for a fresh drop of the tier: Rare and Legendary always
      * roll; anything else (including Mythic, which carries a passive instead) rolls none.
+     * Rares roll the original fifteen lanes; the five expansion lanes live on Legendaries
+     * from the second half of the run onward ({@link AffixId#EXPANSION_FROM_WAVE}), so the
+     * early and middle game loot table is bit-identical to the pre-expansion one and the
+     * wider pool lands exactly where runs used to converge.
      */
     public static String rollForDrop(GameState state, ItemTier tier) {
         if (state == null || (tier != ItemTier.RARE && tier != ItemTier.LEGENDARY)) {
             return "";
         }
-        AffixId[] pool = AffixId.values();
+        AffixId[] pool = tier == ItemTier.LEGENDARY && state.waveNumber >= AffixId.EXPANSION_FROM_WAVE
+            ? AffixId.values() : AffixId.basePool();
         float roll = state.nextAffixRandomFloat();
         int index = Math.min(pool.length - 1, (int) (roll * pool.length));
         return pool[index].name();
@@ -116,8 +121,8 @@ public final class AffixEffects {
         return 1f + sum(state, AffixId.FOCUS_GAIN);
     }
 
-    /** Scales the ground delay of fresh drops; stacked pieces floor the delay at a quarter. */
-    public static float gatherDelayMultiplier(GameState state) {
-        return Math.max(0.25f, 1f - sum(state, AffixId.SWIFT_GATHER));
+    /** Multiplier on all incoming damage; stacked pieces never cut it by more than half. */
+    public static float fortitudeDamageMultiplier(GameState state) {
+        return Math.max(0.5f, 1f - sum(state, AffixId.FORTITUDE));
     }
 }

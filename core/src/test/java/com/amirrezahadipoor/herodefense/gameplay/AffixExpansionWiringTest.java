@@ -1,7 +1,6 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.items.AffixId;
@@ -16,7 +15,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Each of the five B2a affixes must have exactly one real consumer in the shipped systems:
  * Elite Damage in the arrow formula, Thorns in the melee pipeline, Potion Find in the potion
- * roll, Focus Gain in the meter fill, Swift Gather in the drop pickup delay. Query-only
+ * roll, Focus Gain in the meter fill, Fortitude in the incoming-damage pipeline. Query-only
  * affixes would be dead text in the tooltip, so every lane is fired end to end here.
  */
 final class AffixExpansionWiringTest {
@@ -36,7 +35,7 @@ final class AffixExpansionWiringTest {
         foe.eliteAffix = "BRUTAL";
         attacks.update(elite, 0f);
         assertEquals(1, elite.projectiles.size());
-        assertEquals(16f * 1.08f, elite.projectiles.get(0).damage, 0.01f,
+        assertEquals(16f * 1.10f, elite.projectiles.get(0).damage, 0.01f,
             "the elite branch of the arrow formula must carry the Elite Damage affix");
 
         GameState unaffixedElite = autoAttackState(10L, null);
@@ -61,8 +60,8 @@ final class AffixExpansionWiringTest {
         Enemy attacker = thorned.aliveEnemies.get(0);
         melee.update(thorned, 0f);
         assertEquals(95f, thorned.hero.health, 0.001f);
-        assertEquals(attacker.maxHealth - attacker.damage * 0.15f, attacker.health, 0.001f,
-            "a landed swing must reflect fifteen percent of itself back through the ward path");
+        assertEquals(attacker.maxHealth - attacker.damage * 0.20f, attacker.health, 0.001f,
+            "a landed swing must reflect a fifth of itself back through the ward path");
     }
 
     @Test
@@ -84,39 +83,22 @@ final class AffixExpansionWiringTest {
         GameState focused = GameState.newRun(11L);
         equip(focused, AffixId.FOCUS_GAIN);
         FocusSystem.addHits(focused, 5, 0, 0);
-        assertEquals(5 * FocusSystem.FOCUS_PER_HIT * 1.10f, focused.focus, 0.0001f,
+        assertEquals(5 * FocusSystem.FOCUS_PER_HIT * 1.12f, focused.focus, 0.0001f,
             "the fill-rate multiplier is the single lane every Focus gain passes through");
     }
 
     @Test
-    void swiftGatherShortensTheGroundDelayOfFreshDrops() {
-        float bare = firstPotionPickupDelay(null);
-        float gathered = firstPotionPickupDelay(AffixId.SWIFT_GATHER);
-        assertTrue(bare > 0f && gathered > 0f, "both configurations must find a natural potion drop");
-        assertEquals(2.6f, bare, 0.001f);
-        assertEquals(2.6f * 0.8f, gathered, 0.001f,
-            "the Swift Gather affix must scale the pickup delay at spawn time");
-    }
+    void fortitudeCutsTheMeleeSwingBeforeItReachesTheHero() {
+        EnemyMeleeAttackSystem melee = new EnemyMeleeAttackSystem(new HeroDamageSystem());
 
-    /** First natural potion drop across fresh seeds; its ground delay is what the affix scales. */
-    private float firstPotionPickupDelay(AffixId affix) {
-        PotionDropSystem drops = new PotionDropSystem();
-        for (long seed = 1L; seed <= 400L; seed++) {
-            GameState state = GameState.newRun(seed);
-            if (affix != null) {
-                equip(state, affix);
-            }
-            Enemy victim = factory.create(
-                state, EnemyType.ROOTLING, state.hero.x + 200f, state.hero.y, 0
-            );
-            victim.alive = false;
-            state.aliveEnemies.add(victim);
-            if (drops.processDefeatedEnemies(state) > 0 && !state.drops.isEmpty()) {
-                assertFalse(state.drops.get(0).pickupDelaySeconds < 0f);
-                return state.drops.get(0).pickupDelaySeconds;
-            }
-        }
-        return -1f;
+        GameState bare = meleeState(30L, null);
+        melee.update(bare, 0f);
+        assertEquals(95f, bare.hero.health, 0.001f, "a ROOTLING swing costs five health");
+
+        GameState fortified = meleeState(30L, AffixId.FORTITUDE);
+        melee.update(fortified, 0f);
+        assertEquals(100f - 5f * 0.94f, fortified.hero.health, 0.001f,
+            "Fortitude must scale the swing inside the incoming-damage pipeline");
     }
 
     private GameState autoAttackState(long seed, AffixId affix) {

@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.items.MythicEffects;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.IncomingHitResult;
@@ -37,7 +38,8 @@ public final class HeroDamageSystem {
         // position entirely.
         return state.hero.receiveIncomingHit(
             damage * TrialEffects.damageTakenMultiplier(state.activeTrials)
-                * BraceSystem.damageTakenMultiplier(state), 0.5f, 0f);
+                * BraceSystem.damageTakenMultiplier(state)
+                * AffixEffects.fortitudeDamageMultiplier(state), 0.5f, 0f);
     }
 
     /**
@@ -50,7 +52,8 @@ public final class HeroDamageSystem {
         }
         IncomingHitResult result = state.hero.receiveIncomingHit(
             damage * TrialEffects.damageTakenMultiplier(state.activeTrials)
-                * BraceSystem.damageTakenMultiplier(state),
+                * BraceSystem.damageTakenMultiplier(state)
+                * AffixEffects.fortitudeDamageMultiplier(state),
             dodgeRoll,
             statCalculator.dodgeChance(state)
         );
