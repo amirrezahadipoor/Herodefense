@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAnimationController;
+import com.amirrezahadipoor.herodefense.model.BraceLimits;
 import com.amirrezahadipoor.herodefense.model.Hero;
 import com.amirrezahadipoor.herodefense.model.HeroAnimationState;
 
@@ -51,6 +52,12 @@ public final class HeroSpriteRenderer implements AutoCloseable {
     public void draw(SpriteBatch batch, Hero hero, int frameIndex) {
         Array<TextureAtlas.AtlasRegion> clip = frames.get(hero.animationState);
         TextureAtlas.AtlasRegion frame = clip.get(Math.min(clip.size - 1, Math.max(0, frameIndex)));
+        boolean bracing = hero.braceRemainingSeconds > 0f;
+        if (bracing) {
+            // A cold blue wash over the idle clip: the shield has no art of its own, and a tint is the one
+            // signal that cannot be missed in a frame full of damage numbers while costing no new sheet.
+            batch.setColor(0.62f, 0.80f, 0.95f, 1f);
+        }
         batch.draw(
             frame,
             frameX(hero),
@@ -58,7 +65,11 @@ public final class HeroSpriteRenderer implements AutoCloseable {
             FRAME_SIZE,
             FRAME_SIZE
         );
+        if (bracing) {
+            batch.setColor(1f, 1f, 1f, 1f);
+        }
         drawStepMeter(batch, hero);
+        drawBraceMeter(batch, hero);
     }
 
     /**
@@ -87,6 +98,34 @@ public final class HeroSpriteRenderer implements AutoCloseable {
             batch.setColor(0.95f, 0.76f, 0.36f, 0.92f);
         }
         batch.draw(texture, x, y, METER_WIDTH * ratio, METER_HEIGHT);
+        batch.setColor(1f, 1f, 1f, 1f);
+    }
+
+    /**
+     * The shield's own clock under the feet, one row below the step meter: full and bright while the brace is
+     * up, then a dim refill for the cooldown. Both bars are absent at rest -- a Hero with a full step budget and
+     * a spent cooldown draws exactly the pixels it drew before roadmap A2 -- so no captured screen changes until
+     * a player chooses the verb.
+     */
+    private void drawBraceMeter(SpriteBatch batch, Hero hero) {
+        Texture texture = pixelTexture();
+        float x = hero.x - METER_WIDTH * 0.5f;
+        float y = frameY(hero) - METER_GAP_BELOW_FEET - METER_HEIGHT - 5f;
+        if (hero.braceRemainingSeconds > 0f) {
+            float ratio = Math.max(0f, Math.min(1f, hero.braceRemainingSeconds / BraceLimits.BRACE_SECONDS));
+            batch.setColor(0.05f, 0.08f, 0.10f, 0.55f);
+            batch.draw(texture, x - 1.5f, y - 1.5f, METER_WIDTH + 3f, METER_HEIGHT + 3f);
+            batch.setColor(0.62f, 0.80f, 0.95f, 0.95f);
+            batch.draw(texture, x, y, METER_WIDTH * ratio, METER_HEIGHT);
+        } else if (hero.braceCooldownSeconds > 0f) {
+            float ready = 1f - Math.max(0f, Math.min(1f, hero.braceCooldownSeconds / BraceLimits.COOLDOWN_SECONDS));
+            batch.setColor(0.05f, 0.08f, 0.10f, 0.40f);
+            batch.draw(texture, x - 1.5f, y - 1.5f, METER_WIDTH + 3f, METER_HEIGHT + 3f);
+            batch.setColor(0.45f, 0.52f, 0.58f, 0.55f);
+            batch.draw(texture, x, y, METER_WIDTH * ready, METER_HEIGHT);
+        } else {
+            return;
+        }
         batch.setColor(1f, 1f, 1f, 1f);
     }
 

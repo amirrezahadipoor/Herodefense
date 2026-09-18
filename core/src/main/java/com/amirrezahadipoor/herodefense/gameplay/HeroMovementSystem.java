@@ -84,6 +84,9 @@ public final class HeroMovementSystem {
         if (state == null || state.hero == null || !state.hero.alive) {
             return false;
         }
+        if (BraceSystem.isBracing(state)) {
+            return false;
+        }
         if (state.hero.stepBudgetUnits <= 0f || !isInsideWalkableArea(worldX, worldY)) {
             return false;
         }
@@ -124,7 +127,7 @@ public final class HeroMovementSystem {
         Hero hero = state.hero;
         hero.x = clampX(hero.x);
         hero.y = clampY(hero.y);
-        if (!hero.alive) {
+        if (!hero.alive || BraceSystem.isBracing(state)) {
             hero.moveOrderActive = false;
             return;
         }

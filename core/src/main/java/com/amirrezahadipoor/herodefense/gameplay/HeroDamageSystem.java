@@ -32,8 +32,12 @@ public final class HeroDamageSystem {
         if (state == null || state.hero == null || !state.hero.alive || damage <= 0f) {
             return IncomingHitResult.IGNORED;
         }
+        // The rot is ground damage nobody dodges, and a planted shield is on the ground too: the brace
+        // multiplies it like every other hit, or the shield would be a lie against the one trial that ignores
+        // position entirely.
         return state.hero.receiveIncomingHit(
-            damage * TrialEffects.damageTakenMultiplier(state.activeTrials), 0.5f, 0f);
+            damage * TrialEffects.damageTakenMultiplier(state.activeTrials)
+                * BraceSystem.damageTakenMultiplier(state), 0.5f, 0f);
     }
 
     /**
@@ -45,7 +49,8 @@ public final class HeroDamageSystem {
             return IncomingHitResult.IGNORED;
         }
         IncomingHitResult result = state.hero.receiveIncomingHit(
-            damage * TrialEffects.damageTakenMultiplier(state.activeTrials),
+            damage * TrialEffects.damageTakenMultiplier(state.activeTrials)
+                * BraceSystem.damageTakenMultiplier(state),
             dodgeRoll,
             statCalculator.dodgeChance(state)
         );

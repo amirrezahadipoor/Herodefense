@@ -92,6 +92,10 @@ public final class CombatSystem {
      * per call because the player can change auto-sell rules while the run is on.
      */
     public Frame update(GameState state, float simulationDelta, GameSettings settings) {
+        // The brace's clocks age before anything deals or fires damage this tick, so a shield that expires on
+        // this frame has already expired when the specials and the swings are resolved, and one raised by a tap
+        // between frames is up for all of them.
+        BraceSystem.update(state, simulationDelta);
         int livingBeforeAttack = state.livingEnemyCount();
         int bossesBeforeAttack = ArenaQueries.livingBossCount(state);
         float enemyHealthBeforeAttack = ArenaQueries.totalEnemyHealth(state);

@@ -42,6 +42,10 @@ public final class Hero extends ArenaEntity {
     public boolean moveOrderActive;
     /** Units of stepping left this wave. At zero the Hero is rooted until the next wave begins. */
     public float stepBudgetUnits = WAVE_STEP_BUDGET;
+    /** Seconds of brace left (roadmap A2); zero means the shield is down. */
+    public float braceRemainingSeconds;
+    /** Seconds until the shield may be raised again; ticks whether or not the brace is up. */
+    public float braceCooldownSeconds;
 
     public Hero() {
         super();
@@ -159,5 +163,14 @@ public final class Hero extends ArenaEntity {
         stepBudgetUnits = Float.isFinite(stepBudgetUnits)
             ? Math.max(0f, Math.min(WAVE_STEP_BUDGET, stepBudgetUnits))
             : WAVE_STEP_BUDGET;
+        braceRemainingSeconds = Float.isFinite(braceRemainingSeconds)
+            ? Math.max(0f, Math.min(BraceLimits.BRACE_SECONDS, braceRemainingSeconds))
+            : 0f;
+        braceCooldownSeconds = Float.isFinite(braceCooldownSeconds)
+            ? Math.max(0f, Math.min(BraceLimits.COOLDOWN_SECONDS, braceCooldownSeconds))
+            : 0f;
+        if (!alive) {
+            braceRemainingSeconds = 0f;
+        }
     }
 }

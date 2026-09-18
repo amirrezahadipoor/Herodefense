@@ -625,3 +625,38 @@ live position, so a swing that lands at the arena centre lands nowhere once the 
 `BossSpecialAttackSystem.executeOnce` hands the hit to the damage pipeline with no position test, so the telegraph
 warns about damage that stepping does not avoid. That gap is roadmap **A5**, and it is the one number in this
 section that no amount of movement tuning can fix.
+
+## The brace: one cast verb and its price (roadmap A2)
+
+The audit counted the player's verbs and found two and a half: mark a target, fire the ultimate, and choose
+cards between waves. Nothing was cast inside a wave. The brace is the third verb, and it is deliberately a trade
+rather than a button that is always right to press:
+
+| quantity | value | where it comes from |
+| --- | --- | --- |
+| shield up | **3 s** | `BraceLimits.BRACE_SECONDS` |
+| raise to raise | **12 s** | `BraceLimits.COOLDOWN_SECONDS` |
+| damage taken while up | **×0.40** | `BraceLimits.DAMAGE_TAKEN_MULTIPLIER`, applied in `HeroDamageSystem` |
+| bow while up | **silent** | `HeroAutoAttackSystem` fires nothing new; arrows in flight still land |
+| feet while up | **planted** | `HeroMovementSystem.orderStepTo` refuses; a live step order is voided |
+| gesture | **a tap on the Hero's own body** | `BraceSystem.tapHitsHero`, the one arena tap that meant nothing |
+
+The arithmetic of the trade: at most a quarter of a run can be braced (3 of every 12 seconds), and bracing costs
+the bow's whole uptime while it lasts, so a player who braces on schedule gives up a quarter of their damage to
+take sixty percent off whatever lands inside the windows. Against a boss special -- which
+`BossSpecialAttackSystem` lands regardless of position, roadmap A5 -- the window is the only answer the game
+offers today: the special still lands, and it lands on a shield. The multiplier composes with the trials'
+`damageTakenMultiplier` rather than replacing it, and it applies to the environmental rot as well, because a
+planted shield stands on the ground as much as the Hero does and a shield that ignored the one position-ignoring
+damage source in the game would be a lie with a cooldown.
+
+**The published bands above were not re-measured, and a test is why.** `BalanceSimulator` never names
+`BraceSystem`, so every simulated policy fights unbraced and every number in this file remains a floor; bracing
+can only improve on it, for three seconds in every twelve, at the price of a quarter of the bow. If a future
+change teaches a policy to brace, or raises `BRACE_SECONDS` past a third of the cooldown, that argument ends and
+the sweeps have to run again -- `BraceSystemTest` fails first, on the simulator scan and on the ordering of
+`CombatSystem.update`, where the shield's clocks must age before the bow and the damage resolve in the same tick.
+
+What the brace deliberately does not do is dodge, and nothing in the game says otherwise: not the coaching, not
+the codex, not the Hero's javadoc, which names bracing as the answer to a telegraph precisely because stepping is
+not. That boundary is roadmap A5's to move, not this section's.

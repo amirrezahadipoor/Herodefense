@@ -52,6 +52,16 @@ public final class HeroAutoAttackSystem {
         ImpactCounts impacts = updateProjectiles(state, deltaSeconds);
 
         Hero hero = state.hero;
+        if (BraceSystem.isBracing(state)) {
+            // The bow is silent behind the shield: arrows already in flight still land, nothing new leaves, and
+            // the cooldown keeps ageing so the first volley after the shield drops is not a free burst.
+            hero.attackCooldownSeconds = Math.max(0f, hero.attackCooldownSeconds - deltaSeconds);
+            hero.currentTargetId = -1L;
+            return new HeroAttackUpdateResult(
+                0, impacts.hits, impacts.criticalHits, impacts.x, impacts.y,
+                impacts.chainArcs, impacts.stuns, events
+            );
+        }
         hero.attackCooldownSeconds -= deltaSeconds;
         if (hero.mythicLifestealRemainingSeconds > 0f) {
             hero.mythicLifestealRemainingSeconds =

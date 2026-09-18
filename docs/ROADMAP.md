@@ -91,9 +91,28 @@ started, `[!]` attempted and failed, with the failure written down.
       test (which re-opens every boss-fight measurement in this file's Phase 91 sections and the 40-encounter
       table), or state plainly in the coaching and the codex that a special is not dodged and is only braced for.
       Nothing may claim the step is a dodge until that decision is made.
-- [ ] **A2 (−8) Nothing is actively cast.** All five skills are passive upgrade cards; the only player verbs are
-      marking a target and the ultimate. One aimed or timed active ability would add a decision per wave without
-      adding content.
+- [x] **A2 (−8) Nothing is actively cast.** All five skills are passive upgrade cards; the only player verbs were
+      marking a target and the ultimate. The verb that landed is the **brace**: tap the Hero's own body and the
+      shield goes up for three seconds -- everything that hurts, melee swings, boss specials and the rot nobody
+      dodges, hurts 0.4 as much through it -- and in exchange the bow fires nothing new and the feet stay planted,
+      with twelve seconds raise to raise. `docs/BALANCE.md` carries the table and the trade's arithmetic.
+      *Why this gesture.* It is the one tap in the arena that meant nothing: a tap marks the enemy under the
+      finger and on empty ground releases the mark, but on the Hero there was no enemy and nothing to release, so
+      the verb costs no existing input, no new HUD button, no new art and no new sound. The sfx roster is exactly
+      what F2 measures, and borrowing a cue for the shield would deepen the reuse that finding counts; the
+      feedback is the sprite's cold tint, the shield's own bar under the feet and the haptic the router already
+      owns. Both bars are absent at rest, so no captured screen changes until a player chooses the verb.
+      *Why a trade and not a button.* A shield that is always right to press is a second health bar; this one
+      spends a quarter of the bow's uptime to buy its windows, which is a decision per wave -- the thing the
+      audit asked for -- rather than a buff. `BraceSystemTest` measures each clause against the real pipeline:
+      ten damage unbraced is four braced through `HeroDamageSystem`, the bow's update returns zero shots while
+      arrows in flight still land, a live step order is voided and new ones refused, and a loaded save cannot
+      carry a shield longer than the game's own.
+      *What it is not.* It is not a dodge. Boss specials still land regardless of position (A5); the brace answers
+      that from the other side, and the coaching, the codex and the Hero's javadoc all say so rather than letting
+      a player discover otherwise. The published bands did not move: `BalanceSimulator` never names
+      `BraceSystem`, a test pins that, and another pins that the shield's clocks age before the bow and the
+      damage resolve inside `CombatSystem.update`.
 - [ ] **A3 (−8) Eight enemy types carry 200 waves.** The second half scales numbers rather than behaviour, which
       is what the open playtest finding about the plateau was describing before it was marked fixed by curve
       changes alone.

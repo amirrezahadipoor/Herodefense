@@ -5,6 +5,7 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.gameplay.BraceSystem;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroMovementSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
@@ -435,6 +436,18 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             if (host.flow().state() == GameScreenState.PLAYING
                 && host.flow().onboarding().handleTap(worldX, worldY)) {
                 host.saveNow();
+                return true;
+            }
+            // A2: a tap on the Hero's own body raises the shield. It is the one arena tap that meant nothing
+            // before this -- no enemy under the finger, no mark to release -- and it sits after the coach's Skip
+            // so skipping a lesson can never double as bracing for a hit. A tap that finds the Hero mid-cooldown
+            // is still consumed rather than passed to the bow: a shield that refuses is still an answer, and
+            // letting the tap fall through would mark nothing and clear the player's mark as a shrug.
+            if (host.flow().state() == GameScreenState.PLAYING
+                && BraceSystem.tapHitsHero(host.gameState(), worldX, worldY)) {
+                if (BraceSystem.tryBrace(host.gameState())) {
+                    host.hapticFeedback().tap();
+                }
                 return true;
             }
             // Anything still unclaimed inside a running wave is a tap on the arena: mark the enemy under the
