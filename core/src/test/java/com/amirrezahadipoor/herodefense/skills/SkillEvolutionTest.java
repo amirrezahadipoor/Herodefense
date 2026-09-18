@@ -12,11 +12,11 @@ import java.util.Set;
 
 final class SkillEvolutionTest {
     @Test
-    void everySkillForksIntoExactlyTwoDocumentedEvolutions() {
+    void everySkillForksIntoExactlyThreeDocumentedEvolutions() {
         Set<String> ids = new HashSet<>();
         for (SkillId skill : SkillId.values()) {
             List<SkillEvolution> options = SkillEvolution.forSkill(skill);
-            assertEquals(2, options.size(), skill.name());
+            assertEquals(3, options.size(), skill.name());
             for (SkillEvolution evolution : options) {
                 assertEquals(skill, evolution.skill());
                 assertTrue(ids.add(evolution.id()), "duplicate id " + evolution.id());
@@ -25,7 +25,7 @@ final class SkillEvolutionTest {
                 assertEquals(evolution, SkillEvolution.parse(evolution.id()));
             }
         }
-        assertEquals(10, ids.size());
+        assertEquals(15, ids.size());
         assertTrue(SkillEvolution.forSkill(null).isEmpty());
         assertNull(SkillEvolution.parse(null));
         assertNull(SkillEvolution.parse("not_an_evolution"));
@@ -36,6 +36,7 @@ final class SkillEvolutionTest {
         List<SkillEvolution> options = SkillEvolution.forSkill(SkillId.CHAIN_LIGHTNING);
         assertEquals("Storm Chain", options.get(0).displayName());
         assertEquals("Vampiric Chain", options.get(1).displayName());
+        assertEquals("Overcharge", options.get(2).displayName());
     }
 
     @Test

@@ -49,17 +49,22 @@ final class PremiumShopPresentationTest {
     }
 
     @Test
-    void evolutionForkLabelsNameBothOptionsAndFitTheirSlots() {
+    void evolutionForkLabelsNameAllThreeOptionsAndFitTheirSlots() {
         for (SkillId skill : SkillId.values()) {
             String left = StatShopOverlayRenderer.skillForkLeft(skill);
+            String mid = StatShopOverlayRenderer.skillForkMid(skill);
             String right = StatShopOverlayRenderer.skillForkRight(skill);
             assertTrue(left.startsWith("LEFT: "), skill.name());
+            assertTrue(mid.startsWith("MID: "), skill.name());
             assertTrue(right.startsWith("RIGHT: "), skill.name());
             assertTrue(left.contains(SkillEvolution.forSkill(skill).get(0).displayName()),
                 skill.name());
-            assertTrue(right.contains(SkillEvolution.forSkill(skill).get(1).displayName()),
+            assertTrue(mid.contains(SkillEvolution.forSkill(skill).get(1).displayName()),
+                skill.name());
+            assertTrue(right.contains(SkillEvolution.forSkill(skill).get(2).displayName()),
                 skill.name());
             assertTrue(left.length() <= 34, skill.name() + ": " + left);
+            assertTrue(mid.length() <= 34, skill.name() + ": " + mid);
             assertTrue(right.length() <= 34, skill.name() + ": " + right);
         }
     }

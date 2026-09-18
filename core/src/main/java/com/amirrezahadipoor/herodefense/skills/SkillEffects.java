@@ -212,13 +212,45 @@ public final class SkillEffects {
             ? FARSTRIDER_RANGE_BONUS : 0f;
     }
 
-    /** Deadeye: bonus damage past this hero-to-target distance. */
+    /** Deadeye/Horizon: the distance damage lane of the LONG_RANGE fork. */
     public static final float DEADEYE_DISTANCE = 350f;
     public static final float DEADEYE_BONUS = 0.25f;
+    /** Horizon adds +3% damage per 100 units of distance; inlined to respect the field ratchet. */
+    private static final float HORIZON_BONUS_PER_HUNDRED = 0.03f;
 
     public static float deadeyeMultiplier(GameState state, float distance) {
-        return evolution(state, SkillId.LONG_RANGE) == SkillEvolution.DEADEYE
-                && Float.isFinite(distance) && distance > DEADEYE_DISTANCE
-            ? 1f + DEADEYE_BONUS : 1f;
+        SkillEvolution evolution = evolution(state, SkillId.LONG_RANGE);
+        if (!Float.isFinite(distance)) {
+            return 1f;
+        }
+        if (evolution == SkillEvolution.DEADEYE && distance > DEADEYE_DISTANCE) {
+            return 1f + DEADEYE_BONUS;
+        }
+        if (evolution == SkillEvolution.HORIZON && distance > 0f) {
+            return 1f + distance / 100f * HORIZON_BONUS_PER_HUNDRED;
+        }
+        return 1f;
+    }
+
+    /** Overcharge: every chain arc hits 25% harder. */
+    public static float overchargeArcMultiplier(GameState state) {
+        return evolution(state, SkillId.CHAIN_LIGHTNING) == SkillEvolution.OVERCHARGE
+            ? 1.25f : 1f;
+    }
+
+    /** Sure Strike: secondary arrows skip the crit roll and always crit. */
+    public static boolean sureStrikeCrits(GameState state) {
+        return evolution(state, SkillId.MULTI_SHOT) == SkillEvolution.SURE_STRIKE;
+    }
+
+    /** Nerve Strike: +8% stun chance on hit. */
+    public static float nerveStrikeChanceBonus(GameState state) {
+        return evolution(state, SkillId.STUN_CHANCE) == SkillEvolution.NERVE_STRIKE
+            ? 0.08f : 0f;
+    }
+
+    /** Overload: critical hits charge Focus triple instead of double. */
+    public static boolean overloadsFocus(GameState state) {
+        return evolution(state, SkillId.CRITICAL_MASTERY) == SkillEvolution.OVERLOAD;
     }
 }

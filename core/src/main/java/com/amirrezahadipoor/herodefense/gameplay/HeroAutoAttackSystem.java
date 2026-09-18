@@ -167,8 +167,10 @@ public final class HeroAutoAttackSystem {
             state.allocateEntityId(), hero.id, target.id, hero.x, hero.y
         );
         int mastery = SkillEffects.level(state, SkillId.CRITICAL_MASTERY);
-        projectile.critical = state.nextCombatRandomFloat()
-            < SkillEffects.criticalChance(mastery) + AffixEffects.critChanceBonus(state)
+        // The roll is always consumed so Sure Strike never shifts the combat stream.
+        float critRoll = state.nextCombatRandomFloat();
+        projectile.critical = (secondary && SkillEffects.sureStrikeCrits(state))
+            || critRoll < SkillEffects.criticalChance(mastery) + AffixEffects.critChanceBonus(state)
                 + SkillEffects.keenEyeChanceBonus(state);
         projectile.secondary = secondary;
         float distance = (float) Math.sqrt(hero.distanceSquaredTo(target.x, target.y));
@@ -266,7 +268,8 @@ public final class HeroAutoAttackSystem {
                     projectile.critical, projectile.secondary));
                 if (stunLevel > 0 && target.alive
                     && state.nextCombatRandomFloat() < SkillEffects.stunChance(stunLevel)
-                        + AffixEffects.stunChanceBonus(state)) {
+                        + AffixEffects.stunChanceBonus(state)
+                        + SkillEffects.nerveStrikeChanceBonus(state)) {
                     float duration = SkillEffects.stunDuration(stunLevel)
                         + SkillEffects.deepRootsDurationBonus(state);
                     if (target instanceof Boss) duration *= SkillEffects.BOSS_STUN_RESISTANCE;
@@ -279,7 +282,8 @@ public final class HeroAutoAttackSystem {
                         + AffixEffects.chainChanceBonus(state)) {
                     int arcs = chainLightning(state, target, projectile.damage, chainLevel);
                     chainArcs += arcs;
-                    damageDealt += arcs * projectile.damage * SkillEffects.CHAIN_DAMAGE_SHARE;
+                    damageDealt += arcs * projectile.damage * SkillEffects.CHAIN_DAMAGE_SHARE
+                        * SkillEffects.overchargeArcMultiplier(state);
                 }
                 if (lifesteal > 0f && state.hero.alive) {
                     state.hero.health = Math.min(
@@ -311,7 +315,8 @@ public final class HeroAutoAttackSystem {
                 + SkillEffects.stormChainTargetsBonus(state),
             scratchTargets.size()
         );
-        float arcDamage = arrowDamage * SkillEffects.CHAIN_DAMAGE_SHARE;
+        float arcDamage = arrowDamage * SkillEffects.CHAIN_DAMAGE_SHARE
+            * SkillEffects.overchargeArcMultiplier(state);
         float vampiricShare = SkillEffects.vampiricHealShare(state);
         boolean stormStuns = SkillEffects.stormChainStuns(state);
         for (int index = 0; index < arcs; index++) {

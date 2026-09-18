@@ -38,7 +38,8 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
     /** One row's resolved presentation, shared by both tabs so the layout never diverges. */
     private record Row(
         String iconKey, String title, String benefit, int level, int maxLevel,
-        int price, boolean maxed, boolean affordable, Color accent, String forkDetail
+        int price, boolean maxed, boolean affordable, Color accent, String forkDetail,
+        String forkThird
     ) {
     }
 
@@ -171,6 +172,9 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
             drawText(batch, row.benefit(), 170f, y + 66f + offset, 0.66f, SUBTLE);
             drawText(batch, row.forkDetail() != null ? row.forkDetail() : levelLabel(row.level(), row.maxLevel()),
                 170f, y + 44f + offset, 0.58f, row.forkDetail() != null ? IVORY : GOLD);
+            if (row.forkThird() != null) {
+                drawText(batch, row.forkThird(), 170f, y + 26f + offset, 0.58f, IVORY);
+            }
             Color affordabilityColor = row.maxed() ? GOLD : row.affordable() ? POSITIVE : NEGATIVE;
             drawCentered(batch,
                 affordabilityLabel(row.maxed(), row.affordable(), row.price(), state.coins),
@@ -221,7 +225,7 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
                 pretty(stat).toUpperCase(Locale.ROOT),
                 statBenefit(stat),
                 purchased, StatShopSystem.CORE_LEVELS,
-                price, false, state.coins >= price, POSITIVE, null
+                price, false, state.coins >= price, POSITIVE, null, null
             );
         }
         return rows;
@@ -240,7 +244,7 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
                     skill.displayName().toUpperCase(Locale.ROOT),
                     evolvedBenefit(evolution),
                     SkillId.CORE_LEVELS, SkillId.CORE_LEVELS,
-                    0, true, false, ARCANE, null
+                    0, true, false, ARCANE, null, null
                 );
             } else if (skills.atEvolutionFork(state, skill)) {
                 int price = skills.evolutionPrice(state, skill);
@@ -249,7 +253,8 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
                     skill.displayName().toUpperCase(Locale.ROOT),
                     skillForkLeft(skill),
                     SkillId.CORE_LEVELS, SkillId.CORE_LEVELS,
-                    price, false, state.coins >= price, ARCANE, skillForkRight(skill)
+                    price, false, state.coins >= price, ARCANE, skillForkMid(skill),
+                    skillForkRight(skill)
                 );
             } else {
                 int price = skills.price(state, skill);
@@ -258,7 +263,7 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
                     skill.displayName().toUpperCase(Locale.ROOT),
                     skillBenefit(skill, level),
                     level, SkillId.CORE_LEVELS,
-                    price, false, state.coins >= price, ARCANE, null
+                    price, false, state.coins >= price, ARCANE, null, null
                 );
             }
         }
@@ -304,16 +309,22 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
 
     /**
      * Left fork option: shown on the benefit line while the skill sits at its fork.
-     * Tap the row's left half to buy it.
+     * Tap the row's left third to buy it.
      */
     static String skillForkLeft(SkillId skill) {
         SkillEvolution option = SkillEvolution.forSkill(skill).get(0);
         return "LEFT: " + option.displayName() + ": " + option.forkShort();
     }
 
-    /** Right fork option: shown in the level slot while the skill sits at its fork. */
-    static String skillForkRight(SkillId skill) {
+    /** Middle fork option: shown in the level slot; the row's middle third buys it. */
+    static String skillForkMid(SkillId skill) {
         SkillEvolution option = SkillEvolution.forSkill(skill).get(1);
+        return "MID: " + option.displayName() + ": " + option.forkShort();
+    }
+
+    /** Right fork option: shown on the bottom line of the fork row; the right third buys it. */
+    static String skillForkRight(SkillId skill) {
+        SkillEvolution option = SkillEvolution.forSkill(skill).get(2);
         return "RIGHT: " + option.displayName() + ": " + option.forkShort();
     }
 

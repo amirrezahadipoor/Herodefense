@@ -42,7 +42,7 @@ public final class SkillShopSystem {
      */
     /**
      * Whether the skill sits at its Evolution fork: core-complete but unevolved, so
-     * the shop row offers the two-evolution choice instead of another level.
+     * the shop row offers the three-evolution choice instead of another level.
      */
     public boolean atEvolutionFork(GameState state, SkillId skill) {
         return state != null && skill != null

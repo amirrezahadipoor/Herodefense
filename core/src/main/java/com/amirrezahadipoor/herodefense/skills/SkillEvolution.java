@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Level-10 capstones (Phase 24.2): each skill forks into one of two Evolutions instead of
+ * Level-10 capstones (Phase 24.2): each skill forks into one of three Evolutions instead of
  * continuing the flat endless curve. Stored in {@code GameState.skillEvolutions} by stable
  * id; the choice is one-time per skill per run and resets with the skill shop.
  */
@@ -17,6 +17,10 @@ public enum SkillEvolution {
         SkillId.CHAIN_LIGHTNING, "vampiric_chain", "Vampiric Chain", "heal 30%",
         "Arcs heal the Hero for 30% of damage dealt"
     ),
+    OVERCHARGE(
+        SkillId.CHAIN_LIGHTNING, "overcharge", "Overcharge", "arcs x1.25",
+        "Chain arcs deal +25% damage"
+    ),
     HORNET_VOLLEY(
         SkillId.MULTI_SHOT, "hornet_volley", "Hornet Volley", "+2 arrows", "+2 extra arrows per volley"
     ),
@@ -24,11 +28,19 @@ public enum SkillEvolution {
         SkillId.MULTI_SHOT, "true_flight", "True Flight", "100% arrow",
         "Secondary arrows deal full damage"
     ),
+    SURE_STRIKE(
+        SkillId.MULTI_SHOT, "sure_strike", "Sure Strike", "2nd crit",
+        "Secondary arrows always critically hit"
+    ),
     DEEP_ROOTS(
         SkillId.STUN_CHANCE, "deep_roots", "Deep Roots", "+1.2s stun", "Stuns last +1.2s longer"
     ),
     STARFALL(
         SkillId.STUN_CHANCE, "starfall", "Starfall", "stun +25%", "Stunned foes take +25% damage"
+    ),
+    NERVE_STRIKE(
+        SkillId.STUN_CHANCE, "nerve_strike", "Nerve Strike", "stun +8%",
+        "+8% chance to stun on hit"
     ),
     EXECUTIONER(
         SkillId.CRITICAL_MASTERY, "executioner", "Executioner", "crit x+0.5",
@@ -37,11 +49,19 @@ public enum SkillEvolution {
     KEEN_EYE(
         SkillId.CRITICAL_MASTERY, "keen_eye", "Keen Eye", "crit +10%", "Critical chance +10%"
     ),
+    OVERLOAD(
+        SkillId.CRITICAL_MASTERY, "overload", "Overload", "focus x3",
+        "Critical hits charge Focus x3 instead of x2"
+    ),
     FARSTRIDER(
         SkillId.LONG_RANGE, "farstrider", "Farstrider", "range +150", "Bonus range +150"
     ),
     DEADEYE(
         SkillId.LONG_RANGE, "deadeye", "Deadeye", "+25% far", "+25% damage beyond 350 units"
+    ),
+    HORIZON(
+        SkillId.LONG_RANGE, "horizon", "Horizon", "+3%/100 far",
+        "+3% damage per 100 units of distance"
     );
 
     private final SkillId skill;
@@ -83,9 +103,9 @@ public enum SkillEvolution {
         return description;
     }
 
-    /** The two fork options for a skill, in display order. */
+    /** The three fork options for a skill, in display order. */
     public static List<SkillEvolution> forSkill(SkillId skill) {
-        List<SkillEvolution> options = new ArrayList<>(2);
+        List<SkillEvolution> options = new ArrayList<>(3);
         if (skill == null) return options;
         for (SkillEvolution evolution : values()) {
             if (evolution.skill == skill) options.add(evolution);
@@ -103,7 +123,9 @@ public enum SkillEvolution {
 
     /**
      * The simulator's deterministic Evolution policy (higher-DPS pick):
-     * Storm, Hornet, Starfall, Executioner, Deadeye.
+     * Storm, Hornet, Starfall, Executioner, Deadeye. The B2b third forks widen the player's
+     * choice, not the policy's: the simulator keeps buying the same five so the measured
+     * bands stay comparable across the change.
      */
     public static SkillEvolution simPick(SkillId skill) {
         if (skill == null) return null;

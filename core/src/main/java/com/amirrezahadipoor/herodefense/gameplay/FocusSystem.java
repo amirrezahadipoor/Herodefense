@@ -3,6 +3,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.items.AffixEffects;
 import com.amirrezahadipoor.herodefense.items.MythicEffects;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.skills.SkillEffects;
 
 /**
  * The Hero's Focus meter (Phase 24.1): every landed hit charges it, critical
@@ -12,6 +13,8 @@ import com.amirrezahadipoor.herodefense.model.GameState;
 public final class FocusSystem {
     public static final float FOCUS_PER_HIT = 0.1f;
     public static final float CRITICAL_FOCUS_MULTIPLIER = 2f;
+    /** Overload evolution: critical hits charge triple. */
+    public static final float OVERLOAD_FOCUS_MULTIPLIER = 3f;
     /** +2% fill per Hero level above 1, +10% per equipped Mythic. */
     public static final float FILL_LEVEL_BONUS = 0.02f;
     public static final float FILL_MYTHIC_BONUS = 0.10f;
@@ -25,7 +28,9 @@ public final class FocusSystem {
         float max = state.focusMax > 0f && Float.isFinite(state.focusMax) ? state.focusMax : 100f;
         if (state.focus >= max) return;
         int normal = Math.max(0, hits - Math.max(0, criticalHits));
-        float gain = (normal + Math.max(0, criticalHits) * CRITICAL_FOCUS_MULTIPLIER
+        float critMultiplier = SkillEffects.overloadsFocus(state)
+            ? OVERLOAD_FOCUS_MULTIPLIER : CRITICAL_FOCUS_MULTIPLIER;
+        float gain = (normal + Math.max(0, criticalHits) * critMultiplier
             + Math.max(0, chainArcs)) * FOCUS_PER_HIT * fillRateMultiplier(state);
         state.focus = Math.min(max, Math.max(0f, state.focus) + Math.max(0f, gain));
     }

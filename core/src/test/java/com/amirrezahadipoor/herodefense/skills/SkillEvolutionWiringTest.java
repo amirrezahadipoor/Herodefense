@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAutoAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroStatCalculator;
 import com.amirrezahadipoor.herodefense.model.Enemy;
@@ -217,6 +218,133 @@ final class SkillEvolutionWiringTest {
             far.projectiles.get(0).damage / near.projectiles.get(0).damage,
             1e-5f
         );
+    }
+
+    @Test
+    void overchargeArcsHitTwentyFivePercentHarder() {
+        for (long seed = 0; seed < 200; seed++) {
+            GameState plain = chainState(seed, null);
+            GameState charged = chainState(seed, SkillEvolution.OVERCHARGE);
+            system.update(plain, 0f);
+            system.update(charged, 0f);
+            if (system.update(plain, 0.2f).chainArcs() == 0) continue;
+            system.update(charged, 0.2f);
+            float plainDealt = 0f;
+            float plainStruck = 0f;
+            for (Enemy victim : plain.aliveEnemies) {
+                float damage = 1_000_000f - victim.health;
+                plainDealt += damage;
+                plainStruck = Math.max(plainStruck, damage);
+            }
+            float chargedDealt = 0f;
+            float chargedStruck = 0f;
+            for (Enemy victim : charged.aliveEnemies) {
+                float damage = 1_000_000f - victim.health;
+                chargedDealt += damage;
+                chargedStruck = Math.max(chargedStruck, damage);
+            }
+            assertEquals(plainStruck, chargedStruck, 1e-3f, "the struck arrow is identical");
+            float plainArcs = plainDealt - plainStruck;
+            assertTrue(plainArcs > 0f, "arcs dealt no damage");
+            assertEquals(plainArcs * 1.25f, chargedDealt - chargedStruck, 0.01f,
+                "Overcharge must multiply every arc by 1.25");
+            return;
+        }
+        fail("no chain proc found in 200 seeds");
+    }
+
+    @Test
+    void sureStrikeCritsEverySecondaryArrow() {
+        GameState state = GameState.newRun(606L);
+        state.skillLevels.put(SkillId.MULTI_SHOT.saveKey(), 10);
+        state.skillEvolutions.put(SkillId.MULTI_SHOT.saveKey(), "sure_strike");
+        state.aliveEnemies.add(enemy(state, 90f, 0f));
+        state.aliveEnemies.add(enemy(state, 150f, 40f));
+
+        system.update(state, 0f);
+
+        assertTrue(state.projectiles.stream().anyMatch(p -> p.secondary),
+            "level-10 Multishot must produce secondaries");
+        for (var projectile : state.projectiles) {
+            if (projectile.secondary) {
+                assertTrue(projectile.critical, "a Sure Strike secondary skipped its crit");
+            }
+        }
+    }
+
+    @Test
+    void nerveStrikeStraddlesTheStunThreshold() {
+        boolean found = false;
+        for (long seed = 0; seed < 2000; seed++) {
+            GameState plain = GameState.newRun(seed);
+            GameState nerve = GameState.newRun(seed);
+            for (GameState state : new GameState[] {plain, nerve}) {
+                state.skillLevels.put(SkillId.STUN_CHANCE.saveKey(), 10);
+            }
+            nerve.skillEvolutions.put(SkillId.STUN_CHANCE.saveKey(), "nerve_strike");
+            Enemy plainTarget = enemy(plain, 90f, 0f);
+            Enemy nerveTarget = enemy(nerve, 90f, 0f);
+            plain.aliveEnemies.add(plainTarget);
+            nerve.aliveEnemies.add(nerveTarget);
+            system.update(plain, 0f);
+            system.update(nerve, 0f);
+            system.update(plain, 0.2f);
+            system.update(nerve, 0.2f);
+            boolean plainStun = plainTarget.stunRemainingSeconds > 0f;
+            boolean nerveStun = nerveTarget.stunRemainingSeconds > 0f;
+            if (plainStun && !nerveStun) {
+                fail("same-seed rolls misaligned at seed " + seed);
+            }
+            if (!plainStun && nerveStun) {
+                found = true;
+                break;
+            }
+        }
+        assertTrue(found, "no threshold-straddling stun roll found in 2000 seeds");
+    }
+
+    @Test
+    void overloadChargesFocusTripleOnCrits() {
+        GameState plain = GameState.newRun(607L);
+        GameState overloaded = GameState.newRun(607L);
+        for (GameState state : new GameState[] {plain, overloaded}) {
+            state.skillLevels.put(SkillId.CRITICAL_MASTERY.saveKey(), 10);
+        }
+        overloaded.skillEvolutions.put(SkillId.CRITICAL_MASTERY.saveKey(), "overload");
+
+        FocusSystem.addHits(plain, 1, 1, 0);
+        FocusSystem.addHits(overloaded, 1, 1, 0);
+
+        assertEquals(FocusSystem.FOCUS_PER_HIT * FocusSystem.CRITICAL_FOCUS_MULTIPLIER,
+            plain.focus, 1e-6f);
+        assertEquals(FocusSystem.FOCUS_PER_HIT * FocusSystem.OVERLOAD_FOCUS_MULTIPLIER,
+            overloaded.focus, 1e-6f,
+            "Overload must charge Focus x3 per critical hit");
+    }
+
+    @Test
+    void horizonScalesDamageWithDistance() {
+        for (long seed = 600; seed < 800; seed++) {
+            GameState near = GameState.newRun(seed);
+            GameState far = GameState.newRun(seed);
+            for (GameState state : new GameState[] {near, far}) {
+                state.skillLevels.put(SkillId.LONG_RANGE.saveKey(), 10);
+                state.skillEvolutions.put(SkillId.LONG_RANGE.saveKey(), "horizon");
+            }
+            near.aliveEnemies.add(enemy(near, 100f, 0f));
+            far.aliveEnemies.add(enemy(far, 400f, 0f));
+            system.update(near, 0f);
+            system.update(far, 0f);
+            if (far.projectiles.get(0).critical) continue;
+            float base = new HeroStatCalculator().damage(far);
+            assertEquals(base * (1f + 100f / 100f * 0.03f),
+                near.projectiles.get(0).damage, 0.01f);
+            assertEquals(base * (1f + 400f / 100f * 0.03f),
+                far.projectiles.get(0).damage, 0.01f,
+                "Horizon must add +3% damage per 100 units of distance");
+            return;
+        }
+        fail("no non-crit shot found in 200 seeds");
     }
 
     /** Level-10 chain setup: primary plus eight victims inside the arc radius. */

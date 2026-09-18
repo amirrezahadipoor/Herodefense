@@ -177,7 +177,7 @@ started, `[!]` attempted and failed, with the failure written down.
       unlucky runs the rule exists for are measurably no longer the weakest runs. `ItemDropPityTest` pins the
       four promises; the ledger finding is `fixed` citing the implementation commit, and BALANCE.md's bad-luck
       section now carries the shipped rule beside the three measured refusals.
-- [ ] **B2 (−10) Build space is narrow:** 5 skills, 10 evolutions, 15 affixes. Two runs at the same tier can and
+- [x] **B2 (−10) Build space is narrow:** 5 skills, 10 evolutions, 15 affixes. Two runs at the same tier can and
       do converge on the same build.
       **B2a landed (affix axis):** the pool is twenty — Elite Damage (+10% against elites, the arrow formula's
       elite branch mirroring the boss lane), Thorns (landed melee swings reflect 20% of themselves through the
@@ -193,6 +193,20 @@ started, `[!]` attempted and failed, with the failure written down.
       reviewed premium-v2 medallion in the asset manifest (`SkillIconContractTest`), which needs the Blender art
       pipeline and is blocked in-sandbox; evolutions carry no icon contract, so a third fork per skill is the
       remaining in-reach lever.
+      **B2b landed (evolution axis):** every skill now forks three ways -- Overcharge (chain arcs +25% damage),
+      Sure Strike (secondary arrows always crit; the crit roll is still consumed so the combat stream never
+      shifts), Nerve Strike (+8% stun chance), Overload (crits charge Focus x3 instead of x2) and Horizon (+3%
+      damage per 100 units of distance, sharing the LONG_RANGE distance lane with Deadeye). Ten evolutions
+      become fifteen with no icon contract involved; the fork row renders three labelled options (LEFT/MID/RIGHT
+      on three lines of the row) and the row's touch splits into thirds. The simulator's `simPick` deliberately
+      keeps buying the same five evolutions it always did, so every measured band stays bit-identical across
+      the fork widening; each new fork is pinned end to end in `SkillEvolutionWiringTest` instead, and the
+      presentation/touch contracts moved with the layout (`PremiumShopPresentationTest`,
+      `StatShopTouchLayoutTest`, `SkillEvolutionTest` now pin three options and fifteen ids).
+      **The skill axis stays open on purpose:** 5 skills is what the reviewed premium-v2 icon pipeline can
+      ship; adding a sixth `SkillId` without a medallion fails `SkillIconContractTest`, and the Blender art
+      review loop lives outside this sandbox. B2 closes with the two axes that are code: 15 evolutions, 20
+      affixes, and a documented art-pipeline dependency for the third.
 - [ ] **B3 (−8) No choice of hero, class or playstyle.** One defender, one weapon, one 50-hour line.
 - [ ] **B4 (−4) Ascension was inverted for non-optimiser players.** Fixed (`NonOptimiserBandTest` now guards the
       band), but it was found by a simulated policy, not by a player — re-validate against C1 when a human
