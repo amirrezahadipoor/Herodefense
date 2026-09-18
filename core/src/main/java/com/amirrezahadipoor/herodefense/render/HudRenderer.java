@@ -83,27 +83,27 @@ public final class HudRenderer implements AutoCloseable {
         levelFlashSeconds = Math.max(0f, levelFlashSeconds - Math.max(0f, realDeltaSeconds));
         UiFrameRenderer.State speedState = frames.resolve(
             true, state.simulationSpeed > 1f,
-            HudTouchLayout.SPEED_X, HudTouchLayout.buttonY(),
+            HudTouchLayout.speedX(), HudTouchLayout.buttonY(),
             HudTouchLayout.BUTTON_WIDTH, HudTouchLayout.BUTTON_HEIGHT
         );
         UiFrameRenderer.State pauseState = frames.resolve(
             true, false,
-            HudTouchLayout.PAUSE_X, HudTouchLayout.buttonY(),
+            HudTouchLayout.pauseX(), HudTouchLayout.buttonY(),
             HudTouchLayout.BUTTON_WIDTH, HudTouchLayout.BUTTON_HEIGHT
         );
         UiFrameRenderer.State inventoryState = frames.resolve(
             true, false,
-            HudTouchLayout.INVENTORY_X, HudTouchLayout.utilityButtonY(),
+            HudTouchLayout.inventoryX(), HudTouchLayout.utilityButtonY(),
             HudTouchLayout.UTILITY_BUTTON_WIDTH, HudTouchLayout.UTILITY_BUTTON_HEIGHT
         );
         UiFrameRenderer.State shopState = frames.resolve(
             true, false,
-            HudTouchLayout.SHOP_X, HudTouchLayout.utilityButtonY(),
+            HudTouchLayout.shopX(), HudTouchLayout.utilityButtonY(),
             HudTouchLayout.UTILITY_BUTTON_WIDTH, HudTouchLayout.UTILITY_BUTTON_HEIGHT
         );
         UiFrameRenderer.State ultimateState = frames.resolve(
             true, false,
-            HudTouchLayout.ULTIMATE_X, HudTouchLayout.utilityButtonY(),
+            HudTouchLayout.ultimateX(), HudTouchLayout.utilityButtonY(),
             HudTouchLayout.UTILITY_BUTTON_WIDTH, HudTouchLayout.UTILITY_BUTTON_HEIGHT
         );
 
@@ -115,37 +115,39 @@ public final class HudRenderer implements AutoCloseable {
             HEALTH_PANEL_X, HEALTH_PANEL_Y + up, HEALTH_PANEL_WIDTH, HEALTH_PANEL_HEIGHT,
             true, false
         );
-        frames.draw(batch, UiFrameRenderer.Kind.PANEL, 18f, INFO_PANEL_Y + up, 194f,
+        frames.draw(batch, UiFrameRenderer.Kind.PANEL,
+            UiMirror.leadingOnScreen(18f, 194f), INFO_PANEL_Y + up, 194f,
             INFO_PANEL_HEIGHT, true, false);
-        frames.draw(batch, UiFrameRenderer.Kind.PANEL, 220f, INFO_PANEL_Y + up, 194f,
+        frames.draw(batch, UiFrameRenderer.Kind.PANEL,
+            UiMirror.leadingOnScreen(220f, 194f), INFO_PANEL_Y + up, 194f,
             INFO_PANEL_HEIGHT, true, false);
         frames.draw(
             batch, UiFrameRenderer.Kind.BUTTON,
-            HudTouchLayout.SPEED_X, HudTouchLayout.buttonY(),
+            HudTouchLayout.speedX(), HudTouchLayout.buttonY(),
             HudTouchLayout.BUTTON_WIDTH, HudTouchLayout.BUTTON_HEIGHT,
             true, state.simulationSpeed > 1f
         );
         frames.draw(
             batch, UiFrameRenderer.Kind.BUTTON,
-            HudTouchLayout.PAUSE_X, HudTouchLayout.buttonY(),
+            HudTouchLayout.pauseX(), HudTouchLayout.buttonY(),
             HudTouchLayout.BUTTON_WIDTH, HudTouchLayout.BUTTON_HEIGHT, true, false
         );
         frames.draw(
             batch, UiFrameRenderer.Kind.BUTTON,
-            HudTouchLayout.INVENTORY_X, HudTouchLayout.utilityButtonY(),
+            HudTouchLayout.inventoryX(), HudTouchLayout.utilityButtonY(),
             HudTouchLayout.UTILITY_BUTTON_WIDTH, HudTouchLayout.UTILITY_BUTTON_HEIGHT,
             true, false
         );
         frames.draw(
             batch, UiFrameRenderer.Kind.BUTTON,
-            HudTouchLayout.SHOP_X, HudTouchLayout.utilityButtonY(),
+            HudTouchLayout.shopX(), HudTouchLayout.utilityButtonY(),
             HudTouchLayout.UTILITY_BUTTON_WIDTH, HudTouchLayout.UTILITY_BUTTON_HEIGHT,
             true, false
         );
         if (FocusSystem.isFull(state)) {
             frames.draw(
                 batch, UiFrameRenderer.Kind.BUTTON,
-                HudTouchLayout.ULTIMATE_X, HudTouchLayout.utilityButtonY(),
+                HudTouchLayout.ultimateX(), HudTouchLayout.utilityButtonY(),
                 HudTouchLayout.UTILITY_BUTTON_WIDTH, HudTouchLayout.UTILITY_BUTTON_HEIGHT,
                 true, true
             );
@@ -156,25 +158,31 @@ public final class HudRenderer implements AutoCloseable {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapes.setProjectionMatrix(projection);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
+        // Roadmap G4: the tracks mirror with the screen and the fills grow from the leading edge, so a
+        // Persian bar drains toward the screen's right and an English one toward its left.
+        float healthBarX = UiMirror.leadingOnScreen(HEALTH_BAR_X, HEALTH_BAR_WIDTH);
+        float expBarX = UiMirror.leadingOnScreen(EXP_BAR_X, EXP_BAR_WIDTH);
         shapes.setColor(0.055f, 0.035f, 0.030f, 0.98f);
-        shapes.rect(HEALTH_BAR_X, HEALTH_BAR_Y + up, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+        shapes.rect(healthBarX, HEALTH_BAR_Y + up, HEALTH_BAR_WIDTH, HEALTH_BAR_HEIGHT);
+        float healthFill = Math.max(0f, (HEALTH_BAR_WIDTH - 4f) * healthRatio);
         shapes.setColor(healthColor(healthRatio));
         shapes.rect(
-            HEALTH_BAR_X + 2f,
+            barFillX(healthBarX, HEALTH_BAR_WIDTH, 2f, healthFill),
             HEALTH_BAR_Y + up + 2f,
-            Math.max(0f, (HEALTH_BAR_WIDTH - 4f) * healthRatio),
+            healthFill,
             HEALTH_BAR_HEIGHT - 4f
         );
+        float glossFill = Math.max(0f, (HEALTH_BAR_WIDTH - 6f) * healthRatio);
         shapes.setColor(0.90f, 0.98f, 0.82f, 0.18f);
         shapes.rect(
-            HEALTH_BAR_X + 3f,
+            barFillX(healthBarX, HEALTH_BAR_WIDTH, 3f, glossFill),
             HEALTH_BAR_Y + up + HEALTH_BAR_HEIGHT - 7f,
-            Math.max(0f, (HEALTH_BAR_WIDTH - 6f) * healthRatio),
+            glossFill,
             3f
         );
         // EXP: a slim cyan bar under the health bar; flashes ivory for a moment on level-up.
         shapes.setColor(0.055f, 0.035f, 0.030f, 0.98f);
-        shapes.rect(EXP_BAR_X, EXP_BAR_Y + up, EXP_BAR_WIDTH, EXP_BAR_HEIGHT);
+        shapes.rect(expBarX, EXP_BAR_Y + up, EXP_BAR_WIDTH, EXP_BAR_HEIGHT);
         float flash = levelFlashSeconds / LEVEL_FLASH_SECONDS;
         shapes.setColor(
             EXP.r + (EXP_FLASH.r - EXP.r) * flash,
@@ -183,21 +191,24 @@ public final class HudRenderer implements AutoCloseable {
             1f
         );
         float expFill = flash > 0f ? Math.max(expRatio, flash) : expRatio;
+        float expFillWidth = Math.max(0f, (EXP_BAR_WIDTH - 3f) * expFill);
         shapes.rect(
-            EXP_BAR_X + 1.5f,
+            barFillX(expBarX, EXP_BAR_WIDTH, 1.5f, expFillWidth),
             EXP_BAR_Y + up + 1.5f,
-            Math.max(0f, (EXP_BAR_WIDTH - 3f) * expFill),
+            expFillWidth,
             EXP_BAR_HEIGHT - 3f
         );
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
         batch.begin();
-        icons.draw(batch, "health", 28f, 1194f + up, 50f);
+        icons.draw(batch, "health", UiMirror.leadingOnScreen(28f, 50f), 1194f + up, 50f);
         drawShadowed(batch, GameLocale.text(HudStrings.LEVEL, GameLocale.number(state.heroLevel)),
             102f, 1199f + up, 0.52f,
             flash > 0f ? EXP_FLASH : EXP);
-        text.drawRightAligned(batch, experienceLabel(state), 580f, 1199f + up, 0.46f, SUBTLE);
+        // The caption hangs off the panel's trailing edge: the right one in English, the left one in Persian.
+        text.drawTrailing(batch, experienceLabel(state), 0f, UiMirror.SCREEN_WIDTH,
+            UiMirror.SCREEN_WIDTH - 580f, 1199f + up, 0.46f, SUBTLE);
         if (state.ascensionTier > 0) {
             drawShadowed(batch,
                 GameLocale.text(HudStrings.TIER_BADGE, GameLocale.number(state.ascensionTier)),
@@ -217,7 +228,7 @@ public final class HudRenderer implements AutoCloseable {
             IVORY
         );
 
-        icons.draw(batch, "wave", 29f, 1087f + up, 48f);
+        icons.draw(batch, "wave", UiMirror.leadingOnScreen(29f, 48f), 1087f + up, 48f);
         drawShadowed(batch, GameLocale.text(HudStrings.WAVE), 84f, 1144f + up, 0.66f, GOLD);
         drawShadowed(
             batch,
@@ -233,7 +244,7 @@ public final class HudRenderer implements AutoCloseable {
             drawShadowed(batch, omen.label(), 84f, 1076f + up, 0.44f, CRITICAL);
         }
 
-        icons.draw(batch, "coin", 231f, 1087f + up, 48f);
+        icons.draw(batch, "coin", UiMirror.leadingOnScreen(231f, 48f), 1087f + up, 48f);
         drawShadowed(batch, GameLocale.text(HudStrings.COINS), 286f, 1144f + up, 0.66f, GOLD);
         drawShadowed(batch, MainMenuRenderer.coinTotalLabel(state.coins), 286f, 1107f + up, 1.02f, IVORY);
         // Grove HP (32.3): show planted count and health ratio reusing groveHealthRatio
@@ -246,13 +257,15 @@ public final class HudRenderer implements AutoCloseable {
         drawShadowed(batch, groveLabel, 286f, 1075f + up, 0.52f, groveRatio < 0.4f ? CRITICAL : (groveRatio < 0.7f ? WOUNDED : HEALTHY));
 
         float speedOffset = MainMenuRenderer.pressedOffset(speedState);
-        icons.draw(batch, "speed", 440f, 1091f + up + speedOffset, 44f, speedState);
+        icons.draw(batch, "speed", UiMirror.leadingOnScreen(440f, 44f),
+            1091f + up + speedOffset, 44f, speedState);
         drawShadowed(batch,
             GameLocale.text(HudStrings.SPEED, GameLocale.number(Math.round(state.simulationSpeed))),
             487f, 1124f + up + speedOffset, 0.96f, IVORY);
 
         float pauseOffset = MainMenuRenderer.pressedOffset(pauseState);
-        icons.draw(batch, "pause", 603f, 1088f + up + pauseOffset, 54f, pauseState);
+        icons.draw(batch, "pause", UiMirror.leadingOnScreen(603f, 54f),
+            1088f + up + pauseOffset, 54f, pauseState);
 
         if (state.activeTrials != null) {
             int shown = 0;
@@ -261,7 +274,8 @@ public final class HudRenderer implements AutoCloseable {
                 if (trial == null) {
                     continue;
                 }
-                icons.draw(batch, trial.iconKey(), TRIAL_ICON_X,
+                icons.draw(batch, trial.iconKey(),
+                    UiMirror.leadingOnScreen(TRIAL_ICON_X, TRIAL_ICON_SIZE),
                     TRIAL_ICON_TOP_Y + up - shown * TRIAL_ICON_STRIDE, TRIAL_ICON_SIZE);
                 shown++;
             }
@@ -269,16 +283,16 @@ public final class HudRenderer implements AutoCloseable {
 
         drawUtilityAction(
             batch, icons, "inventory", GameLocale.text(HudStrings.INVENTORY),
-            HudTouchLayout.INVENTORY_X, inventoryState
+            HudTouchLayout.inventoryX(), inventoryState
         );
         drawUtilityAction(
             batch, icons, "shop", GameLocale.text(HudStrings.SHOP),
-            HudTouchLayout.SHOP_X, shopState
+            HudTouchLayout.shopX(), shopState
         );
         if (FocusSystem.isFull(state)) {
             drawUtilityAction(
                 batch, icons, "general_power", GameLocale.text(HudStrings.ULTIMATE),
-                HudTouchLayout.ULTIMATE_X, ultimateState
+                HudTouchLayout.ultimateX(), ultimateState
             );
         }
         batch.end();
@@ -293,20 +307,36 @@ public final class HudRenderer implements AutoCloseable {
         UiFrameRenderer.State state
     ) {
         float offset = MainMenuRenderer.pressedOffset(state) - HudTouchLayout.bottomShift();
-        icons.draw(batch, icon, x + 13f, 48f + offset, 56f, state);
-        drawShadowedCentered(batch, label, x + 105f, 87f + offset, 0.74f, IVORY);
+        // x is the English design-grid edge; the button itself is drawn where the mirror puts it, and the
+        // icon and label follow it inside the button rather than inside the screen (roadmap G4).
+        float buttonX = UiMirror.leadingOnScreen(x, HudTouchLayout.UTILITY_BUTTON_WIDTH);
+        icons.draw(batch, icon,
+            UiMirror.leading(buttonX, HudTouchLayout.UTILITY_BUTTON_WIDTH, 13f, 56f),
+            48f + offset, 56f, state);
+        float labelCentreX = GameLocale.rightToLeft()
+            ? buttonX + HudTouchLayout.UTILITY_BUTTON_WIDTH - 105f
+            : buttonX + 105f;
+        text.drawCentered(batch, label, labelCentreX, 87f + offset, 0.74f, IVORY);
     }
 
     private void drawShadowedCentered(
         SpriteBatch batch, String label, float centerX, float y, float scale, Color color
     ) {
-        text.drawCentered(batch, label, centerX, y, scale, color);
+        text.drawCentered(batch, label,
+            UiMirror.centre(0f, UiMirror.SCREEN_WIDTH, centerX), y, scale, color);
     }
 
+    /**
+     * A left-aligned HUD label at its design-grid x, mirrored with the screen (roadmap G4). The run is
+     * measured shaped, because the advance of joined Persian text is not the sum of its letters' advances
+     * and mirroring with the wrong width would push the label off the edge it was measured against.
+     * In English {@code UiMirror.leadingOnScreen} returns x untouched, pixel for pixel.
+     */
     private void drawShadowed(
         SpriteBatch batch, String label, float x, float y, float scale, Color color
     ) {
-        text.draw(batch, label, x, y, scale, color);
+        text.draw(batch, label,
+            UiMirror.leadingOnScreen(x, text.width(label, scale)), y, scale, color);
     }
 
     static final float LEVEL_FLASH_SECONDS = 0.9f;
@@ -327,6 +357,17 @@ public final class HudRenderer implements AutoCloseable {
                 HudStrings.XP_PROGRESS,
                 GameLocale.number(state.heroExperience), GameLocale.number(required)
             );
+    }
+
+    /**
+     * Where a fill {@code fillWidth} wide starts inside a bar: {@code inset} in from the bar's leading edge,
+     * which is its left edge in English and its right one in Persian, so both bars drain toward the trailing
+     * edge (roadmap G4). Pure arithmetic on the already-mirrored bar position, and therefore testable.
+     */
+    static float barFillX(float barX, float barWidth, float inset, float fillWidth) {
+        return GameLocale.rightToLeft()
+            ? barX + barWidth - inset - fillWidth
+            : barX + inset;
     }
 
     static float healthRatio(float health, float maxHealth) {

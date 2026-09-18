@@ -42,8 +42,10 @@ public final class CombatEntityRenderer implements AutoCloseable {
     static final float REGULAR_FEET_RATIO = 23f / 192f;
     static final float BOSS_FEET_RATIO = 30f / 256f;
     private static final float ATTACK_CLIP_SECONDS = 8f / FRAME_RATE;
-    public static final float DROP_TARGET_X = HudTouchLayout.INVENTORY_X
-        + HudTouchLayout.UTILITY_BUTTON_WIDTH * 0.5f;
+    /** Where a drop lands: the centre of the inventory button, which mirrors with the HUD (roadmap G4). */
+    public static float dropTargetX() {
+        return HudTouchLayout.inventoryX() + HudTouchLayout.UTILITY_BUTTON_WIDTH * 0.5f;
+    }
     public static final float DROP_TARGET_Y = HudTouchLayout.DESIGN_UTILITY_BUTTON_Y
         + HudTouchLayout.UTILITY_BUTTON_HEIGHT * 0.5f;
     private static final float DROP_HOMING_ARC_HEIGHT = 86f;
@@ -473,7 +475,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     }
 
     private static float dropDrawX(DropEntity drop, float progress) {
-        return MathUtils.lerp(drop.x, DROP_TARGET_X, smoothStep(progress));
+        return MathUtils.lerp(drop.x, dropTargetX(), smoothStep(progress));
     }
 
     static float dropDrawY(DropEntity drop, float runTimeSeconds) {

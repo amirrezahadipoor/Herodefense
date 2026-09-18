@@ -75,8 +75,10 @@ class ArchitectureRatchetTest {
         "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
         // D2 raised the count by three lines: eliteGlow maps three new deep-pool affix ids to their own
         // glows, one if-line each beside the three that shipped. A map or a table for six constants would be
-        // a new file to hold six lines; the chain stays.
-        new ArchitectureRatchet.Frozen(656, 13),
+        // a new file to hold six lines; the chain stays. G4 raised it by two more: DROP_TARGET_X became
+        // dropTargetX(), because a static final captured the English inventory position before any locale
+        // existed and drops would have flown at a button that is not there in Persian.
+        new ArchitectureRatchet.Frozen(658, 13),
         // R3.5 added a mode-aware entry point (`runBrief`) and kept the old signature as a one-line delegate,
         // so the standard sweeps are unchanged by construction. R3.4 needed no growth here at all: the omens'
         // counterfactual is simply a run without the omen trial, which the existing trial axes already measure.

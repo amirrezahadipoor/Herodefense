@@ -21,11 +21,11 @@ final class DropHomingVisualTest {
         assertEquals(0.5f, CombatEntityRenderer.dropHomingProgress(drop), 0.0001f);
         float halfwayX = CombatEntityRenderer.dropDrawX(drop);
         float halfwayY = CombatEntityRenderer.dropDrawY(drop, 0f);
-        assertTrue(halfwayX > drop.x && halfwayX < CombatEntityRenderer.DROP_TARGET_X);
+        assertTrue(halfwayX > drop.x && halfwayX < CombatEntityRenderer.dropTargetX());
         assertTrue(halfwayY > 228f, "The collection path must have a visible upward arc");
 
         drop.homingElapsedSeconds = DropPickupSystem.HOMING_DURATION_SECONDS;
-        assertEquals(CombatEntityRenderer.DROP_TARGET_X, CombatEntityRenderer.dropDrawX(drop));
+        assertEquals(CombatEntityRenderer.dropTargetX(), CombatEntityRenderer.dropDrawX(drop));
         assertEquals(
             CombatEntityRenderer.DROP_TARGET_Y,
             CombatEntityRenderer.dropDrawY(drop, 0f),

@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.input;
 
 import com.amirrezahadipoor.herodefense.render.ScreenEdges;
+import com.amirrezahadipoor.herodefense.render.UiMirror;
 
 /**
  * Shared phone-HUD bounds with 120-by-100 world-unit touch targets.
@@ -27,6 +28,32 @@ public final class HudTouchLayout {
     private HudTouchLayout() {
     }
 
+    /**
+     * Left edges of the five HUD buttons as the screen currently draws them (roadmap G4). The constants above
+     * are the English design grid and stay frozen; a Persian screen mirrors the whole row, and because the
+     * hit tests below read these same methods, the box a player sees and the box a finger lands in cannot
+     * disagree -- which is the one failure mode {@code render/UiMirror} exists to prevent.
+     */
+    public static float speedX() {
+        return UiMirror.leadingOnScreen(SPEED_X, BUTTON_WIDTH);
+    }
+
+    public static float pauseX() {
+        return UiMirror.leadingOnScreen(PAUSE_X, BUTTON_WIDTH);
+    }
+
+    public static float inventoryX() {
+        return UiMirror.leadingOnScreen(INVENTORY_X, UTILITY_BUTTON_WIDTH);
+    }
+
+    public static float shopX() {
+        return UiMirror.leadingOnScreen(SHOP_X, UTILITY_BUTTON_WIDTH);
+    }
+
+    public static float ultimateX() {
+        return UiMirror.leadingOnScreen(ULTIMATE_X, UTILITY_BUTTON_WIDTH);
+    }
+
     /** Positive world units the status row moves up on tall panels. */
     public static float topShift() {
         return Math.min(MAX_EDGE_SHIFT, Math.max(0f, ScreenEdges.top() - 1280f));
@@ -46,23 +73,23 @@ public final class HudTouchLayout {
     }
 
     public static boolean speedAt(float x, float y) {
-        return inside(x, y, SPEED_X);
+        return inside(x, y, speedX());
     }
 
     public static boolean pauseAt(float x, float y) {
-        return inside(x, y, PAUSE_X);
+        return inside(x, y, pauseX());
     }
 
     public static boolean inventoryAt(float x, float y) {
-        return insideUtility(x, y, INVENTORY_X);
+        return insideUtility(x, y, inventoryX());
     }
 
     public static boolean shopAt(float x, float y) {
-        return insideUtility(x, y, SHOP_X);
+        return insideUtility(x, y, shopX());
     }
 
     public static boolean ultimateAt(float x, float y) {
-        return insideUtility(x, y, ULTIMATE_X);
+        return insideUtility(x, y, ultimateX());
     }
 
     private static boolean inside(float x, float y, float left) {

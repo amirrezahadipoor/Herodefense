@@ -139,7 +139,7 @@ public final class RunPresentationSystem {
             if (drop.homingElapsedSeconds + deltaSeconds >= DropPickupSystem.HOMING_DURATION_SECONDS
                 && ("ITEM".equals(drop.dropType) || "POTION".equals(drop.dropType))) {
                 particleSystem.emitCollectionSparkle(
-                    CombatEntityRenderer.DROP_TARGET_X, CombatEntityRenderer.DROP_TARGET_Y + 30f
+                    CombatEntityRenderer.dropTargetX(), CombatEntityRenderer.DROP_TARGET_Y + 30f
                 );
             }
         }

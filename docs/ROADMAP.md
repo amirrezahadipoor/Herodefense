@@ -402,8 +402,29 @@ started, `[!]` attempted and failed, with the failure written down.
         an Android-platform project of its own and it is not honest to tick it off as a settings row. Written
         here so the −14 is accounted for rather than quietly redefined to mean the three things that were
         cheaper.
-- [ ] **G4 (−4) The HUD does not mirror in RTL,** a documented and deliberate asymmetry, still an asymmetry a
-      Persian player meets every wave.
+- [x] **G4 (−4) The HUD does not mirror in RTL,** a documented and deliberate asymmetry, still an asymmetry a
+      Persian player meets every wave. The asymmetry is gone, and it is gone in the only way `UiMirror`'s
+      contract allows: the drawing and the hit-testing mirror together or not at all. `HudTouchLayout` kept
+      its frozen design-grid constants and grew five accessors — `speedX()` through `ultimateX()` — that
+      return the constant in English and the mirrored edge in Persian; the five `*At` hit tests read the same
+      accessors, so a Persian player presses the pause button where the pause button is drawn, which in
+      Persian is where speed used to be. The utility row reverses with it: ultimate, shop, inventory from the
+      leading edge. `HudRenderer` routes every horizontal position through the mirror — the two info panels,
+      the six icons, the trial stack, the button frames — and its two text helpers do the rest: left-aligned
+      labels mirror by their shaped measured width, centred ones about the screen's centre, and the EXP
+      caption moved from `drawRightAligned` to `drawTrailing`, which is the same pixel in English and the
+      correct edge in Persian. The bars were the one genuinely new shape: the tracks mirror, and a new
+      `barFillX` helper starts every fill at the leading edge, so health and EXP drain toward the trailing
+      edge in both languages instead of left-to-right in a right-to-left screen. One field died for this:
+      `CombatEntityRenderer.DROP_TARGET_X` was a `static final` that captured the English inventory position
+      at class-load, before any locale existed, and drops would have flown at a button that is not there in
+      Persian — it is `dropTargetX()` now, and the ratchet moved 656→658 with that reason recorded at the
+      entry. English is pixel-frozen by construction: every mirror call is the identity when the locale is
+      English, which is what kept this item safe to ship between device runs. Pinned by the RTL test in
+      `HudTouchLayoutTest` (mirrored edges, reversed row order, hits inside the mirrored boxes and outside
+      the English ones) and the new `HudRendererMirrorTest` (fill arithmetic both directions, full-bar
+      identity, drop target following the button, and no locale residue after the switch). 920/920 green
+      locally, PMD and SpotBugs clean.
 - [ ] **G5 (−2) Overlay text density** (inventory, codex, tooltips) leaves little room for a thumb.
 - [x] **G5a The settings screen's own text collided with itself, and only a screenshot could show it.** The CI
       capture of the settings screen showed three subtitles ending under their rows' right-aligned tap hints
