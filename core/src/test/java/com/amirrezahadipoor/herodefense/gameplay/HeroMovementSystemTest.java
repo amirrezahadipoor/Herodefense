@@ -35,6 +35,9 @@ final class HeroMovementSystemTest {
 
     private static final float TICK = 1f / 60f;
 
+    /** Grid spacing for the band scan: fine enough that no 120-unit button fits between two samples. */
+    private static final float GRID_STEP = 12f;
+
     /** A run at wave one with a full step budget and the Hero where every run starts. */
     private static GameState rooted() {
         GameState state = GameState.newRun(20260918L);
@@ -199,8 +202,18 @@ final class HeroMovementSystemTest {
 
     @Test
     void noHudButtonSitsInsideTheWalkableBand() {
-        for (float x = WorldLayout.HERO_WALK_MIN_X; x <= WorldLayout.HERO_WALK_MAX_X; x += 12f) {
-            for (float y = WorldLayout.HERO_WALK_MIN_Y; y <= WorldLayout.HERO_WALK_MAX_Y; y += 12f) {
+        // Integer indices, floated inside the body: both analysers reject a float loop counter (PMD
+        // DontUseFloatTypeForLoopIndices, SpotBugs FL_FLOATS_AS_LOOP_COUNTERS), and they are right -- an
+        // accumulated `x += 12f` decides its own last column by rounding, so the grid it scans is the grid the
+        // accumulator happens to reach rather than the band.
+        int columns = Math.round((WorldLayout.HERO_WALK_MAX_X - WorldLayout.HERO_WALK_MIN_X) / GRID_STEP) + 1;
+        int rows = Math.round((WorldLayout.HERO_WALK_MAX_Y - WorldLayout.HERO_WALK_MIN_Y) / GRID_STEP) + 1;
+        assertEquals(49, columns, "the grid has to cover the band's own width");
+        assertEquals(45, rows, "and its height, or a button could hide in the columns nobody scanned");
+        for (int column = 0; column < columns; column++) {
+            float x = WorldLayout.HERO_WALK_MIN_X + column * GRID_STEP;
+            for (int row = 0; row < rows; row++) {
+                float y = WorldLayout.HERO_WALK_MIN_Y + row * GRID_STEP;
                 assertTrue(HeroMovementSystem.isInsideWalkableArea(x, y));
                 String where = "at " + x + "," + y;
                 assertFalse(HudTouchLayout.speedAt(x, y), "the speed button is in the band " + where);
