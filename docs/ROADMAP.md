@@ -448,8 +448,17 @@ started, `[!]` attempted and failed, with the failure written down.
         The sixth row did not fit the screen as it was: rows went from 150f on a 150f pitch to 130f on a 140f
         pitch, which is what the surrounding constraints allow (96f minimum target, clear the footer panel at
         260f, clear the close button at 1120f, clear the header band at 1096f).
-  - [ ] **G3-layout The settings screen is full.** Six rows is the ceiling of a non-scrolling screen; a seventh
+  - [x] **G3-layout The settings screen is full.** Six rows is the ceiling of a non-scrolling screen; a seventh
         needs a scrolling list, and G3b and G3c each want a row. This is the blocker for both, not a nicety.
+        Fixed by turning the settings viewport into a drag-scrollable list with `VISIBLE_ROWS = 6` visible slots
+        between 270f and 1090f (`SettingsTouchLayout.slotY(slot)` and `visibleSlotAt(y)`). `SettingsTouchController`
+        maintains `firstVisibleIndex` and `accumulatedDrag` with `ROW_DRAG_THRESHOLD = 55f` matching Codex and
+        Inventory, resetting overshoot at boundaries so reverse scrolling responds instantly. `SettingsOverlayRenderer`
+        draws the visible window dynamically and displays a subtle golden scroll indicator on the trailing edge
+        when rows exceed 6, while keeping 100% pixel-identical output at scroll offset 0. `ScreenTouchRouter`
+        routes drag gestures to settings, `ScreenStateComposer` passes the active scroll index to the renderer,
+        and `SettingsScrollLayoutTest` locks slot geometry, drag clamping, and scrolled hit-dispatch.
+        `HeroDefenseGame` shrank to 775 lines (ceiling 779), strictly respecting the architecture ratchet.
   - [ ] **G3b Text size.** `GameFonts` already rebuilds its atlases from `DisplayMetrics`, so three named steps
         are plausible the way the volume levels are; what has to be checked first is every surface's text
         bounds, because a larger face in a row that was laid out for a smaller one clips, and clipping is worse

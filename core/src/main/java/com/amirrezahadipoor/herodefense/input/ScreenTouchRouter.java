@@ -199,6 +199,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 && host.codexTouchController().isOpen()) {
                 host.codexTouchController().drag(host.gameState(), deltaY);
             }
+            if (host.flow().state() == GameScreenState.SETTINGS) {
+                host.settingsTouchController().drag(deltaY);
+            }
             return true;
         }
 
@@ -372,6 +375,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 } else if (action == MainMenuTouchLayout.Action.CONTINUE) {
                     host.continueRun();
                 } else if (action == MainMenuTouchLayout.Action.SETTINGS) {
+                    host.settingsTouchController().open();
                     host.flow().transitionTo(GameScreenState.SETTINGS);
                 } else if (action == MainMenuTouchLayout.Action.ROOT_NETWORK) {
                     host.flow().transitionTo(GameScreenState.ROOT_NETWORK);

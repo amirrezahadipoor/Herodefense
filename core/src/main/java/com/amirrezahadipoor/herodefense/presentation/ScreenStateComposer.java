@@ -9,6 +9,7 @@ import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
+import com.amirrezahadipoor.herodefense.input.SettingsTouchController;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.onboarding.OnboardingSystem;
 import com.amirrezahadipoor.herodefense.polish.FloatingCoinTextSystem;
@@ -160,6 +161,8 @@ public final class ScreenStateComposer {
         ScreenShakeSystem screenShakeSystem();
 
         GameSettings settings();
+
+        SettingsTouchController settingsTouchController();
 
         SettingsOverlayRenderer settingsOverlayRenderer();
 
@@ -337,7 +340,8 @@ if (host.flow().state() == GameScreenState.MENU) {
     );
 } else if (host.flow().state() == GameScreenState.SETTINGS) {
     host.settingsOverlayRenderer().draw(
-        spriteBatch, camera.combined, host.settings(), host.uiIconRenderer(), host.uiFrameRenderer()
+        spriteBatch, camera.combined, host.settings(), host.uiIconRenderer(), host.uiFrameRenderer(),
+        host.settingsTouchController().firstVisibleIndex()
     );
 } else if (host.flow().state() == GameScreenState.LEVEL_UP) {
     host.levelUpOverlayRenderer().draw(

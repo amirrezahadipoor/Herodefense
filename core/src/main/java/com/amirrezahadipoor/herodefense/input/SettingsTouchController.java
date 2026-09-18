@@ -3,12 +3,56 @@ package com.amirrezahadipoor.herodefense.input;
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
-/** Applies device-setting taps and reports close separately. */
+/** Applies device-setting taps, drag-scrolls the list, and reports close separately. */
 public final class SettingsTouchController {
+
+    private static final float ROW_DRAG_THRESHOLD = 55f;
+
+    private int firstVisibleIndex;
+    private float accumulatedDrag;
+
+    public void open() {
+        firstVisibleIndex = 0;
+        accumulatedDrag = 0f;
+    }
+
+    public int firstVisibleIndex() {
+        return firstVisibleIndex;
+    }
+
+    public void drag(float deltaY, int totalRows) {
+        accumulatedDrag += deltaY;
+        int maxFirst = Math.max(0, totalRows - SettingsTouchLayout.VISIBLE_ROWS);
+        while (accumulatedDrag >= ROW_DRAG_THRESHOLD) {
+            if (firstVisibleIndex >= maxFirst) {
+                accumulatedDrag = 0f;
+                break;
+            }
+            firstVisibleIndex++;
+            accumulatedDrag -= ROW_DRAG_THRESHOLD;
+        }
+        while (accumulatedDrag <= -ROW_DRAG_THRESHOLD) {
+            if (firstVisibleIndex <= 0) {
+                accumulatedDrag = 0f;
+                break;
+            }
+            firstVisibleIndex--;
+            accumulatedDrag += ROW_DRAG_THRESHOLD;
+        }
+        if (firstVisibleIndex >= maxFirst && accumulatedDrag > 0f) {
+            accumulatedDrag = 0f;
+        } else if (firstVisibleIndex <= 0 && accumulatedDrag < 0f) {
+            accumulatedDrag = 0f;
+        }
+    }
+
+    public void drag(float deltaY) {
+        drag(deltaY, SettingsTouchLayout.TOTAL_ROWS);
+    }
 
     /** Applies the action to the settings and returns it, so the caller can play the right cue. */
     public SettingsTouchLayout.Action tap(GameSettings settings, float x, float y) {
-        SettingsTouchLayout.Action action = SettingsTouchLayout.actionAt(x, y);
+        SettingsTouchLayout.Action action = SettingsTouchLayout.actionAt(x, y, firstVisibleIndex);
         if (settings == null) return SettingsTouchLayout.Action.NONE;
         switch (action) {
             case TOGGLE_SOUND -> settings.soundEnabled = !settings.soundEnabled;

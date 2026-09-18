@@ -249,13 +249,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         screenShakeSystem = new ScreenShakeSystem();
         presentationSystem = new RunPresentationSystem(particleSystem, screenShakeSystem, codexSystem,
             new RunPresentationSystem.BeatSink() {
-                @Override public void showBeat(String line) {
-                    showStoryBeat(line);
-                }
-
-                @Override public void save() {
-                    saveNow();
-                }
+                @Override public void showBeat(String line) { showStoryBeat(line); }
+                @Override public void save() { saveNow(); }
             });
         settingsTouchController = new SettingsTouchController();
         simulationSpeedTouchController = new SimulationSpeedTouchController();
@@ -759,6 +754,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public SaplingTreeRenderer saplingTreeRenderer() { return renderers.saplingTreeRenderer; }
         @Override public ScreenShakeSystem screenShakeSystem() { return screenShakeSystem; }
         @Override public GameSettings settings() { return settings; }
+        @Override public SettingsTouchController settingsTouchController() { return settingsTouchController; }
         @Override public SettingsOverlayRenderer settingsOverlayRenderer() { return renderers.settingsOverlayRenderer; }
         @Override public StatShopTouchLayout.Tab shopTab() { return shopTab; }
         @Override public float simulationSeconds() { return simulationSeconds; }

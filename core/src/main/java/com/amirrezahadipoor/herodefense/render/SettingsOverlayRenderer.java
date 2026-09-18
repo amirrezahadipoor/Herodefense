@@ -14,8 +14,8 @@ import com.amirrezahadipoor.herodefense.input.SettingsTouchLayout;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
 /**
- * Premium settings surface: two large explicit ON/OFF toggles, the two level rows, the language row and the
- * reduced-motion row, over the reviewed arena.
+ * Premium settings surface: large explicit ON/OFF toggles, level rows, language row and accessibility
+ * rows inside a scrollable viewport over the reviewed arena.
  *
  * <p>Every word on this screen comes from {@link SettingsStrings} through {@link GameLocale}, and
  * {@code DrawnStringProvenanceTest} fails the build if a literal is drawn here instead -- which matters more on
@@ -72,6 +72,17 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         UiIconRenderer icons,
         UiFrameRenderer frames
     ) {
+        draw(batch, projection, settings, icons, frames, 0);
+    }
+
+    public void draw(
+        SpriteBatch batch,
+        Matrix4 projection,
+        GameSettings settings,
+        UiIconRenderer icons,
+        UiFrameRenderer frames,
+        int firstVisibleIndex
+    ) {
         batch.setProjectionMatrix(projection);
         batch.begin();
         batch.setColor(0.70f, 0.80f, 0.76f, 1f);
@@ -87,62 +98,40 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         shapes.rect(0f, ScreenEdges.bottom(), 720f, ScreenEdges.height());
         shapes.setColor(0.07f, 0.19f, 0.16f, 0.62f);
         shapes.rect(0f, 1096f, 720f, ScreenEdges.top() - 1096f);
+
+        int totalRows = SettingsTouchLayout.TOTAL_ROWS;
+        if (totalRows > SettingsTouchLayout.VISIBLE_ROWS) {
+            float railX = UiMirror.trailingOnScreen(42f, 6f);
+            float trackY = SettingsTouchLayout.REDUCED_MOTION_ROW_Y;
+            float trackHeight = (SettingsTouchLayout.SOUND_ROW_Y + SettingsTouchLayout.ROW_HEIGHT) - trackY;
+            shapes.setColor(0.15f, 0.28f, 0.24f, 0.45f);
+            shapes.rect(railX, trackY, 6f, trackHeight);
+
+            float thumbHeight = trackHeight * ((float) SettingsTouchLayout.VISIBLE_ROWS / totalRows);
+            int maxFirst = totalRows - SettingsTouchLayout.VISIBLE_ROWS;
+            float scrollFraction = maxFirst > 0 ? (float) firstVisibleIndex / maxFirst : 0f;
+            float thumbY = trackY + (trackHeight - thumbHeight) * (1f - scrollFraction);
+            shapes.setColor(0.85f, 0.72f, 0.38f, 0.65f);
+            shapes.rect(railX, thumbY, 6f, thumbHeight);
+        }
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
         UiFrameRenderer.State closeState = frames.resolve(
             true, false, CLOSE_X, CLOSE_Y, CLOSE_SIZE, CLOSE_SIZE
         );
-        UiFrameRenderer.State soundState = frames.resolve(
-            true, settings.soundEnabled, SettingsTouchLayout.ROW_X, SOUND_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
-        );
-        UiFrameRenderer.State musicState = frames.resolve(
-            true, settings.musicEnabled, SettingsTouchLayout.ROW_X, MUSIC_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
-        );
-        UiFrameRenderer.State soundLevelState = frames.resolve(
-            true, settings.soundVolume > 0f, SettingsTouchLayout.ROW_X, SOUND_LEVEL_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
-        );
-        UiFrameRenderer.State musicLevelState = frames.resolve(
-            true, settings.musicVolume > 0f, SettingsTouchLayout.ROW_X, MUSIC_LEVEL_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
-        );
-        UiFrameRenderer.State languageState = frames.resolve(
-            true, settings.language != GameLanguage.ENGLISH, SettingsTouchLayout.ROW_X, LANGUAGE_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
-        );
-        UiFrameRenderer.State reducedMotionState = frames.resolve(
-            true, settings.reducedMotion, SettingsTouchLayout.ROW_X, REDUCED_MOTION_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
-        );
 
         batch.begin();
         frames.draw(batch, UiFrameRenderer.Kind.BUTTON, CLOSE_X, CLOSE_Y, CLOSE_SIZE, CLOSE_SIZE,
             true, false);
-        frames.draw(
-            batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, SOUND_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
-            settings.soundEnabled
-        );
-        frames.draw(
-            batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, MUSIC_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
-            settings.musicEnabled
-        );
-        frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, SOUND_LEVEL_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
-            settings.soundVolume > 0f);
-        frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, MUSIC_LEVEL_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
-            settings.musicVolume > 0f);
-        frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, LANGUAGE_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
-            settings.language != GameLanguage.ENGLISH);
-        frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, REDUCED_MOTION_ROW_Y,
-            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
-            settings.reducedMotion);
+
+        for (int slot = 0; slot < SettingsTouchLayout.VISIBLE_ROWS; slot++) {
+            int rowIndex = firstVisibleIndex + slot;
+            if (rowIndex >= totalRows) break;
+            float y = SettingsTouchLayout.slotY(slot);
+            drawRow(batch, frames, rowIndex, y, settings);
+        }
+
         frames.draw(batch, UiFrameRenderer.Kind.PANEL, NOTE_PANEL_X, NOTE_PANEL_Y,
             NOTE_PANEL_WIDTH, NOTE_PANEL_HEIGHT, true, false);
 
@@ -156,22 +145,6 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             UiMirror.trailingOnScreen(CLOSE_ICON_INSET, CLOSE_ICON_SIZE), 1138f, CLOSE_ICON_SIZE,
             closeState);
 
-        drawToggle(batch, SettingsStrings.SOUND_EFFECTS, SettingsStrings.SOUND_EFFECTS_SUBTITLE,
-            SOUND_ROW_Y, settings.soundEnabled, soundState);
-        drawToggle(batch, SettingsStrings.MUSIC, SettingsStrings.MUSIC_SUBTITLE,
-            MUSIC_ROW_Y, settings.musicEnabled, musicState);
-
-        drawLevel(batch, SettingsStrings.EFFECT_LEVEL, SettingsStrings.EFFECT_LEVEL_SUBTITLE,
-            SOUND_LEVEL_ROW_Y, settings.soundVolume, soundLevelState);
-        drawLevel(batch, SettingsStrings.MUSIC_LEVEL, SettingsStrings.MUSIC_LEVEL_SUBTITLE,
-            MUSIC_LEVEL_ROW_Y, settings.musicVolume, musicLevelState);
-
-        drawLanguage(batch, settings.language, LANGUAGE_ROW_Y, languageState);
-
-        drawToggle(batch, SettingsStrings.REDUCED_MOTION, SettingsStrings.REDUCED_MOTION_SUBTITLE,
-            REDUCED_MOTION_ROW_Y, settings.reducedMotion, reducedMotionState,
-            SettingsStrings.TAP_TO_RESTORE_MOTION);
-
         text.drawLeading(batch, GameLocale.text(SettingsStrings.TOUCH_ONLY), NOTE_PANEL_X,
             NOTE_PANEL_WIDTH, NOTE_INSET, 226f, 0.66f, OverlayText.GOLD);
         // 0.66f, down from 0.74f: at the larger step this line ran past the panel's right border on the CI
@@ -181,6 +154,87 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         text.drawLeading(batch, GameLocale.text(SettingsStrings.CLOSE_HINT), NOTE_PANEL_X,
             NOTE_PANEL_WIDTH, NOTE_INSET, 164f, 0.74f, OverlayText.SUBTLE);
         batch.end();
+    }
+
+    private void drawRow(
+        SpriteBatch batch,
+        UiFrameRenderer frames,
+        int rowIndex,
+        float y,
+        GameSettings settings
+    ) {
+        switch (rowIndex) {
+            case 0 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.soundEnabled, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(
+                    batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.soundEnabled
+                );
+                drawToggle(batch, SettingsStrings.SOUND_EFFECTS, SettingsStrings.SOUND_EFFECTS_SUBTITLE,
+                    y, settings.soundEnabled, state);
+            }
+            case 1 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.musicEnabled, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(
+                    batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.musicEnabled
+                );
+                drawToggle(batch, SettingsStrings.MUSIC, SettingsStrings.MUSIC_SUBTITLE,
+                    y, settings.musicEnabled, state);
+            }
+            case 2 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.soundVolume > 0f, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.soundVolume > 0f);
+                drawLevel(batch, SettingsStrings.EFFECT_LEVEL, SettingsStrings.EFFECT_LEVEL_SUBTITLE,
+                    y, settings.soundVolume, state);
+            }
+            case 3 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.musicVolume > 0f, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.musicVolume > 0f);
+                drawLevel(batch, SettingsStrings.MUSIC_LEVEL, SettingsStrings.MUSIC_LEVEL_SUBTITLE,
+                    y, settings.musicVolume, state);
+            }
+            case 4 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.language != GameLanguage.ENGLISH, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.language != GameLanguage.ENGLISH);
+                drawLanguage(batch, settings.language, y, state);
+            }
+            case 5 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.reducedMotion, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.reducedMotion);
+                drawToggle(batch, SettingsStrings.REDUCED_MOTION, SettingsStrings.REDUCED_MOTION_SUBTITLE,
+                    y, settings.reducedMotion, state, SettingsStrings.TAP_TO_RESTORE_MOTION);
+            }
+            default -> {}
+        }
     }
 
     private void drawToggle(
