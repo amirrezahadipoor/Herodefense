@@ -67,8 +67,11 @@ started, `[!]` attempted and failed, with the failure written down.
       *What stepping buys, measured.* `EnemyMeleeAttackSystem` checks its range against the Hero's live position,
       so the test plays a swing that lands at the centre and then lands nowhere after a 100-unit step north. The
       meter under the Hero's feet is drawn only once some budget is spent, which is why an untouched wave renders
-      the pixels it rendered before and the device journeys' reference brightness needed no re-capture — their one
-      swipe is inside the inventory, not the arena.
+      the pixels it rendered before. Exactly one captured screen did change, and it changed because of the coach
+      rather than the movement: six steps draw six pips where five drew five, and the first Android run of this
+      change measured `live-hud-premium-v2.png` at mean 47.09 / lit 0.9306 against its stored reference
+      46.81 / 0.9340 (run 35301961953's own brightness-measurements.txt), inside the tolerance — so no reference
+      moved, and the frame in that run shows the six-pip banner over a wave the Hero has not stepped in yet.
       *The coaching.* The drag lesson came back as step 2 of 6 in both languages ("Drag on the ground and the Hero
       steps there" / «انگشت را روی زمین بکشید تا قهرمان گام بردارد»), reported only when
       `HeroMovementSystem.orderStepTo` actually took the order, so the lesson cannot complete on a drag that moved
