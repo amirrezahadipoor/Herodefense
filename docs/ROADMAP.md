@@ -146,8 +146,20 @@ started, `[!]` attempted and failed, with the failure written down.
 - [ ] **I2 (−6) Device evidence is a headless x86 emulator.** Real Adreno/Mali GPUs, real touch latency and
       thermal behaviour are untested. `docs/perf/` runs are emulator runs and should say so wherever they are
       quoted.
-- [ ] **I3 (−4) Three `|| true` in `.github/workflows/generate-visual-assets.yml`** can swallow a failure in the
-      render-resume path. Rule 2 is about tests, but a step that cannot fail is the same shape of problem.
+- [x] **I3 (−4) Three or-true suffixes in `.github/workflows/generate-visual-assets.yml` swallowed failures.**
+      One hid a broken render-resume, which then looked identical to "this batch owes nothing" and quietly
+      re-rendered the whole batch; two hid the render hash log and the batch's review evidence failing to be
+      written, after which the workflow stayed green, the artifacts uploaded empty with `if-no-files-found:
+      warn`, and nothing anywhere said which of the two had happened. All three now fail their step with a
+      `::error::` line naming what is missing, and the resume fallback announces itself in the step summary
+      instead of being inferred from an empty variable. The integrity metric needed the same fix from the other
+      side: `workflow_always_true` counted the pattern anywhere in the file, so the three comments explaining
+      what had been removed would have kept reporting three swallowed failures in a workflow with none. It now
+      ignores comment lines, is a function of its own so it can be tested, and reads 0. Rule 2 is about tests,
+      but a step that cannot fail is the same shape of problem, and so is a metric that cannot tell a failure
+      from a sentence about one. This workflow only runs on `workflow_dispatch`, so nothing in CI exercised the
+      change: the YAML parses and all ten `run` blocks pass `bash -n`, which is checked and stated rather than
+      left implied.
 - [ ] **I4 (−2) The core suite was not executed locally today.** CI is green on both jobs, and the last full
       local execution predates the current tree by two days. Small, and it stays small only while the sandbox
       keeps losing its JDK; `scripts/gradle.sh` plus a pinned toolchain in CI already covers it.

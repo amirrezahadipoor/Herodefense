@@ -144,3 +144,20 @@ class ContentFlagTest(unittest.TestCase):
         content = measure_round.content_flags()
         for flag in ("backButton", "persian", "rightToLeft", "haptics"):
             self.assertTrue(content[flag], f"{flag} stopped being detected: the pattern or the code moved")
+
+
+class IntegrityScanTest(unittest.TestCase):
+    """Roadmap I3: a metric about swallowed failures has to count failures, not sentences about them."""
+
+    def test_a_comment_mentioning_the_suffix_is_not_a_swallowed_failure(self) -> None:
+        text = (
+            "# `|| true` was what made this step's own failure invisible\n"
+            "run: python3 tools/render/render_hash_log.py write out || true\n"
+            "          # a trailing comment with || true in it\n"
+        )
+        self.assertEqual(1, measure_round.or_true_count(text))
+
+    def test_no_workflow_in_this_repository_swallows_a_failure_any_more(self) -> None:
+        self.assertEqual(0, measure_round.integrity_scan()["workflow_always_true"],
+                         "a workflow line ends in an or-true suffix, so a step can fail without the job failing:"
+                         " either remove the suffix or say in the line why the failure does not matter")

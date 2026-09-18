@@ -82,10 +82,19 @@ jobs:
             python3 tools/render/render_hash_log.py resume \
               /tmp/hero-defense-rendered/asset_manifest.json \
               /tmp/hero-defense-rendered/render_hash_log.json \
-              --root /tmp/hero-defense-rendered $@ || true
+              --root /tmp/hero-defense-rendered "$@"
           }
-          owed=$(print_owed --keys)
-          print_owed
+          # A resume that cannot be computed renders the whole batch, which is safe: nothing ships that was not
+          # rendered here. Safe is not silent, though, and `|| true` made this the quiet path -- an empty $owed
+          # looked exactly like "this batch owes nothing", so a broken resume read as a finished one and the run
+          # re-rendered everything Blender had already produced. Announced instead.
+          if owed=$(print_owed --keys); then
+            print_owed
+          else
+            owed=""
+            echo "Resume could not be computed, so this run renders the whole batch instead of only what it owes." \
+              | tee -a "$GITHUB_STEP_SUMMARY"
+          fi
           echo "only=$owed" >> "$GITHUB_OUTPUT"
           if [ -n "$owed" ]; then
             echo "Resuming: $(echo "$owed" | wc -w) key(s) still owed by this batch."
@@ -146,7 +155,14 @@ jobs:
       - name: Write the render hash log
         if: always()
         run: |
-          python3 tools/render/render_hash_log.py write /tmp/hero-defense-rendered || true
+          # `if: always()` is what makes this step run after a failure above. `|| true` was what made this
+          # step's own failure invisible -- and the diff below then compared the previous log against a file
+          # that had never been written, which is a comparison that looks like evidence and is not. A batch
+          # without a hash log cannot be diffed against the next one, so that is an error and not a warning.
+          if ! python3 tools/render/render_hash_log.py write /tmp/hero-defense-rendered; then
+            echo "::error::the render hash log could not be written, so this batch cannot be diffed against the next one"
+            exit 1
+          fi
           if [ -f /tmp/previous-render-log.json ]; then
             python3 tools/render/render_hash_log.py diff \
               /tmp/previous-render-log.json \
@@ -164,10 +180,18 @@ jobs:
       - name: Regenerate this batch's review evidence
         if: always()
         run: |
-          python3 tools/visual/regenerate_batch_review.py \
+          # Without `|| true`, and for the same reason as the hash log above: the upload step below tolerates an
+          # empty directory with `if-no-files-found: warn`, so a generator that died used to leave a green
+          # workflow, a review artifact with nothing in it, and no line anywhere saying which of the two had
+          # happened. Rule 1 of docs/RULES.md is about evidence that is not there being presented as evidence
+          # that is; a silent generator failure is that, one step removed.
+          if ! python3 tools/visual/regenerate_batch_review.py \
             --batch "${{ inputs.batch }}" \
             --candidate /tmp/hero-defense-runtime \
-            --output /tmp/hero-defense-review || true
+            --output /tmp/hero-defense-review; then
+            echo "::error::this batch's review evidence could not be regenerated, so the artifact uploaded next is empty or stale"
+            exit 1
+          fi
 
       - name: Upload this batch's regenerated review evidence
         if: always()

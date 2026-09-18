@@ -74,6 +74,22 @@ def largest_classes() -> list[dict]:
     return core[:5]
 
 
+OR_TRUE = re.compile(r"\|\|\s*true")
+
+
+def or_true_count(text: str) -> int:
+    """How many workflow lines swallow a failure with an or-true suffix.
+
+    Comment lines do not count. Three of these were removed from the asset workflow on 2026-09-18 (roadmap I3)
+    and each removal left a comment explaining what the suffix had been hiding, so a counter that read prose
+    would have kept reporting three swallowed failures in a workflow with none -- the same mistake M1 fixed for
+    the content flags, in the other direction. A metric that cannot tell a failure from a sentence about a
+    failure is a metric nobody can act on.
+    """
+    return sum(1 for line in text.splitlines()
+               if OR_TRUE.search(line) and not line.strip().startswith("#"))
+
+
 def integrity_scan() -> dict:
     """The scan `TestIntegrityTest` performs, reported as counts so the audit can quote them."""
     sources = list(java_files("core/src/test/java")) + list(java_files("android/src/androidTest/java"))
@@ -90,7 +106,7 @@ def integrity_scan() -> dict:
             found[key] += len(pattern.findall(text))
         found["exemptions"] += len(re.findall(r"//\s*integrity-exempt:\s*\S", text))
     workflows = sorted((ROOT / ".github/workflows").glob("*.yml"))
-    found["workflow_always_true"] = sum(len(re.findall(r"\|\|\s*true", read(path))) for path in workflows)
+    found["workflow_always_true"] = sum(or_true_count(read(path)) for path in workflows)
     found["test_integrity_test"] = any("TestIntegrityTest" in path.name for path in sources)
     return found
 
