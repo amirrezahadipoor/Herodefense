@@ -39,6 +39,11 @@ public enum SettingsStrings implements Translated {
     LEVEL_NORMAL("NORMAL", "عادی"),
     LEVEL_FULL("FULL", "کامل"),
 
+    /** Roadmap G3a: the reduced-motion row. Its "on" hint is its own, because "tap to mute" is about sound. */
+    REDUCED_MOTION("REDUCED MOTION", "حرکت کاهش‌یافته"),
+    REDUCED_MOTION_SUBTITLE("No camera shake, no drifting spores", "بدون لرزش دوربین و ذره‌های سرگردان"),
+    TAP_TO_RESTORE_MOTION("tap to restore motion", "برای بازگشت حرکت لمس کنید"),
+
     TOUCH_ONLY("TOUCH ONLY", "فقط لمسی"),
 
     LANGUAGE("LANGUAGE", "زبان"),

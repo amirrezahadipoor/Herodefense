@@ -14,8 +14,8 @@ import com.amirrezahadipoor.herodefense.input.SettingsTouchLayout;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
 /**
- * Premium settings surface: two large explicit ON/OFF toggles, the two level rows and the language row, over the
- * reviewed arena.
+ * Premium settings surface: two large explicit ON/OFF toggles, the two level rows, the language row and the
+ * reduced-motion row, over the reviewed arena.
  *
  * <p>Every word on this screen comes from {@link SettingsStrings} through {@link GameLocale}, and
  * {@code DrawnStringProvenanceTest} fails the build if a literal is drawn here instead -- which matters more on
@@ -37,6 +37,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     static final float SOUND_LEVEL_ROW_Y = SettingsTouchLayout.SOUND_LEVEL_ROW_Y;
     static final float MUSIC_LEVEL_ROW_Y = SettingsTouchLayout.MUSIC_LEVEL_ROW_Y;
     static final float LANGUAGE_ROW_Y = SettingsTouchLayout.LANGUAGE_ROW_Y;
+    static final float REDUCED_MOTION_ROW_Y = SettingsTouchLayout.REDUCED_MOTION_ROW_Y;
     /**
      * The insets this screen's elements sit at, named because a mirrored screen has to move each of them by the
      * same distance from the other edge: 136f is {@code ROW_X + ROW_TEXT_INSET} and 590f is the row's right edge
@@ -112,6 +113,10 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             true, settings.language != GameLanguage.ENGLISH, SettingsTouchLayout.ROW_X, LANGUAGE_ROW_Y,
             SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
         );
+        UiFrameRenderer.State reducedMotionState = frames.resolve(
+            true, settings.reducedMotion, SettingsTouchLayout.ROW_X, REDUCED_MOTION_ROW_Y,
+            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+        );
 
         batch.begin();
         frames.draw(batch, UiFrameRenderer.Kind.BUTTON, CLOSE_X, CLOSE_Y, CLOSE_SIZE, CLOSE_SIZE,
@@ -135,6 +140,9 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, LANGUAGE_ROW_Y,
             SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
             settings.language != GameLanguage.ENGLISH);
+        frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, REDUCED_MOTION_ROW_Y,
+            SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+            settings.reducedMotion);
         frames.draw(batch, UiFrameRenderer.Kind.PANEL, NOTE_PANEL_X, NOTE_PANEL_Y,
             NOTE_PANEL_WIDTH, NOTE_PANEL_HEIGHT, true, false);
 
@@ -160,6 +168,10 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
 
         drawLanguage(batch, settings.language, LANGUAGE_ROW_Y, languageState);
 
+        drawToggle(batch, SettingsStrings.REDUCED_MOTION, SettingsStrings.REDUCED_MOTION_SUBTITLE,
+            REDUCED_MOTION_ROW_Y, settings.reducedMotion, reducedMotionState,
+            SettingsStrings.TAP_TO_RESTORE_MOTION);
+
         text.drawLeading(batch, GameLocale.text(SettingsStrings.TOUCH_ONLY), NOTE_PANEL_X,
             NOTE_PANEL_WIDTH, NOTE_INSET, 226f, 0.66f, OverlayText.GOLD);
         text.drawLeading(batch, GameLocale.text(SettingsStrings.HINT), NOTE_PANEL_X,
@@ -177,14 +189,32 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         boolean enabled,
         UiFrameRenderer.State state
     ) {
+        drawToggle(batch, title, subtitle, y, enabled, state, SettingsStrings.TAP_TO_MUTE);
+    }
+
+    /**
+     * A toggle row, with the hint it shows while it is on chosen by the caller: "tap to mute" is right for the
+     * two audio rows and wrong for reduced motion, where on is the calm state and the way back is what the
+     * player might want. The offsets are the row's own -- 90f and 46f of a 130f row are where 104f and 54f of
+     * the 150f row were -- and they moved with the row instead of being left floating inside a shorter frame.
+     */
+    private void drawToggle(
+        SpriteBatch batch,
+        SettingsStrings title,
+        SettingsStrings subtitle,
+        float y,
+        boolean enabled,
+        UiFrameRenderer.State state,
+        SettingsStrings onHint
+    ) {
         float offset = MainMenuRenderer.pressedOffset(state);
-        rowTitle(batch, GameLocale.text(title), y + 104f + offset, 1.16f, OverlayText.IVORY);
-        rowTitle(batch, GameLocale.text(subtitle), y + 54f + offset, 0.68f, OverlayText.SUBTLE);
-        rowValue(batch, toggleLabel(enabled), y + 96f + offset, 1.14f,
+        rowTitle(batch, GameLocale.text(title), y + 90f + offset, 1.16f, OverlayText.IVORY);
+        rowTitle(batch, GameLocale.text(subtitle), y + 46f + offset, 0.68f, OverlayText.SUBTLE);
+        rowValue(batch, toggleLabel(enabled), y + 84f + offset, 1.14f,
             enabled ? OverlayText.GOLD : OverlayText.MUTED);
         rowValue(batch,
-            GameLocale.text(enabled ? SettingsStrings.TAP_TO_MUTE : SettingsStrings.TAP_TO_ENABLE),
-            y + 54f + offset, 0.62f, OverlayText.SUBTLE);
+            GameLocale.text(enabled ? onHint : SettingsStrings.TAP_TO_ENABLE),
+            y + 46f + offset, 0.62f, OverlayText.SUBTLE);
     }
 
     private void drawLevel(
@@ -196,12 +226,12 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         UiFrameRenderer.State state
     ) {
         float offset = MainMenuRenderer.pressedOffset(state);
-        rowTitle(batch, GameLocale.text(title), y + 104f + offset, 1.16f, OverlayText.IVORY);
-        rowTitle(batch, GameLocale.text(subtitle), y + 54f + offset, 0.68f, OverlayText.SUBTLE);
+        rowTitle(batch, GameLocale.text(title), y + 90f + offset, 1.16f, OverlayText.IVORY);
+        rowTitle(batch, GameLocale.text(subtitle), y + 46f + offset, 0.68f, OverlayText.SUBTLE);
         rowValue(batch, GameSettings.levelLabel(GameSettings.levelIndex(volume)),
-            y + 96f + offset, 1.06f, OverlayText.GOLD);
+            y + 84f + offset, 1.06f, OverlayText.GOLD);
         rowValue(batch, GameLocale.text(SettingsStrings.TAP_TO_STEP),
-            y + 54f + offset, 0.62f, OverlayText.SUBTLE);
+            y + 46f + offset, 0.62f, OverlayText.SUBTLE);
     }
 
     /**
@@ -215,17 +245,17 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
         UiFrameRenderer.State state
     ) {
         float offset = MainMenuRenderer.pressedOffset(state);
-        rowTitle(batch, GameLocale.text(SettingsStrings.LANGUAGE), y + 104f + offset, 1.16f,
+        rowTitle(batch, GameLocale.text(SettingsStrings.LANGUAGE), y + 90f + offset, 1.16f,
             OverlayText.IVORY);
-        rowTitle(batch, GameLocale.text(SettingsStrings.LANGUAGE_SUBTITLE), y + 54f + offset,
+        rowTitle(batch, GameLocale.text(SettingsStrings.LANGUAGE_SUBTITLE), y + 46f + offset,
             0.68f, OverlayText.SUBTLE);
-        rowValue(batch, nativeName(language), y + 96f + offset, 1.06f, OverlayText.GOLD);
+        rowValue(batch, nativeName(language), y + 84f + offset, 1.06f, OverlayText.GOLD);
         rowValue(batch, GameLocale.text(SettingsStrings.TAP_TO_SWITCH),
-            y + 54f + offset, 0.62f, OverlayText.SUBTLE);
+            y + 46f + offset, 0.62f, OverlayText.SUBTLE);
     }
 
     /**
-     * A row's two leading lines and its two trailing ones. All five rows call these rather than drawing at a
+     * A row's two leading lines and its two trailing ones. All six rows call these rather than drawing at a
      * number, because the number is a sum of the row's edge and an inset and only the inset survives mirroring:
      * 136f means "36f in from the left" in English and would mean the same in Persian, which is the wrong side.
      */

@@ -121,8 +121,35 @@ started, `[!]` attempted and failed, with the failure written down.
       deleting the `DRAG_FIRE` action nothing can honestly claim, and adding `OnboardingClaimsTest`, which fails
       if a coached line ever claims movement or aiming again and fails if anyone makes the Hero move without
       coming back to the coach. Worth 32 points across G and H; see H1 for the Persian half.
-- [ ] **G3 (−14) There are no accessibility options.** No colour-blind palette, no screen-reader labels, no font
-      size, no reduced-motion switch. `GameSettings` holds audio, auto-sell and a tutorial flag; that is all.
+- [~] **G3 (−14) There were no accessibility options at all.** Split into the four things that word covered,
+      because they are four different sizes of work and one of them is not this project's to finish alone:
+  - [x] **G3a Reduced motion.** `GameSettings.reducedMotion`, persisted as `display.reducedMotion`, toggled by
+        a sixth settings row, and honoured where the motion is drawn: the camera stops reading the shake
+        offsets and the ambient spore drift is not drawn. Both go through one gate, `polish/ReducedMotion`, so a
+        third source of motion cannot forget the preference exists. Hit particles, floating damage numbers and
+        the hit-stop pause are deliberately left alone: those carry information, and an accessibility setting is
+        not a licence to make the game harder to read. `ReducedMotionSettingsTest` holds all four links — the
+        tap, the relaunch, the gate's meaning, and the composer still consulting it — and asserts the shake it
+        suppresses is a shake that actually moves the camera, so the row cannot become a placebo unnoticed.
+        The sixth row did not fit the screen as it was: rows went from 150f on a 150f pitch to 130f on a 140f
+        pitch, which is what the surrounding constraints allow (96f minimum target, clear the footer panel at
+        260f, clear the close button at 1120f, clear the header band at 1096f).
+  - [ ] **G3-layout The settings screen is full.** Six rows is the ceiling of a non-scrolling screen; a seventh
+        needs a scrolling list, and G3b and G3c each want a row. This is the blocker for both, not a nicety.
+  - [ ] **G3b Text size.** `GameFonts` already rebuilds its atlases from `DisplayMetrics`, so three named steps
+        are plausible the way the volume levels are; what has to be checked first is every surface's text
+        bounds, because a larger face in a row that was laid out for a smaller one clips, and clipping is worse
+        than small.
+  - [ ] **G3c Colour-blind-safe rarity colours.** Rarity is currently carried by `rarityColor(String)` inside
+        `InventoryOverlayRenderer` and by tier art, so this starts with centralising the palette before it can
+        offer an alternative to it. `VisualRarityTest` and `DropRarityVisualTest` are the tests that will say
+        whether the alternative still distinguishes five tiers.
+  - [ ] **G3d Screen-reader support — recorded, not started.** This is one libGDX surface, so TalkBack has
+        nothing to read: real support means an accessibility delegate publishing virtual views for the HUD, the
+        menus and the card choices, and keeping them in step with a renderer that redraws every frame. That is
+        an Android-platform project of its own and it is not honest to tick it off as a settings row. Written
+        here so the −14 is accounted for rather than quietly redefined to mean the three things that were
+        cheaper.
 - [ ] **G4 (−4) The HUD does not mirror in RTL,** a documented and deliberate asymmetry, still an asymmetry a
       Persian player meets every wave.
 - [ ] **G5 (−2) Overlay text density** (inventory, codex, tooltips) leaves little room for a thumb.

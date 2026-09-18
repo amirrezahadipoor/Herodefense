@@ -117,13 +117,21 @@ class ContentFlagTest(unittest.TestCase):
         self.assertEqual("fourth", stripped[3].strip())
         self.assertEqual("fifth", stripped[4].strip())
 
-    def test_accessibility_is_false_because_no_accessibility_feature_exists(self) -> None:
+    def test_accessibility_is_reported_from_a_setting_and_not_from_a_word(self) -> None:
+        # This assertion was "accessibility is false" until roadmap G3a shipped a reduced-motion switch, which
+        # is what the flag is for and which flipped it. The old message said to replace it with a check that the
+        # feature is real rather than merely mentioned, and that is this: the evidence has to name the settings
+        # field a player toggles, because a javadoc word is exactly what made the flag lie before.
         content = measure_round.content_flags()
-        self.assertFalse(content["accessibility"],
-                         "a colour-blind palette, a screen-reader label, a font size or a reduced-motion switch"
-                         " appeared in code: roadmap item G3 has been started, and this assertion should be"
-                         " replaced by one that checks the feature works")
-        self.assertEqual([], content["flagEvidence"]["accessibility"])
+        self.assertTrue(content["accessibility"],
+                        "the reduced-motion setting stopped being detected, which means the pattern, the field"
+                        " or the comment-stripping moved")
+        self.assertTrue(any(entry.startswith("GameSettings.java")
+                            for entry in content["flagEvidence"]["accessibility"]),
+                        "accessibility is reported from "
+                        + str(content["flagEvidence"]["accessibility"])
+                        + ", and none of those is the settings field the player toggles: a flag that cannot"
+                          " point at a setting is a flag reading prose again")
 
     def test_every_flag_is_its_own_evidence_and_the_evidence_still_exists(self) -> None:
         content = measure_round.content_flags()

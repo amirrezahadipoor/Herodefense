@@ -21,6 +21,19 @@ public final class GameSettings {
     public boolean tutorialSeen;
 
     /**
+     * Reduced motion (roadmap G3a): switches off the two sources of movement in this game that a player cannot
+     * predict and does not control -- the camera impulse after a hit, a critical, an ultimate or a boss arrival,
+     * and the ambient spore drift that never stops. Both are decoration; neither carries information the rest of
+     * the screen does not also carry, which is what makes them safe to remove and the reason the hit particles,
+     * the floating damage numbers and the hit-stop pause are deliberately left alone: those tell the player
+     * something happened, and a preference is not a licence to make the game harder to read.
+     *
+     * <p>Device-local like the volumes, and off by default because it is a preference about the player and not
+     * a difficulty choice.
+     */
+    public boolean reducedMotion;
+
+    /**
      * The language the game speaks (roadmap R7.3). It is a device-local preference like the volumes rather than
      * part of a run save: a player who switches to Persian halfway through a wave keeps Persian in the next run,
      * and a save file copied to another device does not carry a language with it.

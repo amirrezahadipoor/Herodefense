@@ -20,6 +20,10 @@ public final class SettingsTouchController {
             // point of the row: a language you have to leave the screen to see is a language you cannot
             // confirm you chose.
             case CYCLE_LANGUAGE -> GameLocale.use(settings.cycleLanguage());
+            // Read straight from the settings object by the composer on the frame after the tap, so the shake
+            // stops while the player is still looking at the row they pressed. That is the row's only proof:
+            // nothing else on the screen changes when motion is reduced.
+            case TOGGLE_REDUCED_MOTION -> settings.reducedMotion = !settings.reducedMotion;
             default -> {
                 return action;
             }

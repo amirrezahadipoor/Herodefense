@@ -14,6 +14,7 @@ import com.amirrezahadipoor.herodefense.onboarding.OnboardingSystem;
 import com.amirrezahadipoor.herodefense.polish.FloatingCoinTextSystem;
 import com.amirrezahadipoor.herodefense.polish.FloatingDamageTextSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
+import com.amirrezahadipoor.herodefense.polish.ReducedMotion;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
 import com.amirrezahadipoor.herodefense.polish.TouchFeedbackSystem;
 import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
@@ -219,12 +220,18 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
     float baseCameraX = WorldLayout.REFERENCE_WIDTH * 0.5f;
     float baseCameraY = WorldLayout.REFERENCE_HEIGHT * 0.5f;
     boolean opening = host.flow().state() == GameScreenState.CINEMATIC && host.openingCinematic().isActive();
+    // Roadmap G3a: the camera impulse and the spore drift are decoration, so a player who asked not to be
+    // shaken gets the same frame without them. The shake system itself keeps running -- its state belongs to
+    // the simulation and stays deterministic -- and only the camera stops reading it.
+    boolean reducedMotion = ReducedMotion.suppresses(host.settings());
+    float shakeX = reducedMotion ? 0f : host.screenShakeSystem().offsetX();
+    float shakeY = reducedMotion ? 0f : host.screenShakeSystem().offsetY();
     float focus = opening ? host.openingCinematic().cameraFocus() : 0f;
     camera.zoom = opening ? host.openingCinematic().cameraZoom() : 1f;
     camera.position.set(
-        baseCameraX + host.screenShakeSystem().offsetX()
+        baseCameraX + shakeX
             + (GameState.ARENA_CENTER_X - baseCameraX) * focus,
-        baseCameraY + host.screenShakeSystem().offsetY()
+        baseCameraY + shakeY
             + (GameState.ARENA_CENTER_Y + 60f - baseCameraY) * focus,
         camera.position.z
     );
@@ -238,7 +245,9 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
         presentationDeltaSeconds
     );
     spriteBatch.end();
-    host.particleRenderer().drawAmbient(camera.combined, host.ambientSeconds());
+    if (!reducedMotion) {
+        host.particleRenderer().drawAmbient(camera.combined, host.ambientSeconds());
+    }
     spriteBatch.begin();
     boolean cinematic = host.flow().state() == GameScreenState.CINEMATIC && !opening;
     if (cinematic) {
