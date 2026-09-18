@@ -95,7 +95,7 @@ final class OnboardingClaimsTest {
                     var matcher = HERO_POSITION_WRITE.matcher(source);
                     while (matcher.find()) {
                         int line = 1 + (int) source.substring(0, matcher.start()).chars().filter(c -> c == '\n').count();
-                        writes.add(path.getFileName() + ":" + line + " " + matcher.group().trim());
+                        writes.add(path + ":" + line + " " + matcher.group().trim());
                     }
                 });
             } catch (IOException e) {
@@ -141,9 +141,12 @@ final class OnboardingClaimsTest {
             files.filter(path -> path.toString().endsWith(".java"))
                 // The vocabulary's own declaration and the step table's constructor arguments both name every
                 // action; neither reports one. Only a real notify site counts, which is what makes an action
-                // nobody produces an orphan instead of a formality.
-                .filter(path -> !path.getFileName().toString().equals("OnboardingAction.java"))
-                .filter(path -> !path.getFileName().toString().equals("OnboardingStep.java"))
+                // nobody produces an orphan instead of a formality. Matched on the path rather than on
+                // getFileName(), whose declared return is nullable: the first draft called .equals() on it and
+                // both analysers said so (PMD LiteralsFirstInComparisons, SpotBugs
+                // NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE) in the run that checked this file.
+                .filter(path -> !path.toString().endsWith("/OnboardingAction.java"))
+                .filter(path -> !path.toString().endsWith("/OnboardingStep.java"))
                 .forEach(path -> {
                     String source = read(path);
                     int from = 0;
