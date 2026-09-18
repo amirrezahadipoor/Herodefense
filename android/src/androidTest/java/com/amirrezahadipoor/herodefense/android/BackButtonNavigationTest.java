@@ -113,6 +113,9 @@ public final class BackButtonNavigationTest {
             assertTrue(game.gameState().trialDraftPicks.isEmpty());
             assertEquals(Lifecycle.State.RESUMED, scenario.getState());
 
+            // Roadmap B3: the draft opens on its path phase, so the first card tap binds a path.
+            tap(game, surface, 360f + correction[0], 887.5f + correction[1], "first path card");
+            await("hero path", () -> game.gameState().heroPath != null);
             tap(game, surface, 360f + correction[0], 887.5f + correction[1], "first trial card");
             await("first trial pick", () -> game.gameState().trialDraftPicks.size() == 1);
             tap(game, surface, 360f + correction[0], 702.5f + correction[1], "second trial card");

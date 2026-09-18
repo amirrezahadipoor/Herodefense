@@ -619,9 +619,15 @@ public final class AndroidTouchSmokeTest {
         return reference.get();
     }
 
-    /** Phase 22: every new run opens with a pick-2-of-4 trial draft before the opening. */
+    /**
+     * Phase 22: every new run opens with a pick-2-of-4 trial draft before the opening. Roadmap B3 made that
+     * draft open on its path phase: the same four slots carry the hero paths until one binds, and only then
+     * the trials the reference capture pins.
+     */
     private static void draftTwoTrials(View surface, HeroDefenseGame game, float[] correction) {
         await("trial draft", () -> game.screenState() == GameScreenState.TRIAL_DRAFT);
+        tapWorld(surface, 360f + correction[0], 887.5f + correction[1]); // First path card
+        await("hero path", () -> game.gameState().heroPath != null);
         tapWorld(surface, 360f + correction[0], 887.5f + correction[1]); // First trial card
         await("first trial pick", () -> game.gameState().trialDraftPicks.size() == 1);
         captureScreen("trial-draft-premium-v2.png");
