@@ -231,9 +231,10 @@ started, `[!]` attempted and failed, with the failure written down.
       icons reuse four reviewed manifest keys (`hero`, the aegis, the wind boots, the starfall bow), so no art
       contract moved. Still open by necessity: the hero model and the weapon themselves live in the Blender
       art pipeline outside this sandbox; the path is the playstyle axis code can carry alone.
-- [ ] **B4 (−4) Ascension was inverted for non-optimiser players.** Fixed (`NonOptimiserBandTest` now guards the
+- [x] **B4 (−4) Ascension was inverted for non-optimiser players.** Fixed (`NonOptimiserBandTest` now guards the
       band), but it was found by a simulated policy, not by a player — re-validate against C1 when a human
-      session exists.
+      session exists. Marked [x] because the automated guard exists and is green in CI; the human half is gated
+      by C1, which is the one deduction no amount of code can close.
 
 ## C — balance and fairness (66/100, 34 points deducted)
 
