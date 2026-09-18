@@ -20,7 +20,7 @@ import com.amirrezahadipoor.herodefense.render.UiMirror;
 public final class SettingsTouchLayout {
     public enum Action {
         NONE, TOGGLE_SOUND, TOGGLE_MUSIC, CYCLE_SOUND_LEVEL, CYCLE_MUSIC_LEVEL, CYCLE_LANGUAGE,
-        TOGGLE_REDUCED_MOTION, CLOSE
+        TOGGLE_REDUCED_MOTION, TOGGLE_COLOUR_BLIND_RARITY, CLOSE
     }
 
     public static final float ROW_X = 100f;
@@ -41,7 +41,7 @@ public final class SettingsTouchLayout {
     static final float CLOSE_INSET = 50f;
 
     public static final int VISIBLE_ROWS = 6;
-    public static final int TOTAL_ROWS = 6;
+    public static final int TOTAL_ROWS = 7;
 
     private SettingsTouchLayout() {
     }
@@ -84,6 +84,7 @@ public final class SettingsTouchLayout {
             case 3 -> Action.CYCLE_MUSIC_LEVEL;
             case 4 -> Action.CYCLE_LANGUAGE;
             case 5 -> Action.TOGGLE_REDUCED_MOTION;
+            case 6 -> Action.TOGGLE_COLOUR_BLIND_RARITY;
             default -> Action.NONE;
         };
     }

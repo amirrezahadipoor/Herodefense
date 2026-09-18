@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.render;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.DropEntity;
@@ -20,6 +21,18 @@ final class DropRarityVisualTest {
         DropEntity potion = new DropEntity(2L, "POTION", 0f, 0f, 1);
         potion.itemId = "TIER_6";
         assertEquals(VisualRarity.COMMON, CombatEntityRenderer.dropRarity(potion));
+    }
+
+    @Test
+    void dropsMapToValidColorsInBothPalettes() {
+        String[] samples = {
+            "ashwood_bow", "moonwood_longbow", "starfall_bow", "worldbranch", "sunfall_last_arrow"
+        };
+        for (String sample : samples) {
+            VisualRarity r = rarity(sample);
+            assertNotNull(r.color(false), "standard color must exist for " + sample);
+            assertNotNull(r.color(true), "accessible color must exist for " + sample);
+        }
     }
 
     private static VisualRarity rarity(String itemId) {

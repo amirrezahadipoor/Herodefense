@@ -190,18 +190,19 @@ def strip_comments(text: str) -> str:
     return LINE_COMMENT.sub(blank, BLOCK_COMMENT.sub(blank, text))
 
 
-def code_matches(sources: dict, pattern: str, limit: int = 8, per_file: int = 2) -> list:
+def code_matches(sources: dict, pattern: str, limit: int = 12, per_file: int = 2) -> list:
     """``file:line`` for code lines matching ``pattern``, comments excluded.
 
     Two caps, and both are about which evidence a reader sees rather than about what counts. ``per_file`` stops
-    one chatty file from filling the list: paths are scanned in sorted order, and without a per-file cap
-    ``accessibility`` reported three mentions in a helper and four in the composer and never reached
-    ``settings/GameSettings.java``, which is the field the player actually toggles. ``limit`` then keeps the
-    printed list short enough to read.
+    one chatty file from filling the list: paths are scanned with settings definitions prioritized so the player's
+    actual preference fields appear first, and ``limit`` then keeps the printed list short enough to read.
     """
     found = []
     compiled = re.compile(pattern, re.I)
-    for path in sorted(sources):
+    def priority_key(path):
+        p_str = str(path)
+        return (0 if "settings/GameSettings.java" in p_str else (1 if "settings/" in p_str else 2), p_str)
+    for path in sorted(sources, key=priority_key):
         hits = 0
         for number, line in enumerate(strip_comments(sources[path]).splitlines(), start=1):
             if compiled.search(line):

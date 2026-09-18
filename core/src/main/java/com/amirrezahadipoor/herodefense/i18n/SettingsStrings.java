@@ -44,6 +44,11 @@ public enum SettingsStrings implements Translated {
     REDUCED_MOTION_SUBTITLE("No shake, no drifting spores", "بدون لرزش و ذره‌های سرگردان"),
     TAP_TO_RESTORE_MOTION("tap to restore motion", "برای بازگشت حرکت لمس کنید"),
 
+    /** Roadmap G3c: accessible colour-blind safe rarity palette. */
+    COLOUR_BLIND_RARITY("ACCESSIBLE RARITY", "رنگ‌های دسترس‌پذیر"),
+    COLOUR_BLIND_RARITY_SUBTITLE("High contrast loot hues", "رنگ‌های متمایز غنیمت"),
+    TAP_TO_RESTORE_RARITY("tap for default colours", "برای رنگ‌های پیش‌فرض لمس کنید"),
+
     TOUCH_ONLY("TOUCH ONLY", "فقط لمسی"),
 
     LANGUAGE("LANGUAGE", "زبان"),

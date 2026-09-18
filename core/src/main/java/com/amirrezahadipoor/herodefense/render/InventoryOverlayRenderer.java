@@ -84,6 +84,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         batch.end();
 
         beginShapes(projection);
+        boolean colourBlind = settings != null && settings.colourBlindRarity;
         for (int index = 0; index < EquipmentSlot.values().length; index++) {
             EquipmentSlot slot = EquipmentSlot.values()[index];
             Item item = state.equippedItems.get(slot.name());
@@ -94,7 +95,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             float y = InventoryTouchLayout.SLOT_TOP_Y
                 - InventoryTouchLayout.SLOT_HEIGHT
                 - row * InventoryTouchLayout.SLOT_ROW_STRIDE;
-            rarityAccent(x + 5f, y + 9f, 5f, InventoryTouchLayout.SLOT_HEIGHT - 18f, item.tier);
+            rarityAccent(x + 5f, y + 9f, 5f, InventoryTouchLayout.SLOT_HEIGHT - 18f, item.tier, colourBlind);
         }
         for (int row = 0; row < InventoryTouchLayout.VISIBLE_ROWS; row++) {
             int itemIndex = controller.firstVisibleIndex() + row;
@@ -108,7 +109,8 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
                 y + 9f,
                 5f,
                 InventoryTouchLayout.LIST_ROW_HEIGHT - 18f,
-                item.tier
+                item.tier,
+                colourBlind
             );
         }
         shapes.end();
@@ -130,7 +132,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             float chipX = InventoryTouchLayout.autoSellChipX(index);
             float centerX = chipX + InventoryTouchLayout.AUTO_SELL_WIDTH * 0.5f;
             drawCentered(batch, autoSellChipLabel(tier, on), centerX,
-                InventoryTouchLayout.AUTO_SELL_Y + 60f, 0.56f, on ? rarityColor(tier.name()) : MUTED);
+                InventoryTouchLayout.AUTO_SELL_Y + 60f, 0.56f, on ? rarityColor(tier.name(), colourBlind) : MUTED);
             drawCentered(batch, on ? "ON" : "OFF", centerX,
                 InventoryTouchLayout.AUTO_SELL_Y + 34f, 0.60f, on ? POSITIVE : MUTED);
         }
@@ -160,7 +162,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             } else {
                 drawIcon(batch, item, x + 14f, y + 11f, 58f, visibleIcons);
                 drawText(batch, item.name, x + 80f, y + 44f, 0.78f, IVORY);
-                drawText(batch, prettyOrUnknown(item.tier), x + 220f, y + 69f, 0.58f, rarityColor(item.tier));
+                drawText(batch, prettyOrUnknown(item.tier), x + 220f, y + 69f, 0.58f, rarityColor(item.tier, colourBlind));
             }
         }
 
@@ -179,12 +181,12 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
                 InventoryTouchLayout.LIST_X + 92f,
                 y + 32f,
                 0.58f,
-                rarityColor(item.tier)
+                rarityColor(item.tier, colourBlind)
             );
             drawText(batch, "$ " + item.sellPrice, InventoryTouchLayout.LIST_X + 247f, y + 32f, 0.62f, GOLD);
         }
 
-        drawDetails(batch, state, selected);
+        drawDetails(batch, state, selected, colourBlind);
         boolean hasSelection = selected != null;
         UiFrameRenderer.State equipState = frames.resolve(
             hasSelection, false,
@@ -333,7 +335,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         return pretty(tier.name()).toUpperCase(Locale.ROOT);
     }
 
-    private void drawDetails(SpriteBatch batch, GameState state, Item selected) {
+    private void drawDetails(SpriteBatch batch, GameState state, Item selected, boolean colourBlind) {
         float x = InventoryTouchLayout.DETAILS_X + 26f;
         float top = InventoryTouchLayout.DETAILS_Y + InventoryTouchLayout.DETAILS_HEIGHT - 25f;
         if (selected == null) {
@@ -346,7 +348,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         }
 
         Details details = InventoryItemDetails.inspect(state, selected);
-        drawText(batch, details.name(), x, top, 0.86f, rarityColor(details.rarity()));
+        drawText(batch, details.name(), x, top, 0.86f, rarityColor(details.rarity(), colourBlind));
         drawText(
             batch,
             prettyOrUnknown(details.rarity()).toUpperCase(Locale.ROOT)
@@ -380,7 +382,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         boolean mythic = details.passiveLine() != null;
         drawText(batch, mythic ? "MYTHIC PASSIVE" : "STAT COMPARISON", x, top - 151f, 0.64f, GOLD);
         if (mythic) {
-            drawMythicBody(batch, details, x, top);
+            drawMythicBody(batch, details, x, top, colourBlind);
             return;
         }
         if (details.stats().isEmpty()) {
@@ -413,7 +415,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
      * to the passive plus §7 flavor. Eight tight rows (2 passive + 6 flavor) end at
      * top-362, inside the top-375 panel bottom.
      */
-    private void drawMythicBody(SpriteBatch batch, Details details, float x, float top) {
+    private void drawMythicBody(SpriteBatch batch, Details details, float x, float top, boolean colourBlind) {
         float maxWidth = InventoryTouchLayout.DETAILS_WIDTH - 52f;
         List<String> passive = CodexOverlayRenderer.capLines(
             CodexOverlayRenderer.wrapLines(details.passiveLine(), line -> text.width(line, 0.62f), maxWidth),
@@ -424,8 +426,9 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             6
         );
         float y = top - 194f;
+        Color passiveColor = VisualRarity.MYTHIC.color(colourBlind);
         for (String line : passive) {
-            drawText(batch, line, x, y, 0.62f, MYTHIC);
+            drawText(batch, line, x, y, 0.62f, passiveColor);
             y -= 24f;
         }
         for (String line : flavor) {
@@ -475,9 +478,13 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
 
-    private void rarityAccent(float x, float y, float width, float height, String rarity) {
-        shapes.setColor(rarityColor(rarity));
+    private void rarityAccent(float x, float y, float width, float height, String rarity, boolean colourBlind) {
+        shapes.setColor(rarityColor(rarity, colourBlind));
         shapes.rect(x, y, width, height);
+    }
+
+    private void rarityAccent(float x, float y, float width, float height, String rarity) {
+        rarityAccent(x, y, width, height, rarity, false);
     }
 
     private void drawCentered(
@@ -505,15 +512,12 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         return MUTED;
     }
 
+    private static Color rarityColor(String rarity, boolean colourBlind) {
+        return VisualRarity.colorForTier(rarity, colourBlind);
+    }
+
     private static Color rarityColor(String rarity) {
-        if (rarity == null) return Color.valueOf("E7D8B1");
-        return switch (rarity) {
-            case "UNCOMMON" -> Color.valueOf("74C365");
-            case "RARE" -> Color.valueOf("6FADEB");
-            case "LEGENDARY" -> Color.valueOf("F2B84B");
-            case "MYTHIC" -> Color.valueOf("C77DFF");
-            default -> Color.valueOf("E7D8B1");
-        };
+        return rarityColor(rarity, false);
     }
 
     private static String signed(float value) {

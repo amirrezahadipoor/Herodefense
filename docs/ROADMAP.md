@@ -463,10 +463,20 @@ started, `[!]` attempted and failed, with the failure written down.
         are plausible the way the volume levels are; what has to be checked first is every surface's text
         bounds, because a larger face in a row that was laid out for a smaller one clips, and clipping is worse
         than small.
-  - [ ] **G3c Colour-blind-safe rarity colours.** Rarity is currently carried by `rarityColor(String)` inside
-        `InventoryOverlayRenderer` and by tier art, so this starts with centralising the palette before it can
-        offer an alternative to it. `VisualRarityTest` and `DropRarityVisualTest` are the tests that will say
-        whether the alternative still distinguishes five tiers.
+  - [x] **G3c Colour-blind-safe rarity colours.** Rarity was previously carried by a private `rarityColor(String)`
+        inside `InventoryOverlayRenderer` and tier art. Centralised the five item rarity tiers (`COMMON`,
+        `UNCOMMON`, `RARE`, `LEGENDARY`, `MYTHIC`) into `VisualRarity` with dedicated dual palette support:
+        the default historical palette (`#E7D8B1`, `#74C365`, `#6FADEB`, `#F2B84B`, `#C77DFF`) and an accessible
+        Okabe-Ito / Wong high-contrast palette (`#D9D2C9`, `#56B4E9`, `#0072B2`, `#E69F00`, `#CC79A7`) designed
+        to preserve high chroma and luminance separation across protanopia, deuteranopia, and tritanopia.
+        Pairwise Euclidean RGB distance between every tier in the accessible palette is mathematically asserted
+        to be >= 0.20 in `VisualRarityTest` (ranging 0.37..1.15). Wired `colourBlindRarity` into `GameSettings`,
+        persisted via `display.colourBlindRarity` in `LocalSettingsRepository`, and integrated as the 7th row in
+        the scrollable settings viewport (`SettingsTouchLayout.Action.TOGGLE_COLOUR_BLIND_RARITY`), complete with
+        bilingual English/Persian translations ("ACCESSIBLE RARITY" / "رنگ‌های دسترس‌پذیر") gated under 30 characters
+        in `SettingsTextFitTest`. `InventoryOverlayRenderer` delegates all item badges, list accents, and detail panels
+        to `VisualRarity.colorForTier(tier, colourBlind)`. Added `ColourBlindRaritySettingsTest` and expanded
+        `DropRarityVisualTest` and `SettingsScrollLayoutTest`.
   - [ ] **G3d Screen-reader support — recorded, not started.** This is one libGDX surface, so TalkBack has
         nothing to read: real support means an accessibility delegate publishing virtual views for the HUD, the
         menus and the card choices, and keeping them in step with a renderer that redraws every frame. That is

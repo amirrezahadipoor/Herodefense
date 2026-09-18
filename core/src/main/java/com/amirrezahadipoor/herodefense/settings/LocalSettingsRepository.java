@@ -17,6 +17,7 @@ public final class LocalSettingsRepository {
     private static final String SOUND_VOLUME_KEY = "audio.soundVolume";
     private static final String LANGUAGE_KEY = "display.language";
     private static final String REDUCED_MOTION_KEY = "display.reducedMotion";
+    private static final String COLOUR_BLIND_RARITY_KEY = "display.colourBlindRarity";
     private final Preferences preferences;
 
     public LocalSettingsRepository(Preferences preferences) {
@@ -41,6 +42,7 @@ public final class LocalSettingsRepository {
         // English here rather than at draw time. Loading the device's preferences is what makes the game speak
         // them, and this is the only place it happens other than the settings row that changes it.
         settings.reducedMotion = preferences.getBoolean(REDUCED_MOTION_KEY, false);
+        settings.colourBlindRarity = preferences.getBoolean(COLOUR_BLIND_RARITY_KEY, false);
         settings.language = GameLanguage.fromCode(preferences.getString(LANGUAGE_KEY, settings.language.code()));
         GameLocale.use(settings.language);
         return settings;
@@ -57,6 +59,7 @@ public final class LocalSettingsRepository {
         preferences.putFloat(MUSIC_VOLUME_KEY, settings.musicVolume);
         preferences.putFloat(SOUND_VOLUME_KEY, settings.soundVolume);
         preferences.putBoolean(REDUCED_MOTION_KEY, settings.reducedMotion);
+        preferences.putBoolean(COLOUR_BLIND_RARITY_KEY, settings.colourBlindRarity);
         preferences.putString(LANGUAGE_KEY, settings.language.code());
         preferences.flush();
     }

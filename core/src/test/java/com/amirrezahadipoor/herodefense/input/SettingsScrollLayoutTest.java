@@ -8,7 +8,7 @@ import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import org.junit.jupiter.api.Test;
 
 /**
- * Roadmap G3-layout: the settings viewport supports scroll offsets and drag gestures so that
+ * Roadmap G3-layout and G3c: the settings viewport supports scroll offsets and drag gestures so that
  * additional accessibility options fit cleanly without screen crowding.
  */
 final class SettingsScrollLayoutTest {
@@ -109,5 +109,28 @@ final class SettingsScrollLayoutTest {
         // Reset via open()
         controller.open();
         assertEquals(0, controller.firstVisibleIndex());
+    }
+
+    @Test
+    void scrollingExposesAndTogglesColourBlindRarityRow() {
+        GameSettings settings = new GameSettings();
+        SettingsTouchController controller = new SettingsTouchController();
+        assertEquals(7, SettingsTouchLayout.TOTAL_ROWS);
+
+        assertFalse(settings.colourBlindRarity);
+
+        // Drag up by 60f -> firstVisibleIndex becomes 1
+        controller.drag(60f);
+        assertEquals(1, controller.firstVisibleIndex());
+
+        // Slot 5 is the bottom visible row: 1 + 5 = row 6 (TOGGLE_COLOUR_BLIND_RARITY)
+        float cx = SettingsTouchLayout.ROW_X + 50f;
+        float slot5Y = SettingsTouchLayout.slotY(5) + 20f;
+        SettingsTouchLayout.Action action = controller.tap(settings, cx, slot5Y);
+        assertEquals(SettingsTouchLayout.Action.TOGGLE_COLOUR_BLIND_RARITY, action);
+        assertTrue(settings.colourBlindRarity, "tapping accessible rarity row toggles it on");
+
+        controller.tap(settings, cx, slot5Y);
+        assertFalse(settings.colourBlindRarity, "tapping it again toggles it off");
     }
 }

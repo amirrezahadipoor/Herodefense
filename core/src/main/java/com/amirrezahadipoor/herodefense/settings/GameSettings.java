@@ -34,6 +34,12 @@ public final class GameSettings {
     public boolean reducedMotion;
 
     /**
+     * Colour-blind accessible rarity palette (roadmap G3c): replaces the default green/gold/violet palette
+     * with an Okabe-Ito / Wong accessible palette distinguishable under protanopia, deuteranopia, and tritanopia.
+     */
+    public boolean colourBlindRarity;
+
+    /**
      * The language the game speaks (roadmap R7.3). It is a device-local preference like the volumes rather than
      * part of a run save: a player who switches to Persian halfway through a wave keeps Persian in the next run,
      * and a save file copied to another device does not carry a language with it.

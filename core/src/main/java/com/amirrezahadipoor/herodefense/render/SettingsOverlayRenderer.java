@@ -233,6 +233,17 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                 drawToggle(batch, SettingsStrings.REDUCED_MOTION, SettingsStrings.REDUCED_MOTION_SUBTITLE,
                     y, settings.reducedMotion, state, SettingsStrings.TAP_TO_RESTORE_MOTION);
             }
+            case 6 -> {
+                UiFrameRenderer.State state = frames.resolve(
+                    true, settings.colourBlindRarity, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
+                    settings.colourBlindRarity);
+                drawToggle(batch, SettingsStrings.COLOUR_BLIND_RARITY, SettingsStrings.COLOUR_BLIND_RARITY_SUBTITLE,
+                    y, settings.colourBlindRarity, state, SettingsStrings.TAP_TO_RESTORE_RARITY);
+            }
             default -> {}
         }
     }

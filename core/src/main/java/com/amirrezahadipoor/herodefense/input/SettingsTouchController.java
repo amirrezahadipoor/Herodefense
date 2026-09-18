@@ -68,6 +68,7 @@ public final class SettingsTouchController {
             // stops while the player is still looking at the row they pressed. That is the row's only proof:
             // nothing else on the screen changes when motion is reduced.
             case TOGGLE_REDUCED_MOTION -> settings.reducedMotion = !settings.reducedMotion;
+            case TOGGLE_COLOUR_BLIND_RARITY -> settings.colourBlindRarity = !settings.colourBlindRarity;
             default -> {
                 return action;
             }
