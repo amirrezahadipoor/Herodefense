@@ -121,9 +121,10 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             InventoryTouchLayout.CLOSE_X, InventoryTouchLayout.CLOSE_Y,
             InventoryTouchLayout.CLOSE_SIZE, InventoryTouchLayout.CLOSE_SIZE
         ));
-        drawText(batch, "EQUIPMENT & INVENTORY", 40f, 1232f, 1.35f, GOLD);
-        drawText(batch, "Tap a loadout slot to unequip", 40f, 1189f, 0.76f, SUBTLE);
-        drawText(batch, "AUTO-SELL", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1102f, 0.62f, GOLD);
+        // E4: shorter, icon-first titles for arm's length
+        drawText(batch, "GEAR", 40f, 1232f, 1.35f, GOLD);
+        drawText(batch, "Tap slot to unequip", 40f, 1189f, 0.76f, SUBTLE);
+        drawText(batch, "A-SELL", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1102f, 0.62f, GOLD);
         drawText(batch, "on pickup", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1072f, 0.54f, SUBTLE);
         for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.size(); index++) {
             ItemTier tier = InventoryTouchLayout.AUTO_SELL_TIERS.get(index);
@@ -145,6 +146,8 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
             GOLD
         );
         drawText(batch, "ITEM DETAILS", InventoryTouchLayout.DETAILS_X, 681f, 0.72f, GOLD);
+        // E4: density guard — truncate long item names at overlay max
+        
 
         for (int index = 0; index < EquipmentSlot.values().length; index++) {
             EquipmentSlot slot = EquipmentSlot.values()[index];
@@ -160,7 +163,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
                 drawText(batch, "Empty slot", x + 112f, y + 42f, 0.78f, MUTED);
             } else {
                 drawIcon(batch, item, x + 14f, y + 11f, 58f, visibleIcons);
-                drawText(batch, item.name, x + 80f, y + 44f, 0.78f, IVORY);
+                drawText(batch, UiDensity.truncate(item.name, UiDensity.OVERLAY_MAX_CHARS), x + 80f, y + 44f, 0.78f, IVORY);
                 drawText(batch, prettyOrUnknown(item.tier), x + 220f, y + 69f, 0.58f, rarityColor(item.tier, colourBlind));
             }
         }
@@ -173,7 +176,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
                 - InventoryTouchLayout.LIST_ROW_HEIGHT
                 - row * InventoryTouchLayout.LIST_ROW_STRIDE;
             drawIcon(batch, item, InventoryTouchLayout.LIST_X + 12f, y + 12f, 70f, visibleIcons);
-            drawText(batch, item.name, InventoryTouchLayout.LIST_X + 92f, y + 64f, 0.79f, IVORY);
+            drawText(batch, UiDensity.truncate(item.name, UiDensity.OVERLAY_MAX_CHARS), InventoryTouchLayout.LIST_X + 92f, y + 64f, 0.79f, IVORY);
             drawText(
                 batch,
                 prettyOrUnknown(item.tier).toUpperCase(Locale.ROOT),
@@ -392,7 +395,9 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         for (int index = 0; index < details.stats().size(); index++) {
             StatComparison comparison = details.stats().get(index);
             float y = top - 194f - index * 43f;
-            drawText(batch, pretty(comparison.stat().name()), x, y, 0.62f, IVORY);
+            // E4: icon-first, abbreviated stat for arm's length readability
+            String abbrev = UiDensity.abbrevStat(comparison.stat().name());
+            drawText(batch, abbrev, x, y, 0.62f, IVORY);
             drawText(batch, signed(comparison.candidateValue()), x + 104f, y, 0.62f, IVORY);
             drawText(
                 batch,

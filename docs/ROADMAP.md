@@ -381,7 +381,16 @@ started, `[!]` attempted and failed, with the failure written down.
       `HumanReviewRecordTest` (exists, mentions E3, 10 checklist items, names CI run). New workflow
       `.github/workflows/human-review.yml` captures frames on push to main for next review and uploads
       `human-review-frames` artifact. The machine gate stays, the human gate now exists too.
-- [ ] **E4 (−4) The interface is text-heavy** for a game played on a phone at arm's length.
+- [x] **E4 (−4) The interface is text-heavy** for a game played on a phone at arm's length.
+    Fixed: `render/UiDensity` now owns arm's-length rules — HUD max 20 chars, overlay max 30 chars,
+    detail max 40 chars, stat abbreviations (HP/ATK/SPD/DODGE/CRIT), icon mapping, and truncate with
+    ellipsis. `InventoryOverlayRenderer` uses `abbrevStat` for stat rows and `truncate(OVERLAY_MAX_CHARS)`
+    for item names, and shortens chrome to "GEAR" / "Tap slot to unequip" / "A-SELL" while keeping
+    required strings (EQUIPPED LOADOUT, BACKPACK, ITEM DETAILS, STAT COMPARISON) for
+    `PremiumInventoryPresentationTest`. HUD already icon-first (`icons.draw` for health/wave/coin) and
+    Codex uses icons for close/continue. Guarded by `TextDensityTest` — density constants reasonable,
+    abbrev short, truncate respects max, inventory uses UiDensity, HUD/Codex remain icon-first.
+    Visual hierarchy: title > value > metadata, icons + numbers not words.
 
 ## F — audio (62/100, 38 points deducted)
 
