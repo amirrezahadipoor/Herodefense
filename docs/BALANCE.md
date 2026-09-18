@@ -66,13 +66,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 91177 | |
-| Item sales | 24579 | |
+| Kill income | 80143 | |
+| Item sales | 25830 | |
 | Stat shop | 58990 | 135 levels |
-| Skill shop | 39580 | 44 levels |
+| Skill shop | 30590 | 40 levels |
 | Anvil | 15980 | 28 steps |
 
-Across the 9 gate seeds the split is stable: stats 51-57%, skills 28-35%, Anvil 13-15% of spend.
+Across the 9 gate seeds the split is stable: stats 52-58%, skills 28-34%, Anvil 12-15% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -98,15 +98,15 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.0576 / 0.0986 / 0.1142 / 0.1298` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.712 / x1.158 / x1.136` | the same sweep |
-| Sweep average range | `0.0748 - 0.1193` | the same sweep, inside the 0.05-0.15 band |
-| Deepest single-seed quarter dip | `4.97%` against the `5.00%` allowance | the same sweep |
+| Quarter means (fixed sweep) | `0.0576 / 0.0986 / 0.1171 / 0.1466` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.712 / x1.188 / x1.251` | the same sweep |
+| Sweep average range | `0.0812 - 0.1321` | the same sweep, inside the 0.05-0.15 band |
+| Deepest single-seed quarter dip | `1.39%` against the `5.00%` allowance | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `0.3729 / 0.3816 / 0.3515` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+| Riskiest trial pairs, median spike | `0.4000 / 0.3663 / 0.3793` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
 
 The three pairs are the ones this gate has caught above 0.38, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `BOSS_BOUNTY + BLOOD_PRICE`, `MISERS_PACT + BLOOD_PRICE` (the other eleven pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.38992` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.30708` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
 <!-- balance:end second-half -->
 
 The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. Two honest caveats, both of them visible in the generated table above rather than buried: the deepest single-seed quarter dip spends most of the five percent the gate allows, and the reward-card matrix keeps very little headroom against its ceiling — so a later change that adds pressure to the *first* hundred waves has almost nothing to spend.
@@ -669,8 +669,8 @@ lanes, different jobs.
 
 | role | body | from wave | behaviour | counter |
 | --- | --- | --- | --- | --- |
-| the ward | HUSK_WARDEN | **101** | living enemies within **150** units take **×0.75** damage, warden included | mark the warden; the ward dies with it in the same tick |
-| the berserk | FUNGAL_BRUTE | **121** | below **40%** health, latches: closing **×1.4**, swing interval **×0.6** | burst it, or brace (A2) the three seconds it takes to arrive |
+| the ward | HUSK_WARDEN | **121** | living enemies within **100** units take **×0.94** damage, warden included | mark the warden; the ward dies with it in the same tick |
+| the berserk | FUNGAL_BRUTE | **141** | below **30%** health, latches: closing **×1.25**, swing interval **×0.78** | burst it, or brace (A2) the seconds it takes to arrive |
 
 Both gates sit far past the brief vigil's thirtieth wave on purpose: the first session of the game keeps exactly
 the roster its balance evidence was measured on, while the two-hundred-wave sweep now fights roles from its
@@ -680,9 +680,22 @@ for a fourth call site that skips it -- a ward that worked only against arrows w
 its contract. The berserk latches once, at the transition, because nothing heals a regular enemy and a per-tick
 recompute would have to remember spawn-time trial and omen multipliers it had already folded into the speed.
 
-**The bands below this section were measured before the roles existed, and the balance gate on this commit is
-the re-measurement.** The simulator drives the real `CombatSystem`, so its policies fight the ward and the berserk
-from wave 101 and 121 without knowing their names; if the tier deltas or the non-optimiser's margins move outside
-their gates, the curve answers for it in a follow-up commit and this section gains the measured before/after
-table, from the gate's own log rather than from an estimate. That loop is the item working as intended: A3 is the
-one deduction whose resolution cannot be asserted, only measured.
+The simulator wires its systems by hand rather than hosting `CombatSystem`, so `EnemyRoleSystem.update` ticks in
+its loop explicitly -- without that line the sweeps would publish bands for a game that does not ship. With it,
+the gate measured the roles, and the first landing failed it: the ward at ×0.75 across 150 units from wave 101
+plus the berserk at ×1.4/×0.6 below 40% from wave 121 pushed the naked tier-0 run average to **0.1564** against
+its **0.15** ceiling and the riskiest trial-pair median spikes to **0.4863** against their **0.40** ceiling
+(four gate classes red). The curve answered the way A3 promised -- the numbers moved, not the gates:
+
+| quantity | before roles (`57d667e`) | first landing (failed the gate) | shipped (this block's numbers) |
+| --- | ---: | ---: | ---: |
+| quarter means, fixed sweep | `0.0576 / 0.0986 / 0.1142 / 0.1298` | `0.0576 / 0.0986 / 0.1637 / 0.2085` | `0.0576 / 0.0986 / 0.1171 / 0.1466` |
+| sweep average range | `0.0748 - 0.1193` | `0.1034 - 0.1564` | `0.0812 - 0.1321` |
+| riskiest trial pairs, median spike | `0.3729 / 0.3816 / 0.3515` | `0.4863 / 0.4508 / 0.4766` | `0.4000 / 0.3663 / 0.3793` |
+| reward-card spike, AGILITY at boss 1 | `0.38992` | `0.39427` | `0.30708` |
+
+The shipped roles are the second half's pressure bump made of behaviour: the fourth-quarter mean rises about
+13% over the pre-role curve (0.1298 -> 0.1466) while every gate stays green on its fixed seeds -- including the
+riskiest trial pair now medianing its spike at exactly the 0.40 ceiling, which is the honest reading of how much
+room the late roles had: almost none, and the gate is what found the line. That loop is the item working as
+intended -- A3 is the one deduction whose resolution cannot be asserted, only measured.

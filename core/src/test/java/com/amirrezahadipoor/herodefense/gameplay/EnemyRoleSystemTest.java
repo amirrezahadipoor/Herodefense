@@ -93,7 +93,7 @@ final class EnemyRoleSystemTest {
     void aWoundedBruteLatchesOnceAndOnlyPastItsWave() {
         GameState state = atWave(EnemyRoleSystem.ENRAGE_FROM_WAVE);
         Enemy brute = body(state, EnemyType.FUNGAL_BRUTE, 300f, 500f);
-        brute.health = brute.maxHealth * 0.39f;
+        brute.health = brute.maxHealth * (EnemyRoleSystem.ENRAGE_HEALTH_RATIO - 0.01f);
         float speed = brute.movementSpeed;
         float interval = brute.attackIntervalSeconds;
 
@@ -115,7 +115,7 @@ final class EnemyRoleSystemTest {
 
         GameState whole = atWave(EnemyRoleSystem.ENRAGE_FROM_WAVE);
         Enemy healthy = body(whole, EnemyType.FUNGAL_BRUTE, 300f, 500f);
-        healthy.health = healthy.maxHealth * 0.41f;
+        healthy.health = healthy.maxHealth * (EnemyRoleSystem.ENRAGE_HEALTH_RATIO + 0.06f);
         EnemyRoleSystem.update(whole, 1f / 60f);
         assertFalse(healthy.enraged, "and above the ratio the berserk waits");
 
@@ -164,9 +164,12 @@ final class EnemyRoleSystemTest {
     void theSweepsFightTheRolesBecauseTheyRunTheRealCombat() {
         String simulator = read(Path.of("..", "core", "src", "main", "java",
             "com", "amirrezahadipoor", "herodefense", "balance", "BalanceSimulator.java").normalize());
-        assertTrue(simulator.contains("new CombatSystem(") || simulator.contains("CombatSystem("),
-            "the simulator drives the real combat system, so the balance gate re-measures the bands against the"
-                + " roles instead of assuming they survive them");
+        assertTrue(simulator.contains("EnemyRoleSystem.update(state"),
+            "the simulator wires its systems by hand instead of hosting CombatSystem, so the roles have to tick"
+                + " in its loop explicitly -- otherwise the balance gate publishes bands for a game that does"
+                + " not ship");
+        assertTrue(simulator.contains("new HeroAutoAttackSystem(") && simulator.contains("new HeroUltimateSystem("),
+            "and the ward reaches the sweeps through the same two systems the live game fires");
     }
 
     private static String read(Path path) {

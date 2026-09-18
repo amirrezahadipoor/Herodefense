@@ -74,7 +74,10 @@ class ArchitectureRatchetTest {
         // so the standard sweeps are unchanged by construction. R3.4 needed no growth here at all: the omens'
         // counterfactual is simply a run without the omen trial, which the existing trial axes already measure.
         "com/amirrezahadipoor/herodefense/balance/BalanceSimulator.java",
-        new ArchitectureRatchet.Frozen(661, 23),
+        // A3 raised the line count by 3 without adding a field: EnemyRoleSystem.update now ticks inside the
+        // sweep loop, because bands published for a game without the late-wave roles would be evidence about
+        // a build that no longer ships. No new state, no new method.
+        new ArchitectureRatchet.Frozen(664, 23),
         // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (plus
         // `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one). R3.4 added
         // no field: wave omens are switched on by the trial the player drafted, and the trial list already exists.

@@ -3,6 +3,7 @@ package com.amirrezahadipoor.herodefense.balance;
 import com.amirrezahadipoor.herodefense.gameplay.BossFactory;
 import com.amirrezahadipoor.herodefense.gameplay.BossSpecialAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.EliteAffixSystem;
+import com.amirrezahadipoor.herodefense.gameplay.EnemyRoleSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossWaveSpawner;
 import com.amirrezahadipoor.herodefense.gameplay.ContinuousWaveRun;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
@@ -254,6 +255,9 @@ public final class BalanceSimulator {
                     break;
                 }
                 state.anchorHeroAtArenaCenter();
+                // Roadmap A3: the late-wave roles tick here exactly as they do in CombatSystem, or the sweeps
+                // would publish bands for a game that no longer ships.
+                EnemyRoleSystem.update(state, STEP_SECONDS);
                 movement.update(state, STEP_SECONDS);
                 heroAttack.update(state, STEP_SECONDS);
                 // Phase 26.1c: fire the Ultimate on cooldown (the moment Focus fills).

@@ -40,20 +40,20 @@ import com.amirrezahadipoor.herodefense.model.GameState;
 public final class EnemyRoleSystem {
 
     /** The wave from which wardens project their ward (inclusive). */
-    public static final int WARD_FROM_WAVE = 101;
+    public static final int WARD_FROM_WAVE = 121;
     /** How close a body has to be to a living warden to be warded, in world units. */
-    public static final float WARD_RADIUS = 150f;
+    public static final float WARD_RADIUS = 100f;
     /** The share of damage a warded body takes. */
-    public static final float WARD_DAMAGE_MULTIPLIER = 0.75f;
+    public static final float WARD_DAMAGE_MULTIPLIER = 0.94f;
 
     /** The wave from which brutes can go berserk (inclusive). */
-    public static final int ENRAGE_FROM_WAVE = 121;
+    public static final int ENRAGE_FROM_WAVE = 141;
     /** The health ratio below which a brute latches. */
-    public static final float ENRAGE_HEALTH_RATIO = 0.4f;
+    public static final float ENRAGE_HEALTH_RATIO = 0.30f;
     /** Berserk closing speed, as a multiple of the speed the wave gave the brute. */
-    public static final float ENRAGE_SPEED_MULTIPLIER = 1.4f;
+    public static final float ENRAGE_SPEED_MULTIPLIER = 1.25f;
     /** Berserk swing interval, as a multiple of the interval the wave gave the brute. */
-    public static final float ENRAGE_INTERVAL_MULTIPLIER = 0.6f;
+    public static final float ENRAGE_INTERVAL_MULTIPLIER = 0.78f;
 
     private EnemyRoleSystem() {
     }
