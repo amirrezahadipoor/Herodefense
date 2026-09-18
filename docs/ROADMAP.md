@@ -565,9 +565,10 @@ started, `[!]` attempted and failed, with the failure written down.
       durations quoted there now carry their
       `code:main/java/com/amirrezahadipoor/herodefense/input/GdxHapticFeedback.java` citations, and
       `check_perf_provenance.py` passes again.
-- [ ] **H4 (correction, no deduction) The audit said three languages; there are two.** `GameLanguage` is
+- [x] **H4 (correction, no deduction) The audit said three languages; there are two.** `GameLanguage` is
       `ENGLISH` and `PERSIAN`. Recorded here because a wrong fact in an audit is the same kind of debt as a
-      wrong claim in a game, and rule 1 does not switch off for documents I wrote an hour ago.
+      wrong claim in a game, and rule 1 does not switch off for documents I wrote an hour ago. Marked [x] as
+      correction of record, no code change required.
 
 ## I — engineering, tests and integrity (80/100, 20 points deducted)
 
