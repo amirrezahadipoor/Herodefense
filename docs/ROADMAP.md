@@ -113,13 +113,13 @@ started, `[!]` attempted and failed, with the failure written down.
       a player discover otherwise. The published bands did not move: `BalanceSimulator` never names
       `BraceSystem`, a test pins that, and another pins that the shield's clocks age before the bow and the
       damage resolve inside `CombatSystem.update`.
-- [~] **A3 (−8) Eight enemy types carry 200 waves.** The second half scaled numbers rather than behaviour, which
+- [x] **A3 (−8) Eight enemy types carry 200 waves.** The second half scaled numbers rather than behaviour, which
       is what the open playtest finding about the plateau was describing before it was marked fixed by curve
       changes alone. First half of the answer, landed: two **roles**. From wave 121 a living HUSK_WARDEN projects
-      a ward -- every living enemy within 100 units, itself included, takes ×0.94 damage -- so the shielded
+      a ward -- every living enemy within 90 units, itself included, takes ×0.96 damage -- so the shielded
       mid-weight becomes a body the wave is organised around, and the counter is a verb the game already teaches
       (mark the warden; the ward dies with it in the same tick). From wave 141 a FUNGAL_BRUTE below 30% health
-      latches into a berserk -- closing ×1.25, swing interval ×0.78 -- so the heaviest regular body stops being
+      latches into a berserk -- closing ×1.25, swing interval ×0.80 -- so the heaviest regular body stops being
       a sponge and becomes a clock, with the brace from A2 as one of the answers. Both gates sit far past the brief
       vigil's thirtieth wave, so the first session keeps exactly the roster its evidence was measured on.
       The ward enters damage through one function every enemy-damaging call site passes through, and a source
@@ -131,8 +131,19 @@ started, `[!]` attempted and failed, with the failure written down.
       four gates -- naked-run average 0.1564 against the 0.15 ceiling, trial-pair median spikes up to 0.4863
       against 0.40 -- and the curve answered the way this entry promised: lighter role numbers, gates back to
       121/141, re-measured green, with the before/after table in `docs/BALANCE.md`.
-      Still owed (second half): the thrall's split and the hound's lunge, the two roles that give the deepest
-      waves their own silhouette; this item closes when they land and the gate has spoken.
+      Second half, landed and measured on the same seeds: from wave 161 a non-elite BRAMBLE_THRALL at 50%
+      health splits into two rootling fragments carrying a hair under its remaining budget (2×24% of max
+      against the 50% ratio), its speed, reach and swing interval, and half its damage each, swings staggered
+      half an interval apart -- the same contact damage per second in two bodies that land their hits on
+      different frames, kill reward handed to the fragments, drop lineage rolled once on the corpse, so the
+      split changes the shape of the fight, mints no economy and costs marginally less to finish. From wave 181 a SAP_HOUND fences: a still 0.45 s
+      windup, a 0.55 s dash at ×3.2, a 0.9 s self-stun punishment window, then 3 s of walking -- over a cycle it
+      covers less ground than it would walking, so the lunge adds tells, not pressure. Both are
+      pressure-neutral by construction because the trial-spike ceiling had no room left after the ward and the
+      berserk were measured in -- and the gate proved the point twice more, catching a median reshuffle onto a
+      0.4037 spike at wave 173 until the fragments were staggered and the ward lightened to ×0.96 across 90
+      units. The gate has spoken three times: it rejected the first landing, rejected the un-staggered split,
+      and accepted the shipped four. A3 closes: the second half now scales behaviour, wave block by wave block.
 - [ ] **A4 (−4) Five wave modifiers, one of which is `NONE`.** Four real modifiers across 200 waves.
 
 ## B — depth and progression (66/100, 34 points deducted)

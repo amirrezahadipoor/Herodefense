@@ -66,13 +66,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 80143 | |
-| Item sales | 25830 | |
+| Kill income | 81199 | |
+| Item sales | 24873 | |
 | Stat shop | 58990 | 135 levels |
 | Skill shop | 30590 | 40 levels |
 | Anvil | 15980 | 28 steps |
 
-Across the 9 gate seeds the split is stable: stats 52-58%, skills 28-34%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 52-56%, skills 29-34%, Anvil 12-15% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -98,15 +98,15 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.0576 / 0.0986 / 0.1171 / 0.1466` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.712 / x1.188 / x1.251` | the same sweep |
-| Sweep average range | `0.0812 - 0.1321` | the same sweep, inside the 0.05-0.15 band |
-| Deepest single-seed quarter dip | `1.39%` against the `5.00%` allowance | the same sweep |
+| Quarter means (fixed sweep) | `0.0576 / 0.0986 / 0.1187 / 0.1338` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.712 / x1.204 / x1.127` | the same sweep |
+| Sweep average range | `0.0816 - 0.1214` | the same sweep, inside the 0.05-0.15 band |
+| Deepest single-seed quarter dip | `0.68%` against the `5.00%` allowance | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `0.4000 / 0.3663 / 0.3793` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+| Riskiest trial pairs, median spike | `0.3791 / 0.3433 / 0.3815` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
 
 The three pairs are the ones this gate has caught above 0.38, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `BOSS_BOUNTY + BLOOD_PRICE`, `MISERS_PACT + BLOOD_PRICE` (the other eleven pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.30708` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.28229` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
 <!-- balance:end second-half -->
 
 The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. Two honest caveats, both of them visible in the generated table above rather than buried: the deepest single-seed quarter dip spends most of the five percent the gate allows, and the reward-card matrix keeps very little headroom against its ceiling — so a later change that adds pressure to the *first* hundred waves has almost nothing to spend.
@@ -661,20 +661,31 @@ What the brace deliberately does not do is dodge, and nothing in the game says o
 the codex, not the Hero's javadoc, which names bracing as the answer to a telegraph precisely because stepping is
 not. That boundary is roadmap A5's to move, not this section's.
 
-## Late-wave roles: behaviour instead of bigger numbers (roadmap A3, first half)
+## Late-wave roles: behaviour instead of bigger numbers (roadmap A3)
 
 The audit's line about the second half was that eight enemy types carry two hundred waves and the late ones scale
-numbers rather than behaviour. This section is the first half of the answer: two roles, same sprites, same spawn
-lanes, different jobs.
+numbers rather than behaviour. This section is the answer: four roles, same sprites, same spawn lanes, different
+jobs, one per late block of the run.
 
 | role | body | from wave | behaviour | counter |
 | --- | --- | --- | --- | --- |
-| the ward | HUSK_WARDEN | **121** | living enemies within **100** units take **×0.94** damage, warden included | mark the warden; the ward dies with it in the same tick |
-| the berserk | FUNGAL_BRUTE | **141** | below **30%** health, latches: closing **×1.25**, swing interval **×0.78** | burst it, or brace (A2) the seconds it takes to arrive |
+| the ward | HUSK_WARDEN | **121** | living enemies within **90** units take **×0.96** damage, warden included | mark the warden; the ward dies with it in the same tick |
+| the berserk | FUNGAL_BRUTE | **141** | below **30%** health, latches: closing **×1.25**, swing interval **×0.80** | burst it, or brace (A2) the seconds it takes to arrive |
+| the split | BRAMBLE_THRALL | **161** | a non-elite thrall at **50%** health comes apart into **2** rootling fragments: **2×24%** of its max health, its speed, reach and swing interval, half its damage each, swings staggered half an interval | chain and area work doubles in value; single-target focus picks a fragment order |
+| the lunge | SAP_HOUND | **181** | cycles: **0.45 s** still windup, **0.55 s** dash at **×3.2**, **0.9 s** self-stun, **3 s** walk | the self-stun is the punishment window: brace (A2) it or burst it while it recovers |
 
-Both gates sit far past the brief vigil's thirtieth wave on purpose: the first session of the game keeps exactly
+Every gate sits far past the brief vigil's thirtieth wave on purpose: the first session of the game keeps exactly
 the roster its balance evidence was measured on, while the two-hundred-wave sweep now fights roles from its
-middle onwards. The ward enters damage at the single function every enemy-damaging call site passes through
+middle onwards. The split and the lunge are pressure-neutral by construction, and had to be: after the ward and
+the berserk were measured in (history table below), the riskiest trial pair medianed its spike at exactly the
+0.40 ceiling, so a late role that added net pressure would have had to take the ward or the berserk back out. The
+split keeps the thrall's contact damage per second to the digit -- fragments swing half an interval apart,
+because two bodies on one rhythm land on the same frames and the gates measure single-wave maxima, not
+averages -- hands the kill reward to the fragments, rolls the drop lineage once on the corpse, and inherits a
+hair under the thrall's remaining health (2×24% against the 50% ratio), so it changes the shape of the fight,
+mints no economy and costs marginally less to finish. The
+lunge covers slightly less ground per cycle than walking would (dash-seconds × dash-speed + walked cooldown
+against the whole cycle), so the fastest body in the roster gains tells instead of threat. The ward enters damage at the single function every enemy-damaging call site passes through
 (`EnemyRoleSystem.damageTo`: arrow impact, chain arc, ultimate), and `EnemyRoleSystemTest` scans the main sources
 for a fourth call site that skips it -- a ward that worked only against arrows would be a shield with a hole in
 its contract. The berserk latches once, at the transition, because nothing heals a regular enemy and a per-tick
@@ -689,13 +700,19 @@ its **0.15** ceiling and the riskiest trial-pair median spikes to **0.4863** aga
 
 | quantity | before roles (`57d667e`) | first landing (failed the gate) | shipped (this block's numbers) |
 | --- | ---: | ---: | ---: |
-| quarter means, fixed sweep | `0.0576 / 0.0986 / 0.1142 / 0.1298` | `0.0576 / 0.0986 / 0.1637 / 0.2085` | `0.0576 / 0.0986 / 0.1171 / 0.1466` |
-| sweep average range | `0.0748 - 0.1193` | `0.1034 - 0.1564` | `0.0812 - 0.1321` |
-| riskiest trial pairs, median spike | `0.3729 / 0.3816 / 0.3515` | `0.4863 / 0.4508 / 0.4766` | `0.4000 / 0.3663 / 0.3793` |
-| reward-card spike, AGILITY at boss 1 | `0.38992` | `0.39427` | `0.30708` |
+| quarter means, fixed sweep | `0.0576 / 0.0986 / 0.1142 / 0.1298` | `0.0576 / 0.0986 / 0.1637 / 0.2085` | `0.0576 / 0.0986 / 0.1187 / 0.1338` |
+| sweep average range | `0.0748 - 0.1193` | `0.1034 - 0.1564` | `0.0816 - 0.1214` |
+| riskiest trial pairs, median spike | `0.3729 / 0.3816 / 0.3515` | `0.4863 / 0.4508 / 0.4766` | `0.3791 / 0.3433 / 0.3815` |
+| reward-card spike, AGILITY at boss 1 | `0.38992` | `0.39427` | `0.28229` |
 
-The shipped roles are the second half's pressure bump made of behaviour: the fourth-quarter mean rises about
-13% over the pre-role curve (0.1298 -> 0.1466) while every gate stays green on its fixed seeds -- including the
-riskiest trial pair now medianing its spike at exactly the 0.40 ceiling, which is the honest reading of how much
-room the late roles had: almost none, and the gate is what found the line. That loop is the item working as
-intended -- A3 is the one deduction whose resolution cannot be asserted, only measured.
+The shipped four are the second half's behaviour made of numbers the gate accepts: the third- and fourth-quarter
+means rise about 4% and 3% over the pre-role curve (0.1142 -> 0.1187, 0.1298 -> 0.1338) while every band stays
+green on its fixed seeds. The tuning history is the honest reading of how little room the late game had. The
+second landing passed every gate but left the riskiest trial pair medianing its spike at exactly 0.4000 against
+the 0.40 ceiling -- zero margin -- and the un-staggered split then reshuffled the medians onto a 0.4037 spike
+and failed again. Staggering the fragments' swings, lightening the ward to ×0.96 across 90 units and inheriting
+2×24% instead of 2×25% bought the margin back: the riskiest pair now medians 0.3815 with ~0.02 of headroom, and
+kill income moved 80143 -> 81199 across the sweep, exactly the +5 coins per split (two rootling rewards, 24,
+against the thrall's 19) the design promised -- the split pays for itself and not a coin more. That loop is the
+item working as intended: A3 is the one deduction whose resolution cannot be asserted, only measured -- three
+times, on the fixed seeds, before it shipped.

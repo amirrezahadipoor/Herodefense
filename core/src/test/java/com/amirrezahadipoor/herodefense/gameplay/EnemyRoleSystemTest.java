@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.Enemy;
@@ -124,6 +125,135 @@ final class EnemyRoleSystemTest {
         wolf.health = 1f;
         EnemyRoleSystem.update(wrongBody, 1f / 60f);
         assertFalse(wolf.enraged, "the berserk is the brute's role, not the roster's");
+    }
+
+    @Test
+    void aWoundedThrallComesApartIntoFragmentsThatCostNothingExtra() {
+        GameState state = atWave(EnemyRoleSystem.SPLIT_FROM_WAVE);
+        Enemy thrall = body(state, EnemyType.BRAMBLE_THRALL, 300f, 500f);
+        thrall.damage = 7f;
+        thrall.health = thrall.maxHealth * EnemyRoleSystem.SPLIT_HEALTH_RATIO;
+        float healthLeft = thrall.health;
+        int before = state.aliveEnemies.size();
+
+        EnemyRoleSystem.update(state, 1f / 60f);
+
+        assertFalse(thrall.alive, "the thrall's body is the split");
+        assertTrue(thrall.splitSpawned);
+        assertTrue(thrall.killRewardsGranted, "the corpse pays nothing; the fragments carry the lineage's reward");
+        assertEquals(before + EnemyRoleSystem.SPLIT_FRAGMENT_COUNT, state.aliveEnemies.size());
+
+        float fragmentHealth = 0f;
+        float fragmentDps = 0f;
+        java.util.Set<Float> phasesSeen = new java.util.HashSet<>();
+        for (int i = before; i < state.aliveEnemies.size(); i++) {
+            Enemy fragment = state.aliveEnemies.get(i);
+            assertEquals("ROOTLING", fragment.enemyType);
+            assertTrue(fragment.alive);
+            assertEquals(thrall.maxHealth * EnemyRoleSystem.SPLIT_FRAGMENT_HEALTH_SHARE,
+                fragment.health, 0.001f);
+            assertEquals(thrall.damage * 0.5f, fragment.damage, 0.001f);
+            assertEquals(thrall.movementSpeed, fragment.movementSpeed, 0.001f);
+            assertEquals(thrall.attackIntervalSeconds, fragment.attackIntervalSeconds, 0.001f);
+            assertEquals(thrall.spawnLane, fragment.spawnLane);
+            assertTrue(fragment.itemDropRolled && fragment.potionDropRolled,
+                "the lineage rolls its drops once, on the corpse: the split mints no economy");
+            assertFalse(fragment.killRewardsGranted, "and the fragments pay the standard rootling reward");
+            assertNotEquals(thrall.x, fragment.x, "fragments land to either side of the body");
+            phasesSeen.add(fragment.attackCooldownSeconds);
+            fragmentHealth += fragment.health;
+            fragmentDps += fragment.damage / fragment.attackIntervalSeconds;
+        }
+        assertEquals(thrall.maxHealth * EnemyRoleSystem.SPLIT_FRAGMENT_HEALTH_SHARE
+                * EnemyRoleSystem.SPLIT_FRAGMENT_COUNT, fragmentHealth, 0.001f,
+            "the fragments inherit a hair under the thrall's budget at the ratio -- the spike ceiling left no"
+                + " room for the split to be exactly free, let alone dearer");
+        assertTrue(fragmentHealth <= healthLeft + 0.001f, "and never more than the thrall had left");
+        assertEquals(thrall.damage / thrall.attackIntervalSeconds, fragmentDps, 0.001f,
+            "and exactly its contact damage per second: the split changes the shape of the fight, not its cost");
+        assertEquals(EnemyRoleSystem.SPLIT_FRAGMENT_COUNT, phasesSeen.size(),
+            "the fragments swing half an interval apart: two bodies sharing the thrall's rhythm would land on"
+                + " the same frames, and the gates measure single-wave maxima, not averages");
+    }
+
+    @Test
+    void theSplitWaitsForItsWaveItsRatioAndANonEliteBody() {
+        GameState early = atWave(EnemyRoleSystem.SPLIT_FROM_WAVE - 1);
+        Enemy thrall = body(early, EnemyType.BRAMBLE_THRALL, 300f, 500f);
+        thrall.health = thrall.maxHealth * 0.1f;
+        EnemyRoleSystem.update(early, 1f / 60f);
+        assertTrue(thrall.alive, "one wave earlier the thrall is still one body");
+
+        GameState whole = atWave(EnemyRoleSystem.SPLIT_FROM_WAVE);
+        Enemy healthy = body(whole, EnemyType.BRAMBLE_THRALL, 300f, 500f);
+        healthy.health = healthy.maxHealth * (EnemyRoleSystem.SPLIT_HEALTH_RATIO + 0.01f);
+        EnemyRoleSystem.update(whole, 1f / 60f);
+        assertTrue(healthy.alive, "above the ratio it holds together");
+
+        GameState elite = atWave(EnemyRoleSystem.SPLIT_FROM_WAVE);
+        Enemy marked = body(elite, EnemyType.BRAMBLE_THRALL, 300f, 500f);
+        marked.eliteAffix = "BLIGHTBURST";
+        marked.health = marked.maxHealth * 0.1f;
+        EnemyRoleSystem.update(elite, 1f / 60f);
+        assertTrue(marked.alive,
+            "an elite keeps its contract: affix, fragment lore and trophy all assume one body to kill");
+    }
+
+    @Test
+    void theHoundLungesOnAToldRhythmAndPunishesItself() {
+        GameState state = atWave(EnemyRoleSystem.LUNGE_FROM_WAVE);
+        Enemy hound = body(state, EnemyType.SAP_HOUND, 300f, 500f);
+        float walk = hound.movementSpeed;
+
+        hound.lungeBaseSpeed = walk;
+        hound.lungeSeconds = -0.01f;
+        EnemyRoleSystem.update(state, 0.02f);
+        assertEquals(0f, hound.movementSpeed, 0.001f, "the windup is a standstill the player can read");
+
+        EnemyRoleSystem.update(state, EnemyRoleSystem.LUNGE_WINDUP_SECONDS);
+        assertEquals(walk * EnemyRoleSystem.LUNGE_DASH_SPEED_MULTIPLIER, hound.movementSpeed, 0.01f,
+            "then the dash");
+
+        EnemyRoleSystem.update(state, EnemyRoleSystem.LUNGE_DASH_SECONDS);
+        assertTrue(hound.stunRemainingSeconds >= EnemyRoleSystem.LUNGE_RECOVERY_STUN_SECONDS - 0.001f,
+            "the dash ends in a self-stun: the punishment window");
+        assertEquals(walk, hound.movementSpeed, 0.001f);
+        assertTrue(hound.lungeSeconds <= -EnemyRoleSystem.LUNGE_COOLDOWN_SECONDS + 0.001f,
+            "and the cycle resets to its cooldown");
+
+        hound.stunRemainingSeconds = 0f;
+        EnemyRoleSystem.update(state, EnemyRoleSystem.LUNGE_COOLDOWN_SECONDS - 0.1f);
+        assertEquals(walk, hound.movementSpeed, 0.001f, "the cooldown is ordinary walking");
+        EnemyRoleSystem.update(state, 0.1f);
+        assertEquals(0f, hound.movementSpeed, 0.001f,
+            "and the moment the cooldown ends the next windup begins: the cycle has no seam");
+    }
+
+    @Test
+    void theLungeCoversSlightlyLessGroundThanWalkingWould() {
+        // One full cycle: windup stands still, dash covers dash-seconds at dash-speed, the recovery stun eats
+        // the start of the cooldown, and the rest of the cooldown walks. The sum has to stay under the ground a
+        // plain walking hound covers in the same time, or the lunge would be pressure -- and pressure is what
+        // the trial-spike ceiling, medianing exactly at 0.40, has no room left for.
+        float walk = 100f;
+        float cycle = EnemyRoleSystem.LUNGE_WINDUP_SECONDS + EnemyRoleSystem.LUNGE_DASH_SECONDS
+            + EnemyRoleSystem.LUNGE_COOLDOWN_SECONDS;
+        float walkedCooldown = Math.max(0f, EnemyRoleSystem.LUNGE_COOLDOWN_SECONDS
+            - EnemyRoleSystem.LUNGE_RECOVERY_STUN_SECONDS);
+        float lunged = EnemyRoleSystem.LUNGE_DASH_SECONDS * EnemyRoleSystem.LUNGE_DASH_SPEED_MULTIPLIER * walk
+            + walkedCooldown * walk;
+        assertTrue(lunged < cycle * walk,
+            "lunge ground " + lunged + " must stay under walking ground " + (cycle * walk));
+    }
+
+    @Test
+    void theLungeStartsAtItsWaveAndNotOneEarlier() {
+        GameState early = atWave(EnemyRoleSystem.LUNGE_FROM_WAVE - 1);
+        Enemy hound = body(early, EnemyType.SAP_HOUND, 300f, 500f);
+        float walk = hound.movementSpeed;
+        EnemyRoleSystem.update(early, 1f);
+        assertEquals(walk, hound.movementSpeed, 0.001f);
+        assertEquals(0f, hound.lungeBaseSpeed, 0.001f, "one wave earlier the hound is still just fast");
     }
 
     @Test

@@ -44,6 +44,16 @@ public class Enemy extends ArenaEntity {
      * folded into {@code movementSpeed}.
      */
     public boolean enraged;
+
+    /**
+     * Roadmap A3, second half: the thrall has split into fragments (once per body), and the hound's lunge cycle
+     * timer. {@code lungeSeconds} is the whole state machine: negative counts the cooldown up to zero, then the
+     * same float walks through windup, dash and the hand-off to {@code stunRemainingSeconds} for the recovery.
+     * {@code lungeBaseSpeed} remembers the speed the wave gave the hound, because the phases overwrite it.
+     */
+    public boolean splitSpawned;
+    public float lungeSeconds;
+    public float lungeBaseSpeed;
     /** The elite kill has been claimed for counts, codex, and its lore fragment. */
     public boolean eliteKillClaimed;
 
