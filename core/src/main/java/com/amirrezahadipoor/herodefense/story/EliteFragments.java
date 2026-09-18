@@ -26,6 +26,21 @@ public final class EliteFragments {
                 ? "The ground it crosses does not heal. Not yet. Maybe not ever."
                 : "Every trail leads back the same direction, if you follow it far enough: toward the Tree.";
         }
+        if ("hollowmolt".equals(affixId)) {
+            return first
+                ? "It does not leave empty. Nothing here does."
+                : "Two smaller silences where one loud one stood. The Tree counts them as the same wound.";
+        }
+        if ("gravemoss".equals(affixId)) {
+            return first
+                ? "The moss grows over the wound while the wound is still wearing it."
+                : "It is not healing. It is being reclaimed, slowly, by something patient.";
+        }
+        if ("cinderhalo".equals(affixId)) {
+            return first
+                ? "Stand close and it will love you the way an ember loves a dry wind."
+                : "The heat is not attack. It is grief, still warm from the fire that made it.";
+        }
         return null;
     }
 }

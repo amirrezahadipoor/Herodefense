@@ -13,7 +13,13 @@ public enum VisualRarity {
     /** Deep root-teal for rootward Elites. */
     ELITE_ROOTWARD(true, 0.25f, 0.9f, 0.6f, 1.05f),
     /** Bruised magenta for weeping Elites. */
-    ELITE_WEEPING(true, 1.0f, 0.25f, 0.45f, 1.05f);
+    ELITE_WEEPING(true, 1.0f, 0.25f, 0.45f, 1.05f),
+    /** Bone amber for hollowmolt Elites (roadmap D2). */
+    ELITE_HOLLOWMOLT(true, 0.95f, 0.85f, 0.55f, 1.05f),
+    /** Patient grey-green for gravemoss Elites (roadmap D2). */
+    ELITE_GRAVEMOSS(true, 0.55f, 0.75f, 0.45f, 1.05f),
+    /** Warm ember for cinderhalo Elites (roadmap D2). */
+    ELITE_CINDERHALO(true, 1.0f, 0.5f, 0.2f, 1.15f);
 
     private final boolean glowing;
     private final float red;

@@ -69,7 +69,10 @@ class ArchitectureRatchetTest {
         // `DropTextureCache` (the drop texture map and its two helpers, 23 lines). The frozen size is lowered
         // to the new measurement so the next change has to pay for itself too.
         "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
-        new ArchitectureRatchet.Frozen(653, 13),
+        // D2 raised the count by three lines: eliteGlow maps three new deep-pool affix ids to their own
+        // glows, one if-line each beside the three that shipped. A map or a table for six constants would be
+        // a new file to hold six lines; the chain stays.
+        new ArchitectureRatchet.Frozen(656, 13),
         // R3.5 added a mode-aware entry point (`runBrief`) and kept the old signature as a one-line delegate,
         // so the standard sweeps are unchanged by construction. R3.4 needed no growth here at all: the omens'
         // counterfactual is simply a run without the omen trial, which the existing trial axes already measure.

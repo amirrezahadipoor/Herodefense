@@ -276,7 +276,20 @@ started, `[!]` attempted and failed, with the failure written down.
 - [ ] **D1 (−14) One arena.** The manifest holds a single `arena_backdrop` and `ground_tile_0..2`. 200 waves,
       2.2 hours, one room. A second backdrop plus a ground set is mostly an art-pipeline task, and the pipeline
       (Blender tools, render workflow, hash-bound reviews) already exists.
-- [ ] **D2 (−12) Eight enemy identities and three elite affixes.**
+- [x] **D2 (−12) Eight enemy identities and three elite affixes.** The affix half is closed in code: the pool
+      doubles to six -- hollowmolt splits into two husks on death, gravemoss regrows its own health (stun is
+      the window that stops it), cinderhalo burns whoever stands inside its halo on a half-second rhythm --
+      each with its own glowing outline (three new `ELITE_*` visual rarities) and its own two-part
+      "Whispering Wounds" thread in `docs/STORY_CONTENT.md` §4, verbatim-locked by `EliteFragmentsTest`.
+      The pool opens at **wave 101 only** (`EnemyWaveSpawner.LATE_AFFIX_WAVE`), the B2a playbook: below the
+      gate the draw size stays 3, so every early and mid roll is bit-identical and the frozen baseline keeps
+      its meaning; `EliteAffixPoolTest` pins both sides. The pressure it adds was measured, not assumed: the
+      first cut tripped the trial-pair spike gate (0.4151 at wave 119 against the 0.40 ceiling), the tuning
+      loop softened the three constants until the riskiest pair landed at 0.3590, and `docs/BALANCE.md`
+      carries the regenerated numbers plus the one shallow quarter dip (-2.69%, inside the 5% allowance) that
+      the deep pool put back on the board. The identity half stays open by necessity: new enemy bodies are
+      sprite-sheet art, and the reviewed Blender pipeline that makes them lives outside this sandbox -- the
+      same dependency B2 documented for the sixth skill.
 - [ ] **D3 (−8) Four boss identities across forty encounters.** The encounter table itself is good work — eight
       fight scripts on a shifting permutation, deterministic against the save file — but only four of them have
       a body.

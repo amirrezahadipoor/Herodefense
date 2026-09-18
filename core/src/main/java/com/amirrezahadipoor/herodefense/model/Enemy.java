@@ -29,7 +29,7 @@ public class Enemy extends ArenaEntity {
      * never moves, attacks, or pays out; targeting, wave-clear counts, and drops all skip it.
      */
     public boolean silentWatcher;
-    /** Elite affix id (blightburst/rootward_ward/weeping_rot); null for regulars. */
+    /** Elite affix id (see {@link EliteAffix}); null for regulars. */
     public String eliteAffix;
     /** Affix clock driving the rootward shield cycle and weeping trail cadence. */
     public float affixTimerSeconds;

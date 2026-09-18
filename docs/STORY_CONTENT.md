@@ -118,6 +118,18 @@ the two fragments can unlock in either order.
 - Fragment II: "Every trail leads back the same direction, if you follow it far enough: toward the
   Tree."
 
+**Hollowmolt** *(splits into two husks on death — roadmap D2, deep-run pool, wave 101+)*
+- Fragment I: "It does not leave empty. Nothing here does."
+- Fragment II: "Two smaller silences where one loud one stood. The Tree counts them as the same wound."
+
+**Gravemoss** *(regrows its own health; stun stops it — roadmap D2, deep-run pool)*
+- Fragment I: "The moss grows over the wound while the wound is still wearing it."
+- Fragment II: "It is not healing. It is being reclaimed, slowly, by something patient."
+
+**Cinderhalo** *(burns whoever stands inside its halo — roadmap D2, deep-run pool)*
+- Fragment I: "Stand close and it will love you the way an ember loves a dry wind."
+- Fragment II: "The heat is not attack. It is grief, still warm from the fire that made it."
+
 ## 5. The Grove Codex — 30 Entries
 
 Narrated in the Tree's voice throughout. Grouped by unlock trigger; the grouping is for

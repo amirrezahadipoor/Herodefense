@@ -15,6 +15,8 @@ import java.util.List;
 public final class EnemyWaveSpawner {
     public static final float EDGE_OFFSET = 40f;
     public static final int MAX_REGULAR_ENEMIES = 24;
+    /** The wave the doubled Elite affix pool opens at (roadmap D2); below it only the base three draw. */
+    public static final int LATE_AFFIX_WAVE = 101;
     private static final float SIDE_JITTER = 180f;
     private static final float SOUTH_JITTER = 250f;
     /** One in fifty Rootling spawns stands silent at the tree line ("The Quiet Ones"). */
@@ -179,9 +181,14 @@ public final class EnemyWaveSpawner {
             int slot = Math.floorMod(
                 watcherMix(state.runSeed, waveNumber, 11 + pick, ELITE_SALT), candidates.size());
             Enemy elite = state.aliveEnemies.get(candidates.remove(slot));
+            // D2's three new affixes enter the draw at LATE_AFFIX_WAVE; below it the pool size stays 3
+            // and every roll is bit-identical to the shipped curve (the B2a lesson: never remap a draw
+            // the frozen baseline was measured on).
+            int poolSize = waveNumber >= LATE_AFFIX_WAVE
+                ? EliteAffix.values().length : EliteAffix.BASE_POOL_SIZE;
             EliteAffix affix = EliteAffix.values()[Math.floorMod(
                 watcherMix(state.runSeed, waveNumber, 101 + pick, ELITE_SALT),
-                EliteAffix.values().length)];
+                poolSize)];
             elite.eliteAffix = affix.id();
             if (affix == EliteAffix.ROOTWARD_WARD) {
                 elite.affixTimerSeconds = EliteAffixSystem.ROOTWARD_SHIELD_PERIOD

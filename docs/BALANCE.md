@@ -66,13 +66,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 81199 | |
-| Item sales | 24873 | |
-| Stat shop | 58990 | 135 levels |
-| Skill shop | 30590 | 40 levels |
+| Kill income | 96215 | |
+| Item sales | 25749 | |
+| Stat shop | 65450 | 138 levels |
+| Skill shop | 39580 | 44 levels |
 | Anvil | 15980 | 28 steps |
 
-Across the 9 gate seeds the split is stable: stats 51-57%, skills 28-35%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 52-56%, skills 29-35%, Anvil 12-15% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -98,18 +98,18 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.0593 / 0.0970 / 0.1170 / 0.1417` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.636 / x1.206 / x1.211` | the same sweep |
-| Sweep average range | `0.0949 - 0.1151` | the same sweep, inside the 0.05-0.15 band |
-| Deepest single-seed quarter dip | `-5.95%` against the `5.00%` allowance | the same sweep |
+| Quarter means (fixed sweep) | `0.0593 / 0.0970 / 0.1125 / 0.1317` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.636 / x1.160 / x1.171` | the same sweep |
+| Sweep average range | `0.0841 - 0.1117` | the same sweep, inside the 0.05-0.15 band |
+| Deepest single-seed quarter dip | `-2.69%` against the `5.00%` allowance | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `0.3791 / 0.3013 / 0.3815` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+| Riskiest trial pairs, median spike | `0.3707 / 0.2754 / 0.3590` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
 
 The three pairs are the ones this gate has caught above 0.38, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `BOSS_BOUNTY + BLOOD_PRICE`, `MISERS_PACT + BLOOD_PRICE` (the other eleven pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.28229` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.28831` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
 <!-- balance:end second-half -->
 
-The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. The caveats move with the measurements: since roadmap B1 shipped the pity rule below, no seed's quarter-to-quarter line dips at all — the deepest reading in the table is a **rise** of 5.95% — and the reward-card matrix sits at `0.28229` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3815` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first.
+The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. The caveats move with the measurements: roadmap B1's pity rule below had left no seed dipping at all; roadmap D2's deep-pool Elite affixes (wave 101+, six instead of three) put one shallow dip back on the board — `-2.69%` against the `5.00%` allowance — and lifted the deep-run kill income, because a hollowmolt elite that splits into two husks is two more kills to pay for. The reward-card matrix sits at `0.28831` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3590` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first — D2 paid there too, and the tuning loop that brought the riskiest pair back under the ceiling (cinderhalo's burn at 0.08 of the elite's damage per half-second tick, gravemoss regrowing 0.6% of max health a second, the molt husks at 15% health and 45% damage) is the gate working as designed.
 
 **What the headroom bought.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 alone returned `0.01–0.03` — not enough, which is what the open ledger finding said from the economy's side. Roadmap A3's role tuning then returned the rest (worst pair `0.3815`), and roadmap B1 spent it: the guaranteed common after thirty dry kills now ships, gated past the brief vigil, and every band above stayed green on the fixed seeds — the riskiest pair unchanged at `0.3815`, and the sweep average's floor raised from `0.0816` to `0.0949`, which is the rule doing exactly its job: the unluckiest runs are no longer the weakest measurements. See the economy section for the rule and its measured price. Roadmap B2a then widened the affix pool from fifteen to twenty — Elite Damage, Thorns, Potion Find, Focus Gain and Fortitude, each wired to exactly one shipped system — and paid for it with a rule instead of a band: the five expansion lanes roll on **Legendaries from wave 101 onward only**, so the early and middle-game loot table is bit-identical to the one every number above was measured on. The naive variant (all Rares diluting across twenty lanes) was measured and refused: it remapped every Legendary loadout, flipped the balanced run's middle-third shape gate (quarters `0.0860 → 0.0857` where the contract demands a rise of `0.01`) and pushed the FAMISHED_EARTH pairs to `0.4536 / 0.4116` against the `0.40` ceiling. The gated variant leaves every block in this document exactly where B1 left it, and the wider table lands in the second half — which is precisely where two runs at the same tier used to converge.
 

@@ -5,9 +5,14 @@ import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.RotTrailSegment;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
-/** Runs Elite affix combat: blightburst death blasts plus the live rootward/weeping clocks. */
+/**
+ * Runs Elite affix combat: blightburst death blasts and hollowmolt death splits, plus the live
+ * rootward/weeping/gravemoss/cinderhalo clocks.
+ */
 public final class EliteAffixSystem {
     public static final float BLIGHT_BLAST_RADIUS = 150f;
     public static final float BLIGHT_BLAST_DAMAGE_MULT = 1f;
@@ -18,6 +23,14 @@ public final class EliteAffixSystem {
     public static final float WEEPING_SEGMENT_LIFETIME = 3f;
     public static final float WEEPING_SEGMENT_RADIUS = 55f;
     public static final float WEEPING_DAMAGE_SHARE = 0.35f;
+    public static final int MOLT_CHILD_COUNT = 2;
+    public static final float MOLT_CHILD_HEALTH_SHARE = 0.15f;
+    public static final float MOLT_CHILD_DAMAGE_SHARE = 0.45f;
+    public static final float MOLT_CHILD_OFFSET = 16f;
+    public static final float GRAVEMOSS_REGEN_PER_SECOND = 0.006f;
+    public static final float CINDERHALO_RADIUS = 90f;
+    public static final float CINDERHALO_TICK_SECONDS = 0.5f;
+    public static final float CINDERHALO_DAMAGE_SHARE = 0.08f;
 
     private final HeroDamageSystem heroDamageSystem;
 
@@ -29,10 +42,16 @@ public final class EliteAffixSystem {
         if (state == null || state.hero == null || state.aliveEnemies == null || deltaSeconds < 0f) {
             return;
         }
+        // Hollowmolt children are collected, not added in-loop: state.aliveEnemies is being iterated.
+        List<Enemy> spawned = null;
         for (Enemy enemy : state.aliveEnemies) {
             if (enemy == null || enemy.eliteAffix == null) continue;
             if (!enemy.alive) {
-                resolveDeath(state, enemy);
+                List<Enemy> children = resolveDeath(state, enemy);
+                if (!children.isEmpty()) {
+                    if (spawned == null) spawned = new ArrayList<>();
+                    spawned.addAll(children);
+                }
                 continue;
             }
             if (enemy.stunned()) continue;
@@ -40,13 +59,21 @@ public final class EliteAffixSystem {
                 updateRootward(enemy, deltaSeconds);
             } else if (EliteAffix.WEEPING_ROT.id().equals(enemy.eliteAffix)) {
                 updateWeeping(state, enemy, deltaSeconds);
+            } else if (EliteAffix.GRAVEMOSS.id().equals(enemy.eliteAffix)) {
+                updateGravemoss(enemy, deltaSeconds);
+            } else if (EliteAffix.CINDERHALO.id().equals(enemy.eliteAffix)) {
+                updateCinderhalo(state, enemy, deltaSeconds);
             }
+        }
+        if (spawned != null) {
+            state.aliveEnemies.addAll(spawned);
         }
         updateTrail(state, deltaSeconds);
     }
 
-    private void resolveDeath(GameState state, Enemy enemy) {
-        if (enemy.affixResolved) return;
+    /** Resolves a dead Elite's affix once; returns hollowmolt's children, empty when it leaves none. */
+    private List<Enemy> resolveDeath(GameState state, Enemy enemy) {
+        if (enemy.affixResolved) return List.of();
         enemy.affixResolved = true;
         if (EliteAffix.BLIGHTBURST.id().equals(enemy.eliteAffix)
             && state.hero.alive
@@ -54,6 +81,41 @@ public final class EliteAffixSystem {
                 <= BLIGHT_BLAST_RADIUS * BLIGHT_BLAST_RADIUS) {
             heroDamageSystem.applyIncomingHit(
                 state, enemy.damage * BLIGHT_BLAST_DAMAGE_MULT);
+        }
+        if (EliteAffix.HOLLOWMOLT.id().equals(enemy.eliteAffix)) {
+            List<Enemy> children = new ArrayList<>(MOLT_CHILD_COUNT);
+            for (int index = 0; index < MOLT_CHILD_COUNT; index++) {
+                float sign = index % 2 == 0 ? -1f : 1f;
+                Enemy child = new Enemy(state.allocateEntityId(), enemy.enemyType,
+                    enemy.x + sign * MOLT_CHILD_OFFSET, enemy.y + sign * MOLT_CHILD_OFFSET * 0.5f);
+                child.maxHealth = enemy.maxHealth * MOLT_CHILD_HEALTH_SHARE;
+                child.health = child.maxHealth;
+                child.damage = enemy.damage * MOLT_CHILD_DAMAGE_SHARE;
+                child.movementSpeed = enemy.movementSpeed;
+                child.attackRange = enemy.attackRange;
+                children.add(child);
+            }
+            return children;
+        }
+        return List.of();
+    }
+
+    /** Gravemoss regrows a sliver of max health per second; stun is the window that stops it. */
+    private static void updateGravemoss(Enemy enemy, float deltaSeconds) {
+        if (enemy.health >= enemy.maxHealth) return;
+        enemy.health = Math.min(enemy.maxHealth,
+            enemy.health + enemy.maxHealth * GRAVEMOSS_REGEN_PER_SECOND * deltaSeconds);
+    }
+
+    /** Cinderhalo burns the hero on a fixed rhythm while they stand inside the halo; stun pauses the clock. */
+    private void updateCinderhalo(GameState state, Enemy enemy, float deltaSeconds) {
+        enemy.affixTimerSeconds += deltaSeconds;
+        if (enemy.affixTimerSeconds < CINDERHALO_TICK_SECONDS) return;
+        enemy.affixTimerSeconds -= CINDERHALO_TICK_SECONDS;
+        if (state.hero != null && state.hero.alive
+            && enemy.distanceSquaredTo(state.hero.x, state.hero.y)
+                <= CINDERHALO_RADIUS * CINDERHALO_RADIUS) {
+            heroDamageSystem.applyIncomingHit(state, enemy.damage * CINDERHALO_DAMAGE_SHARE);
         }
     }
 

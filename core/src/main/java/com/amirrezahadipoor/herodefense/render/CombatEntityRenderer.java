@@ -316,6 +316,9 @@ public final class CombatEntityRenderer implements AutoCloseable {
         if ("blightburst".equals(affixId)) return VisualRarity.ELITE_BLIGHTBURST;
         if ("rootward_ward".equals(affixId)) return VisualRarity.ELITE_ROOTWARD;
         if ("weeping_rot".equals(affixId)) return VisualRarity.ELITE_WEEPING;
+        if ("hollowmolt".equals(affixId)) return VisualRarity.ELITE_HOLLOWMOLT;
+        if ("gravemoss".equals(affixId)) return VisualRarity.ELITE_GRAVEMOSS;
+        if ("cinderhalo".equals(affixId)) return VisualRarity.ELITE_CINDERHALO;
         return VisualRarity.COMMON;
     }
 

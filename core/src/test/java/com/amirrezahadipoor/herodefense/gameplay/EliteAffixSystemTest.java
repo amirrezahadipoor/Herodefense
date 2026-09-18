@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.Enemy;
@@ -155,6 +156,68 @@ final class EliteAffixSystemTest {
         affixes.update(state, 1f);
         assertEquals(before, state.combatRandomState);
         assertTrue(state.rotTrail.isEmpty());
+    }
+
+    @Test
+    void hollowmoltSplitsIntoTwoHusksExactlyOnce() {
+        GameState state = GameState.newRun(11L);
+        Enemy elite = deadElite(state, "hollowmolt", state.hero.x + 200f, state.hero.y);
+        elite.enemyType = "STONEKIN";
+        elite.maxHealth = 500f;
+        elite.damage = 20f;
+        elite.movementSpeed = 42f;
+        int before = state.aliveEnemies.size();
+        affixes.update(state, 0.1f);
+        assertEquals(before + EliteAffixSystem.MOLT_CHILD_COUNT, state.aliveEnemies.size());
+        for (int index = before; index < state.aliveEnemies.size(); index++) {
+            Enemy child = state.aliveEnemies.get(index);
+            assertTrue(child.alive);
+            assertEquals("STONEKIN", child.enemyType);
+            assertEquals(500f * EliteAffixSystem.MOLT_CHILD_HEALTH_SHARE, child.maxHealth, 1e-3f);
+            assertEquals(child.maxHealth, child.health);
+            assertEquals(20f * EliteAffixSystem.MOLT_CHILD_DAMAGE_SHARE, child.damage, 1e-3f);
+            assertEquals(42f, child.movementSpeed, 1e-3f);
+            assertNull(child.eliteAffix, "the husks are regulars, not elites");
+        }
+        affixes.update(state, 0.1f);
+        assertEquals(before + EliteAffixSystem.MOLT_CHILD_COUNT, state.aliveEnemies.size(),
+            "one death splits once");
+    }
+
+    @Test
+    void gravemossRegrowsHealthAndStunStopsIt() {
+        GameState state = GameState.newRun(11L);
+        Enemy elite = liveElite(state, "gravemoss");
+        elite.maxHealth = 1_000f;
+        elite.health = 500f;
+        affixes.update(state, 1f);
+        assertEquals(500f + 1_000f * EliteAffixSystem.GRAVEMOSS_REGEN_PER_SECOND, elite.health, 1e-3f);
+        elite.health = 999.5f;
+        affixes.update(state, 10f);
+        assertEquals(1_000f, elite.health, 1e-6f, "regrowth stops at full");
+        elite.health = 400f;
+        elite.stunRemainingSeconds = 2f;
+        affixes.update(state, 1f);
+        assertEquals(400f, elite.health, 1e-6f, "stun is the window that stops the moss");
+    }
+
+    @Test
+    void cinderhaloBurnsStandingHeroesOnRhythmAndOnlyInsideTheHalo() {
+        GameState state = GameState.newRun(11L);
+        state.hero.maxHealth = 10_000f;
+        state.hero.health = 10_000f;
+        Enemy elite = liveElite(state, "cinderhalo");
+        elite.x = state.hero.x + 40f;
+        elite.y = state.hero.y;
+        elite.damage = 10f;
+        affixes.update(state, 0.3f);
+        assertEquals(10_000f, state.hero.health, "no tick before the rhythm comes due");
+        affixes.update(state, 0.3f);
+        assertTrue(state.hero.health < 10_000f, "one tick at half a second inside the halo");
+        float afterFirstTick = state.hero.health;
+        elite.x = state.hero.x + EliteAffixSystem.CINDERHALO_RADIUS + 60f;
+        affixes.update(state, 1f);
+        assertEquals(afterFirstTick, state.hero.health, 1e-4f, "outside the halo the clock runs cold");
     }
 
     private static Enemy liveElite(GameState state, String affix) {

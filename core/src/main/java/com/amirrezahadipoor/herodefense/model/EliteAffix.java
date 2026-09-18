@@ -3,11 +3,23 @@ package com.amirrezahadipoor.herodefense.model;
 /**
  * The fixed Elite affix pool (Phase 25.2): blightburst explodes on death,
  * rootward_ward periodically shields, weeping_rot leaves a damaging trail.
+ *
+ * <p>Roadmap D2 doubles the pool, but only the deep run sees the new three: the spawner draws from the
+ * first {@link #BASE_POOL_SIZE} until {@code EnemyWaveSpawner.LATE_AFFIX_WAVE}, so every early and mid
+ * roll stays bit-identical to the shipped curve and the frozen balance baseline keeps its meaning.
+ * hollowmolt splits into husks on death, gravemoss regrows its own health, cinderhalo burns whoever
+ * stands too close too long.
  */
 public enum EliteAffix {
     BLIGHTBURST("blightburst"),
     ROOTWARD_WARD("rootward_ward"),
-    WEEPING_ROT("weeping_rot");
+    WEEPING_ROT("weeping_rot"),
+    HOLLOWMOLT("hollowmolt"),
+    GRAVEMOSS("gravemoss"),
+    CINDERHALO("cinderhalo");
+
+    /** How many affixes the shallow run draws from; the enum's first three, in shipped order. */
+    public static final int BASE_POOL_SIZE = 3;
 
     private final String id;
 
