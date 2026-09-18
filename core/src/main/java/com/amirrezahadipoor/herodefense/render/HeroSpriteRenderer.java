@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.render;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
@@ -11,13 +12,31 @@ import com.amirrezahadipoor.herodefense.model.HeroAnimationState;
 import java.util.EnumMap;
 import java.util.Map;
 
-/** Draws the procedural Blender Hero atlas at its fixed gameplay anchor. */
+/**
+ * Draws the procedural Blender Hero atlas wherever the Hero currently stands, plus the wave's step meter under
+ * its feet (roadmap A1).
+ *
+ * <p>The atlas has four clips -- idle, attack, hit and death -- and no walk cycle, so a stepping Hero slides on
+ * the idle pose. That reads as a glide at 165 units a second for a second and a half, which is the length of the
+ * whole budget, and it is the honest option until an art pass adds a fifth clip: inventing a bob in the renderer
+ * would be a second source of truth for where the Hero's feet are, and {@code CeremonyHeroRenderer} matches this
+ * class's geometry on purpose so the hand-off from a ceremony to the combat idle never jumps.
+ *
+ * <p>The meter is drawn only once some of the budget has been spent. An untouched wave therefore renders exactly
+ * the pixels it rendered before the Hero could move, which is what keeps the emulator smoke journeys' reference
+ * brightness measurements meaningful without a re-capture.
+ */
 public final class HeroSpriteRenderer implements AutoCloseable {
     private static final String ATLAS_PATH = "generated/sprites/hero.atlas";
     static final float FRAME_SIZE = 192f;
     static final float FEET_OFFSET_FROM_FRAME_BOTTOM = 23f;
+    /** The meter's box, in world units, centred under the feet. */
+    static final float METER_WIDTH = 84f;
+    static final float METER_HEIGHT = 6f;
+    static final float METER_GAP_BELOW_FEET = 10f;
 
     private final TextureAtlas atlas;
+    private Texture pixel;
     private final Map<HeroAnimationState, Array<TextureAtlas.AtlasRegion>> frames =
         new EnumMap<>(HeroAnimationState.class);
 
@@ -39,6 +58,48 @@ public final class HeroSpriteRenderer implements AutoCloseable {
             FRAME_SIZE,
             FRAME_SIZE
         );
+        drawStepMeter(batch, hero);
+    }
+
+    /**
+     * What is left of this wave's stepping, under the feet, where the player is already looking.
+     *
+     * <p>A budget that empties silently reads as a bug -- the finger drags and the Hero refuses -- so the meter is
+     * the feedback, and it is the only feedback: no floating text (a line over the arena competes with the coach
+     * and the whispers), no haptic (a pulse says "something happened", not "you have 40 units left"). It appears
+     * the moment the first unit is spent and disappears at the next wave, when the budget is full again.
+     */
+    private void drawStepMeter(SpriteBatch batch, Hero hero) {
+        if (hero == null || hero.stepBudgetUnits >= Hero.WAVE_STEP_BUDGET) {
+            return;
+        }
+        float ratio = Math.max(0f, Math.min(1f, hero.stepBudgetUnits / Hero.WAVE_STEP_BUDGET));
+        float x = hero.x - METER_WIDTH * 0.5f;
+        float y = frameY(hero) - METER_GAP_BELOW_FEET;
+        Texture texture = pixelTexture();
+        batch.setColor(0.05f, 0.08f, 0.06f, 0.55f);
+        batch.draw(texture, x - 1.5f, y - 1.5f, METER_WIDTH + 3f, METER_HEIGHT + 3f);
+        // Green while the wave can still be repositioned, amber once the budget is a third spent, and the same
+        // amber at zero rather than a red that would read as damage in a frame full of damage numbers.
+        if (ratio > 0.34f) {
+            batch.setColor(0.56f, 0.87f, 0.53f, 0.92f);
+        } else {
+            batch.setColor(0.95f, 0.76f, 0.36f, 0.92f);
+        }
+        batch.draw(texture, x, y, METER_WIDTH * ratio, METER_HEIGHT);
+        batch.setColor(1f, 1f, 1f, 1f);
+    }
+
+    private Texture pixelTexture() {
+        if (pixel == null) {
+            com.badlogic.gdx.graphics.Pixmap pixmap =
+                new com.badlogic.gdx.graphics.Pixmap(1, 1, com.badlogic.gdx.graphics.Pixmap.Format.RGBA8888);
+            pixmap.setColor(1f, 1f, 1f, 1f);
+            pixmap.fill();
+            pixel = new Texture(pixmap);
+            pixmap.dispose();
+        }
+        return pixel;
     }
 
     static float frameX(Hero hero) {
@@ -62,6 +123,10 @@ public final class HeroSpriteRenderer implements AutoCloseable {
 
     @Override
     public void close() {
+        if (pixel != null) {
+            pixel.dispose();
+            pixel = null;
+        }
         atlas.dispose();
     }
 }

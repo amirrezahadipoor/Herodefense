@@ -10,8 +10,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 
 /**
- * Roadmap R7.1: the five coached steps and the two rules that make them safe to ship — a step ends on its own
- * action or on its own budget, never on anything else.
+ * Roadmap R7.1: the coached steps — six since A1 added the walk — and the two rules that make them safe to ship:
+ * a step ends on its own action or on its own budget, never on anything else.
  */
 final class OnboardingCoachTest {
 
@@ -20,7 +20,7 @@ final class OnboardingCoachTest {
     @Test
     void theWholeLessonFitsInAMinute() {
         assertEquals(60f, OnboardingStep.totalSeconds(), 0.001f,
-            "the onboarding is a sixty-second lesson by definition: five steps, no slack");
+            "the onboarding is a sixty-second lesson by definition: six steps, no slack");
         assertTrue(OnboardingStep.values().length >= 4, "four or more distinct lessons, not one wall of text");
     }
 

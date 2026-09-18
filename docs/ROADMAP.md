@@ -43,12 +43,51 @@ started, `[!]` attempted and failed, with the failure written down.
 
 ## A — moment-to-moment gameplay (62/100, 38 points deducted)
 
-- [ ] **A1 (−18) The Hero cannot move.** Not one assignment to `hero.x` or `hero.y` exists anywhere in
-      `core/src/main`. There is an `EnemyMovementSystem` and no hero equivalent, so the whole spatial layer of
-      the game — positioning, kiting, stepping out of a telegraph — is absent. Decide it deliberately: either
-      build tap-to-move (path, collision, camera, and a re-balance of every melee range that currently assumes a
-      fixed target), or accept a stationary defender and remove the last traces of movement from the coaching,
-      the lore and this file. `OnboardingClaimsTest` now pins the current answer and fails the day it changes.
+- [x] **A1 (−18) The Hero cannot move.** Not one assignment to `hero.x` or `hero.y` existed anywhere in
+      `core/src/main`. Decided deliberately, and built: the Hero steps. `OnboardingClaimsTest` failed on purpose
+      the day the position started being written, which is what it was written to do, and it now guards the new
+      answer instead of the old one.
+      *The gesture.* A drag, not a tap, because a tap was already spoken for — it marks a target for the bow — and
+      because a drag during a wave previously did nothing at all beyond moving a press marker. The walkable band
+      (`WorldLayout.HERO_WALK_*`, x 72–648 / y 168–700 of the 720×1280 frame) is what excludes the HUD: it clears
+      both button rows at every panel shift, and `HeroMovementSystemTest` walks a grid over the band asserting no
+      HUD hit test fires inside it, so a finger on a button walks nobody. Releasing the drag stops the walk where
+      the finger left it.
+      *The bound.* Movement is priced per wave, not per second: 260 units at 165 units/s, a 1.58-second burst,
+      refilled by `startCurrentWave`. A speed limit cannot be both dodge-capable and kite-proof — the slowest body
+      in the game walks at 28 units/s, so a Hero slow enough never to be kited with is too slow to be worth a
+      gesture, and one fast enough to matter outruns half the roster forever. A whole budget buys 9.29 s of
+      distance on the slowest foe and 2.60 s on the fastest, computed in the test from the shipped `EnemyType`,
+      `BossType`, `BossFightScript`, `WaveModifier` and `TrialEffects` tables rather than restated from a comment.
+      `docs/BALANCE.md` carries the table and the argument.
+      *The evidence that did not have to be re-run.* `BalanceSimulator` still anchors the Hero every tick and no
+      simulated policy steps, so every published band still measures a rooted Hero — the floor of player skill —
+      and stepping can only improve on it by less than ten seconds of distance a wave. `HeroMovementSystemTest`
+      pins that too, by asserting the simulator still calls the anchor and never names the movement system.
+      *What stepping buys, measured.* `EnemyMeleeAttackSystem` checks its range against the Hero's live position,
+      so the test plays a swing that lands at the centre and then lands nowhere after a 100-unit step north. The
+      meter under the Hero's feet is drawn only once some budget is spent, which is why an untouched wave renders
+      the pixels it rendered before and the device journeys' reference brightness needed no re-capture — their one
+      swipe is inside the inventory, not the arena.
+      *The coaching.* The drag lesson came back as step 2 of 6 in both languages ("Drag on the ground and the Hero
+      steps there" / «انگشت را روی زمین بکشید تا قهرمان گام بردارد»), reported only when
+      `HeroMovementSystem.orderStepTo` actually took the order, so the lesson cannot complete on a drag that moved
+      nothing. Six budgets still total exactly sixty seconds, which meant shortening the three lessons whose
+      gesture a player either performs at once or never performs.
+      *Cost.* `HeroDefenseGame` grew four lines and no fields (one import, three of comment where the per-frame
+      anchor used to be) and the ratchet records why; everything else landed in files the ratchet does not hold.
+      `GameState` stayed at 635 lines because `Hero.keepAt` — the anchor — now voids a pending step order itself,
+      which is also the correct semantics: a ceremony or a save repair puts the Hero somewhere the player did not
+      ask for, and a stale order should not resume afterwards.
+- [ ] **A5 (no deduction; found while building A1) A boss's special lands wherever the Hero is standing when the
+      telegraph ends.** `BossSpecialAttackSystem.executeOnce` applies all four identities' hits through the damage
+      pipeline with no position test, and `VOID_KNIGHT`'s charge re-places the boss at melee range of the Hero at
+      telegraph time. That was invisible while the Hero could not move; now that it can, a player who learns to
+      step will try to step out of a telegraph and be hit anyway, and the telegraph contract in `docs/BALANCE.md`
+      promises a readable warning rather than an avoidable one. Decide it: either give specials a landed-position
+      test (which re-opens every boss-fight measurement in this file's Phase 91 sections and the 40-encounter
+      table), or state plainly in the coaching and the codex that a special is not dodged and is only braced for.
+      Nothing may claim the step is a dodge until that decision is made.
 - [ ] **A2 (−8) Nothing is actively cast.** All five skills are passive upgrade cards; the only player verbs are
       marking a target and the ultimate. One aimed or timed active ability would add a decision per wave without
       adding content.

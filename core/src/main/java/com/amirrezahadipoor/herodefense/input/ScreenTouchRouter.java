@@ -6,6 +6,7 @@ import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
+import com.amirrezahadipoor.herodefense.gameplay.HeroMovementSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
@@ -180,9 +181,15 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             int pointer
         ) {
             host.uiFrameRenderer().movePress(worldX, worldY);
-            // A drag during a wave moves the press marker and nothing else: it does not aim, fire or walk, so it
-            // is not reported to the first-run coach. The coach used to have a step that waited for exactly this
-            // gesture, and the step could therefore only be completed by accident or by its budget expiring.
+            // A drag during a wave is the Hero stepping (roadmap A1). It still aims nothing and fires nothing:
+            // the bow keeps its own schedule and a tap keeps its own meaning, which is marking a target. The
+            // walkable band is what excludes the HUD, so a drag that begins on a button walks nobody -- and the
+            // order is only reported to the first-run coach when the movement system actually took it, which is
+            // what keeps the coach's second lesson from completing on a drag that moved nothing.
+            if (host.flow().state() == GameScreenState.PLAYING
+                && HeroMovementSystem.orderStepTo(host.gameState(), worldX, worldY)) {
+                host.flow().onboarding().notify(OnboardingAction.HERO_MOVED);
+            }
             if (host.flow().state() == GameScreenState.INVENTORY
                 && host.inventoryTouchController().isOpen()) {
                 host.inventoryTouchController().drag(host.gameState(), deltaY);
@@ -201,6 +208,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
             host.setLastTouchWorldY(worldY);
             host.countHandledTouchUp();
             if (!isTap) {
+                // Releasing a drag ends the step order: the Hero stops where the finger left it rather than
+                // finishing a walk the player is no longer asking for (A1).
+                HeroMovementSystem.cancelOrder(host.gameState());
                 return true;
             }
             boolean cardChoiceTap = host.flow().state() == GameScreenState.CARD_CHOICE

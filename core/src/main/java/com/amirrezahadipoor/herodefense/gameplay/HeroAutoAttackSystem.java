@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Deterministic nearest-target bow attacks for the stationary Hero, extended by the five
+ * Deterministic nearest-target bow attacks for the Hero, extended by the five
  * purchasable skills: Multi Shot volleys, Chain Lightning arcs, stunning arrows, critical
  * mastery, and bonus range. All rolls use the persisted combat RNG.
  */

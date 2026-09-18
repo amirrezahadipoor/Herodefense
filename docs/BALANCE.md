@@ -586,3 +586,42 @@ The third line is the useful one. It says the blocker is not the size of the gif
 trial ceiling that a passing pair already sits within one percent of cannot absorb *any* economy change, which is the
 same missing headroom `R4.6` describes from the curve's side. The rule returns when that headroom exists; the table
 above is what it will be priced against.
+
+## Stepping: the movement budget (roadmap A1)
+
+Until A1 the Hero was re-anchored to the arena centre every simulated frame, so every number in this file was
+measured against a defender that could not be anywhere else. A1 built the walk. It is deliberately small, and the
+smallness is the part that has to stay true:
+
+| quantity | value | where it comes from |
+| --- | --- | --- |
+| step speed | **165 units/s** | `HeroMovementSystem.STEP_SPEED` |
+| budget per wave | **260 units** | `Hero.WAVE_STEP_BUDGET`, refilled by `WaveLifecycleSystem.startCurrentWave` |
+| burst length | **1.58 s** | budget ÷ speed |
+| walkable band | **x 72–648, y 168–700** of the 720×1280 frame | `WorldLayout.HERO_WALK_*` |
+| slowest body in the game | **28 units/s** (BRAMBLE_THRALL) | `EnemyType` |
+| fastest body in the game | **100 units/s** (SAP_HOUND) | `EnemyType` |
+| head start a full budget buys | **9.29 s** on the slowest, **2.60 s** on the fastest | budget ÷ speed |
+
+Three things make that table a bound rather than a hope. `DifficultyCurve.applyToRegularEnemy` scales health and
+damage only, never speed, so 28 units/s is the floor at wave 200 and at tier 10 as well as at wave 1. Every wave
+modifier's `speedMultiplier` is ≥ 1.00 and so is every trial's `enemySpeedMultiplier` -- nothing in the game slows
+the field -- and every `BossFightScript` carries a movement multiplier of exactly 1.00, so the bosses sit between
+34 and 72. `HeroMovementSystemTest` computes all of that from the shipped enums instead of trusting this table, and
+asserts the two consequences: a wave's whole budget buys at most ten seconds of distance on the slowest foe, and
+the step is faster than the fastest one for the length of the burst, so stepping means something.
+
+**The published bands above were not re-measured, and did not need to be.** `BalanceSimulator` still calls
+`GameState.anchorHeroAtArenaCenter` every tick -- a rooted Hero, which is the floor of player skill -- and no
+simulated policy steps, so the 7970 s median, the tier deltas, the non-optimiser's 12/12 and the telegraph contract
+all still describe a player who never moves. Stepping can only improve on that floor, and the improvement is
+capped at under ten seconds of distance per wave. If a future change raises `WAVE_STEP_BUDGET` or lowers an enemy's
+speed, that argument ends and the sweeps have to be re-run; the test that computes the head start is what fails
+first.
+
+What stepping actually buys is measured, not asserted: `EnemyMeleeAttackSystem` checks its range against the Hero's
+live position, so a swing that lands at the arena centre lands nowhere once the Hero has stepped out of reach, and
+`HeroMovementSystemTest` plays exactly that out. What it does not buy is a dodge against a boss's special --
+`BossSpecialAttackSystem.executeOnce` hands the hit to the damage pipeline with no position test, so the telegraph
+warns about damage that stepping does not avoid. That gap is roadmap **A5**, and it is the one number in this
+section that no amount of movement tuning can fix.

@@ -30,6 +30,7 @@ import com.amirrezahadipoor.herodefense.gameplay.CombatEvent;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAttackUpdateResult;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAutoAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroDamageSystem;
+import com.amirrezahadipoor.herodefense.gameplay.HeroMovementSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroUltimateSystem;
 import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
@@ -591,7 +592,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         particleSystem.update(simulationDelta);
         floatingCoinTextSystem.update(simulationDelta);
         floatingDamageTextSystem.update(simulationDelta);
-        gameState.anchorHeroAtArenaCenter();
+        // Roadmap A1: the frame used to re-anchor the Hero to the arena centre here, every tick, which is what
+        // made the defender stationary. Stepping now runs in that slot instead -- before the animation
+        // controller and the field's movement, so everything downstream sees this tick's position.
+        HeroMovementSystem.update(gameState, simulationDelta);
         heroAnimationController.update(gameState.hero, simulationDelta);
         enemyMovementSystem.update(gameState, simulationDelta);
         FocusFireSystem.tick(gameState, simulationDelta);

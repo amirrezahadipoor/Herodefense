@@ -231,7 +231,7 @@ public final class GameState {
         return wave == 50 || wave == 150;
     }
 
-    /** Enforces the stationary-defender rule every simulation tick. */
+    /** Puts the Hero back at the arena centre: ceremonies, save repair, and the simulator's rooted policy. */
     public void anchorHeroAtArenaCenter() {
         if (hero != null) {
             hero.keepAt(ARENA_CENTER_X, ARENA_CENTER_Y);

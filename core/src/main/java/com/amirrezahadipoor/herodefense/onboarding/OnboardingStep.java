@@ -6,12 +6,13 @@ import com.amirrezahadipoor.herodefense.i18n.OnboardingStrings;
 /**
  * The first-run vigil's coaching steps, in order (roadmap R7.1).
  *
- * <p>Five lines, one minute, and each line waits for the thing it describes rather than for a timer: the
+ * <p>Six lines, one minute, and each line waits for the thing it describes rather than for a timer: the
  * player is taught by doing. Two rules keep that from becoming a lecture. Every step carries its own
  * budget, and the coach advances when the budget runs out even if the player never performed the action —
  * a player who ignores the coach entirely must never be trapped by it, which is also what makes the
- * sequence's total a hard sixty seconds. And a step only ever completes on <em>its</em> action: taking a
- * card early does not tick off the targeting lesson.
+ * sequence's total a hard sixty seconds -- a total that stayed at sixty when roadmap A1 added the sixth line,
+ * by shortening the three lessons whose gesture a player either performs at once or never performs. And a step
+ * only ever completes on <em>its</em> action: taking a card early does not tick off the targeting lesson.
  *
  * <p>The words are {@link OnboardingStrings} entries rather than fields of this enum, which is where the
  * locale work (R7.3) said they would end up: the action and the budget are gameplay data and stay here, while
@@ -20,10 +21,12 @@ import com.amirrezahadipoor.herodefense.i18n.OnboardingStrings;
  * display text.
  *
  * <p>What each step waits for is what the game actually does, which is a rule rather than a coincidence:
- * {@code OnboardingClaimsTest} fails if a coached line claims movement or aiming in either language, and fails
- * if anyone ever makes the Hero move without coming back here to teach it. The step that used to wait for a
- * drag now waits for the ultimate, because a drag during a wave aims nothing, fires nothing and moves nothing,
- * and a lesson that can only be completed by its own budget expiring teaches the player that the coach lies.
+ * {@code OnboardingClaimsTest} fails if a coached line promises aiming in either language, fails if the Hero's
+ * position is written anywhere but its own movement system, and fails if the movement lesson stops describing
+ * the gesture the router reports. The drag step is back because a drag now <em>does</em> something: roadmap A1
+ * made it the way the Hero steps. The lesson this file lost on 2026-09-18 was not the gesture, it was the lie --
+ * a step that waits for a drag that changes nothing can only be completed by its own budget expiring, and that
+ * is what teaches a player the coach cannot be trusted.
  */
 public enum OnboardingStep {
     TARGET(
@@ -31,7 +34,14 @@ public enum OnboardingStep {
         OnboardingStrings.TARGET_LINE,
         OnboardingStrings.TARGET_HINT,
         OnboardingAction.TAP_GROUND,
-        12f
+        10f
+    ),
+    MOVE(
+        "move",
+        OnboardingStrings.MOVE_LINE,
+        OnboardingStrings.MOVE_HINT,
+        OnboardingAction.HERO_MOVED,
+        10f
     ),
     ULTIMATE(
         "ultimate",
@@ -45,21 +55,21 @@ public enum OnboardingStep {
         OnboardingStrings.LOOT_LINE,
         OnboardingStrings.LOOT_HINT,
         OnboardingAction.PICKUP_COLLECTED,
-        10f
+        8f
     ),
     CARD(
         "card",
         OnboardingStrings.CARD_LINE,
         OnboardingStrings.CARD_HINT,
         OnboardingAction.CARD_TAKEN,
-        14f
+        12f
     ),
     SHOP(
         "shop",
         OnboardingStrings.SHOP_LINE,
         OnboardingStrings.SHOP_HINT,
         OnboardingAction.SHOP_OPENED,
-        12f
+        8f
     );
 
     private final String id;
@@ -112,7 +122,7 @@ public enum OnboardingStep {
         return this.action == action;
     }
 
-    /** The whole sequence's worst-case duration: five budgets, no slack. */
+    /** The whole sequence's worst-case duration: six budgets, no slack. */
     public static float totalSeconds() {
         float total = 0f;
         for (OnboardingStep step : values()) {

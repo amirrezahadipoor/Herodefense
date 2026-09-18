@@ -18,8 +18,9 @@ import com.amirrezahadipoor.herodefense.onboarding.OnboardingSystem;
  * <p>It is drawn over the running wave rather than as its own screen, because the lessons are about the
  * running wave: the player learns by doing the thing while the enemies are already coming. The banner is a
  * band above the utility row, with the line the coach is waiting for, the hint that says where to do it, a
- * row of pips for the five steps (filled once each is done, and the current one filling with the step's own
- * clock so a player can see that ignoring it is temporary), and the Skip button that ends the lesson.
+ * row of pips, one per step and drawn from the step table rather than from a count written here (filled once
+ * each is done, and the current one filling with the step's own clock so a player can see that ignoring it is
+ * temporary), and the Skip button that ends the lesson.
  */
 public final class OnboardingOverlayRenderer implements AutoCloseable {
     static final float LINE_X = 44f;

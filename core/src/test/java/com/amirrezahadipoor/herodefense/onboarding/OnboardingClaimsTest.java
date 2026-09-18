@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.onboarding;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.i18n.OnboardingStrings;
@@ -19,28 +20,31 @@ import org.junit.jupiter.api.Test;
  * The first-run coach may only describe the game that ships.
  *
  * <p>On 2026-09-18 an audit of the whole tree found that three of the coach's five lines taught mechanics that
- * do not exist. Step one said "Tap empty ground and the Hero walks there", and nothing in {@code core/src/main}
- * writes {@code hero.x} or {@code hero.y} — there is an {@code EnemyMovementSystem} and no hero equivalent. Step
- * two said "Hold and drag to aim — the bow fires while you hold", and a drag during a wave moves a press marker
- * while the bow fires on its own schedule regardless of the finger. Step three said drops come to the player
- * "when you walk near them", and {@code DropPickupSystem} homes every drop in after a short delay. Each step
- * also <em>completed</em> on the gesture it described, so a player was told something false and then marked as
- * having learned it, in both languages, twelve seconds into their first run.
+ * did not exist. Step one said "Tap empty ground and the Hero walks there", and nothing in {@code core/src/main}
+ * wrote {@code hero.x} or {@code hero.y} -- there was an {@code EnemyMovementSystem} and no hero equivalent. Step
+ * two said "Hold and drag to aim -- the bow fires while you hold", and a drag during a wave moved a press marker
+ * while the bow fired on its own schedule regardless of the finger. Step three said drops come to the player
+ * "when you walk near them", and {@code DropPickupSystem} homes every drop in after a short delay. Each step also
+ * <em>completed</em> on the gesture it described, so a player was told something false and then marked as having
+ * learned it, in both languages, twelve seconds into their first run.
  *
- * <p>Nothing in the suite caught that, because every existing check verified the table's shape — both languages
- * present, placeholders matching, glyphs drawable — and a well-formed lie passes all of them. So this class
- * checks the claims instead, in the three directions that matter:
+ * <p>Nothing in the suite caught that, because every existing check verified the table's shape -- both languages
+ * present, placeholders matching, glyphs drawable -- and a well-formed lie passes all of them. So this class was
+ * written to check the claims instead, and it asserted the absence of movement on purpose: the day the Hero could
+ * walk, the assertion would fail and whoever built the legs would have to come here and teach them.
+ *
+ * <p>That day was the same day, later in the audit's wake: roadmap A1 built drag-to-step movement, and this file
+ * now guards the new answer rather than the old one. Three claims are checked, and each one is a claim about code
+ * rather than about wording:
  *
  * <ol>
- *   <li>no coached line, in either language, promises movement or aiming;</li>
- *   <li>the fact those words would contradict is still true: the playable Hero's position is never written;</li>
- *   <li>every action a step waits for is one some code path actually reports, so no lesson can only be finished
- *       by its own budget expiring.</li>
+ *   <li>no coached line, in either language, promises aiming or firing by hand -- the bow is still automatic and
+ *       still decides its own target order, so this half of the old lie stays banned;</li>
+ *   <li>the Hero's position is written in exactly two files, its own model and its movement system, so the coach
+ *       cannot be describing a walk that some other code path performs differently;</li>
+ *   <li>the movement lesson names the gesture the router actually reports, and every action a step waits for is
+ *       one some code path produces, so no lesson can only be finished by its own budget expiring.</li>
  * </ol>
- *
- * <p>If hero movement is ever built — roadmap item A1, the largest single deduction in the 2026-09-18 audit —
- * the second assertion fails on purpose. That is the point: the coach and the game were allowed to disagree for
- * however long they disagreed, and this test is what makes the disagreement noisy.
  */
 final class OnboardingClaimsTest {
 
@@ -50,30 +54,42 @@ final class OnboardingClaimsTest {
     private static final Path ANDROID_SOURCES =
         Path.of("..", "android", "src", "main", "java").normalize();
 
-    /**
-     * Words that promise the player can move or aim. Deliberately blunt: the coach has five short lines and none
-     * of them needs any of these to describe a game where the Hero stands still and the bow fires itself.
-     */
-    private static final List<String> ENGLISH_CLAIMS = List.of("walk", "drag", "aim", "move", "step closer");
+    private static final Path ROUTER = MAIN_SOURCES.resolve(
+        "com/amirrezahadipoor/herodefense/input/ScreenTouchRouter.java");
 
-    /** The same promises in Persian, including the exact wordings that shipped before they were corrected. */
-    private static final List<String> PERSIAN_CLAIMS =
-        List.of("برود", "بکشید", "نشانه", "حرکت", "راه رفتن", "بدوید", "بروید", "نزدیکشان شوید");
+    /**
+     * Words that promise the player aims or fires by hand. Movement words are no longer banned: roadmap A1 made
+     * the drag the way the Hero steps, and {@link #theMovementLessonNamesTheGestureTheRouterReports} checks that
+     * the lesson and the code agree instead of forbidding the subject.
+     */
+    private static final List<String> ENGLISH_AIM_CLAIMS =
+        List.of("aim", "fires while you hold", "hold to fire", "shoot where", "steer");
+
+    /** The same promises in Persian, including the wording that shipped before it was corrected. */
+    private static final List<String> PERSIAN_AIM_CLAIMS = List.of("نشانه", "هدف گیری", "شلیک با کشیدن");
 
     /** An assignment to the playable Hero's position, plain or compound: {@code hero.x = 1f}, {@code hero.y += v}. */
     private static final Pattern HERO_POSITION_WRITE = Pattern.compile("\\bhero\\.(x|y)\\s*(\\+|-|\\*|/)?=[^=]");
 
+    /**
+     * The only two files allowed to write the Hero's position: the movement system that owns stepping, and the
+     * model's own {@code keepAt}, which is how the game -- a ceremony, a save repair, the simulator's rooted
+     * policy -- puts the Hero somewhere the player did not ask for.
+     */
+    private static final List<String> POSITION_WRITERS =
+        List.of("HeroMovementSystem.java", "Hero.java");
+
     @Test
-    void noCoachedLinePromisesMovementOrAiming() {
+    void noCoachedLinePromisesAimingOrFiringByHand() {
         List<String> problems = new ArrayList<>();
         for (OnboardingStrings entry : OnboardingStrings.values()) {
             String english = entry.english().toLowerCase(Locale.ROOT);
-            for (String claim : ENGLISH_CLAIMS) {
+            for (String claim : ENGLISH_AIM_CLAIMS) {
                 if (english.contains(claim)) {
                     problems.add(entry.key() + " promises \"" + claim + "\" in English: " + entry.english());
                 }
             }
-            for (String claim : PERSIAN_CLAIMS) {
+            for (String claim : PERSIAN_AIM_CLAIMS) {
                 if (entry.persian().contains(claim)) {
                     problems.add(entry.key() + " promises \"" + claim + "\" in Persian: " + entry.persian());
                 }
@@ -81,12 +97,12 @@ final class OnboardingClaimsTest {
         }
         assertTrue(problems.isEmpty(), () -> String.join(System.lineSeparator(), problems)
             + System.lineSeparator()
-            + "The Hero cannot move and a drag aims nothing, so the coach may not say either. If that has"
-            + " changed, the code moved before this test did: see the assertion below.");
+            + "The bow fires itself at whatever a tap marked. A coached line that says otherwise is the exact"
+            + " falsehood this class was written for.");
     }
 
     @Test
-    void thePlayableHeroPositionIsNeverWritten() {
+    void theHeroPositionIsWrittenInExactlyTwoFiles() {
         List<String> writes = new ArrayList<>();
         for (Path root : List.of(MAIN_SOURCES, ANDROID_SOURCES)) {
             try (Stream<Path> files = Files.walk(root)) {
@@ -94,19 +110,51 @@ final class OnboardingClaimsTest {
                     String source = read(path);
                     var matcher = HERO_POSITION_WRITE.matcher(source);
                     while (matcher.find()) {
-                        int line = 1 + (int) source.substring(0, matcher.start()).chars().filter(c -> c == '\n').count();
-                        writes.add(path + ":" + line + " " + matcher.group().trim());
+                        int line = 1 + (int) source.substring(0, matcher.start())
+                            .chars().filter(c -> c == '\n').count();
+                        writes.add(path.getFileName() + ":" + line + " " + matcher.group().trim());
+                        String name = String.valueOf(path.getFileName());
+                        assertTrue(POSITION_WRITERS.contains(name),
+                            "the Hero's position is written outside its movement system: " + path + ":" + line
+                                + System.lineSeparator()
+                                + "Stepping is one system with one budget and one clamp. A second writer means a"
+                                + " second idea of where the Hero may stand, and the coach, the meter and the"
+                                + " walkable band all describe the first one.");
                     }
                 });
             } catch (IOException e) {
                 throw new UncheckedIOException("cannot walk " + root.toAbsolutePath(), e);
             }
         }
-        assertTrue(writes.isEmpty(), () -> "the Hero now moves: " + writes
-            + System.lineSeparator()
-            + "That is roadmap item A1, and it is welcome — but the coach spent its whole life claiming a walk"
-            + " that did not exist, so teach the real movement first, then delete this assertion and the"
-            + " movement words it guards in noCoachedLinePromisesMovementOrAiming.");
+        assertTrue(writes.stream().anyMatch(write -> write.startsWith("HeroMovementSystem.java")),
+            "the movement system no longer writes hero.x or hero.y, so the Hero cannot move and this whole"
+                + " vocabulary is stale again: " + writes);
+    }
+
+    @Test
+    void theMovementLessonNamesTheGestureTheRouterReports() {
+        OnboardingStep move = OnboardingStep.MOVE;
+        assertEquals(OnboardingAction.HERO_MOVED, move.action(),
+            "the movement lesson completes on a real step order, not on any finger movement");
+        String shown = move.line();
+        assertTrue(shown.equals(OnboardingStrings.MOVE_LINE.english())
+                || shown.equals(OnboardingStrings.MOVE_LINE.persian()),
+            "the movement lesson shows the movement line, in one of the two languages: " + shown);
+        assertTrue(OnboardingStrings.MOVE_LINE.english().toLowerCase(Locale.ROOT).contains("drag")
+                && OnboardingStrings.MOVE_LINE.persian().contains("بکشید"),
+            "and it has to name it in both languages, because a Persian player who is told to tap will tap and"
+                + " the Hero will stand still: " + OnboardingStrings.MOVE_LINE.persian());
+
+        String router = read(ROUTER);
+        int from = router.indexOf("public boolean onTouchDragged");
+        assertTrue(from >= 0, "the router no longer has a drag handler, so nothing can report HERO_MOVED");
+        int to = router.indexOf("@Override", from);
+        String dragHandler = router.substring(from, to < 0 ? router.length() : to);
+        assertTrue(dragHandler.contains("HeroMovementSystem.orderStepTo"),
+            "the drag handler has to be the thing that orders the step");
+        assertTrue(dragHandler.contains("OnboardingAction.HERO_MOVED"),
+            "and it has to report the lesson from inside the same handler, or the step teaches a gesture the"
+                + " game does not connect to walking");
     }
 
     @Test

@@ -51,6 +51,9 @@ public final class WaveLifecycleSystem {
             );
         }
         state.waveActive = true;
+        // A1: each wave grants its own stepping budget, so the defender is never rooted for the run by a wave
+        // that spent everything, and never carries a surplus into the next one either.
+        HeroMovementSystem.beginWave(state);
         return true;
     }
 

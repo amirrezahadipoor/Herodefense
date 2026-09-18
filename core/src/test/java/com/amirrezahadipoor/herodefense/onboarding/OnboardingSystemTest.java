@@ -100,8 +100,9 @@ final class OnboardingSystemTest {
         system.beginIfUnseen(false);
         GameState state = GameState.newRun(0x4845524F444546L);
         system.observe(state);
-        // Target and ultimate first: the coach is strict about order.
+        // Target, step and ultimate first: the coach is strict about order, and A1 put the walk second.
         system.notify(OnboardingStep.TARGET.action());
+        system.notify(OnboardingStep.MOVE.action());
         system.notify(OnboardingStep.ULTIMATE.action());
         assertEquals(OnboardingStep.LOOT, system.currentStep());
         system.observe(state);
