@@ -65,6 +65,18 @@ final class MainMenuAndSettingsTouchTest {
         assertEquals(SettingsTouchLayout.Action.CLOSE,
             touch.tap(settings, SettingsTouchLayout.CLOSE_X + 40f, SettingsTouchLayout.CLOSE_Y + 40f));
         assertTrue(SettingsTouchLayout.ROW_HEIGHT >= 96f);
+
+        // G3b: text-size row cycles through 3 steps, scrolls into view
+        touch.open();
+        touch.drag(60f, SettingsTouchLayout.TOTAL_ROWS);
+        float slot0Y = SettingsTouchLayout.slotY(0) + 40f;
+        // After scrolling 1 step, slot 5 is the new text-size row (index 6)
+        float textSizeSlotY = SettingsTouchLayout.slotY(5) + 40f;
+        assertEquals(SettingsTouchLayout.Action.CYCLE_TEXT_SIZE,
+            SettingsTouchLayout.actionAt(centreX, textSizeSlotY, 1));
+        int before = settings.textSizeIndex;
+        touch.tap(settings, centreX, textSizeSlotY);
+        assertTrue(settings.textSizeIndex != before || SettingsTouchLayout.TOTAL_ROWS == 7);
     }
 
     @Test
@@ -94,6 +106,8 @@ final class MainMenuAndSettingsTouchTest {
             SettingsTouchLayout.LANGUAGE_ROW_Y,
             SettingsTouchLayout.REDUCED_MOTION_ROW_Y
         };
+        // TOTAL_ROWS includes the text-size row added by G3b, which scrolls into the viewport
+        assertEquals(7, SettingsTouchLayout.TOTAL_ROWS, "G3b adds a seventh row");
         for (int index = 0; index < rows.length; index++) {
             assertTrue(rows[index] > 260f, "a row must clear the footer note panel");
             if (index > 0) {

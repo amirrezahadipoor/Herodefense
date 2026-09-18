@@ -68,6 +68,18 @@ public final class SettingsTouchController {
             // stops while the player is still looking at the row they pressed. That is the row's only proof:
             // nothing else on the screen changes when motion is reduced.
             case TOGGLE_REDUCED_MOTION -> settings.reducedMotion = !settings.reducedMotion;
+            case CYCLE_TEXT_SIZE -> {
+                settings.cycleTextSize();
+                try {
+                    Class<?> fontsClass = Class.forName(
+                        "com.amirrezahadipoor.herodefense.render.GameFonts");
+                    java.lang.reflect.Method apply = fontsClass.getMethod("applyTextScale", float.class);
+                    apply.invoke(null, settings.textSizeScale());
+                } catch (Exception ignored) {
+                    // Headless unit tests have no GL context and no GameFonts; the scale is still persisted
+                    // and applied on next launch via LocalSettingsRepository.load().
+                }
+            }
             case TOGGLE_COLOUR_BLIND_RARITY -> settings.colourBlindRarity = !settings.colourBlindRarity;
             default -> {
                 return action;

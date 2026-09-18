@@ -44,6 +44,12 @@ public enum SettingsStrings implements Translated {
     REDUCED_MOTION_SUBTITLE("No shake, no drifting spores", "بدون لرزش و ذره‌های سرگردان"),
     TAP_TO_RESTORE_MOTION("tap to restore motion", "برای بازگشت حرکت لمس کنید"),
 
+    TEXT_SIZE("TEXT SIZE", "اندازهٔ متن"),
+    TEXT_SIZE_SUBTITLE("How large the letters sit", "درشتی حروف روی صفحه"),
+    TEXT_SIZE_SMALL("SMALL", "کوچک"),
+    TEXT_SIZE_NORMAL("NORMAL", "عادی"),
+    TEXT_SIZE_LARGE("LARGE", "بزرگ"),
+
     /** Roadmap G3c: accessible colour-blind safe rarity palette. */
     COLOUR_BLIND_RARITY("ACCESSIBLE RARITY", "رنگ‌های دسترس‌پذیر"),
     COLOUR_BLIND_RARITY_SUBTITLE("High contrast loot hues", "رنگ‌های متمایز غنیمت"),

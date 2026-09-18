@@ -47,6 +47,47 @@ public final class GameSettings {
     public GameLanguage language = GameLanguage.ENGLISH;
 
     /**
+     * Text size (roadmap G3b): three named steps that scale every typographic role. Device-local like the
+     * volumes, because it is about the player and not the run. 0.85/1.0/1.18 are the shipped scales — small
+     * enough that a larger face never clips a row laid out for a smaller one (checked in
+     * SettingsTextFitTest), large enough that the difference is readable at arm's length.
+     */
+    private static final float[] TEXT_SCALES = {0.85f, 1.0f, 1.18f};
+
+    private static final SettingsStrings[] TEXT_SIZE_LABELS = {
+        SettingsStrings.TEXT_SIZE_SMALL, SettingsStrings.TEXT_SIZE_NORMAL, SettingsStrings.TEXT_SIZE_LARGE
+    };
+
+    public int textSizeIndex = 1;
+
+    public static int textSizeCount() {
+        return TEXT_SCALES.length;
+    }
+
+    public static float textScaleValue(int index) {
+        if (index < 0) return TEXT_SCALES[0];
+        return TEXT_SCALES[Math.min(index, TEXT_SCALES.length - 1)];
+    }
+
+    public float textSizeScale() {
+        return textScaleValue(textSizeIndex);
+    }
+
+    public String textSizeLabel() {
+        if (textSizeIndex < 0) return GameLocale.text(TEXT_SIZE_LABELS[0]);
+        return GameLocale.text(TEXT_SIZE_LABELS[Math.min(textSizeIndex, TEXT_SIZE_LABELS.length - 1)]);
+    }
+
+    public String cycleTextSize() {
+        textSizeIndex = (textSizeIndex + 1) % TEXT_SCALES.length;
+        return textSizeLabel();
+    }
+
+    public void normalizeTextSize() {
+        if (textSizeIndex < 0 || textSizeIndex >= TEXT_SCALES.length) textSizeIndex = 1;
+    }
+
+    /**
      * Effect and music level, as one of three named steps (roadmap R6.4). Three taps cycle them because the
      * settings surface is touch-only with no drag handles; the numbers are here so the audio layer has one
      * source for "how loud is loud" and the screen has one source for the label.

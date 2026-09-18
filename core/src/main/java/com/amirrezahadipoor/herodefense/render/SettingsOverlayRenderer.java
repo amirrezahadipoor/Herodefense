@@ -24,9 +24,9 @@ import com.amirrezahadipoor.herodefense.settings.GameSettings;
  * it. It is also the screen that mirrors: every element is placed by {@link UiMirror} rather than by a number,
  * so its rows read from the right in Persian and its close button is where the finger finds it.
  *
- * <p>The row is drawn with each language's own name for itself -- "English" and "فارسی" -- rather than the
+ * <p>The row is drawn with each language's own name for itself -- \"English\" and \"فارسی\" -- rather than the
  * current language's word for it. A player reading a screen they do not understand is looking for the word they
- * recognise, and "Persian" is not it.
+ * recognise, and \"Persian\" is not it.
  */
 public final class SettingsOverlayRenderer implements AutoCloseable {
     static final float CLOSE_X = 570f;
@@ -235,6 +235,15 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             }
             case 6 -> {
                 UiFrameRenderer.State state = frames.resolve(
+                    true, true, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
+                );
+                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
+                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true, true);
+                drawTextSize(batch, settings, y, state);
+            }
+            case 7 -> {
+                UiFrameRenderer.State state = frames.resolve(
                     true, settings.colourBlindRarity, SettingsTouchLayout.ROW_X, y,
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
                 );
@@ -260,7 +269,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     }
 
     /**
-     * A toggle row, with the hint it shows while it is on chosen by the caller: "tap to mute" is right for the
+     * A toggle row, with the hint it shows while it is on chosen by the caller: \"tap to mute\" is right for the
      * two audio rows and wrong for reduced motion, where on is the calm state and the way back is what the
      * player might want. The offsets are the row's own -- 90f and 46f of a 130f row are where 104f and 54f of
      * the 150f row were -- and they moved with the row instead of being left floating inside a shorter frame.
@@ -301,6 +310,22 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             y + 46f + offset, 0.62f, OverlayText.SUBTLE);
     }
 
+    private void drawTextSize(
+        SpriteBatch batch,
+        GameSettings settings,
+        float y,
+        UiFrameRenderer.State state
+    ) {
+        float offset = MainMenuRenderer.pressedOffset(state);
+        rowTitle(batch, GameLocale.text(SettingsStrings.TEXT_SIZE), y + 90f + offset, 1.16f,
+            OverlayText.IVORY);
+        rowTitle(batch, GameLocale.text(SettingsStrings.TEXT_SIZE_SUBTITLE), y + 46f + offset,
+            0.68f, OverlayText.SUBTLE);
+        rowValue(batch, settings.textSizeLabel(), y + 84f + offset, 1.06f, OverlayText.GOLD);
+        rowValue(batch, GameLocale.text(SettingsStrings.TAP_TO_STEP),
+            y + 46f + offset, 0.62f, OverlayText.SUBTLE);
+    }
+
     /**
      * The language row. It is drawn like the level rows -- title and subtitle on the left, current value and the
      * hint on the right -- because a player who has read four rows already knows what the fifth one does.
@@ -324,7 +349,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     /**
      * A row's two leading lines and its two trailing ones. All six rows call these rather than drawing at a
      * number, because the number is a sum of the row's edge and an inset and only the inset survives mirroring:
-     * 136f means "36f in from the left" in English and would mean the same in Persian, which is the wrong side.
+     * 136f means \"36f in from the left\" in English and would mean the same in Persian, which is the wrong side.
      */
     private void rowTitle(SpriteBatch batch, String value, float y, float scale, Color color) {
         text.drawLeading(batch, value, SettingsTouchLayout.ROW_X, SettingsTouchLayout.ROW_WIDTH,

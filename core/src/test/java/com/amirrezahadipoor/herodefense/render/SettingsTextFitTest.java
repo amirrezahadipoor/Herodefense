@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test;
  */
 final class SettingsTextFitTest {
 
-    /** The row subtitles: left column of a line whose right column holds the tap hint. */
+    /** The eight row subtitles: left column of a line whose right column holds the tap hint. */
     private static final List<SettingsStrings> ROW_SUBTITLES = List.of(
         SettingsStrings.SOUND_EFFECTS_SUBTITLE,
         SettingsStrings.MUSIC_SUBTITLE,
@@ -36,6 +36,7 @@ final class SettingsTextFitTest {
         SettingsStrings.MUSIC_LEVEL_SUBTITLE,
         SettingsStrings.LANGUAGE_SUBTITLE,
         SettingsStrings.REDUCED_MOTION_SUBTITLE,
+        SettingsStrings.TEXT_SIZE_SUBTITLE,
         SettingsStrings.COLOUR_BLIND_RARITY_SUBTITLE
     );
 

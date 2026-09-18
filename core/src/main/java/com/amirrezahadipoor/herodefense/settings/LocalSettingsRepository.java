@@ -18,6 +18,7 @@ public final class LocalSettingsRepository {
     private static final String LANGUAGE_KEY = "display.language";
     private static final String REDUCED_MOTION_KEY = "display.reducedMotion";
     private static final String COLOUR_BLIND_RARITY_KEY = "display.colourBlindRarity";
+    private static final String TEXT_SIZE_KEY = "display.textSize";
     private final Preferences preferences;
 
     public LocalSettingsRepository(Preferences preferences) {
@@ -43,8 +44,19 @@ public final class LocalSettingsRepository {
         // them, and this is the only place it happens other than the settings row that changes it.
         settings.reducedMotion = preferences.getBoolean(REDUCED_MOTION_KEY, false);
         settings.colourBlindRarity = preferences.getBoolean(COLOUR_BLIND_RARITY_KEY, false);
+        settings.textSizeIndex = preferences.getInteger(TEXT_SIZE_KEY, settings.textSizeIndex);
+        settings.normalizeTextSize();
         settings.language = GameLanguage.fromCode(preferences.getString(LANGUAGE_KEY, settings.language.code()));
         GameLocale.use(settings.language);
+        try {
+            Class<?> fontsClass = Class.forName(
+                "com.amirrezahadipoor.herodefense.render.GameFonts");
+            java.lang.reflect.Method apply = fontsClass.getMethod("applyTextScale", float.class);
+            apply.invoke(null, settings.textSizeScale());
+        } catch (Exception ignored) {
+            // Headless tests and early startup have no GL context; the scale is still remembered and will
+            // be applied when GameFonts.shared() is first created via its DisplayMetrics path.
+        }
         return settings;
     }
 
@@ -60,6 +72,7 @@ public final class LocalSettingsRepository {
         preferences.putFloat(SOUND_VOLUME_KEY, settings.soundVolume);
         preferences.putBoolean(REDUCED_MOTION_KEY, settings.reducedMotion);
         preferences.putBoolean(COLOUR_BLIND_RARITY_KEY, settings.colourBlindRarity);
+        preferences.putInteger(TEXT_SIZE_KEY, settings.textSizeIndex);
         preferences.putString(LANGUAGE_KEY, settings.language.code());
         preferences.flush();
     }

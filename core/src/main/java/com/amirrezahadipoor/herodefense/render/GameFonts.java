@@ -78,6 +78,7 @@ public final class GameFonts implements AutoCloseable {
     static final String PERSIAN_CHARACTERS = persianCharacters();
 
     private static GameFonts shared;
+    private static float pendingTextScale = 1.0f;
 
     /** The libGDX application whose GL context owns the glyph textures. */
     private final Application owner = Gdx.app;
@@ -88,6 +89,11 @@ public final class GameFonts implements AutoCloseable {
     private final BitmapFont[][] fonts =
         new BitmapFont[GameLanguage.values().length][Role.values().length];
     private DisplayMetrics metrics;
+    private float textScale;
+
+    private static float effectivePendingScale() {
+        return pendingTextScale;
+    }
 
     private GameFonts() {
         FreeTypeFontGenerator.setMaxTextureSize(2048);
@@ -95,6 +101,7 @@ public final class GameFonts implements AutoCloseable {
         extraBold = new FreeTypeFontGenerator(Gdx.files.internal(EXTRA_BOLD_PATH));
         persianBold = new FreeTypeFontGenerator(Gdx.files.internal(PERSIAN_BOLD_PATH));
         persianExtraBold = new FreeTypeFontGenerator(Gdx.files.internal(PERSIAN_EXTRA_BOLD_PATH));
+        textScale = effectivePendingScale();
         rebuild(new DisplayMetrics(
             Gdx.graphics.getBackBufferWidth(),
             Gdx.graphics.getBackBufferHeight(),
@@ -129,6 +136,10 @@ public final class GameFonts implements AutoCloseable {
             && metrics.screenHeight() == newMetrics.screenHeight()) {
             return;
         }
+        rebuildForced(newMetrics);
+    }
+
+    private void rebuildForced(DisplayMetrics newMetrics) {
         metrics = newMetrics;
         for (GameLanguage language : GameLanguage.values()) {
             for (Role role : Role.values()) {
@@ -137,6 +148,28 @@ public final class GameFonts implements AutoCloseable {
                 fonts[language.ordinal()][role.ordinal()] = generate(role, language);
             }
         }
+    }
+
+    public void setTextScale(float scale) {
+        float clamped = Math.max(0.5f, Math.min(2.0f, scale));
+        if (Math.abs(clamped - textScale) < 0.001f) return;
+        textScale = clamped;
+        pendingTextScale = clamped;
+        if (metrics != null) {
+            DisplayMetrics current = metrics;
+            metrics = null;
+            rebuildForced(current);
+        }
+    }
+
+    public float textScale() {
+        return textScale;
+    }
+
+    public static void applyTextScale(float scale) {
+        float clamped = Math.max(0.5f, Math.min(2.0f, scale));
+        pendingTextScale = clamped;
+        if (shared != null) shared.setTextScale(clamped);
     }
 
     /** The English face, which is what every call site asked for before the game had two languages. */
@@ -155,8 +188,12 @@ public final class GameFonts implements AutoCloseable {
 
     /** World-unit glyph size for a role on the current panel; pure so tests can lock the contract. */
     static float worldSizeFor(Role role, DisplayMetrics metrics) {
-        float natural = metrics.worldUnitsForDp(role.sp);
-        float floor = MIN_WORLD_SIZE * role.sp / Role.CAPTION.sp;
+        return worldSizeFor(role, metrics, 1.0f);
+    }
+
+    static float worldSizeFor(Role role, DisplayMetrics metrics, float textScale) {
+        float natural = metrics.worldUnitsForDp(role.sp) * textScale;
+        float floor = MIN_WORLD_SIZE * role.sp / Role.CAPTION.sp * textScale;
         float ceiling = floor * MAX_WORLD_SIZE_FACTOR;
         return Math.max(floor, Math.min(ceiling, natural));
     }
@@ -191,7 +228,7 @@ public final class GameFonts implements AutoCloseable {
     }
 
     private BitmapFont generate(Role role, GameLanguage language) {
-        float worldSize = worldSizeFor(role, metrics);
+        float worldSize = worldSizeFor(role, metrics, textScale);
         FreeTypeFontGenerator.FreeTypeFontParameter parameter =
             new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = metrics.glyphPixelsForWorldUnits(worldSize);

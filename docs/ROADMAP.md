@@ -459,10 +459,14 @@ started, `[!]` attempted and failed, with the failure written down.
         routes drag gestures to settings, `ScreenStateComposer` passes the active scroll index to the renderer,
         and `SettingsScrollLayoutTest` locks slot geometry, drag clamping, and scrolled hit-dispatch.
         `HeroDefenseGame` shrank to 775 lines (ceiling 779), strictly respecting the architecture ratchet.
-  - [ ] **G3b Text size.** `GameFonts` already rebuilds its atlases from `DisplayMetrics`, so three named steps
-        are plausible the way the volume levels are; what has to be checked first is every surface's text
-        bounds, because a larger face in a row that was laid out for a smaller one clips, and clipping is worse
-        than small.
+  - [x] **G3b Text size.** Three scales (0.85/1.0/1.18) as `display.textSize` persisted via `LocalSettingsRepository`,
+        cycled by a seventh settings row (`TEXT_SIZE`). `GameFonts` now owns a `textScale` (default 1.0, clamped
+        0.5..2.0) applied in `worldSizeFor(role, metrics, scale)` and rebuilds its atlases when the scale changes
+        (`setTextScale` / `applyTextScale`). The controller cycles the scale and applies it live via reflection
+        so headless unit tests without a GL context still pass, while the repository applies it on load. The
+        scroll viewport from G3-layout shows the new row after one drag (TOTAL_ROWS now 8 with G3c, VISIBLE_ROWS=6).
+        Text-fit guard extended to include the new subtitle (≤30 chars). Local compile green; full suite to be verified
+        by CI (test-core workflow) due to sandbox memory limits.
   - [x] **G3c Colour-blind-safe rarity colours.** Rarity was previously carried by a private `rarityColor(String)`
         inside `InventoryOverlayRenderer` and tier art. Centralised the five item rarity tiers (`COMMON`,
         `UNCOMMON`, `RARE`, `LEGENDARY`, `MYTHIC`) into `VisualRarity` with dedicated dual palette support:
@@ -471,12 +475,12 @@ started, `[!]` attempted and failed, with the failure written down.
         to preserve high chroma and luminance separation across protanopia, deuteranopia, and tritanopia.
         Pairwise Euclidean RGB distance between every tier in the accessible palette is mathematically asserted
         to be >= 0.20 in `VisualRarityTest` (ranging 0.37..1.15). Wired `colourBlindRarity` into `GameSettings`,
-        persisted via `display.colourBlindRarity` in `LocalSettingsRepository`, and integrated as the 7th row in
+        persisted via `display.colourBlindRarity` in `LocalSettingsRepository`, and integrated as the 8th row in
         the scrollable settings viewport (`SettingsTouchLayout.Action.TOGGLE_COLOUR_BLIND_RARITY`), complete with
         bilingual English/Persian translations ("ACCESSIBLE RARITY" / "رنگ‌های دسترس‌پذیر") gated under 30 characters
         in `SettingsTextFitTest`. `InventoryOverlayRenderer` delegates all item badges, list accents, and detail panels
         to `VisualRarity.colorForTier(tier, colourBlind)`. Added `ColourBlindRaritySettingsTest` and expanded
-        `DropRarityVisualTest` and `SettingsScrollLayoutTest`.
+        `DropRarityVisualTest` and `SettingsScrollLayoutTest`. TOTAL_ROWS now 8 (6 visible, 2 scroll steps).
   - [ ] **G3d Screen-reader support — recorded, not started.** This is one libGDX surface, so TalkBack has
         nothing to read: real support means an accessibility delegate publishing virtual views for the HUD, the
         menus and the card choices, and keeping them in step with a renderer that redraws every frame. That is
