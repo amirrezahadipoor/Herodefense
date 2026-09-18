@@ -11,8 +11,11 @@ There are intentionally no desktop, iOS, or browser modules. Input is touch-only
 
 ## Where the project stands
 
-[`docs/ROADMAP_TO_1000.md`](docs/ROADMAP_TO_1000.md) is the plan and the work log. Every item carries its own
-evidence, and the dated log at the end records what failed as well as what shipped.
+[`docs/RULES.md`](docs/RULES.md) is the seven standing rules the work is done under -- no fake evidence, no
+weakened test, generated numbers, one item per commit pushed immediately, failures recorded, no completion
+claim on prose alone, nothing designed around revenue. The roadmap those rules came from was deleted on
+2026-09-18 at the owner's direction, along with its 1,511-line progress log; the work itself is in the tree and
+the gates that keep it honest are the tests, `tools/` and the CI workflows.
 
 The repository was measured three times against the same ten-category, 920-point rubric: **505** on 2026-09-16,
 **731** on 2026-09-17, and **777** on 2026-09-18 at commit `bf3776e`. The roadmap's Gate 1 asks for ≥ 900, so

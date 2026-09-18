@@ -37,7 +37,6 @@ ENVIRONMENT = PERF_DIR / "ENVIRONMENT.md"
 #: Documents (or directories) allowed to state numbers without a citation, each with its reason. An
 #: exemption that cannot be explained is a hole in the rule.
 EXEMPT = {
-    "ROADMAP_TO_1000.md": "the plan and the work log: it quotes the audit and names target budgets",
     "art_reviews/": "per-batch review records: dated summaries of one render batch, backed by that batch's "
                     "tools, its review sheet and docs/asset_hashes.json rather than by a run in docs/perf",
 }

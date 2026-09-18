@@ -8,7 +8,7 @@ what makes that a rule instead of a habit:
 * ``docs/playtests/sessions.json`` -- one record per played session, with the build it ran, who played, what they
   were asked to do, and the measurements the session produced.
 * ``docs/playtests/findings.json`` -- one record per finding, each one pointing at a roadmap item id that exists in
-  ``docs/ROADMAP_TO_1000.md``. A finding that is "fixed" must name the commit; a finding that is "accepted" must
+  ``docs/RULES.md``. A finding that is "fixed" must name the commit; a finding that is "accepted" must
   name the reason it was accepted instead of fixed.
 
 Run it from the repository root:
@@ -30,7 +30,6 @@ import sys
 REPOSITORY = pathlib.Path(__file__).resolve().parents[2]
 LEDGER = pathlib.Path("docs") / "playtests" / "sessions.json"
 FINDING_LEDGER = pathlib.Path("docs") / "playtests" / "findings.json"
-ROADMAP = pathlib.Path("docs") / "ROADMAP_TO_1000.md"
 RECORD_SCHEMA = "herodefense.run-record/1"
 
 SESSION_FIELDS = {
@@ -99,8 +98,15 @@ def check_record(problems, path, root, record, fields, label):
 
 
 def roadmap_items(root: pathlib.Path):
-    text = (root / ROADMAP).read_text(encoding="utf-8")
-    return set(re.findall(r"\*\*(R\d+\.\d+)", text))
+    """The plan's item ids -- empty, because the plan is gone.
+
+    ``docs/ROADMAP_TO_1000.md`` was deleted on 2026-09-18 at the owner's direction and only its standing rules
+    survive, as ``docs/RULES.md``, which holds no item list. A finding's ``roadmapItem`` therefore cannot be
+    resolved against a plan any more, and the existence check below is skipped rather than answered from a
+    document that does not exist. The shape check still runs, so the field cannot quietly become free text, and
+    the ids already in the ledger stay as historical labels (``docs/RULES.md`` says exactly that).
+    """
+    return set()
 
 
 def validate(repository: pathlib.Path = REPOSITORY, sessions_path=None, findings_path=None):
@@ -161,7 +167,8 @@ def validate(repository: pathlib.Path = REPOSITORY, sessions_path=None, findings
                             f" disagrees with its record ({raw.get('wavesCleared')})"
                         )
 
-    # The roadmap ids are read from the real roadmap, so a finding cannot cite a made-up item.
+    # Was read from the real roadmap, so a finding could not cite a made-up item; the roadmap is gone, so this
+    # is empty and the membership check below no-ops. See roadmap_items().
     items = roadmap_items(repository)
     known_findings = set()
     for index, finding in enumerate(findings["findings"]):
@@ -183,7 +190,7 @@ def validate(repository: pathlib.Path = REPOSITORY, sessions_path=None, findings
             problems.append(
                 f"{where(findings_path, repository)}[{index}]: roadmapItem must look like 'R4.2', got {item!r}"
             )
-        elif item not in items:
+        elif items and item not in items:
             problems.append(
                 f"{where(findings_path, repository)}[{index}]: roadmap item {item} does not exist in the roadmap"
             )

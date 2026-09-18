@@ -71,7 +71,7 @@ class FactSheetTest(unittest.TestCase):
         for name, builder in sections.items():
             self.assertTrue(callable(builder), name)
         facts = measure_round.docs_facts()
-        for key in ("documents", "roadmapLines", "roadmapDone", "roadmapOpen", "readmeLines"):
+        for key in ("documents", "rulesLines", "readmeLines"):
             self.assertIn(key, facts)
         self.assertNotIn("audits", facts,
                          "the audit documents are gone, so the tool must not report a permanently empty list")

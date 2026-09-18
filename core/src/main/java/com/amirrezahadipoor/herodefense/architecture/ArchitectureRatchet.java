@@ -27,7 +27,7 @@ import java.util.stream.Stream;
  *       build fails, and when it drops below the limit its entry must be deleted.</li>
  * </ol>
  *
- * <p>See {@code docs/ROADMAP_TO_1000.md} R2.4.
+ * <p>See {@code docs/RULES.md} R2.4.
  */
 public final class ArchitectureRatchet {
 

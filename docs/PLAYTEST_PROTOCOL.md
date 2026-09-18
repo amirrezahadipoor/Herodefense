@@ -80,7 +80,9 @@ A session that found nothing still gets recorded; a session that found something
 
 Three rules make findings more than a wish list, and the validator enforces all three:
 
-1. **`roadmapItem` must exist in `docs/ROADMAP_TO_1000.md`.** A finding cannot point at a plan that is not written
+1. **`roadmapItem` must look like `R4.2`.** It used to have to exist in the roadmap; that document was deleted
+   on 2026-09-18 at the owner's direction (only `docs/RULES.md` survives), so the id is a historical label and
+   only its shape is checked. A finding still cannot point at a plan that is not written
    down. If the item is missing, add it to the roadmap (in English, in the phase it belongs to) or attach the
    finding to the item that will fix it.
 2. **`fixed` needs a commit.** The evidence has to contain the hash of the commit that fixed it, so the claim can

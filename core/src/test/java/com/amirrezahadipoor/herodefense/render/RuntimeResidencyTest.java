@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>{@link RuntimeResidency} is the arithmetic; this test is the gate. It also proves the gate can fail
  * (negative control), because a budget that has never rejected anything is decoration.
  *
- * <p>See {@code docs/ROADMAP_TO_1000.md} R8.2 and R1.9.
+ * <p>See {@code docs/RULES.md} R8.2 and R1.9.
  */
 class RuntimeResidencyTest {
 

@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * plus this test means art can no longer change silently — regenerating art requires regenerating the
  * ledger in the same commit, which is a deliberate, reviewable act.
  *
- * <p>See {@code docs/ROADMAP_TO_1000.md} R1.7.
+ * <p>See {@code docs/RULES.md} R1.7.
  */
 class AssetIntegrityTest {
 

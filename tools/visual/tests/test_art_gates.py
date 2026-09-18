@@ -3,7 +3,7 @@
 A gate that has never been seen failing is not a gate. These tests build deliberately broken fixtures
 and assert that the validator's resampling gate rejects them while an honest fixture passes, and that
 hash-ledger drift is detectable. The fixtures use Pillow only, the same dependency the validator needs.
-See `docs/ROADMAP_TO_1000.md` R1.9.
+See `docs/RULES.md` R1.9.
 """
 from __future__ import annotations
 

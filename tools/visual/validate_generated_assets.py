@@ -57,7 +57,7 @@ PIVOT_EXPECTATIONS = {
 
 # Honest bookkeeping: a "gate" only counts as measured when it inspects the produced artifact.
 # Checks that merely look for a string in the pipeline source are reported separately, because they
-# prove that a word exists, not that the pixels are right (see docs/ROADMAP_TO_1000.md R1.6).
+# prove that a word exists, not that the pixels are right (see docs/RULES.md R1.6).
 MEASURED_GATES: list[str] = []
 tier_divergence: set[str] = set()
 CONFIG_PRESENCE_CHECKS: list[str] = []

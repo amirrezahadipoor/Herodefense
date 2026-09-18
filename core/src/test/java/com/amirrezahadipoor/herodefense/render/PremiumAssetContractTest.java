@@ -45,7 +45,7 @@ final class PremiumAssetContractTest {
      * Equipment art ids that arrived after the premium-v2 audit (the Phase 75 own-art batches) and
      * are therefore not listed in that audit nor shipped with a per-asset metadata file. They are
      * covered by the committed hash ledger instead. Add or remove an id here only on purpose, with a
-     * freshly accepted review document (docs/ROADMAP_TO_1000.md R5.6).
+     * freshly accepted review document (docs/RULES.md R5.6).
      */
     private static final Set<String> POST_AUDIT_ART_IDS = Set.of(
         "yew_shortbow", "thornwood_bow", "golemsbane_warbow",
@@ -208,7 +208,7 @@ final class PremiumAssetContractTest {
             // Every runtime equipment sheet must carry a revision that a review document covers:
             // the premium-v2 batch, the bows that received their own art batch, and the own-art
             // Mythics. Add a new revision here only together with a review document update
-            // (see docs/ROADMAP_TO_1000.md R1.11).
+            // (see docs/RULES.md R1.11).
             assertTrue(Set.of("equipment-premium-v2", "bow-premium-v1", "mythic-premium-v1")
                     .contains(asset.getString("modelRevision")),
                 key + " modelRevision=" + asset.getString("modelRevision"));
@@ -262,7 +262,7 @@ final class PremiumAssetContractTest {
             if (recorded == null) {
                 // No audit entry for this art yet: it must still match the committed hash ledger, byte
                 // for byte, so it cannot have been replaced silently. A review document for these
-                // batches is owed (docs/ROADMAP_TO_1000.md R1.10/R5.6).
+                // batches is owed (docs/RULES.md R1.10/R5.6).
                 assertTrue(POST_AUDIT_ART_IDS.contains(id),
                     "missing audited equipment " + id);
                 JsonValue ledgerSheets = new JsonReader().parse(Files.readString(ASSET_LEDGER)).get("sheets");

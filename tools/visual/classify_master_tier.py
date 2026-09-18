@@ -254,7 +254,7 @@ def main() -> None:
         "   at `" + MASTER_COMMIT + "`.",
         "3. The runtime tier (`android/assets/generated`) is the reviewed 192-frame artwork, because that",
         "   is the tier the art reviews are hash-bound to. Composing a runtime tier from the independent",
-        "   masters requires the new layout to be re-reviewed first (see `docs/ROADMAP_TO_1000.md` R5).",
+        "   masters requires the new layout to be re-reviewed first (see `docs/RULES.md` R5).",
         "",
     ]
     REPORT.write_text("\n".join(lines), encoding="utf-8")

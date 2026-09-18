@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Every shipped asset must carry a revision label its own review document lists, and that document must
  * carry the generated block that keeps the list honest.
  *
- * <p>See {@code docs/ROADMAP_TO_1000.md} R1.11.
+ * <p>See {@code docs/RULES.md} R1.11.
  */
 class ReviewLabelBindingTest {
 

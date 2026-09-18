@@ -132,8 +132,11 @@ class LedgerGateTest(unittest.TestCase):
 
     def test_a_finding_must_cite_a_roadmap_item_that_exists(self):
         self.write_sessions([a_session()])
-        self.write_findings([a_finding(roadmapItem="R9.9")])
-        self.assertTrue(any("does not exist in the roadmap" in problem for problem in self.problems()))
+        # Was: a finding citing an item the plan does not have is rejected. The plan was deleted on
+        # 2026-09-18 at the owner's direction, so there is nothing to cite against; what still has to hold is
+        # that the field cannot become free text.
+        self.write_findings([a_finding(roadmapItem="not an item id")])
+        self.assertTrue(any("must look like 'R4.2'" in problem for problem in self.problems()))
 
     def test_a_finding_must_belong_to_a_recorded_session(self):
         self.write_sessions([a_session()])

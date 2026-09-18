@@ -181,14 +181,17 @@ def content_flags() -> dict:
 
 
 def docs_facts() -> dict:
+    """How much documentation the repository carries.
+
+    There used to be four counts of roadmap checkboxes here. The roadmap was deleted on 2026-09-18 at the
+    owner's direction -- only its standing rules survive, as ``docs/RULES.md`` -- so what is left to measure is
+    how many documents exist and how long the two a reader meets first are. A count of ticked boxes in a file
+    that no longer exists would be a number with nothing behind it, which rule 3 of ``docs/RULES.md`` is about.
+    """
     docs = sorted((ROOT / "docs").rglob("*.md"))
-    roadmap = read(ROOT / "docs/ROADMAP_TO_1000.md")
     return {
         "documents": len(docs),
-        "roadmapLines": len(roadmap.splitlines()),
-        "roadmapDone": len(re.findall(r"^- \[x\]", roadmap, re.M)),
-        "roadmapPartial": len(re.findall(r"^- \[~\]", roadmap, re.M)),
-        "roadmapOpen": len(re.findall(r"^- \[ \]", roadmap, re.M)),
+        "rulesLines": len(read(ROOT / "docs/RULES.md").splitlines()),
         "readmeLines": len(read(ROOT / "README.md").splitlines()),
     }
 

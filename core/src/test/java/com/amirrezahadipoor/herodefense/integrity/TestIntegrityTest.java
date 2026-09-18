@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * to be written down on the line itself as {@code // integrity-exempt: <reason>}, so it shows up in a
  * grep and in review.
  *
- * <p>See {@code docs/ROADMAP_TO_1000.md} R1.5.
+ * <p>See {@code docs/RULES.md} R1.5.
  */
 final class TestIntegrityTest {
 
@@ -77,7 +77,7 @@ final class TestIntegrityTest {
             }
         }
         assertEquals(List.of(), findings,
-            "tests are weakened instead of fixed; see docs/ROADMAP_TO_1000.md R1.5");
+            "tests are weakened instead of fixed; see docs/RULES.md R1.5");
     }
 
     @Test

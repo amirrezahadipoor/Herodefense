@@ -22,7 +22,7 @@ script. This is that step, repeatable and checked:
   and the master tier and engine line are recorded next to it as `masterRender`, because that is the truth
   about where the pixels came from.
 
-See docs/ROADMAP_TO_1000.md R3.4 and docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md.
+See docs/RULES.md R3.4 and docs/art_reviews/ENEMIES_PREMIUM_V2_REVIEW.md.
 """
 from __future__ import annotations
 

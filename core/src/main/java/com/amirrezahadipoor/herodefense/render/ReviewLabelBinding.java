@@ -15,7 +15,7 @@ import java.util.function.Function;
  * claim about provenance, so it must appear in the document it points at, and that document must list its
  * labels from a generated block instead of from memory.
  *
- * <p>See {@code docs/ROADMAP_TO_1000.md} R1.11 and {@code tools/visual/write_review_labels.py}, which
+ * <p>See {@code docs/RULES.md} R1.11 and {@code tools/visual/write_review_labels.py}, which
  * generates the blocks this class requires.
  */
 public final class ReviewLabelBinding {

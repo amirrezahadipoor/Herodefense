@@ -16,7 +16,7 @@ import java.util.List;
  * can be on screen together, the equipment sheets of a fully dressed hero, one boss and the arena. It is
  * deliberately smaller than the whole catalog (which includes every item, icon and effect).
  *
- * <p>See {@code docs/ROADMAP_TO_1000.md} R8.2.
+ * <p>See {@code docs/RULES.md} R8.2.
  */
 public final class RuntimeResidency {
 
@@ -123,7 +123,7 @@ public final class RuntimeResidency {
         if (actual > budget) {
             throw new IllegalStateException(
                 label + " uses " + actual + " decoded bytes, above the budget of " + budget
-                    + " (see docs/ROADMAP_TO_1000.md R8.2)"
+                    + " (see docs/RULES.md R8.2)"
             );
         }
     }
