@@ -55,8 +55,8 @@ final class ProgressionHoursTest {
     }
 
     @Test
-    void codexHas30EntriesWithSlowestGateAt10Ascensions() {
-        assertEquals(30, LoreCatalog.all().size());
+    void codexHas34EntriesWithSlowestGateAt10Ascensions() {
+        assertEquals(34, LoreCatalog.all().size());
         Map<LoreTrigger, Integer> counts = new EnumMap<>(LoreTrigger.class);
         int slowestAscension = 0;
         for (LoreEntry entry : LoreCatalog.all()) {
@@ -66,7 +66,7 @@ final class ProgressionHoursTest {
             }
         }
         assertEquals(8, counts.get(LoreTrigger.WAVE_MILESTONE));
-        assertEquals(4, counts.get(LoreTrigger.BOSS_FIRST_KILL));
+        assertEquals(8, counts.get(LoreTrigger.BOSS_FIRST_KILL));
         assertEquals(3, counts.get(LoreTrigger.ELITE_KILL));
         assertEquals(5, counts.get(LoreTrigger.ASCENSION));
         assertEquals(10, counts.get(LoreTrigger.SECRET));

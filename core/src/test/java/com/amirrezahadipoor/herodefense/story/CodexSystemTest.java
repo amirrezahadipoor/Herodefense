@@ -37,26 +37,26 @@ final class CodexSystemTest {
     @Test
     void firstEliteKillOfEachAffixUnlocksItsOwnEntry() {
         GameState state = GameState.newRun(7L);
-        assertEquals(List.of("codex_13"), codex.unlockForEliteKill(state, "blightburst"));
+        assertEquals(List.of("codex_17"), codex.unlockForEliteKill(state, "blightburst"));
         assertTrue(codex.unlockForEliteKill(state, "blightburst").isEmpty());
-        assertEquals(List.of("codex_14"), codex.unlockForEliteKill(state, "rootward_ward"));
-        assertEquals(List.of("codex_15"), codex.unlockForEliteKill(state, "weeping_rot"));
+        assertEquals(List.of("codex_18"), codex.unlockForEliteKill(state, "rootward_ward"));
+        assertEquals(List.of("codex_19"), codex.unlockForEliteKill(state, "weeping_rot"));
         assertTrue(codex.unlockForEliteKill(state, null).isEmpty());
         assertTrue(codex.unlockForEliteKill(state, "unknown_affix").isEmpty());
     }
 
     @Test
-    void secretTwentyEightNeedsAllThreeAffixesKilled() {
+    void secretThirtyTwoNeedsAllThreeAffixesKilled() {
         GameState state = GameState.newRun(7L);
         state.eliteKillCounts.put("blightburst", 2);
         state.eliteKillCounts.put("rootward_ward", 1);
-        assertEquals(List.of("codex_13"), codex.unlockForEliteKill(state, "blightburst"));
-        assertEquals(List.of("codex_14"), codex.unlockForEliteKill(state, "rootward_ward"));
-        assertFalse(codex.isUnlocked(state, "codex_28"));
+        assertEquals(List.of("codex_17"), codex.unlockForEliteKill(state, "blightburst"));
+        assertEquals(List.of("codex_18"), codex.unlockForEliteKill(state, "rootward_ward"));
+        assertFalse(codex.isUnlocked(state, "codex_32"));
         state.eliteKillCounts.put("weeping_rot", 1);
         assertEquals(
-            List.of("codex_15", "codex_28"), codex.unlockForEliteKill(state, "weeping_rot"));
-        assertTrue(codex.isUnlocked(state, "codex_28"));
+            List.of("codex_19", "codex_32"), codex.unlockForEliteKill(state, "weeping_rot"));
+        assertTrue(codex.isUnlocked(state, "codex_32"));
     }
 
     @Test
@@ -72,10 +72,10 @@ final class CodexSystemTest {
     @Test
     void eliteKillUnlocksOnlyItsOwnAffixEntry() {
         GameState state = GameState.newRun(7L);
-        assertEquals(List.of("codex_14"), codex.unlockForEliteKill(state, "rootward_ward"));
+        assertEquals(List.of("codex_18"), codex.unlockForEliteKill(state, "rootward_ward"));
         assertTrue(codex.unlockForEliteKill(state, "rootward_ward").isEmpty());
-        assertFalse(codex.isUnlocked(state, "codex_13"));
-        assertFalse(codex.isUnlocked(state, "codex_15"));
+        assertFalse(codex.isUnlocked(state, "codex_17"));
+        assertFalse(codex.isUnlocked(state, "codex_19"));
     }
 
     @Test
@@ -83,11 +83,11 @@ final class CodexSystemTest {
         GameState state = GameState.newRun(7L);
         assertTrue(codex.unlockForAscension(state).isEmpty());
         state.ascensionTier = 1;
-        assertEquals(List.of("codex_16"), codex.unlockForAscension(state));
-        state.ascensionTier = 5;
-        assertEquals(List.of("codex_17", "codex_18", "codex_19"), codex.unlockForAscension(state));
-        state.ascensionTier = 10;
         assertEquals(List.of("codex_20"), codex.unlockForAscension(state));
+        state.ascensionTier = 5;
+        assertEquals(List.of("codex_21", "codex_22", "codex_23"), codex.unlockForAscension(state));
+        state.ascensionTier = 10;
+        assertEquals(List.of("codex_24"), codex.unlockForAscension(state));
         assertEquals(5, codex.unlockedCount(state));
     }
 
@@ -107,40 +107,40 @@ final class CodexSystemTest {
     void bareHandedNeedsWaveFiftyWithNoShopStats() {
         GameState clean = GameState.newRun(11L);
         clean.waveNumber = 50;
-        assertEquals(List.of("codex_21"), codex.unlockSecretsForProgress(clean));
+        assertEquals(List.of("codex_25"), codex.unlockSecretsForProgress(clean));
 
         GameState buyer = GameState.newRun(11L);
         buyer.waveNumber = 60;
         buyer.shopStatsBoughtThisRun = 3;
-        assertTrue(codex.unlockSecretsForProgress(buyer).stream().noneMatch("codex_21"::equals));
-        assertFalse(codex.isUnlocked(buyer, "codex_21"));
+        assertTrue(codex.unlockSecretsForProgress(buyer).stream().noneMatch("codex_25"::equals));
+        assertFalse(codex.isUnlocked(buyer, "codex_25"));
     }
 
     @Test
     void noPotionsNeedsWaveOneHundredOneOnACleanRun() {
         GameState clean = GameState.newRun(12L);
         clean.waveNumber = 101;
-        assertTrue(codex.unlockSecretsForProgress(clean).contains("codex_26"));
+        assertTrue(codex.unlockSecretsForProgress(clean).contains("codex_30"));
 
         GameState user = GameState.newRun(12L);
         user.waveNumber = 150;
         user.noPotionRun = false;
-        assertFalse(codex.unlockSecretsForProgress(user).contains("codex_26"));
-        assertFalse(codex.isUnlocked(user, "codex_26"));
+        assertFalse(codex.unlockSecretsForProgress(user).contains("codex_30"));
+        assertFalse(codex.isUnlocked(user, "codex_30"));
         GameState early = GameState.newRun(12L);
         early.waveNumber = 100;
-        assertFalse(codex.unlockSecretsForProgress(early).contains("codex_26"));
+        assertFalse(codex.unlockSecretsForProgress(early).contains("codex_30"));
     }
 
     @Test
     void fastestFallNeedsARecordClearUnderTenSeconds() {
         GameState slow = GameState.newRun(13L);
         slow.fastestWaveClearSeconds = 42f;
-        assertFalse(codex.unlockSecretsForProgress(slow).contains("codex_29"));
+        assertFalse(codex.unlockSecretsForProgress(slow).contains("codex_33"));
 
         GameState fast = GameState.newRun(13L);
         fast.fastestWaveClearSeconds = 9.5f;
-        assertEquals(List.of("codex_29"), codex.unlockSecretsForProgress(fast));
+        assertEquals(List.of("codex_33"), codex.unlockSecretsForProgress(fast));
     }
 
     @Test
@@ -148,14 +148,14 @@ final class CodexSystemTest {
         GameState first = GameState.newRun(14L);
         first.waveNumber = 200;
         first.wave200ReachedCount = 1;
-        assertFalse(codex.unlockSecretsForProgress(first).contains("codex_30"));
+        assertFalse(codex.unlockSecretsForProgress(first).contains("codex_34"));
 
         GameState second = GameState.newRun(14L);
         second.waveNumber = 200;
         second.wave200ReachedCount = 2;
         second.shopStatsBoughtThisRun = 4;
         second.noPotionRun = false;
-        assertEquals(List.of("codex_30"), codex.unlockSecretsForProgress(second));
+        assertEquals(List.of("codex_34"), codex.unlockSecretsForProgress(second));
     }
 
     @Test
@@ -164,7 +164,7 @@ final class CodexSystemTest {
         state.skillLevels.put("chain_lightning", 9);
         assertTrue(codex.unlockSecretsForSkillPurchase(state).isEmpty());
         state.skillLevels.put("chain_lightning", 10);
-        assertEquals(List.of("codex_23"), codex.unlockSecretsForSkillPurchase(state));
+        assertEquals(List.of("codex_27"), codex.unlockSecretsForSkillPurchase(state));
         assertTrue(codex.unlockSecretsForSkillPurchase(state).isEmpty());
     }
 
@@ -177,7 +177,7 @@ final class CodexSystemTest {
         assertTrue(codex.unlockSecretsForEquipment(state).isEmpty());
 
         equipById(state, "BOOTS", "windstep_boots");
-        assertEquals(List.of("codex_22"), codex.unlockSecretsForEquipment(state));
+        assertEquals(List.of("codex_26"), codex.unlockSecretsForEquipment(state));
         assertTrue(codex.unlockSecretsForEquipment(state).isEmpty());
     }
 
@@ -196,7 +196,7 @@ final class CodexSystemTest {
         assertTrue(codex.unlockSecretsForEquipment(state).isEmpty());
 
         equipById(state, "RING_2", "emberless_core");
-        assertEquals(List.of("codex_25"), codex.unlockSecretsForEquipment(state));
+        assertEquals(List.of("codex_29"), codex.unlockSecretsForEquipment(state));
         assertTrue(codex.unlockSecretsForEquipment(state).isEmpty());
     }
 
@@ -209,7 +209,7 @@ final class CodexSystemTest {
         assertTrue(codex.unlockSecretsForForge(state).isEmpty());
 
         close.upgradeLevel = 5;
-        assertEquals(List.of("codex_24"), codex.unlockSecretsForForge(state));
+        assertEquals(List.of("codex_28"), codex.unlockSecretsForForge(state));
     }
 
     @Test
@@ -218,7 +218,7 @@ final class CodexSystemTest {
         Item equipped = new Item("worldbranch", "Worldbranch", "WEAPON", "LEGENDARY");
         equipped.upgradeLevel = 5;
         state.equippedItems.put("WEAPON", equipped);
-        assertEquals(List.of("codex_24"), codex.unlockSecretsForForge(state));
+        assertEquals(List.of("codex_28"), codex.unlockSecretsForForge(state));
     }
 
     @Test
@@ -227,7 +227,7 @@ final class CodexSystemTest {
         state.longestPauseSeconds = 299f;
         assertTrue(codex.unlockSecretsForPause(state).isEmpty());
         state.longestPauseSeconds = 300f;
-        assertEquals(List.of("codex_27"), codex.unlockSecretsForPause(state));
+        assertEquals(List.of("codex_31"), codex.unlockSecretsForPause(state));
     }
 
     @Test
@@ -247,16 +247,16 @@ final class CodexSystemTest {
         codex.unlockSecretsForSkillPurchase(maxed);
         codex.unlockSecretsForForge(maxed);
         codex.unlockSecretsForPause(maxed);
-        assertFalse(codex.isUnlocked(maxed, "codex_22"));
-        assertFalse(codex.isUnlocked(maxed, "codex_25"));
-        assertFalse(codex.isUnlocked(maxed, "codex_28"));
-        assertTrue(codex.isUnlocked(maxed, "codex_21"));
-        assertTrue(codex.isUnlocked(maxed, "codex_23"));
-        assertTrue(codex.isUnlocked(maxed, "codex_24"));
-        assertTrue(codex.isUnlocked(maxed, "codex_26"));
+        assertFalse(codex.isUnlocked(maxed, "codex_26"));
+        assertFalse(codex.isUnlocked(maxed, "codex_29"));
+        assertFalse(codex.isUnlocked(maxed, "codex_32"));
+        assertTrue(codex.isUnlocked(maxed, "codex_25"));
         assertTrue(codex.isUnlocked(maxed, "codex_27"));
-        assertTrue(codex.isUnlocked(maxed, "codex_29"));
+        assertTrue(codex.isUnlocked(maxed, "codex_28"));
         assertTrue(codex.isUnlocked(maxed, "codex_30"));
+        assertTrue(codex.isUnlocked(maxed, "codex_31"));
+        assertTrue(codex.isUnlocked(maxed, "codex_33"));
+        assertTrue(codex.isUnlocked(maxed, "codex_34"));
     }
 
     private static void equipById(GameState state, String slot, String id) {
