@@ -11,10 +11,17 @@ import org.junit.jupiter.api.Test;
  * I2: Device evidence is headless x86 emulator — now multi-profile + real-device notes.
  */
 final class DeviceEvidenceTest {
+    private static final Path ROOT = Path.of("..").normalize();
+
+    private static Path repoFile(String relativePath) {
+        Path direct = Path.of(relativePath);
+        if (Files.exists(direct)) return direct;
+        return ROOT.resolve(relativePath);
+    }
 
     @Test
     void deviceEvidenceDocExistsAndMentionsI2() throws IOException {
-        Path doc = Path.of("docs/device_evidence/DEVICE_EVIDENCE.md");
+        Path doc = repoFile("docs/device_evidence/DEVICE_EVIDENCE.md");
         assertTrue(Files.exists(doc), "DEVICE_EVIDENCE.md must exist for I2");
         String content = Files.readString(doc);
         assertTrue(content.contains("I2"), "Must mention I2");
@@ -26,7 +33,7 @@ final class DeviceEvidenceTest {
 
     @Test
     void deviceEvidenceWorkflowExists() throws IOException {
-        Path workflow = Path.of(".github/workflows/device-evidence.yml");
+        Path workflow = repoFile(".github/workflows/device-evidence.yml");
         assertTrue(Files.exists(workflow), "device-evidence.yml must exist");
         String content = Files.readString(workflow);
         assertTrue(content.contains("pixel_3a"), "Must test pixel_3a");
@@ -37,7 +44,7 @@ final class DeviceEvidenceTest {
 
     @Test
     void humanReviewWorkflowNowCapturesDeviceInfo() throws IOException {
-        Path workflow = Path.of(".github/workflows/human-review.yml");
+        Path workflow = repoFile(".github/workflows/human-review.yml");
         assertTrue(Files.exists(workflow));
         String content = Files.readString(workflow);
         assertTrue(content.contains("device-info") || content.contains("getprop"), "human-review.yml must capture device info for I2");
@@ -45,7 +52,7 @@ final class DeviceEvidenceTest {
 
     @Test
     void deviceInfoCaptureTestExists() throws IOException {
-        Path test = Path.of("android/src/androidTest/java/com/amirrezahadipoor/herodefense/android/DeviceInfoCaptureTest.java");
+        Path test = repoFile("android/src/androidTest/java/com/amirrezahadipoor/herodefense/android/DeviceInfoCaptureTest.java");
         assertTrue(Files.exists(test), "DeviceInfoCaptureTest must exist");
         String content = Files.readString(test);
         assertTrue(content.contains("Build.MODEL"), "Must capture Build.MODEL");
