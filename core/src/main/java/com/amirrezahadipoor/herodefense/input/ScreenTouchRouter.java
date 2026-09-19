@@ -398,8 +398,10 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                     host.flow().returnFromOverlay();
                     host.saveNow();
                 } else if (rnAction == com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action.PURCHASED) {
-                    // Re-apply bonuses live and save
-                    host.rootNetworkSystem().applyPermanentBonuses(host.gameState());
+                    // Apply only the node just bought: re-applying every owned node re-stacked its stats.
+                    host.rootNetworkSystem().applyNodeDuringRun(
+                        host.gameState(), host.rootNetworkTouchController().lastPurchasedNodeId()
+                    );
                     host.audioManager().play(AudioCue.PURCHASE);
                     host.saveNow();
                 }

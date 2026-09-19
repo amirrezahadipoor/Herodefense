@@ -8,6 +8,7 @@ public final class RootNetworkTouchController {
     public enum Action { NONE, CLOSED, PURCHASED }
 
     private final RootNetworkSystem system;
+    private String lastPurchasedNodeId;
 
     public RootNetworkTouchController(RootNetworkSystem system) {
         this.system = system;
@@ -17,8 +18,14 @@ public final class RootNetworkTouchController {
         if (RootNetworkTouchLayout.closeAt(x, y)) return Action.CLOSED;
         String nodeId = RootNetworkTouchLayout.nodeAt(x, y);
         if (nodeId != null && system.purchase(state, nodeId)) {
+            lastPurchasedNodeId = nodeId;
             return Action.PURCHASED;
         }
         return Action.NONE;
+    }
+
+    /** The node the last successful tap bought, for the router's mid-run application. */
+    public String lastPurchasedNodeId() {
+        return lastPurchasedNodeId;
     }
 }

@@ -71,42 +71,74 @@ public final class RootNetworkSystem {
         return true;
     }
 
+    /** Run start: every owned node applies once to the fresh hero, who wakes at full health. */
     public void applyPermanentBonuses(GameState state) {
         if (state == null || state.hero == null) return;
         float extraMax = 0f;
         for (Map.Entry<String, Boolean> e : state.rootNodesPurchased.entrySet()) {
             if (e.getValue() == null || !e.getValue()) continue;
-            String id = e.getKey();
-            RootNodeDefinition def = RootNetworkCatalog.byId(id);
-            if (def == null) continue;
-            if ("root_all_1".equals(id)) {
-                state.hero.stats.strength += 1;
-                state.hero.stats.agility += 1;
-                state.hero.stats.luck += 1;
-                state.hero.stats.dodge += 1;
-                state.hero.stats.health += 1;
-            } else if ("root_all_2".equals(id)) {
-                state.hero.stats.strength += 2;
-                state.hero.stats.agility += 2;
-                state.hero.stats.luck += 2;
-                state.hero.stats.dodge += 2;
-                state.hero.stats.health += 2;
-                state.coins += 100;
-            } else if ("root_heart_1".equals(id)) {
-                state.unspentTalentPoints += 1;
-                extraMax += def.bonusAmount();
-            } else {
-                applyBonus(state, def);
-                if (def.bonusType() == RootNodeBonusType.MAX_HEALTH_BONUS) {
-                    extraMax += def.bonusAmount();
-                }
-            }
+            RootNodeDefinition def = RootNetworkCatalog.byId(e.getKey());
+            if (def != null) extraMax += applyNode(state, e.getKey(), def);
         }
-        state.hero.maxHealth = (state.hero.stats.maxHealth() + extraMax)
-            * TrialEffects.heroMaxHealthMultiplier(state.activeTrials);
+        float boosted = extraMax * TrialEffects.heroMaxHealthMultiplier(state.activeTrials);
+        state.synchronizeEquipmentHealth();
+        state.hero.maxHealth += boosted;
         state.hero.health = state.hero.maxHealth;
         state.worldTreeMaxHealth = 1000f + extraMax * 0.5f;
         state.worldTreeHealth = state.worldTreeMaxHealth;
+    }
+
+    /** One mid-run purchase: only this node's stats, health moves by the delta, the tree is never healed. */
+    public void applyNodeDuringRun(GameState state, String nodeId) {
+        if (state == null || state.hero == null) return;
+        RootNodeDefinition def = RootNetworkCatalog.byId(nodeId);
+        if (def == null || !isPurchased(state, nodeId)) return;
+        float previousMax = state.hero.maxHealth;
+        applyNode(state, nodeId, def);
+        float boosted = ownedFlatMaxBonus(state) * TrialEffects.heroMaxHealthMultiplier(state.activeTrials);
+        state.synchronizeEquipmentHealth();
+        state.hero.maxHealth += boosted;
+        state.hero.health = Math.min(state.hero.maxHealth,
+            state.hero.health + Math.max(0f, state.hero.maxHealth - previousMax));
+        state.worldTreeMaxHealth = 1000f + ownedFlatMaxBonus(state) * 0.5f;
+    }
+
+    /** Applies one node's stats; returns its flat max-health bonus. */
+    private float applyNode(GameState state, String id, RootNodeDefinition def) {
+        if ("root_all_1".equals(id)) {
+            state.hero.stats.strength += 1;
+            state.hero.stats.agility += 1;
+            state.hero.stats.luck += 1;
+            state.hero.stats.dodge += 1;
+            state.hero.stats.health += 1;
+        } else if ("root_all_2".equals(id)) {
+            state.hero.stats.strength += 2;
+            state.hero.stats.agility += 2;
+            state.hero.stats.luck += 2;
+            state.hero.stats.dodge += 2;
+            state.hero.stats.health += 2;
+            state.coins += 100;
+        } else if ("root_heart_1".equals(id)) {
+            state.unspentTalentPoints += 1;
+        } else {
+            applyBonus(state, def);
+        }
+        return flatMaxBonus(id, def);
+    }
+
+    private static float flatMaxBonus(String id, RootNodeDefinition def) {
+        if ("root_heart_1".equals(id)) return def.bonusAmount();
+        return def.bonusType() == RootNodeBonusType.MAX_HEALTH_BONUS ? def.bonusAmount() : 0f;
+    }
+
+    private static float ownedFlatMaxBonus(GameState state) {
+        float sum = 0f;
+        for (Map.Entry<String, Boolean> e : state.rootNodesPurchased.entrySet()) {
+            if (e.getValue() == null || !e.getValue()) continue;
+            RootNodeDefinition def = RootNetworkCatalog.byId(e.getKey());
+            if (def != null) sum += flatMaxBonus(e.getKey(), def);
+        }
+        return sum;
     }
 
     private void applyBonus(GameState state, RootNodeDefinition def) {
