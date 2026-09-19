@@ -78,9 +78,20 @@ jobs:
             adb shell getprop > device-props-${{ matrix.profile }}-api${{ matrix.api }}.txt
             adb shell dumpsys display > dumpsys-display-${{ matrix.profile }}-api${{ matrix.api }}.txt
             ./scripts/android-touch-test.sh
+            smoke=$?
             ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace
-            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt
-            adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt
+            capture=$?
+            if adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt; then
+              echo "device-info.txt pulled from the debug package"
+            else
+              echo "device-info.txt was not on the device: the capture test did not reach its write"
+            fi
+            adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt
+            if [ "$smoke" -ne 0 ]; then
+              echo "touch smoke test failed with exit $smoke"
+              exit "$smoke"
+            fi
+            exit "$capture"
 
       - name: Upload device evidence ${{ matrix.profile }}
         if: always()
