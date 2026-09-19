@@ -74,13 +74,13 @@ jobs:
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
             -camera-back none -camera-front none
           script: |
-            set -e
-            adb shell getprop > device-props-${{ matrix.profile }}-api${{ matrix.api }}.txt || true
-            adb shell dumpsys display > dumpsys-display-${{ matrix.profile }}-api${{ matrix.api }}.txt || true
-            ./scripts/android-touch-test.sh || true
-            ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace || true
-            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt || true
-            adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt || true
+            set +e
+            adb shell getprop > device-props-${{ matrix.profile }}-api${{ matrix.api }}.txt
+            adb shell dumpsys display > dumpsys-display-${{ matrix.profile }}-api${{ matrix.api }}.txt
+            ./scripts/android-touch-test.sh
+            ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace
+            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt
+            adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt
 
       - name: Upload device evidence ${{ matrix.profile }}
         if: always()

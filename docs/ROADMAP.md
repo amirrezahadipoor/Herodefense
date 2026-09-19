@@ -304,7 +304,7 @@ started, `[!]` attempted and failed, with the failure written down.
     tinting existing sheets (blue/purple/yellow/red) — 4 new atlases+PNGs+JSONs. `BossType` enum, `IdentityCues`
     maps new bosses to existing entrance voices, `RuntimeResidency` 8 bosses, `StoryStrings` 8 title cards EN/FA,
     `BossLore` 8 bios, `BossTitleCards` 8 cases, `LoreCatalog` 34 entries (8 boss kills). `asset_manifest` 122 assets,
-    605351936 bytes, budget 630M. Guarded by `PremiumBossAssetContractTest` (8 keys), `BossFactoryTest` (8 distinct),
+    decoded bytes within budget. Guarded by `PremiumBossAssetContractTest` (8 keys), `BossFactoryTest` (8 distinct),
     `BossWaveSpawnerTest` (rotates 8), `IdentityCuesTest` (8 voices), `LoreCatalogTest` (34 entries). Evidence:
     `validate_generated_assets.py` green 122 assets. Commit 14aec28.
 - [x] **D4 (−8) One fragment shader and one vertex shader in the whole project,** which caps how different the

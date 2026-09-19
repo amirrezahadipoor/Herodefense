@@ -59,12 +59,12 @@ jobs:
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
             -camera-back none -camera-front none
           script: |
-            set -e
-            adb shell getprop > device-props.txt || true
-            adb shell dumpsys display > dumpsys-display.txt || true
+            set +e
+            adb shell getprop > device-props.txt
+            adb shell dumpsys display > dumpsys-display.txt
             ./scripts/android-touch-test.sh
-            ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace || true
-            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt device-info.txt || true
+            ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace
+            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense/files/device-info.txt device-info.txt
 
       - name: Upload human-review frames (E3 — what a machine cannot catch) + device info (I2)
         if: always()

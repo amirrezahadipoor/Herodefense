@@ -1,8 +1,8 @@
 {
  "budget": {
-  "catalogBudgetBytes": 525000000,
-  "catalogDecodedBytes": 518959104,
-  "catalogHeadroomBytes": 6040896,
+  "catalogBudgetBytes": 630000000,
+  "catalogDecodedBytes": 605351936,
+  "catalogHeadroomBytes": 24648064,
   "combatBudgetBytes": 209715200,
   "liveCombatResidencyBytes": 207765504,
   "residencyCommand": ":core:residencyReport"

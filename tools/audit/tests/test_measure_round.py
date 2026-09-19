@@ -22,7 +22,7 @@ class FactSheetTest(unittest.TestCase):
         for section in ("git", "tree", "tests", "integrity", "manifest", "ledger", "performance",
                         "content", "docs", "assets"):
             self.assertIn(section, facts, f"the audit cites {section}")
-        self.assertEqual(157, facts["ledger"]["entries"])
+        self.assertEqual(168, facts["ledger"]["entries"])
         self.assertEqual(39, facts["ledger"]["materialMaps"])
         self.assertGreater(facts["tree"]["coreMainLines"], 20_000)
         self.assertIn("decodedBytes", facts["manifest"])

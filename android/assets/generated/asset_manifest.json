@@ -24019,15 +24019,12 @@
     "note": "Eight sprite sheets ship the render batch's own pixels at 384 px frames instead of a halved copy of them, because the provenance measurement classifies those eight as independent renders and everything else at that resolution as a resampled copy or inconclusive. The catalog ceiling and the combat residency budget are the manifest's business, not this tool's.",
     "sheets": [
       "ancient_golem",
-      "bloodroot_avatar",
       "ember_wyrm",
-      "frost_titan",
       "fungal_brute",
       "gloom_wolf",
       "hero",
       "rootling",
       "stonekin",
-      "storm_colossus",
       "thorn_matriarch"
     ]
   },

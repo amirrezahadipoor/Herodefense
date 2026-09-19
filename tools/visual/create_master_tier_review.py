@@ -223,6 +223,7 @@ def main() -> int:
         "",
     ]
     REVIEW_DOCUMENT.write_text("\n".join(lines), encoding="utf-8")
+    REVIEW_JSON.write_text(rendered, encoding="utf-8")
     print(f"wrote {REVIEW_DOCUMENT.relative_to(REPOSITORY)} and {REVIEW_JSON.relative_to(REPOSITORY)}")
     print(f"composed {len(sheets)} sheets, catalog {catalog} of {budget} bytes")
     return 0
