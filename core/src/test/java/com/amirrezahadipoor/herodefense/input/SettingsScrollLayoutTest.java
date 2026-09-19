@@ -115,7 +115,7 @@ final class SettingsScrollLayoutTest {
     void scrollingExposesAndTogglesColourBlindRarityRow() {
         GameSettings settings = new GameSettings();
         SettingsTouchController controller = new SettingsTouchController();
-        assertEquals(8, SettingsTouchLayout.TOTAL_ROWS);
+        assertEquals(11, SettingsTouchLayout.TOTAL_ROWS);
 
         assertFalse(settings.colourBlindRarity);
 

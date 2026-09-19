@@ -107,7 +107,7 @@ final class MainMenuAndSettingsTouchTest {
             SettingsTouchLayout.REDUCED_MOTION_ROW_Y
         };
         // TOTAL_ROWS includes the text-size row (G3b) and accessible rarity row (G3c), scrolling into the viewport
-        assertEquals(8, SettingsTouchLayout.TOTAL_ROWS, "G3b and G3c add text size and colour-blind rows");
+        assertEquals(11, SettingsTouchLayout.TOTAL_ROWS, "G3b, G3c, F3, and G3d add text size, colour-blind, narration, and screen-reader rows");
         for (int index = 0; index < rows.length; index++) {
             assertTrue(rows[index] > 260f, "a row must clear the footer note panel");
             if (index > 0) {
