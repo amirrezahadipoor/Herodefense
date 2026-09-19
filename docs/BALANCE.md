@@ -20,8 +20,8 @@ For wave `w` clamped to 1–200 (Phase 18.4 extended the run; waves 1–100 keep
 | 100 | 938.72 | 0.4293 |
 | 125 | 1783.28 | 0.5305 |
 | 150 | 3387.69 | 0.6555 |
-| 175 | 5291.74 | 0.7708 |
-| 200 | 8265.95 | 0.9063 |
+| 175 | 5291.74 | 0.7519 |
+| 200 | 8265.95 | 0.8624 |
 <!-- balance:end growth-checkpoints -->
 - **Second half (waves 101–200, after the planting ceremony):** the half climbs in **two spans** (Phase 91, R4.6). Waves 101–150 — the entry — continue from their Wave 100 values at `HP × 1.026^(w−100)` and `damage × 1.0085^(w−100)`; waves 151–200 — the final quarter — climb at `1.018` and `1.0065`. Measured HP checkpoints on the shipped curve: Wave 100 `938.67`, Wave 125 `1783.34`, Wave 150 `3387.71`, Wave 175 `5291.71`, Wave 200 `8266.02`; baseline damage reaches `0.9063` at Wave 200. Phase 18.4 shipped `1.021 / 1.006` against a simulator that ignored the Anvil; once the simulated player reforges equipped Rare/Legendary items (Phase 19.3) the second half fell to 1–3% pressure per wave, so the curve was tightened one notch. `1.024/1.008`, `1.024/1.010`, `1.025/1.010` and `1.0235/1.008` were rejected because their worst single wave exceeded the 35% ceiling (36–43%) or clears passed 80 s. A single `1.023/1.008` rate covering the whole half is what Phase 91 replaced: see the R4.6 section below for why the half is split and what the split cost.
 - A regular hit is capped at 28% of the max HP of a reference Hero who invests one of every five earned points in Health.
@@ -66,13 +66,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 96215 | |
-| Item sales | 25749 | |
-| Stat shop | 65450 | 138 levels |
+| Kill income | 90553 | |
+| Item sales | 27054 | |
+| Stat shop | 61135 | 136 levels |
 | Skill shop | 39580 | 44 levels |
-| Anvil | 15980 | 28 steps |
+| Anvil | 15115 | 29 steps |
 
-Across the 9 gate seeds the split is stable: stats 52-56%, skills 29-35%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 51-57%, skills 28-35%, Anvil 13-16% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -98,15 +98,15 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.0593 / 0.0970 / 0.1125 / 0.1317` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.636 / x1.160 / x1.171` | the same sweep |
-| Sweep average range | `0.0841 - 0.1117` | the same sweep, inside the 0.05-0.15 band |
-| Deepest single-seed quarter dip | `-2.69%` against the `5.00%` allowance | the same sweep |
+| Quarter means (fixed sweep) | `0.0576 / 0.1052 / 0.1231 / 0.1460` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.826 / x1.170 / x1.186` | the same sweep |
+| Sweep average range | `0.0882 - 0.1422` | the same sweep, inside the 0.05-0.15 band |
+| Deepest single-seed quarter dip | `-10.67%` against the `5.00%` allowance | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `0.3707 / 0.2754 / 0.3590` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+| Riskiest trial pairs, median spike | `0.3947 / 0.3526 / 0.3298` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
 
 The three pairs are the ones this gate has caught above 0.38, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `BOSS_BOUNTY + BLOOD_PRICE`, `MISERS_PACT + BLOOD_PRICE` (the other eleven pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.28831` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.31064` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
 <!-- balance:end second-half -->
 
 The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. The caveats move with the measurements: roadmap B1's pity rule below had left no seed dipping at all; roadmap D2's deep-pool Elite affixes (wave 101+, six instead of three) put one shallow dip back on the board — `-2.69%` against the `5.00%` allowance — and lifted the deep-run kill income, because a hollowmolt elite that splits into two husks is two more kills to pay for. The reward-card matrix sits at `0.28831` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3590` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first — D2 paid there too, and the tuning loop that brought the riskiest pair back under the ceiling (cinderhalo's burn at 0.08 of the elite's damage per half-second tick, gravemoss regrowing 0.6% of max health a second, the molt husks at 15% health and 45% damage) is the gate working as designed.
