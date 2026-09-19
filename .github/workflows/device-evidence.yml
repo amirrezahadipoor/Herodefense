@@ -8,6 +8,7 @@ on:
       - "android/src/androidTest/**"
       - "docs/device_evidence/**"
       - "core/src/main/java/**/render/**"
+      - "core/src/main/java/**/presentation/**"
       - ".github/workflows/device-evidence.yml"
 
 permissions:
