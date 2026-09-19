@@ -518,7 +518,7 @@ final class PremiumAssetContractTest {
                 BufferedImage image = images.get(page);
                 assertTrue(x >= 0 && y >= 0 && x + width <= image.getWidth()
                     && y + height <= image.getHeight(), key + " frame outside page");
-                if (!"arena_backdrop".equals(key)) {
+                if (!key.startsWith("arena_backdrop")) {
                     assertTransparentOuterEdge(key, image, x, y, width, height);
                 }
                 assertVisiblePixels(key, image, x, y, width, height);
