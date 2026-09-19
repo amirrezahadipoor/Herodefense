@@ -79,9 +79,12 @@ jobs:
             echo "::error::avdmanager was not found under $ANDROID_SDK_ROOT/cmdline-tools"
             exit 1
           fi
-          fold=$("$avdmanager_bin" list device | awk -F': *' 'tolower($1)=="id" && tolower($2) ~ /fold/ {print $2; exit}')
+          # Only a clean modern id ([a-z0-9_]) is usable as --device: the list's legacy entries read
+          # like `59 or "6.7in Foldable"` and avdmanager rejects them as a --device argument.
+          fold=$("$avdmanager_bin" list device | awk -F': *' 'tolower($1)=="id" && $2 ~ /^[a-zA-Z0-9_]+$/ && tolower($2) ~ /fold/ {print $2; exit}')
           if [ -z "$fold" ]; then
-            echo "::error::no foldable device profile in this SDK's device list -- the foldable continuity profile needs one to run"
+            echo "::error::no modern foldable device id in this SDK's device list -- foldable ids it does ship:" >&2
+            "$avdmanager_bin" list device | awk -F': *' 'tolower($1)=="id" && tolower($2) ~ /fold/ {print "  " $2}' >&2
             exit 1
           fi
           echo "resolved foldable device id: $fold"
@@ -107,7 +110,7 @@ jobs:
             ./scripts/android-touch-test.sh
             # am instrument rather than a second gradle pass: connectedDebugAndroidTest uninstalls
             # both APKs when it finishes, and the uninstall deletes the evidence file with them.
-            adb install -r -t android/build/outputs/apk/debug/androidTest/*androidTest*.apk
+            adb install -r -t android/build/outputs/apk/androidTest/debug/android-debug-androidTest.apk
             adb shell am instrument -w -e class com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest com.amirrezahadipoor.herodefense.debug.test/androidx.test.runner.AndroidJUnitRunner
             adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt
             adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt

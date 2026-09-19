@@ -70,7 +70,7 @@ jobs:
             # deletes the external files dir the evidence is written to -- gradle could never
             # leave device-info.txt behind to pull. am instrument runs the same runner, fails the
             # step on a test failure, and leaves the app installed so the pull has its file.
-            adb install -r -t android/build/outputs/apk/debug/androidTest/*androidTest*.apk
+            adb install -r -t android/build/outputs/apk/androidTest/debug/android-debug-androidTest.apk
             adb shell am instrument -w -e class com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest com.amirrezahadipoor.herodefense.debug.test/androidx.test.runner.AndroidJUnitRunner
             adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info.txt
       - name: Upload human-review frames (E3 — what a machine cannot catch) + device info (I2)

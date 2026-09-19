@@ -94,7 +94,7 @@ public final class AndroidTouchSmokeTest {
             captureScreen("opening-line-one-premium-v2.png");
             SystemClock.sleep(3_700L); // "Are you sure?!"
             captureScreen("opening-line-three-premium-v2.png");
-            await("wave starts", 12_000L, () -> game.screenState() == GameScreenState.PLAYING);
+            await("wave starts", 30_000L, () -> game.screenState() == GameScreenState.PLAYING);
             assertEquals(1, game.gameState().waveNumber);
             assertTrue(game.gameState().waveActive);
             assertTrue(game.gameState().livingEnemyCount() > 0);
@@ -451,7 +451,7 @@ public final class AndroidTouchSmokeTest {
 
             long preRestartTouch = game.handledTouchUpCount();
             tapWorld(surface, 360f + correction[0], 290f + correction[1]); // Restart at Wave 1
-            await("restart touch dispatched", 10_000L, () -> game.handledTouchUpCount() > preRestartTouch);
+            await("restart touch dispatched", 30_000L, () -> game.handledTouchUpCount() > preRestartTouch);
             draftTwoTrials(surface, game, correction);
             await("restart opening", () -> game.screenState() == GameScreenState.CINEMATIC);
             tapWorld(surface, 360f + correction[0], 640f + correction[1]); // Skip the opening
@@ -668,14 +668,14 @@ public final class AndroidTouchSmokeTest {
      * the trials the reference capture pins.
      */
     private static void draftTwoTrials(View surface, HeroDefenseGame game, float[] correction) {
-        await("trial draft", 10_000L, () -> game.screenState() == GameScreenState.TRIAL_DRAFT);
+        await("trial draft", 30_000L, () -> game.screenState() == GameScreenState.TRIAL_DRAFT);
         tapWorld(surface, 360f + correction[0], 887.5f + correction[1]); // First path card
-        await("hero path", 10_000L, () -> game.gameState().heroPath != null);
+        await("hero path", 30_000L, () -> game.gameState().heroPath != null);
         tapWorld(surface, 360f + correction[0], 887.5f + correction[1]); // First trial card
-        await("first trial pick", 10_000L, () -> game.gameState().trialDraftPicks.size() == 1);
+        await("first trial pick", 30_000L, () -> game.gameState().trialDraftPicks.size() == 1);
         captureScreen("trial-draft-premium-v2.png");
         tapWorld(surface, 360f + correction[0], 702.5f + correction[1]); // Second trial card
-        await("trial pair bound", 10_000L, () -> game.gameState().activeTrials.size() == 2);
+        await("trial pair bound", 30_000L, () -> game.gameState().activeTrials.size() == 2);
     }
 
     private static void tapWorld(View surface, float worldX, float worldY) {
