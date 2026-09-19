@@ -113,10 +113,10 @@ final class BossTelegraphContractTest {
         assertEquals(2, BossEncounterTable.scriptFor(twinEncounter).hits());
         for (BossType type : BossType.values()) {
             float identityPerStrike = switch (type) {
-                case ANCIENT_GOLEM -> 1.60f;
-                case THORN_MATRIARCH -> 0.50f;
-                case EMBER_WYRM -> 1.10f;
-                case VOID_KNIGHT -> 1.25f;
+                case ANCIENT_GOLEM, FROST_TITAN -> 1.60f;
+                case THORN_MATRIARCH, BLOODROOT_AVATAR -> 0.50f;
+                case EMBER_WYRM, STORM_COLOSSUS -> 1.10f;
+                case VOID_KNIGHT, SHADOW_LICH -> 1.25f;
             };
             for (int encounter : new int[] {singleHitEncounter, twinEncounter}) {
                 BossFightScript script = BossEncounterTable.scriptFor(encounter);
