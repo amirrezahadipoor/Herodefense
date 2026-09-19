@@ -104,6 +104,9 @@ public final class AndroidLauncher extends AndroidApplication {
             ttsProvider.shutdown();
             ttsProvider = null;
         }
+        if (accessibilityBridge != null) {
+            accessibilityBridge = null;
+        }
         super.onDestroy();
     }
 

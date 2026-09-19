@@ -19,7 +19,8 @@ public final class HeroAnimationController {
         float fps = fpsFor(hero.animationState);
         float frameDuration = 1f / fps;
         float intoFrame = hero.animationStateSeconds % frameDuration;
-        return intoFrame / frameDuration;
+        float t = Math.max(0f, Math.min(1f, intoFrame / frameDuration));
+        return t * t * (3f - 2f * t);
     }
 
     private static float fpsFor(HeroAnimationState state) {
@@ -89,10 +90,6 @@ public final class HeroAnimationController {
 
     private static float clipDuration(int frameCount, float fps) {
         return frameCount / fps;
-    }
-
-    private static float clipDuration(int frameCount) {
-        return frameCount / RENDERED_FRAMES_PER_SECOND;
     }
 
     private static int loopingFrame(float elapsed, int count, float framesPerSecond) {

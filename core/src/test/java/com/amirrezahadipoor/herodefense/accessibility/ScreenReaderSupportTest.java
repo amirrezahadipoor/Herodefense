@@ -24,7 +24,7 @@ final class ScreenReaderSupportTest {
             String label = AccessibilityLabels.labelFor(key);
             assertFalse(label.isEmpty(), "Empty label for " + key);
             if (!key.startsWith("boss")) {
-                assertTrue(label.toLowerCase().contains("double tap") || label.length() > 5,
+                assertTrue(label.toLowerCase(java.util.Locale.ROOT).contains("double tap") || label.length() > 5,
                     "Label should be actionable: " + key + " -> " + label);
             }
         }
@@ -37,9 +37,9 @@ final class ScreenReaderSupportTest {
         sr.setTts(tts);
         sr.setEnabled(true);
         sr.announce("inventory");
-        assertTrue(tts.history().size() >= 1, "Screen reader should queue via TTS");
+        assertFalse(tts.history().isEmpty(), "Screen reader should queue via TTS");
         String last = tts.history().get(tts.history().size() - 1).text;
-        assertTrue(last.contains("gear") || last.contains("backpack") || last.toLowerCase().contains("inventory"),
+        assertTrue(last.contains("gear") || last.contains("backpack") || last.toLowerCase(java.util.Locale.ROOT).contains("inventory"),
             "Should announce inventory: " + last);
     }
 

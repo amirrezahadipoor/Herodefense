@@ -131,10 +131,6 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         }
     }
 
-    private void drawCrystals(SpriteBatch batch) {
-        drawCrystals(batch, 1);
-    }
-
     private void drawWorldTree(
         SpriteBatch batch,
         GameState state,

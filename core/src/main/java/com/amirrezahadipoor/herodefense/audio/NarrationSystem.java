@@ -36,6 +36,8 @@ public final class NarrationSystem {
     public boolean isEnabled() { return enabled; }
 
     public void setVolume(float volume) { this.volume = Math.max(0f, Math.min(1f, volume)); }
+    public float volume() { return volume; }
+    public float getVolume() { return volume; }
 
     /** Narrate a lore entry — called when player opens it in Codex. */
     public void narrate(NarrationRequest request) {

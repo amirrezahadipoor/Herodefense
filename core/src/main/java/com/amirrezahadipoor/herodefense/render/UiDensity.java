@@ -11,6 +11,8 @@ package com.amirrezahadipoor.herodefense.render;
  * - Visual hierarchy: title > value > metadata
  */
 public final class UiDensity {
+    private static final String DODGE = "dodge";
+
     /** Max chars for a HUD label (arm's length readability). */
     public static final int HUD_MAX_CHARS = 20;
     /** Max chars for an overlay row label. */
@@ -25,7 +27,7 @@ public final class UiDensity {
             case "max_health", "health", "maxhealth" -> "HP";
             case "damage", "attack", "damage_per_attack" -> "ATK";
             case "attack_speed", "attacks_per_second", "attackspeed" -> "SPD";
-            case "dodge", "dodge_chance" -> "DODGE";
+            case DODGE, "dodge_chance" -> "DODGE";
             case "critical", "crit_chance", "crit" -> "CRIT";
             case "lifesteal" -> "LIFESTEAL";
             case "luck", "drop_chance" -> "LUCK";
@@ -66,8 +68,8 @@ public final class UiDensity {
         return switch (statName.toLowerCase(java.util.Locale.ROOT)) {
             case "max_health", "health" -> "health";
             case "damage" -> "agility"; // closest: attack
-            case "attack_speed" -> "dodge"; // speed
-            case "dodge" -> "dodge";
+            case "attack_speed" -> DODGE; // speed
+            case DODGE -> DODGE;
             case "critical" -> "agility";
             case "lifesteal" -> "lifesteal";
             case "luck" -> "luck";

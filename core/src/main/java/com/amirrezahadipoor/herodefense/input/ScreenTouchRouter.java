@@ -513,24 +513,23 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 } else if (action == CodexTouchController.Action.SELECTED) {
                     host.audioManager().play(AudioCue.UI_TAP);
                     // F3: narrate selected lore entry
-                    try {
-                        if (host.audioManager() instanceof GameAudioManager) {
-                            GameAudioManager gam = (GameAudioManager) host.audioManager();
-                            int idx = host.codexTouchController().selectedIndex();
-                            if (idx >= 0 && idx < LoreCatalog.all().size()) {
-                                LoreEntry entry = LoreCatalog.all().get(idx);
-                                if (entry != null && host.gameState() != null
-                                    && host.codexTouchController().tab() == CodexTouchLayout.Tab.LORE) {
-                                    // Only narrate if unlocked
-                                    boolean unlocked = host.codexSystem().isUnlocked(host.gameState(), entry.id());
-                                    if (unlocked) {
-                                        NarrationRequest req = LoreNarration.forEntry(entry);
-                                        if (req != null) gam.narration().narrate(req);
+                    if (host.audioManager() instanceof GameAudioManager) {
+                        int idx = host.codexTouchController().selectedIndex();
+                        if (idx >= 0 && idx < LoreCatalog.all().size()) {
+                            LoreEntry entry = LoreCatalog.all().get(idx);
+                            if (entry != null && host.gameState() != null
+                                && host.codexTouchController().tab() == CodexTouchLayout.Tab.LORE) {
+                                // Only narrate if unlocked
+                                boolean unlocked = host.codexSystem().isUnlocked(host.gameState(), entry.id());
+                                if (unlocked) {
+                                    NarrationRequest req = LoreNarration.forEntry(entry);
+                                    if (req != null && ((GameAudioManager) host.audioManager()).narration() != null) {
+                                        ((GameAudioManager) host.audioManager()).narration().narrate(req);
                                     }
                                 }
                             }
                         }
-                    } catch (Exception ignored) {}
+                    }
                 }
                 return true;
             }
@@ -566,13 +565,12 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
         }
 
     private void announce(com.amirrezahadipoor.herodefense.audio.AudioPlayback playback, String key) {
-        try {
-            if (playback instanceof GameAudioManager) {
-                GameAudioManager gam = (GameAudioManager) playback;
-                ScreenReaderSystem sr = gam.screenReader();
-                if (sr != null) sr.announce(key);
+        if (playback instanceof GameAudioManager) {
+            ScreenReaderSystem sr = ((GameAudioManager) playback).screenReader();
+            if (sr != null) {
+                sr.announce(key);
             }
-        } catch (Exception ignored) {}
+        }
     }
 
     /**

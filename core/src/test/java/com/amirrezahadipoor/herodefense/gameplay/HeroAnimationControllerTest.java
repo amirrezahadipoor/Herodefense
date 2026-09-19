@@ -52,7 +52,7 @@ final class HeroAnimationControllerTest {
         hero.stepBudgetUnits = 100f;
         hero.beginWalkAnimation();
         assertEquals(HeroAnimationState.WALK, hero.animationState);
-        int first = controller.frameIndex(hero);
+        controller.frameIndex(hero);
         controller.update(hero, 0.1f);
         assertEquals(HeroAnimationState.WALK, hero.animationState);
         // Walk loops

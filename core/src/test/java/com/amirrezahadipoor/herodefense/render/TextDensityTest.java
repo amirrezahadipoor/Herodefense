@@ -25,8 +25,8 @@ final class TextDensityTest {
     void abbrevStatIsShort() {
         assertTrue(UiDensity.abbrevStat("max_health").length() <= 10);
         assertTrue(UiDensity.abbrevStat("attack_speed").length() <= 10);
-        assertTrue(UiDensity.abbrevStat("damage").equals("ATK"));
-        assertTrue(UiDensity.abbrevStat("max_health").equals("HP"));
+        assertTrue("ATK".equals(UiDensity.abbrevStat("damage")));
+        assertTrue("HP".equals(UiDensity.abbrevStat("max_health")));
     }
 
     @Test

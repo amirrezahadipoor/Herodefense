@@ -25,7 +25,7 @@ public final class BossTitleNarration {
 
     public static NarrationRequest forBoss(String bossType) {
         if (bossType == null) return null;
-        String card = TITLE_CARDS.getOrDefault(bossType.toUpperCase(), bossType.replace('_', ' ') + " approaches.");
+        String card = TITLE_CARDS.getOrDefault(bossType.toUpperCase(java.util.Locale.ROOT), bossType.replace('_', ' ') + " approaches.");
         return NarrationRequest.bossTitle(bossType, card);
     }
 
