@@ -277,29 +277,29 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `HOLLOW_OMENS_RISK` | Every sixth wave carries an omen | هر موج ششم یک نشان دارد | Approved. Frequency schedule. |
 | `HOLLOW_OMENS_REWARD` | +25% coins on omen waves | ۲۵٪ سکه بیشتر در موج‌های نشان‌دار | Approved. Targeted coin multiplier. |
 
-### 2.11 StoryStrings (18 entries)
+### 2.11 StoryStrings (22 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
 | `BOSS_ANCIENT_GOLEM` | ANCIENT GOLEM — old guard who still stands. | گولم باستانی — نگهبان کهنه‌کاری که هنوز ایستاده است. | Approved. Somber guardian intro. |
-| `BOSS_THORN_MATRIARCH` | THORN MATRIARCH — she grew half your foes. | مادرتاج خار — نیمی از دشمنانت را او رویاند. | Approved. Menacing botanical matriarch. |
+| `BOSS_THORN_MATRIARCH` | THORN MATRIARCH — she grew half your foes. | مادرتاج خار — نیمی از دشمنانت را او رویانده است. | Approved. Natural botanical matriarch intro. |
 | `BOSS_EMBER_WYRM` | EMBER WYRM — a fire that never went out. | اژدر اخگر — آتشی که هرگز خاموش نشد. | Approved. Primordial dragon archetype. |
-| `BOSS_VOID_KNIGHT` | VOID KNIGHT — he fell and forgot the rest. | شوالیهٔ تهی — افتاد و بقیه را فراموش کرد. | Approved. Added ezafe to «شوالیهٔ». |
+| `BOSS_VOID_KNIGHT` | VOID KNIGHT — he fell and forgot the rest. | شوالیهٔ تهی — سقوط کرد و همه چیز را از یاد برد. | Approved. Added ezafe to «شوالیهٔ». |
 | `BOSS_FROST_TITAN` | FROST TITAN — winter that learned to walk. | غول یخبندان — زمستانی که راه رفتن آموخت. | Approved. Frost Titan title intro. |
 | `BOSS_SHADOW_LICH` | SHADOW LICH — keeper of the second fall. | لیچ سایه — نگهبان سقوط دوم. | Approved. Shadow Lich title intro. |
 | `BOSS_STORM_COLOSSUS` | STORM COLOSSUS — thunder in a stone chest. | غول توفان — تندر در سینه‌ای سنگی. | Approved. Storm Colossus title intro. |
-| `BOSS_BLOODROOT_AVATAR` | BLOODROOT AVATAR — the Grove's own root, turned. | تجسم ریشهٔ خونین — ریشهٔ خود بیشه، دگرگون‌شده. | Approved. Bloodroot Avatar title intro. |
-| `CEREMONY_WALK_OUT` | One root should not hold this alone. | یک ریشه نباید این را به تنهایی نگه دارد. | Approved. Solemn ritual opening. |
-| `CEREMONY_PLANT` | Then another one. Grow angry if you must. | پس یکی دیگر. اگر باید، خشمگین شو. | Approved. Hero's internal resolve. |
-| `CEREMONY_WATER` | I will hold the line. That is my job. | من خط را نگه می‌دارم. کارم همین است. | Approved. Terse defensive devotion. |
-| `CEREMONY_GROW` | The grove remembers your gift. | بیشه هدیه تو را به یاد دارد. | Approved. Reverent Tree voice. |
-| `CEREMONY_WALK_BACK` | Now hold the grove. | حالا بیشه را نگه دار. | Approved. Closing imperative. |
-| `REFLECTION_WAVE_25` | Wolves fear something deeper than me. That should scare me more. | گرگ‌ها از چیزی ژرف‌تر از من می‌ترسند. این باید بیشتر بترساندم. | Approved. Foreshadowing void horrors. |
-| `REFLECTION_WAVE_50` | Half of what I killed, I once knew. I try not to think of it. | نیمی از آنچه کشته‌ام روزی می‌شناختم. سعی می‌کنم به آن فکر نکنم. | Approved. Melancholy battlefield reality. |
-| `REFLECTION_WAVE_75` | Ground past the tree line feels wrong. Not ground at all. | زمین آن‌سوی خط درختان درست نیست. اصلاً زمین نیست. | Approved. Atmospheric unreality. |
-| `REFLECTION_WAVE_125` | Three trees now. Thrice to lose. Bad trade. I would still make it. | حالا سه درخت. سه بار باختن. دادوستد بدی است. باز هم می‌کنم. | Approved. Gritty grim determination. |
-| `REFLECTION_WAVE_150` | It no longer sends weak first. It is done waiting. | دیگر نخست ضعیف‌ها را نمی‌فرستد. انتظارش تمام شده است. | Approved. Climax approaching tension. |
-| `REFLECTION_WAVE_175` | What is left may be the last. Or it wants me to think so. | آنچه مانده شاید آخرین باشد. یا می‌خواهد چنین فکر کنم. | Approved. Psychological isolation. |
+| `BOSS_BLOODROOT_AVATAR` | BLOODROOT AVATAR — the grove's own wound. | آواتار خون‌ریشه — زخمِ خودِ بیشه. | Approved. Bloodroot Avatar title intro. |
+| `CEREMONY_WALK_OUT` | One root should not hold this alone. | یک ریشه نباید این بار را تنهایی به دوش بکشد. | Approved. Natural and clear ritual opening. |
+| `CEREMONY_PLANT` | Then another one. Grow angry if you must. | حالا یکی دیگر. اگر لازم است، خشمگین رشد کن. | Approved. Hero's internal resolve. |
+| `CEREMONY_WATER` | I will hold the line. That is my job. | من خط دفاع را نگه می‌دارم. این وظیفهٔ من است. | Approved. Clear defensive devotion. |
+| `CEREMONY_GROW` | The grove remembers your gift. | بیشه فداکاری تو را به یاد خواهد سپرد. | Approved. Reverent Tree voice. |
+| `CEREMONY_WALK_BACK` | Now hold the grove. | حالا از بیشه دفاع کن. | Approved. Actionable imperative. |
+| `REFLECTION_WAVE_25` | Wolves fear something deeper than me. That should scare me more. | گرگ‌ها از چیزی ترسناک‌تر از من فرار می‌کنند؛ این باید بیشتر مرا نگران کند. | Approved. Atmospheric tension. |
+| `REFLECTION_WAVE_50` | Half of what I killed, I once knew. I try not to think of it. | نیمی از کسانی را که شکست دادم روزی می‌شناختم؛ سعی می‌کنم به آن فکر نکنم. | Approved. Melancholy battlefield reflection. |
+| `REFLECTION_WAVE_75` | Ground past the tree line feels wrong. Not ground at all. | زمین آن‌سوی درختان حس ناامنی دارد؛ اصلاً شبیه زمین واقعی نیست. | Approved. Tangible unreality. |
+| `REFLECTION_WAVE_125` | Three trees now. Thrice to lose. Bad trade. I would still make it. | حالا سه درخت داریم؛ سه برابر خطر باخت، اما هنوز هم ارزشش را دارد. | Approved. Gritty determination. |
+| `REFLECTION_WAVE_150` | It no longer sends weak first. It is done waiting. | دیگر دشمنان ضعیف را اول نمی‌فرستد؛ دیگر صبری برایش نمانده است. | Approved. Climax approaching tension. |
+| `REFLECTION_WAVE_175` | What is left may be the last. Or it wants me to think so. | شاید این آخرین نبرد باشد؛ یا شاید می‌خواهد من این‌طور فکر کنم. | Approved. Psychological isolation. |
 | `TROPHY_COUNT` | Trophy - %1$s earned | جام - %1$s کسب شد | Approved. Achievement unlock badge. |
 | `TROPHY_NAMES` | Trophy - %1$s | جام - %1$s | Approved. Single trophy formatting. |
 | `TROPHY_AND` |  and  |  و  | Approved. Conjunction spacing. |
