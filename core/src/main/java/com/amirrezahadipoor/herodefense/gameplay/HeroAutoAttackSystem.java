@@ -26,6 +26,14 @@ public final class HeroAutoAttackSystem {
     public static final float PROJECTILE_SPEED = 900f;
     public static final float CRITICAL_CHANCE = SkillEffects.BASE_CRITICAL_CHANCE;
     public static final float CRITICAL_DAMAGE_MULTIPLIER = SkillEffects.BASE_CRITICAL_MULTIPLIER;
+    /**
+     * The most life the Crimson Root cards may steal per hit. It sits just above the honest deck's
+     * landing zone (the buy policy stops at 20%, and one further card can land at 25.9%), so an
+     * ordinary deck never feels it -- only a stacked deck, which is what it is for (roadmap B1).
+     */
+    public static final float LIFESTEAL_CAP = 0.26f;
+    /** Coins per point of damage dealt by the card share past the cap. */
+    public static final float LIFESTEAL_OVERFLOW_COIN_RATE = 0.02f;
     private static final int MAX_SHOTS_PER_UPDATE = 4;
     private static final int MAX_EXTRA_ARROWS = 6;
 
@@ -221,10 +229,15 @@ public final class HeroAutoAttackSystem {
         int stuns = 0;
         int chainLevel = SkillEffects.level(state, SkillId.CHAIN_LIGHTNING);
         int stunLevel = SkillEffects.level(state, SkillId.STUN_CHANCE);
-        float lifesteal = effectValue(state, BossRewardCardSystem.LIFESTEAL_KEY)
+        float cardLifesteal = effectValue(state, BossRewardCardSystem.LIFESTEAL_KEY);
+        // The Crimson Root caps here (roadmap B1): past the cap every further card share is paid
+        // in coins, so a stacked deck buys wealth, never immortality. The trial, affix and mythic
+        // shares stay additive on top of the capped card, exactly as they always were.
+        float lifesteal = Math.min(LIFESTEAL_CAP, cardLifesteal)
             + TrialEffects.lifestealBonus(state.activeTrials)
             + AffixEffects.lifestealBonus(state)
             + MythicEffects.verdantLifestealBonus(state);
+        float lifestealOverflow = Math.max(0f, cardLifesteal - LIFESTEAL_CAP);
         float impactX = Float.NaN;
         float impactY = Float.NaN;
         events.clear();
@@ -290,6 +303,11 @@ public final class HeroAutoAttackSystem {
                         state.hero.maxHealth,
                         state.hero.health + damageDealt * lifesteal
                     );
+                }
+                if (lifestealOverflow > 0f && damageDealt > 0f) {
+                    state.coins = Math.min(Integer.MAX_VALUE, state.coins
+                        + Math.max(1, Math.round(
+                            damageDealt * lifestealOverflow * LIFESTEAL_OVERFLOW_COIN_RATE)));
                 }
                 projectile.active = false;
             } else {
