@@ -33,9 +33,13 @@ jobs:
           - api: 34
             profile: pixel_tablet
             name: "tablet large-screen"
+          # pixel_fold is not a device id this SDK ships ("No device found matching --device
+          # pixel_fold", run 35462188576), so the foldable profile is resolved at run time from
+          # whatever foldable device definitions avdmanager actually lists.
           - api: 34
-            profile: pixel_fold
+            profile: fold
             name: "foldable continuity"
+            foldable: true
     env:
       GRADLE_USER_HOME: /tmp/herodefense-gradle
       HERO_PROJECT_CACHE_DIR: /tmp/herodefense-project-cache
@@ -63,35 +67,38 @@ jobs:
       - name: Build debug APK
         run: ./scripts/gradle.sh :android:assembleDebug --stacktrace
 
+      - name: Resolve the foldable device id this SDK ships
+        if: matrix.foldable == true
+        id: fold
+        run: |
+          fold=$(avdmanager list device | awk -F': *' 'tolower($1)=="id" && tolower($2) ~ /fold/ {print $2; exit}')
+          if [ -z "$fold" ]; then
+            echo "::error::no foldable device profile in this SDK's device list -- the foldable continuity profile needs one to run"
+            exit 1
+          fi
+          echo "resolved foldable device id: $fold"
+          echo "id=$fold" >> "$GITHUB_OUTPUT"
+
       - name: Run device info + smoke on ${{ matrix.profile }} API ${{ matrix.api }}
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api }}
           arch: x86_64
-          profile: ${{ matrix.profile }}
+          profile: ${{ matrix.foldable && steps.fold.outputs.id || matrix.profile }}
           disable-animations: true
           emulator-options: >-
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
             -camera-back none -camera-front none
+          # The emulator-runner runs each line as its own sh -c and stops at the first failing line,
+          # so every command here is single-line and the pull guards itself: a real failure in the
+          # smoke run or the capture test fails the step, and only the evidence pulls are best-effort.
           script: |
-            set +e
             adb shell getprop > device-props-${{ matrix.profile }}-api${{ matrix.api }}.txt
             adb shell dumpsys display > dumpsys-display-${{ matrix.profile }}-api${{ matrix.api }}.txt
             ./scripts/android-touch-test.sh
-            smoke=$?
             ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace
-            capture=$?
-            if adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt; then
-              echo "device-info.txt pulled from the debug package"
-            else
-              echo "device-info.txt was not on the device: the capture test did not reach its write"
-            fi
+            if adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt; then echo "device-info.txt pulled from the debug package"; else echo "device-info.txt was not on the device: the capture test did not reach its write"; fi
             adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt
-            if [ "$smoke" -ne 0 ]; then
-              echo "touch smoke test failed with exit $smoke"
-              exit "$smoke"
-            fi
-            exit "$capture"
 
       - name: Upload device evidence ${{ matrix.profile }}
         if: always()
@@ -102,6 +109,7 @@ jobs:
             device-*.txt
             dumpsys-*.txt
             android/build/reports/androidTests/
+            android/build/outputs/connected_android_test_additional_output/
           if-no-files-found: warn
           retention-days: 30
 

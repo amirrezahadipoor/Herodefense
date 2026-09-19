@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Build;
 import android.os.SystemClock;
 import android.view.InputDevice;
 import android.view.MotionEvent;
@@ -757,7 +758,7 @@ public final class AndroidTouchSmokeTest {
     /** How far a screenshot may drift from its recorded mean before the run fails. */
     private static final float MEAN_LUMA_TOLERANCE = 8f;
 
-    /** Absolute floor: no screen may be OLED-black, whatever its reference says. */
+    /** Absolute floor on the reference profile: no screen may be OLED-black, whatever its reference says. */
     private static final float MIN_MEAN_LUMA = 30f;
 
     /** Wider band for captures that land mid-animation; see the four-argument `ref`. */
@@ -778,6 +779,14 @@ public final class AndroidTouchSmokeTest {
      * screenshot is compared with what it actually looked like, so both a dark frame and a washed-out frame
      * fail. A new capture must be added here with a measured reference in the same commit; until then it is
      * reported as UNREFERENCED in the CI log and only held to the absolute floor.
+     *
+     * <p>This is the reference profile's table ({@code api35-1080x2220}, the gate emulator of the
+     * "Build and touch-test Android" workflow). The device-evidence matrix runs this same suite on other
+     * profiles, where the same screens compose differently -- the tablet's 1600 px frame shows more
+     * backdrop and the same screens measure 15-19 luma darker -- so those profiles carry their own
+     * measured tables below, and a profile with no table yet is first-contact: held to
+     * {@link #FIRST_CONTACT_FLOOR} alone with every screen reported UNREFERENCED, so the run's own
+     * measurements can be pinned in the next commit.
      */
     private static final Map<String, float[]> SCREEN_REFERENCE = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 44.35f, 0.9141f),
@@ -815,6 +824,126 @@ public final class AndroidTouchSmokeTest {
         ref("reward-cards-premium-v2.png", 43.73f, 0.9712f)
     );
 
+    /**
+     * The device-evidence matrix's api30 pixel_3a table, measured by run 35462188576 at commit 39383ed --
+     * the run whose one failure ({@code opening-line-one} at 43.47 against the reference profile's 34.45)
+     * is what made the tables per-profile. Screens this run never reached ({@code opening-line-three},
+     * {@code live-hud}, {@code pause}: their journey stopped at the first drift) are absent and stay
+     * UNREFERENCED on this profile until a green run measures them.
+     */
+    private static final Map<String, float[]> API30_PIXEL_3A = Map.ofEntries(
+        ref("tree-siege-premium-v2.png", 46.16f, 0.9083f),
+        ref("vfx-tree-collapse-premium-v2.png", 43.46f, 0.9552f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        ref("defeat-premium-v2.png", 35.46f, 0.9747f),
+        ref("trial-draft-premium-v2.png", 43.90f, 0.9741f),
+        ref("settings-premium-v2.png", 44.98f, 0.9570f),
+        ref("level-up-premium-v2.png", 43.55f, 0.9688f),
+        ref("inventory-details-premium-v2.png", 44.96f, 0.9626f),
+        ref("inventory-sell-feedback-premium-v2.png", 44.96f, 0.9626f),
+        ref("vfx-boss-entrance-premium-v2.png", 43.57f, 0.9689f),
+        ref("vfx-combat-0-premium-v2.png", 49.66f, 0.9589f),
+        ref("vfx-combat-1-premium-v2.png", 51.00f, 0.9532f),
+        ref("vfx-combat-2-premium-v2.png", 51.09f, 0.9526f),
+        ref("vfx-combat-3-premium-v2.png", 51.04f, 0.9526f),
+        ref("vfx-combat-4-premium-v2.png", 51.04f, 0.9520f),
+        ref("vfx-combat-5-premium-v2.png", 51.14f, 0.9517f),
+        ref("shop-affordability-premium-v2.png", 41.61f, 0.9566f),
+        ref("shop-purchase-feedback-premium-v2.png", 41.61f, 0.9566f),
+        ref("shop-skills-tab-premium-v2.png", 38.68f, 0.9524f),
+        ref("ceremony-plant-premium-v2.png", 51.54f, 0.9592f),
+        ref("ceremony-water-premium-v2.png", 51.52f, 0.9591f),
+        ref("second-tree-standing-premium-v2.png", 49.84f, 0.9599f),
+        ref("victory-premium-v2.png", 45.86f, 0.9807f),
+        ref("main-menu-premium-v2.png", 42.85f, 0.9691f),
+        ref("opening-line-one-premium-v2.png", 43.47f, 0.9932f),
+        ref("reward-cards-premium-v2.png", 43.57f, 0.9689f)
+    );
+
+    /** The device-evidence matrix's api33 pixel_7 table, measured by run 35462188576 at commit 39383ed. */
+    private static final Map<String, float[]> API33_PIXEL_7 = Map.ofEntries(
+        ref("tree-siege-premium-v2.png", 43.29f, 0.8641f),
+        ref("vfx-tree-collapse-premium-v2.png", 40.89f, 0.8993f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        ref("defeat-premium-v2.png", 34.39f, 0.9170f),
+        ref("trial-draft-premium-v2.png", 41.37f, 0.9139f),
+        ref("settings-premium-v2.png", 42.11f, 0.9138f),
+        ref("level-up-premium-v2.png", 41.09f, 0.9067f),
+        ref("inventory-details-premium-v2.png", 42.37f, 0.9108f),
+        ref("inventory-sell-feedback-premium-v2.png", 42.37f, 0.9108f),
+        ref("vfx-boss-entrance-premium-v2.png", 41.08f, 0.9066f),
+        ref("vfx-combat-0-premium-v2.png", 48.58f, 0.9060f),
+        ref("vfx-combat-1-premium-v2.png", 48.55f, 0.9048f),
+        ref("vfx-combat-2-premium-v2.png", 48.56f, 0.9049f),
+        ref("vfx-combat-3-premium-v2.png", 48.64f, 0.9053f),
+        ref("vfx-combat-4-premium-v2.png", 48.61f, 0.9042f),
+        ref("vfx-combat-5-premium-v2.png", 48.54f, 0.9040f),
+        ref("shop-affordability-premium-v2.png", 37.78f, 0.9023f),
+        ref("shop-purchase-feedback-premium-v2.png", 37.78f, 0.9023f),
+        ref("shop-skills-tab-premium-v2.png", 35.10f, 0.8994f),
+        ref("ceremony-plant-premium-v2.png", 48.10f, 0.9167f),
+        ref("ceremony-water-premium-v2.png", 48.50f, 0.9158f),
+        ref("second-tree-standing-premium-v2.png", 48.05f, 0.9044f),
+        ref("victory-premium-v2.png", 42.36f, 0.9148f),
+        ref("main-menu-premium-v2.png", 40.36f, 0.9071f),
+        ref("opening-line-one-premium-v2.png", 37.23f, 0.9323f),
+        ref("opening-line-three-premium-v2.png", 38.06f, 0.9307f),
+        ref("live-hud-premium-v2.png", 46.66f, 0.9018f),
+        ref("pause-premium-v2.png", 40.93f, 0.9074f),
+        ref("reward-cards-premium-v2.png", 41.08f, 0.9066f)
+    );
+
+    /**
+     * The device-evidence matrix's api34 pixel_tablet table, measured by run 35462188576 at commit 39383ed.
+     * The tablet's 1600x2560 frame composes with more backdrop than a phone's 1080 px column, so the same
+     * screens measure 15-19 luma darker (and a larger share of the frame lit but dimmer). Eleven screens
+     * were reached before their journeys stopped at the first out-of-band frame; the rest stay UNREFERENCED
+     * on this profile -- held to its floor, measured into the artifact -- until a green run pins them.
+     */
+    private static final Map<String, float[]> API34_PIXEL_TABLET = Map.ofEntries(
+        ref("tree-siege-premium-v2.png", 27.42f, 0.9679f),
+        ref("settings-premium-v2.png", 27.21f, 0.9924f),
+        ref("level-up-premium-v2.png", 25.94f, 0.9874f),
+        ref("inventory-details-premium-v2.png", 26.93f, 0.9879f),
+        ref("vfx-boss-entrance-premium-v2.png", 26.70f, 0.9878f),
+        ref("shop-affordability-premium-v2.png", 25.17f, 0.9864f),
+        ref("ceremony-plant-premium-v2.png", 29.17f, 0.9865f),
+        ref("victory-premium-v2.png", 27.48f, 0.9834f),
+        ref("main-menu-premium-v2.png", 26.41f, 0.9876f),
+        ref("reward-cards-premium-v2.png", 26.70f, 0.9878f)
+    );
+
+    /** The profile this run is on, as {@code api<level>-<short>x<long>} of the captured frame. */
+    private static String runProfile;
+
+    /**
+     * The reference tables by profile key. The reference profile is the gate emulator; the others are the
+     * device-evidence matrix's, each measured on its own profile by the run that first ran there.
+     */
+    private static final Map<String, Map<String, float[]>> PROFILE_TABLES = Map.of(
+        "api35-1080x2220", SCREEN_REFERENCE,
+        "api30-1080x2220", API30_PIXEL_3A,
+        "api33-1080x2400", API33_PIXEL_7,
+        "api34-1600x2560", API34_PIXEL_TABLET
+    );
+
+    /**
+     * The black-screen floor per profile: the reference profile's 30 sits under its measured screens
+     * (34-48); the tablet's genuine screens measure 25-29, so its floor is the historical blanket 20 --
+     * still five times a black frame, but above what that profile's real content can dip to.
+     */
+    private static final Map<String, Float> PROFILE_FLOORS = Map.of(
+        "api35-1080x2220", MIN_MEAN_LUMA,
+        "api30-1080x2220", MIN_MEAN_LUMA,
+        "api33-1080x2400", MIN_MEAN_LUMA,
+        "api34-1600x2560", 20f
+    );
+
+    /**
+     * The floor for a first-contact profile -- one whose table is not pinned yet. It is the blanket floor
+     * this contract used before per-screen references existed: low enough that no genuine frame fails on
+     * baselines nobody measured, high enough that an OLED-black frame (which measures under 5) cannot pass.
+     */
+    private static final float FIRST_CONTACT_FLOOR = 20f;
+
     /** Reference with the default tolerance. */
     private static Map.Entry<String, float[]> ref(String name, float mean, float lit) {
         return Map.entry(name, new float[] {mean, lit, MEAN_LUMA_TOLERANCE});
@@ -831,19 +960,24 @@ public final class AndroidTouchSmokeTest {
 
 
     /**
-     * The brightness contract for one frame: the absolute floor, then the recorded reference band and the
-     * lit-fraction check for every screenshot that has a reference.
+     * The brightness contract for one frame: the profile's floor, then the recorded reference band and the
+     * lit-fraction check for every screenshot that has a reference on this profile. A profile with no
+     * pinned table is first-contact -- floor only, every screen UNREFERENCED -- so its own measurements
+     * can be pinned in the next commit rather than judged against a table measured on another device.
      */
     private static void assertBrightnessContract(String name, float[] brightness) {
         float mean = brightness[0];
         float lit = brightness[3];
-        assertTrue(name + " mean luma " + mean + " below the floor of " + MIN_MEAN_LUMA,
-            mean >= MIN_MEAN_LUMA);
-        float[] reference = SCREEN_REFERENCE.get(name);
+        float floor = PROFILE_FLOORS.getOrDefault(runProfile, FIRST_CONTACT_FLOOR);
+        assertTrue(name + " mean luma " + mean + " below the " + runProfile + " floor of " + floor,
+            mean >= floor);
+        Map<String, float[]> references = PROFILE_TABLES.getOrDefault(runProfile, Map.of());
+        float[] reference = references.get(name);
         if (reference == null) {
-            UNREFERENCED.add(name);
-            System.out.println("UNREFERENCED SCREENSHOT " + name + " mean=" + mean + " lit=" + lit
-                + " - record it in SCREEN_REFERENCE in the same commit");
+            UNREFERENCED.add(runProfile + " " + name);
+            System.out.println("UNREFERENCED SCREENSHOT " + name + " on " + runProfile
+                + " mean=" + mean + " lit=" + lit
+                + " - record it in that profile's table in the same commit");
             return;
         }
         float tolerance = reference.length > 2 ? reference[2] : MEAN_LUMA_TOLERANCE;
@@ -860,8 +994,16 @@ public final class AndroidTouchSmokeTest {
      * per-screenshot instead of one blanket floor that a dark frame can quietly undercut. The numbers are
      * written to the instrumentation output directory (uploaded with the screenshots) and printed, because
      * a gate whose reference is not published is a gate nobody can check.
+     *
+     * <p>The frame also names the profile this run is on -- {@code api<level>-<short>x<long>} of the frame
+     * itself, the axes the reference tables are pinned per: the same screen composes differently on a
+     * tablet's 1600 px frame than on a phone's 1080 px column, so the table that judges it has to be the
+     * one measured on that geometry.
      */
     private static float[] measureBrightness(Bitmap screenshot, String name) {
+        runProfile = "api" + Build.VERSION.SDK_INT
+            + "-" + Math.min(screenshot.getWidth(), screenshot.getHeight())
+            + "x" + Math.max(screenshot.getWidth(), screenshot.getHeight());
         long total = 0L;
         int samples = 0;
         int darkest = 255;

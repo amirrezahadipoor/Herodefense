@@ -59,24 +59,14 @@ jobs:
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
             -camera-back none -camera-front none
           script: |
-            set +e
+            # The emulator-runner runs each line as its own sh -c and stops at the first failing line,
+            # so every command here is single-line and the pull guards itself: a real failure in the
+            # smoke run or the capture test fails the step, and only the evidence pull is best-effort.
             adb shell getprop > device-props.txt
             adb shell dumpsys display > dumpsys-display.txt
             ./scripts/android-touch-test.sh
-            smoke=$?
             ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace
-            capture=$?
-            if adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info.txt; then
-              echo "device-info.txt pulled from the debug package"
-            else
-              echo "device-info.txt was not on the device: the capture test did not reach its write"
-            fi
-            if [ "$smoke" -ne 0 ]; then
-              echo "touch smoke test failed with exit $smoke"
-              exit "$smoke"
-            fi
-            exit "$capture"
-
+            if adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info.txt; then echo "device-info.txt pulled from the debug package"; else echo "device-info.txt was not on the device: the capture test did not reach its write"; fi
       - name: Upload human-review frames (E3 — what a machine cannot catch) + device info (I2)
         if: always()
         uses: actions/upload-artifact@v4
