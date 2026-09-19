@@ -13,6 +13,7 @@ import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.items.EquipmentDefinition;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.story.Epilogue;
+import com.amirrezahadipoor.herodefense.story.HollowVoice;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 
 /** Premium end-of-run surface with distinct defeat and victory treatments and a framed restart. */
@@ -214,6 +215,19 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
     ) {
         Epilogue epilogue = Epilogue.endingFor(state);
         float y = EPILOGUE_FIRST_LINE_Y;
+        // The Hollow's word on this death, above the Tree's own ending; once revealed, it leaves the queue.
+        String hollowLine = HollowVoice.pendingDeathLine(state);
+        if (hollowLine != null) {
+            for (String line : CodexOverlayRenderer.wrapLines(
+                hollowLine, this::epilogueWidth, EPILOGUE_MAX_WIDTH)) {
+                text.drawCentered(batch, line, 360f, y, EPILOGUE_SCALE, OverlayText.GOLD, reveal);
+                y -= EPILOGUE_LINE_STRIDE;
+            }
+            if (reveal > 0.5f) {
+                HollowVoice.markDeathLineShown(state);
+            }
+            y -= EPILOGUE_STANZA_GAP * 0.5f;
+        }
         for (String beat : epilogue.lines()) {
             for (String line : CodexOverlayRenderer.wrapLines(
                 beat, this::epilogueWidth, EPILOGUE_MAX_WIDTH)) {

@@ -31,6 +31,8 @@ public final class EliteAffixSystem {
     public static final float CINDERHALO_RADIUS = 90f;
     public static final float CINDERHALO_TICK_SECONDS = 0.5f;
     public static final float CINDERHALO_DAMAGE_SHARE = 0.08f;
+    /** A blightburst at or below this health share counts as dying and warns its blast ring. */
+    public static final float BLIGHT_WARN_HEALTH_FRACTION = 0.35f;
 
     private final HeroDamageSystem heroDamageSystem;
 
@@ -53,6 +55,12 @@ public final class EliteAffixSystem {
                     spawned.addAll(children);
                 }
                 continue;
+            }
+            // A dying blightburst owes the player a warning before its death blast (roadmap A2).
+            if (!enemy.blastWarned && enemy.maxHealth > 0f
+                && EliteAffix.BLIGHTBURST.id().equals(enemy.eliteAffix)
+                && enemy.health <= enemy.maxHealth * BLIGHT_WARN_HEALTH_FRACTION) {
+                enemy.blastWarned = true;
             }
             if (enemy.stunned()) continue;
             if (EliteAffix.ROOTWARD_WARD.id().equals(enemy.eliteAffix)) {

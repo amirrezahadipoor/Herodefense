@@ -5,10 +5,13 @@ import com.amirrezahadipoor.herodefense.audio.NarrationSystem;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
+import com.amirrezahadipoor.herodefense.story.BossBeats;
 import com.amirrezahadipoor.herodefense.story.BossTitleCards;
 import com.amirrezahadipoor.herodefense.story.BossTitleNarration;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
+import com.amirrezahadipoor.herodefense.story.Deeds;
 import com.amirrezahadipoor.herodefense.story.EliteFragments;
+import com.amirrezahadipoor.herodefense.story.HollowVoice;
 import com.amirrezahadipoor.herodefense.story.ReflectionLines;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.DropCollectionStage;
@@ -131,6 +134,79 @@ public final class RunPresentationSystem {
         return ReflectionLines.lineForWave(state.waveNumber);
     }
 
+    /** What a freshly started wave opens with: the Hollow's halfway mark once, then reflections. */
+    public String waveStartLine(GameState state) {
+        if (state.waveNumber >= 100) {
+            String hollow = HollowVoice.lineForGroveCeremony(state);
+            if (hollow != null) {
+                return hollow;
+            }
+        }
+        return waveReflection(state);
+    }
+
+    /**
+     * The Hollow speaks: one line per boss fight, when the fight first crosses half
+     * (roadmap ST4). Claimed once by flag, so a resumed save never hears it twice.
+     */
+    public String presentBossHalfBeat(GameState state) {
+        for (Boss boss : state.aliveBosses) {
+            if (boss == null || !boss.alive || boss.halfBeatSpoken) {
+                continue;
+            }
+            if (boss.health <= boss.maxHealth * 0.5f) {
+                boss.halfBeatSpoken = true;
+                return BossBeats.lineFor(boss.bossType);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * The Hollow at hero fall (roadmap ST1): the first death is addressed differently from every
+     * later one. The line parks in the codex ledger until the game-over panel has shown it.
+     */
+    public String presentHollowDeath(GameState state) {
+        return HollowVoice.lineForDeath(state);
+    }
+
+    /** One soft sparkle where a spared watcher stood, plus the Hollow's first word on mercy. */
+    public String presentMercySpare(GameState state, float x, float y) {
+        collectionSparkle(x, y + 30f);
+        return HollowVoice.lineForSpare(state);
+    }
+
+    /** Per-play tick: a fresh deed's announcement first, then a boss fight's half-health beat. */
+    public void presentPlaytime(GameState state) {
+        String deedLine = presentDeeds(state);
+        if (deedLine != null) {
+            beats.showBeat(deedLine);
+            return;
+        }
+        String bossHalfBeat = presentBossHalfBeat(state);
+        if (bossHalfBeat != null) {
+            beats.showBeat(bossHalfBeat);
+        }
+    }
+
+    /**
+     * The Vigil Deeds (roadmap ST2): pays what the run has just earned and announces it.
+     * Returns null on most frames; a deed line when one completed.
+     */
+    private String presentDeeds(GameState state) {
+        java.util.List<Deeds> newlyCompleted = Deeds.completeNewlyEarned(state);
+        if (newlyCompleted.isEmpty()) {
+            return null;
+        }
+        beats.save();
+        return newlyCompleted.get(0).announce();
+    }
+
+    /** The one bind of the collection sparkle; drops homing in and spared watchers share it. */
+    private void collectionSparkle(float x, float y) {
+        particleSystem.emitCollectionSparkle(x, y);
+    }
+
     public void emitCollectionSparkles(GameState state, float deltaSeconds) {
         for (DropEntity drop : state.drops) {
             if (drop == null || !drop.active
@@ -139,9 +215,7 @@ public final class RunPresentationSystem {
             }
             if (drop.homingElapsedSeconds + deltaSeconds >= DropPickupSystem.HOMING_DURATION_SECONDS
                 && ("ITEM".equals(drop.dropType) || "POTION".equals(drop.dropType))) {
-                particleSystem.emitCollectionSparkle(
-                    CombatEntityRenderer.dropTargetX(), CombatEntityRenderer.DROP_TARGET_Y + 30f
-                );
+                collectionSparkle(CombatEntityRenderer.dropTargetX(), CombatEntityRenderer.DROP_TARGET_Y + 30f);
             }
         }
     }

@@ -74,6 +74,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     private final Texture arrowNormal;
     private final Texture arrowCrit;
     private final Texture arrowSecondary;
+    private final BlastWarnRenderer blastWarnRenderer;
 
     public CombatEntityRenderer() {
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
@@ -81,6 +82,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         pixmap.fill();
         pixel = new Texture(pixmap);
         pixmap.dispose();
+        blastWarnRenderer = new BlastWarnRenderer(pixel);
         arrowNormal = ArrowTextures.arrow(26, 6, 0.545f, 0.353f, 0.169f, 0.78f, 0.78f, 0.82f, 0.85f, 0.78f, 0.57f);
         arrowCrit = ArrowTextures.arrow(30, 8, 0.545f, 0.353f, 0.169f, 1f, 0.84f, 0.31f, 0.35f, 0.92f, 0.96f);
         arrowSecondary = ArrowTextures.arrow(20, 5, 0.30f, 0.36f, 0.23f, 0.72f, 0.75f, 0.78f, 0.48f, 0.80f, 0.52f);
@@ -107,6 +109,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     public void drawEffects(SpriteBatch batch, GameState state, float runTimeSeconds) {
         drawRotTrail(batch, state);
         drawTelegraphWarnings(batch, state, runTimeSeconds);
+        blastWarnRenderer.draw(batch, state, runTimeSeconds);
         drawFocusRing(batch, state);
         focusMarkRenderer.drawMarks(batch, state, runTimeSeconds, this::focusMarkBox);
         drawProjectiles(batch, state);
@@ -256,10 +259,6 @@ public final class CombatEntityRenderer implements AutoCloseable {
     }
 
     /**
-     * Focus meter as a pixel ring around the Hero: a dim full track, a gold
-     * lit arc for the charge, burning white once the Ultimate is ready.
-     */
-    /**
      * Ground warning under the Hero for every telegraphed boss special, in the
      * boss's identity color; stacked rings keep simultaneous specials readable.
      */
@@ -340,6 +339,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         return new float[] {enemy.x - size * 0.5f, enemy.y - size * feet, size};
     }
 
+    /** Focus meter as a pixel ring: a dim track, a gold lit arc, burning white when ready. */
     private void drawFocusRing(SpriteBatch batch, GameState state) {
         if (state == null || state.hero == null || !state.hero.alive) return;
         float ratio = FocusSystem.ratio(state);

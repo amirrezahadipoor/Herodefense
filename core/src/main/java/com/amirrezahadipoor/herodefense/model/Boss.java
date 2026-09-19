@@ -17,6 +17,8 @@ public final class Boss extends Enemy {
     public boolean entrancePresented;
     public int specialUseCount;
     public int bossNumber;
+    /** The Hollow's half-health line has been spoken for this fight (roadmap ST4). */
+    public boolean halfBeatSpoken;
 
     public Boss() {
         super();

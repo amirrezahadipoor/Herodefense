@@ -53,6 +53,7 @@ import com.amirrezahadipoor.herodefense.presentation.FrameDriver;
 import com.amirrezahadipoor.herodefense.progression.TrophyBook;
 import com.amirrezahadipoor.herodefense.progression.TrophyPresenter;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
+import com.amirrezahadipoor.herodefense.presentation.UltimatePresentation;
 import com.amirrezahadipoor.herodefense.presentation.ScreenStateComposer;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
 import com.amirrezahadipoor.herodefense.input.GdxHapticFeedback;
@@ -132,6 +133,7 @@ import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
 import com.amirrezahadipoor.herodefense.story.BossTitleCards;
 import com.amirrezahadipoor.herodefense.story.CeremonyLines;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
+import com.amirrezahadipoor.herodefense.story.MercySystem;
 import com.amirrezahadipoor.herodefense.story.ReflectionLines;
 import com.amirrezahadipoor.herodefense.story.EliteFragments;
 import com.amirrezahadipoor.herodefense.story.Epilogue;
@@ -546,9 +548,16 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     /**
      * Tap-to-focus (roadmap R3.1): marks the enemy under the finger for the bow, clears the mark on a miss,
      * and answers with the same ripple and haptic the rest of the UI uses so the tap is never silent.
+     * A tap on a silent watcher greets it instead (roadmap ST3); three greetings and it departs.
      */
     private void focusFireAt(float worldX, float worldY) {
         if (gameState == null || !gameState.hero.alive) return;
+        if (MercySystem.greet(gameState, worldX, worldY) == MercySystem.Result.SPARED) {
+            // A spared watcher: one sparkle where it stood, a haptic receipt, the Hollow's word on mercy.
+            showStoryBeat(presentationSystem.presentMercySpare(gameState, worldX, worldY));
+            hapticFeedback.tap();
+            return;
+        }
         Enemy marked = FocusFireSystem.markAt(gameState, worldX, worldY);
         touchFeedbackSystem.triggerTap(worldX, worldY);
         if (marked != null) {
@@ -556,29 +565,19 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
     }
 
-    /** Fires the Ultimate and plays its blast, beam fan, shake, and sound. */
+    /** Fires the Ultimate; its blast, beam fan, shake, and sound live in UltimatePresentation. */
     private void fireUltimate() {
         UltimateResult result = new HeroUltimateSystem().fire(gameState);
         if (!result.fired()) return;
-        particleSystem.emitUltimateBlast(result.blastX(), result.blastY());
-        for (Enemy foe : result.arcTargets()) {
-            if (foe == null) continue;
-            particleSystem.emitChainArc(
-                result.blastX(), result.blastY(), foe.x, foe.y + 40f
-            );
-        }
-        screenShakeSystem.triggerUltimate();
-        audioManager.play(AudioCue.ULTIMATE_RELEASE);
-        audioManager.play(AudioCue.CHAIN_LIGHTNING);
-        audioManager.play(AudioCue.CRITICAL);
+        new UltimatePresentation(particleSystem, screenShakeSystem, audioManager).release(result);
     }
 
-    /** Shows the reflection line for a freshly started wave, unless a beat already shows. */
+    /** Shows the opening line for a freshly started wave, unless a beat already shows. */
     private void showWaveReflection() {
         if (frameDriver.storyBeatLine() != null) {
             return;
         }
-        String reflection = presentationSystem.waveReflection(gameState);
+        String reflection = presentationSystem.waveStartLine(gameState);
         if (reflection != null) {
             showStoryBeat(reflection);
         }
@@ -616,6 +615,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         heroAnimationController.update(gameState.hero, simulationDelta);
         enemyMovementSystem.update(gameState, simulationDelta);
         FocusFireSystem.tick(gameState, simulationDelta);
+        presentationSystem.presentPlaytime(gameState);
         CombatSystem.Frame frame = combatSystem.update(gameState, simulationDelta, settings);
         waveDirector.afterCombat(frame.gameOver(), frame.leveledUp());
         simulationSeconds += simulationDelta;

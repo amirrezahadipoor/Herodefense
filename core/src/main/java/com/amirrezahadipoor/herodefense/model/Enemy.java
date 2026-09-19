@@ -56,6 +56,10 @@ public class Enemy extends ArenaEntity {
     public float lungeBaseSpeed;
     /** The elite kill has been claimed for counts, codex, and its lore fragment. */
     public boolean eliteKillClaimed;
+    /** Greetings received from the player; three and a silent watcher departs (roadmap ST3). */
+    public int spareTouches;
+    /** A dying blightburst has thinned below its warn threshold; the telegraph is owed. */
+    public boolean blastWarned;
 
     public Enemy() {
         super();

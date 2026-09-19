@@ -231,6 +231,7 @@ public final class FrameDriver {
 
     /** Shows a story line for {@link #LINE_SECONDS}, restarting its timer. */
     public void showStoryBeat(String line) {
+        if (line == null || line.isBlank()) return;
         storyBeatLine = line;
         storyBeatSeconds = 0f;
     }

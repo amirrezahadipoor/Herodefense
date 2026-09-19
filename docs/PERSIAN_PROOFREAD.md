@@ -45,7 +45,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 
 ---
 
-## 2. Exhaustive Proofreading Ledger (235 Entries across 12 String Tables)
+## 2. Exhaustive Proofreading Ledger (259 Entries across 12 String Tables)
 
 ### 2.1 MenuStrings (18 entries)
 
@@ -277,7 +277,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `HOLLOW_OMENS_RISK` | Every sixth wave carries an omen | هر موج ششم یک نشان دارد | Approved. Frequency schedule. |
 | `HOLLOW_OMENS_REWARD` | +25% coins on omen waves | ۲۵٪ سکه بیشتر در موج‌های نشان‌دار | Approved. Targeted coin multiplier. |
 
-### 2.11 StoryStrings (22 entries)
+### 2.11 StoryStrings (46 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
@@ -303,6 +303,30 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `TROPHY_COUNT` | Trophy - %1$s earned | جام - %1$s کسب شد | Approved. Achievement unlock badge. |
 | `TROPHY_NAMES` | Trophy - %1$s | جام - %1$s | Approved. Single trophy formatting. |
 | `TROPHY_AND` |  and  |  و  | Approved. Conjunction spacing. |
+| `HOLLOW_DEATH_FIRST` | You fell. Not the Hero -- you. I can tell the difference. | تو افتادی؛ نه قهرمان. خودت. من فرق این دو را می‌فهمم. | Approved. Meta voice, direct second person kept. |
+| `HOLLOW_DEATH_AGAIN` | Again. You always get up. It is the only interesting thing about you. | باز هم بلند شدی. تنها چیز جالبِ تو همین است. | Approved. Dry meta mockery; kasra preserved on «جالبِ». |
+| `HOLLOW_SPARE` | It was only watching, and you let it go? I remember mercy. I feed on it later. | داشت تماشایت می‌کرد و رهایش کردی؟ رحمتت را به خاطر می‌سپارم؛ بعداً. | Approved. Ominous promise; natural ellipsis of the trailing threat. |
+| `HOLLOW_WAVE100` | Halfway. The Tree thanks you. I am not in a hurry. Are you? | نیمه‌ی راه. درخت از تو ممنون است. من عجله ندارم. تو چِی؟ | Approved. Conversational cadence; «چِی» diacritic for the spoken lilt. |
+| `HOLLOW_BOSS_GOLEM` | The old guard wavers. Its boundary was never you. | نگهبان کهنه لرزید. مرزش هرگز تو نبودی. | Approved. Terse battlefield whisper. |
+| `HOLLOW_BOSS_MATRIARCH` | She calls the garden home. You are the frost. | او باغ را خانه می‌داند. تو یخ‌بندان هستی. | Approved. Metaphor kept literal-simple for readability. |
+| `HOLLOW_BOSS_WYRM` | Its no grows quiet. Push. | «نه»یش کم‌صدا می‌شود. فشار بیاور. | Approved. Possessive on quoted «نه» handled with «ـش». |
+| `HOLLOW_BOSS_VOID` | It falls and wants company. Give it none. | می‌افتد و همدم می‌خواهد. بهش نده. | Approved. Colloquial «بهش» matches the Hollow's register. |
+| `HOLLOW_BOSS_TITAN` | Winter keeps what it touches. Touch it back. | زمستان آنچه را لمس کند نگه می‌دارد. تو هم لمسش کن. | Approved. Parallel imperative preserved. |
+| `HOLLOW_BOSS_LICH` | The record keeper drafts your name. Keep it brief. | دفتردار، نامت را می‌نویسد. کوتاهش کن. | Approved. Vocative comma reads naturally. |
+| `HOLLOW_BOSS_COLOSSUS` | Thunder never hurries. You should. | رعد عجله نمی‌کند. تو باید. | Approved. Clipped contrast kept. |
+| `HOLLOW_BOSS_BLOODROOT` | The wound fights the cure. It always has. | زخم با درمان می‌جنگد. از همیشه. | Approved. Idiomatic closing «از همیشه». |
+| `DAILY_GIFT` | Two heartwood, kept from yesterday. The Tree counts your days. | دو چوب‌جان از دیروز مانده. درخت روزهایت را می‌شمارد. | Approved. «چوب‌جان» coin term with ZWNJ. |
+| `DEED_WAVE_10` | Deed: held to wave 10  \|  + %1$s coins | کارنامه: ایستادگی تا موج ۱۰  \|  + %1$s سکه | Approved. Row layout mirrors English divider. |
+| `DEED_WAVE_25` | Deed: held to wave 25  \|  + %1$s coins | کارنامه: ایستادگی تا موج ۲۵  \|  + %1$s سکه | Approved. Row layout mirrors English divider. |
+| `DEED_WAVE_50` | Deed: held to wave 50  \|  + %1$s coins | کارنامه: ایستادگی تا موج ۵۰  \|  + %1$s سکه | Approved. Row layout mirrors English divider. |
+| `DEED_WAVE_100` | Deed: held to wave 100  \|  + %1$s coins | کارنامه: ایستادگی تا موج ۱۰۰  \|  + %1$s سکه | Approved. Row layout mirrors English divider. |
+| `DEED_WAVE_150` | Deed: held to wave 150  \|  + %1$s coins | کارنامه: ایستادگی تا موج ۱۵۰  \|  + %1$s سکه | Approved. Row layout mirrors English divider. |
+| `DEED_WAVE_200` | Deed: held to wave 200  \|  + %1$s coins | کارنامه: ایستادگی تا موج ۲۰۰  \|  + %1$s سکه | Approved. Row layout mirrors English divider. |
+| `DEED_FIRST_BOSS` | Deed: first giant felled  \|  + %1$s coins | کارنامه: نخستین غول سرنگون شد  \|  + %1$s سکه | Approved. Verb kept past for the completed act. |
+| `DEED_BOSSES_5` | Deed: five giants in one vigil  \|  + %1$s coins | کارنامه: پنج غول در یک بیداری  \|  + %1$s سکه | Approved. «بیداری» for vigil matches lore usage. |
+| `DEED_CLEAN_25` | Deed: wave 25 without a potion  \|  + %1$s coins | کارنامه: موج ۲۵ بدون معجون  \|  + %1$s سکه | Approved. Constraint phrased as abstinence. |
+| `DEED_FLAWLESS_50` | Deed: wave 50 unfallen and dry  \|  + %1$s coins | کارنامه: موج ۵۰ بی‌مرگ و بی‌معجون  \|  + %1$s سکه | Approved. Twin «بیـ» negations balance the line. |
+| `DEED_CODEX_10` | Deed: read ten codex pages  \|  + %1$s coins | کارنامه: خواندن ده صفحه از دانشنامه  \|  + %1$s سکه | Approved. «دانشنامه» per the codex convention. |
 
 ### 2.12 SettingsStrings (37 entries)
 

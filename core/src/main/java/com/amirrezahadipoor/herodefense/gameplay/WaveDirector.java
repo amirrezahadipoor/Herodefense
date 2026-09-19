@@ -88,6 +88,8 @@ public final class WaveDirector {
                 particleSystem.emitTreeDestruction(WorldLayout.groveTreeX(index), WorldLayout.groveTreeY(index));
             }
             screenShakeSystem.triggerTreeFall();
+            // The Hollow speaks at hero fall, once per line, to the player (roadmap ST1).
+            presentationSystem.presentHollowDeath(state);
             state.trophies.recordRunEnd(state.peakWaveReached, state.noPotionRun);
             state.epilogueId = Epilogue.select(state).name();
             host.transitionTo(GameScreenState.GAME_OVER);

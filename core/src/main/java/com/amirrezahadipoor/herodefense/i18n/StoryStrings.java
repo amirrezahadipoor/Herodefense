@@ -67,7 +67,52 @@ public enum StoryStrings implements Translated {
     /** The trophy line: a count when there are too many to read, otherwise the names joined. */
     TROPHY_COUNT("Trophy - %1$s earned", "جام - %1$s کسب شد"),
     TROPHY_NAMES("Trophy - %1$s", "جام - %1$s"),
-    TROPHY_AND(" and ", " و ");
+    TROPHY_AND(" and ", " و "),
+
+    /** The Hollow (roadmap ST1): the one voice that talks to the player, not the Hero. */
+    HOLLOW_DEATH_FIRST("You fell. Not the Hero -- you. I can tell the difference.",
+        "تو افتادی؛ نه قهرمان. خودت. من فرق این دو را می‌فهمم."),
+    HOLLOW_DEATH_AGAIN("Again. You always get up. It is the only interesting thing about you.",
+        "باز هم بلند شدی. تنها چیز جالبِ تو همین است."),
+    HOLLOW_SPARE("It was only watching, and you let it go? I remember mercy. I feed on it later.",
+        "داشت تماشایت می‌کرد و رهایش کردی؟ رحمتت را به خاطر می‌سپارم؛ بعداً."),
+    HOLLOW_WAVE100("Halfway. The Tree thanks you. I am not in a hurry. Are you?",
+        "نیمه‌ی راه. درخت از تو ممنون است. من عجله ندارم. تو چِی؟"),
+
+    /** The Hollow's half-health beat, one per boss identity. */
+    HOLLOW_BOSS_GOLEM("The old guard wavers. Its boundary was never you.",
+        "نگهبان کهنه لرزید. مرزش هرگز تو نبودی."),
+    HOLLOW_BOSS_MATRIARCH("She calls the garden home. You are the frost.",
+        "او باغ را خانه می‌داند. تو یخ‌بندان هستی."),
+    HOLLOW_BOSS_WYRM("Its no grows quiet. Push.",
+        "«نه»یش کم‌صدا می‌شود. فشار بیاور."),
+    HOLLOW_BOSS_VOID("It falls and wants company. Give it none.",
+        "می‌افتد و همدم می‌خواهد. بهش نده."),
+    HOLLOW_BOSS_TITAN("Winter keeps what it touches. Touch it back.",
+        "زمستان آنچه را لمس کند نگه می‌دارد. تو هم لمسش کن."),
+    HOLLOW_BOSS_LICH("The record keeper drafts your name. Keep it brief.",
+        "دفتردار، نامت را می‌نویسد. کوتاهش کن."),
+    HOLLOW_BOSS_COLOSSUS("Thunder never hurries. You should.",
+        "رعد عجله نمی‌کند. تو باید."),
+    HOLLOW_BOSS_BLOODROOT("The wound fights the cure. It always has.",
+        "زخم با درمان می‌جنگد. از همیشه."),
+
+    /** The Tree's daily gift (roadmap ST5): the return hook, spoken once a day. */
+    DAILY_GIFT("Two heartwood, kept from yesterday. The Tree counts your days.",
+        "دو چوب‌جان از دیروز مانده. درخت روزهایت را می‌شمارد."),
+
+    /** The Vigil Deeds (roadmap ST2): the run's named goals, paid once each. */
+    DEED_WAVE_10("Deed: held to wave 10  |  + %1$s coins", "کارنامه: ایستادگی تا موج ۱۰  |  + %1$s سکه"),
+    DEED_WAVE_25("Deed: held to wave 25  |  + %1$s coins", "کارنامه: ایستادگی تا موج ۲۵  |  + %1$s سکه"),
+    DEED_WAVE_50("Deed: held to wave 50  |  + %1$s coins", "کارنامه: ایستادگی تا موج ۵۰  |  + %1$s سکه"),
+    DEED_WAVE_100("Deed: held to wave 100  |  + %1$s coins", "کارنامه: ایستادگی تا موج ۱۰۰  |  + %1$s سکه"),
+    DEED_WAVE_150("Deed: held to wave 150  |  + %1$s coins", "کارنامه: ایستادگی تا موج ۱۵۰  |  + %1$s سکه"),
+    DEED_WAVE_200("Deed: held to wave 200  |  + %1$s coins", "کارنامه: ایستادگی تا موج ۲۰۰  |  + %1$s سکه"),
+    DEED_FIRST_BOSS("Deed: first giant felled  |  + %1$s coins", "کارنامه: نخستین غول سرنگون شد  |  + %1$s سکه"),
+    DEED_BOSSES_5("Deed: five giants in one vigil  |  + %1$s coins", "کارنامه: پنج غول در یک بیداری  |  + %1$s سکه"),
+    DEED_CLEAN_25("Deed: wave 25 without a potion  |  + %1$s coins", "کارنامه: موج ۲۵ بدون معجون  |  + %1$s سکه"),
+    DEED_FLAWLESS_50("Deed: wave 50 unfallen and dry  |  + %1$s coins", "کارنامه: موج ۵۰ بی‌مرگ و بی‌معجون  |  + %1$s سکه"),
+    DEED_CODEX_10("Deed: read ten codex pages  |  + %1$s coins", "کارنامه: خواندن ده صفحه از دانشنامه  |  + %1$s سکه");
 
     private final String english;
     private final String persian;
