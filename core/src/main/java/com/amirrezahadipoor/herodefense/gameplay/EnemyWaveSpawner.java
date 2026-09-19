@@ -7,6 +7,7 @@ import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.SpawnLane;
 import com.amirrezahadipoor.herodefense.model.WaveModifier;
+import com.amirrezahadipoor.herodefense.render.ScreenEdges;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -142,7 +143,8 @@ public final class EnemyWaveSpawner {
                 }
                 case SOUTH -> {
                     x = WorldLayout.HERO_CENTER_X + jitter * SOUTH_JITTER;
-                    y = -EDGE_OFFSET;
+                    // Tall panels reveal world below y 0; hide the spawn under the true edge.
+                    y = ScreenEdges.bottom() - EDGE_OFFSET;
                 }
                 default -> throw new IllegalStateException("Unhandled spawn lane: " + lane);
             }

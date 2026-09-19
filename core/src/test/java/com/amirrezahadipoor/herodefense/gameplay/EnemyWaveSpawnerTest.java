@@ -277,4 +277,24 @@ final class EnemyWaveSpawnerTest {
         assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(6));
         assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(10));
     }
+
+    @Test
+    void southSpawnsBelowTheTrueScreenEdgeOnTallPanels() {
+        com.amirrezahadipoor.herodefense.render.ScreenEdges
+            .update(new com.amirrezahadipoor.herodefense.render.DisplayMetrics(720, 2560, 2f));
+        try {
+            float bottom = com.amirrezahadipoor.herodefense.render.ScreenEdges.bottom();
+            GameState state = GameState.newRun(321L);
+            spawner.spawnRegularEnemies(state, 2, 12);
+
+            for (Enemy enemy : state.aliveEnemies) {
+                if (enemy.spawnLane == SpawnLane.SOUTH.id()) {
+                    assertTrue(enemy.y < bottom, "the spawn must start off the physical panel");
+                }
+            }
+        } finally {
+            com.amirrezahadipoor.herodefense.render.ScreenEdges
+                .update(new com.amirrezahadipoor.herodefense.render.DisplayMetrics(720, 1280, 2f));
+        }
+    }
 }
