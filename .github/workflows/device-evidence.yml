@@ -8,6 +8,7 @@ on:
       - "android/src/androidTest/**"
       - "docs/device_evidence/**"
       - "core/src/main/java/**/render/**"
+      - ".github/workflows/device-evidence.yml"
 
 permissions:
   contents: read
@@ -79,15 +80,25 @@ jobs:
             echo "::error::avdmanager was not found under $ANDROID_SDK_ROOT/cmdline-tools"
             exit 1
           fi
-          # Only a clean modern id ([a-z0-9_]) is usable as --device: the list's legacy entries read
-          # like `59 or "6.7in Foldable"` and avdmanager rejects them as a --device argument.
-          fold=$("$avdmanager_bin" list device | awk -F': *' 'tolower($1)=="id" && $2 ~ /^[a-zA-Z0-9_]+$/ && tolower($2) ~ /fold/ {print $2; exit}')
+          # This SDK ships only a legacy foldable entry, whose id line reads `59 or "6.7in Foldable"`:
+          # the quoted name is the form avdmanager accepts as --device, so it is extracted; a modern
+          # id (a clean identifier like pixel_9_pro_fold) is used as it stands.
+          fold=$("$avdmanager_bin" list device | awk -F': *' 'tolower($1)=="id" && tolower($2) ~ /fold/ {print $2; exit}')
           if [ -z "$fold" ]; then
-            echo "::error::no modern foldable device id in this SDK's device list -- foldable ids it does ship:" >&2
-            "$avdmanager_bin" list device | awk -F': *' 'tolower($1)=="id" && tolower($2) ~ /fold/ {print "  " $2}' >&2
+            echo "::error::no foldable device profile in this SDK's device list -- the foldable continuity profile needs one to run" >&2
             exit 1
           fi
-          echo "resolved foldable device id: $fold"
+          case "$fold" in
+            *[!a-zA-Z0-9_]*)
+              fold=$(printf '%s' "$fold" | sed 's/.*"\(.*\)".*/\1/')
+              echo "legacy foldable device entry resolved to: $fold"
+              ;;
+            *) echo "resolved foldable device id: $fold" ;;
+          esac
+          if [ -z "$fold" ]; then
+            echo "::error::the foldable device entry could not be resolved to a usable id" >&2
+            exit 1
+          fi
           echo "id=$fold" >> "$GITHUB_OUTPUT"
 
       - name: Run device info + smoke on ${{ matrix.profile }} API ${{ matrix.api }}
@@ -112,8 +123,7 @@ jobs:
             # both APKs when it finishes, and the uninstall deletes the evidence file with them.
             adb install -r -t android/build/outputs/apk/androidTest/debug/android-debug-androidTest.apk
             adb shell am instrument -w -e class com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest com.amirrezahadipoor.herodefense.debug.test/androidx.test.runner.AndroidJUnitRunner
-            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt
-            adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt
+            if adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt; then echo "device-info.txt pulled from the debug package"; elif adb shell run-as com.amirrezahadipoor.herodefense.debug cat /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt > device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt; then echo "device-info.txt read as the app: API 30 denies the shell a direct pull"; else echo "device-info.txt was not readable on the device"; fi
 
       - name: Upload device evidence ${{ matrix.profile }}
         if: always()

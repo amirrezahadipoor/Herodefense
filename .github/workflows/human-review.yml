@@ -9,6 +9,7 @@ on:
       - "core/src/main/java/**/render/**"
       - "docs/human_reviews/**"
       - "docs/device_evidence/**"
+      - ".github/workflows/human-review.yml"
 
 permissions:
   contents: read
