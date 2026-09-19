@@ -554,13 +554,13 @@ public final class AndroidTouchSmokeTest {
             SystemClock.sleep(1_400L); // let the arena settle before the frame is taken
             Bitmap screenshot = null;
             float[] brightness = null;
-            // Same rule as captureScreen: a still-black surface is retried, not captured.
+            // Same rule as captureScreen: a transient frame is retried, not captured.
             for (int attempt = 0; attempt < 8; attempt++) {
                 if (screenshot != null) screenshot.recycle();
                 screenshot = InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
                 assertNotNull(screenshot);
                 brightness = measureBrightness(screenshot, name);
-                if (brightness[0] < 240f && brightness[0] > 8f) {
+                if (!transientFrame(name, brightness[0])) {
                     break;
                 }
                 SystemClock.sleep(300L);
@@ -1004,6 +1004,24 @@ public final class AndroidTouchSmokeTest {
 
 
     /**
+     * Whether a measured frame can still be a transient rather than the screen the capture names:
+     * washed out, still black, or further from this profile's pinned reference for that screen than
+     * the band ever allows. Used only to decide whether to take another frame -- the contract itself
+     * is {@link #assertBrightnessContract} and it is unchanged.
+     */
+    private static boolean transientFrame(String name, float mean) {
+        if (mean >= 240f || mean <= 8f) {
+            return true;
+        }
+        float[] reference = PROFILE_TABLES.getOrDefault(runProfile, Map.of()).get(name);
+        if (reference == null) {
+            return false;
+        }
+        float tolerance = reference.length > 2 ? reference[2] : MEAN_LUMA_TOLERANCE;
+        return Math.abs(mean - reference[0]) > tolerance;
+    }
+
+    /**
      * The brightness contract for one frame: the profile's floor, then the recorded reference band and the
      * lit-fraction check for every screenshot that has a reference on this profile. A profile with no
      * pinned table is first-contact -- floor only, every screen UNREFERENCED -- so its own measurements
@@ -1109,11 +1127,14 @@ public final class AndroidTouchSmokeTest {
     private static void captureScreen(String name) {
         Bitmap screenshot = null;
         float[] brightness = null;
-        // A washed-out frame (mean at or above 240) and a frame that is still black (mean at or below 8)
-        // are both surfaces that were not ready to be captured -- no screen in any profile's table
-        // measures that low -- so both are retried. The API 30 emulator's first arena frame measured
-        // a flat 0.0 while the game state was already PLAYING (run 35463374081): shaders compile late
-        // there, and a black capture is evidence of nothing.
+        // A frame that can still be a transient is retried, not captured: washed-out (at or above
+        // 240), still black (at or below 8 -- the API 30 emulator's first arena frame measured a flat
+        // 0.0 while the state was already PLAYING, run 35463374081), or far off any reference this
+        // profile has pinned for this screen. That last rule is the tablet's: twice its software
+        // renderer put the capture on a bright event flash -- mean 100.83645 both times, the same
+        // overlay pixel for pixel (runs 35465589953 and 35466173314) -- where the pinning run landed
+        // after the flash. A screen that really changed still fails: the retries only wait out
+        // transitions, and the assertion below is exactly what it was.
         for (int attempt = 0; attempt < 8; attempt++) {
             if (screenshot != null) screenshot.recycle();
             screenshot = InstrumentationRegistry.getInstrumentation()
@@ -1121,7 +1142,7 @@ public final class AndroidTouchSmokeTest {
                 .takeScreenshot();
             assertNotNull(screenshot);
             brightness = measureBrightness(screenshot, name);
-            if (brightness[0] < 240f && brightness[0] > 8f) {
+            if (!transientFrame(name, brightness[0])) {
                 break;
             }
             SystemClock.sleep(300L);
