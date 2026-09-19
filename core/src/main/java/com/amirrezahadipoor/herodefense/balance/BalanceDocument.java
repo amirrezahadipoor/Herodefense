@@ -50,11 +50,11 @@ public final class BalanceDocument {
         0x747269616C7331L, 0x747269616C7331L + 1, 0x747269616C7331L + 2,
         0x747269616C7331L + 3, 0x747269616C7331L + 4};
 
-    /** The three pairs trial measurement has caught above 0.38; the full fourteen-pair matrix is the gate's job. */
+    /** The three pairs the trial gate measures highest; the full seventy-eight-pair matrix is the gate's job. */
     private static final TrialId[][] RISKIEST_PAIRS = {
         {TrialId.BOSS_BOUNTY, TrialId.FAMISHED_EARTH},
-        {TrialId.BOSS_BOUNTY, TrialId.BLOOD_PRICE},
-        {TrialId.MISERS_PACT, TrialId.BLOOD_PRICE}};
+        {TrialId.GLASS_ARROWS, TrialId.FAMISHED_EARTH},
+        {TrialId.MISERS_PACT, TrialId.FAMISHED_EARTH}};
 
     /** The reward-card scenario the card gate has come closest to failing: the lowest-offence forced build. */
     private static final long CARD_SEED = 0x4341524453494DL;
@@ -240,8 +240,8 @@ public final class BalanceDocument {
             names.add("`" + pair[0] + " + " + pair[1] + "`");
         }
         lines.add("");
-        lines.add("The three pairs are the ones this gate has caught above 0.38, in the order of the row: "
-            + String.join(", ", names) + " (the other eleven pairs of the matrix run in the gate, not here).");
+        lines.add("The three pairs are the matrix's highest median spikes, in the order of the row: "
+            + String.join(", ", names) + " (the other seventy-five pairs of the matrix run in the gate, not here).");
         lines.add(String.format(Locale.ROOT, "| Reward-card spike, AGILITY forced at boss 1 | `%.5f` | "
             + "`RewardCardSimulationTest`'s seed, against the 0.40 ceiling |", cardSpike));
         return join(lines);

@@ -24,7 +24,7 @@ public final class DifficultyCurve {
     /** Last wave of the second half's hotter entry span; the final quarter owns the rest of the run. */
     public static final int SECOND_HALF_ENTRY_LAST_WAVE = 150;
     public static final float FINAL_QUARTER_HEALTH_GROWTH = 1.018f;
-    public static final float FINAL_QUARTER_DAMAGE_GROWTH = 1.0055f;
+    public static final float FINAL_QUARTER_DAMAGE_GROWTH = 1.0045f;
     // Middle-third segment (Phase 25.3b): waves 25-80 grow slightly hotter than the
     // base first-half rate so pressure rises end to end instead of plateauing.
     // Tuned against the 5-15% / 35% / 120 s gate (see docs/BALANCE.md).
