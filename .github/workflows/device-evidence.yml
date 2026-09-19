@@ -71,7 +71,15 @@ jobs:
         if: matrix.foldable == true
         id: fold
         run: |
-          fold=$(avdmanager list device | awk -F': *' 'tolower($1)=="id" && tolower($2) ~ /fold/ {print $2; exit}')
+          avdmanager_bin=""
+          for candidate in "$ANDROID_SDK_ROOT"/cmdline-tools/*/bin/avdmanager; do
+            if [ -x "$candidate" ]; then avdmanager_bin="$candidate"; break; fi
+          done
+          if [ -z "$avdmanager_bin" ]; then
+            echo "::error::avdmanager was not found under $ANDROID_SDK_ROOT/cmdline-tools"
+            exit 1
+          fi
+          fold=$("$avdmanager_bin" list device | awk -F': *' 'tolower($1)=="id" && tolower($2) ~ /fold/ {print $2; exit}')
           if [ -z "$fold" ]; then
             echo "::error::no foldable device profile in this SDK's device list -- the foldable continuity profile needs one to run"
             exit 1
@@ -85,6 +93,7 @@ jobs:
           api-level: ${{ matrix.api }}
           arch: x86_64
           profile: ${{ matrix.foldable && steps.fold.outputs.id || matrix.profile }}
+          target: ${{ matrix.foldable && 'google_apis' || 'default' }}
           disable-animations: true
           emulator-options: >-
             -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
@@ -96,8 +105,11 @@ jobs:
             adb shell getprop > device-props-${{ matrix.profile }}-api${{ matrix.api }}.txt
             adb shell dumpsys display > dumpsys-display-${{ matrix.profile }}-api${{ matrix.api }}.txt
             ./scripts/android-touch-test.sh
-            ./gradlew :android:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class=com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest --stacktrace
-            if adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt; then echo "device-info.txt pulled from the debug package"; else echo "device-info.txt was not on the device: the capture test did not reach its write"; fi
+            # am instrument rather than a second gradle pass: connectedDebugAndroidTest uninstalls
+            # both APKs when it finishes, and the uninstall deletes the evidence file with them.
+            adb install -r -t android/build/outputs/apk/debug/androidTest/*androidTest*.apk
+            adb shell am instrument -w -e class com.amirrezahadipoor.herodefense.android.DeviceInfoCaptureTest com.amirrezahadipoor.herodefense.debug.test/androidx.test.runner.AndroidJUnitRunner
+            adb pull /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt device-info-${{ matrix.profile }}-api${{ matrix.api }}.txt
             adb shell cat /sdcard/Android/data/com.amirrezahadipoor.herodefense.debug/files/device-info.txt
 
       - name: Upload device evidence ${{ matrix.profile }}
