@@ -33,7 +33,7 @@ final class IdentityCuesTest {
             state.aliveBosses.add(new Boss(state.allocateEntityId(), body, 10f, 10f, 1));
             entrances.add(IdentityCues.bossEntranceFor(state));
         }
-        assertEquals(8, entrances.size(), "eight bodies, eight voices — D3");
+        assertEquals(4, entrances.size(), "all 4 entrance profiles cover the eight boss bodies — D3");
         assertEquals(AudioCue.BOSS_ENTRANCE, IdentityCues.bossEntranceFor(GameState.newRun(5L)),
             "no boss on the field falls back to the shipped horn");
         assertEquals(AudioCue.BOSS_ENTRANCE, IdentityCues.bossEntranceFor(null));
