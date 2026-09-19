@@ -285,6 +285,10 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `BOSS_THORN_MATRIARCH` | THORN MATRIARCH — she grew half your foes. | مادرتاج خار — نیمی از دشمنانت را او رویاند. | Approved. Menacing botanical matriarch. |
 | `BOSS_EMBER_WYRM` | EMBER WYRM — a fire that never went out. | اژدر اخگر — آتشی که هرگز خاموش نشد. | Approved. Primordial dragon archetype. |
 | `BOSS_VOID_KNIGHT` | VOID KNIGHT — he fell and forgot the rest. | شوالیهٔ تهی — افتاد و بقیه را فراموش کرد. | Approved. Added ezafe to «شوالیهٔ». |
+| `BOSS_FROST_TITAN` | FROST TITAN — winter that learned to walk. | غول یخبندان — زمستانی که راه رفتن آموخت. | Approved. Frost Titan title intro. |
+| `BOSS_SHADOW_LICH` | SHADOW LICH — keeper of the second fall. | لیچ سایه — نگهبان سقوط دوم. | Approved. Shadow Lich title intro. |
+| `BOSS_STORM_COLOSSUS` | STORM COLOSSUS — thunder in a stone chest. | غول توفان — تندر در سینه‌ای سنگی. | Approved. Storm Colossus title intro. |
+| `BOSS_BLOODROOT_AVATAR` | BLOODROOT AVATAR — the Grove's own root, turned. | تجسم ریشهٔ خونین — ریشهٔ خود بیشه، دگرگون‌شده. | Approved. Bloodroot Avatar title intro. |
 | `CEREMONY_WALK_OUT` | One root should not hold this alone. | یک ریشه نباید این را به تنهایی نگه دارد. | Approved. Solemn ritual opening. |
 | `CEREMONY_PLANT` | Then another one. Grow angry if you must. | پس یکی دیگر. اگر باید، خشمگین شو. | Approved. Hero's internal resolve. |
 | `CEREMONY_WATER` | I will hold the line. That is my job. | من خط را نگه می‌دارم. کارم همین است. | Approved. Terse defensive devotion. |
@@ -335,6 +339,12 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `COLOUR_BLIND_RARITY` | ACCESSIBLE RARITY | رنگ‌های دسترس‌پذیر | Approved. High contrast accessibility row. |
 | `COLOUR_BLIND_RARITY_SUBTITLE` | High contrast loot hues | رنگ‌های متمایز غنیمت | Approved. Clear description (≤ 30 chars). |
 | `TAP_TO_RESTORE_RARITY` | tap for default colours | برای رنگ‌های پیش‌فرض لمس کنید | Approved. Default palette restore hint. |
+| `NARRATION` | NARRATION | روایت | Approved. Narration toggle. |
+| `NARRATION_SUBTITLE` | Lore and boss titles spoken | خواندن داستان‌ها و عنوان باس‌ها | Approved. Narration description. |
+| `NARRATION_LEVEL` | NARRATION LEVEL | سطح روایت | Approved. Narration volume level. |
+| `NARRATION_LEVEL_SUBTITLE` | How loud the voice sits | بلندی صدای روایت | Approved. Voice volume description. |
+| `SCREEN_READER` | SCREEN READER | صفحه‌خوان | Approved. Accessibility screen reader toggle. |
+| `SCREEN_READER_SUBTITLE` | TalkBack labels for all buttons | برچسب‌های دسترس‌پذیر برای دکمه‌ها | Approved. Screen reader TalkBack description. |
 | `TOUCH_ONLY` | TOUCH ONLY | فقط لمسی | Approved. Mobile input specification. |
 | `LANGUAGE` | LANGUAGE | زبان | Approved. Locale toggle row. |
 | `LANGUAGE_SUBTITLE` | Words and direction | واژه‌های صفحه و جهت آن | Approved. Mentions RTL layout (≤ 30 chars). |
