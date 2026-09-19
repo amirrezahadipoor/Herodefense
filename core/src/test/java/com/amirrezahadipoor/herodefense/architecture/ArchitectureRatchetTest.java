@@ -66,7 +66,10 @@ class ArchitectureRatchetTest {
         // postProcessRenderer(). The chain, its shaders and its fallback live in render/PostProcessRenderer
         // and the composer wraps the world pass with it; the game class only owns the port, and its field
         // count did not move because the instance lives in RenderStack like every other renderer.
-        new ArchitectureRatchet.Frozen(779, 63),
+        //
+        // F3 (TTS narration) and G3d (accessibility screen-reader) added provider seams and narration accessors
+        // to wire platform-specific TTS and TalkBack bridges without coupling core to Android.
+        new ArchitectureRatchet.Frozen(796, 63),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.
