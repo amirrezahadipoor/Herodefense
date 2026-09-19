@@ -54,7 +54,8 @@ public final class AccessibilityLabels {
     }
 
     public static String bossTitleLabel(String bossName) {
-        return String.format(LABELS.getOrDefault("boss_title", "Boss %s"), bossName);
+        String template = LABELS.get("boss_title");
+        return template != null ? String.format(template, bossName) : bossName;
     }
 
     public static Map<String, String> allLabels() {
