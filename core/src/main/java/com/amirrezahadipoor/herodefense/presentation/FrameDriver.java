@@ -85,6 +85,7 @@ public final class FrameDriver {
 
     private GameScreenState lastFrameState = GameScreenState.MENU;
     private long pauseStartNanos;
+    private long lastFrameNanos;
     private String whisperLine;
     private float whisperSeconds;
     private String storyBeatLine;
@@ -151,6 +152,12 @@ public final class FrameDriver {
 
     /** Advances and draws one frame; {@code deltaSeconds} is already clamped by the caller. */
     public void update(float deltaSeconds) {
+        long now = clock.nanos();
+        // The death reveal is a real-time animation: slow frames must not stretch it, so it reads the
+        // wall clock and a long stall lands it at its end state like any wall-clock animation.
+        float wallDelta = lastFrameNanos == 0L
+            ? 0f : Math.max(0f, (now - lastFrameNanos) / 1_000_000_000f);
+        lastFrameNanos = now;
         audioManager.update(settings);
         trackPauseDuration();
         guideMusic();
@@ -185,7 +192,7 @@ public final class FrameDriver {
         if (flow.state() == GameScreenState.GAME_OVER && state != null && !state.runComplete) {
             gameOverPresentationSeconds = Math.min(
                 GAME_OVER_PRESENTATION_CAP_SECONDS,
-                gameOverPresentationSeconds + deltaSeconds
+                gameOverPresentationSeconds + wallDelta
             );
         } else {
             gameOverPresentationSeconds = 0f;

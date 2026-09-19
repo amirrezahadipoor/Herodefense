@@ -145,17 +145,37 @@ final class FrameDriverTest {
         flow.transitionTo(GameScreenState.GAME_OVER);
 
         for (int second = 0; second < 12; second++) {
+            nanos += 1_000_000_000L;
             driver.update(1f);
         }
         assertEquals(10f, driver.gameOverPresentationSeconds(), 1e-4f, "the death screen settles, then holds");
 
         state.runComplete = true;
+        nanos += 1_000_000_000L;
         driver.update(1f);
         assertEquals(0f, driver.gameOverPresentationSeconds(), 1e-4f,
             "a completed run slides away instead of holding the death beat");
 
         driver.resetGameOverPresentation();
         assertEquals(0f, driver.gameOverPresentationSeconds(), 1e-4f);
+    }
+
+    @Test
+    void theDeathRevealRunsOnWallClockSoSlowFramesCannotStallIt() {
+        FrameDriver driver = driver(false);
+        host.state = GameState.newRun(21L);
+        flow.transitionTo(GameScreenState.PLAYING);
+        flow.transitionTo(GameScreenState.GAME_OVER);
+
+        // Four frames at roughly four per second: clamped deltas would crawl (~0.27s here),
+        // while the wall clock delivers the ~1.1s the defeat reveal needs to turn tappable.
+        for (int frame = 0; frame < 5; frame++) {
+            nanos += 250_000_000L;
+            driver.update(1f / 15f);
+        }
+
+        assertTrue(driver.gameOverPresentationSeconds() >= 1f,
+            "the restart gate opens in real time, not frame-clamped time");
     }
 
     @Test
