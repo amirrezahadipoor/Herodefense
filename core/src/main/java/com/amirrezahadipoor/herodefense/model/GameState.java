@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.model;
 
 import com.amirrezahadipoor.herodefense.WorldLayout;
+import com.amirrezahadipoor.herodefense.gameplay.HeroStatCalculator;
 import com.amirrezahadipoor.herodefense.progression.TrophyLedger;
 import com.amirrezahadipoor.herodefense.trials.TrialDraftSystem;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
@@ -566,6 +567,9 @@ public final class GameState {
         this.shopStatsBoughtThisRun = 0;
         this.bareHandedEligible = true;
         this.noPotionRun = true;
+        this.dryKillsSinceItemDrop = 0;
+        this.rotTrail = fresh.rotTrail;
+        this.simulationSpeed = 1f;
         this.waveElapsedSeconds = 0f;
         this.focus = 0f;
         this.hero = fresh.hero;
@@ -617,15 +621,9 @@ public final class GameState {
         return mixed == 0L ? 0xD1B54A32D192ED03L : mixed;
     }
 
-    private void synchronizeEquipmentHealth() {
-        int bonusPoints = 0;
-        for (Item item : equippedItems.values()) {
-            if (item == null || item.statBonuses == null) continue;
-            Float bonus = item.statBonuses.get(HeroStat.HEALTH.name());
-            if (bonus != null && bonus > 0f) bonusPoints += Math.round(bonus);
-        }
-        hero.maxHealth = (hero.stats.maxHealth() + bonusPoints * HeroStats.MAX_HEALTH_PER_POINT)
-            * TrialEffects.heroMaxHealthMultiplier(activeTrials);
+    /** Canonical max-health recompute: hero points plus equipment, through every multiplier. */
+    public void synchronizeEquipmentHealth() {
+        hero.maxHealth = new HeroStatCalculator().maxHealth(this);
         hero.health = Math.max(0f, Math.min(hero.maxHealth, hero.health));
     }
 

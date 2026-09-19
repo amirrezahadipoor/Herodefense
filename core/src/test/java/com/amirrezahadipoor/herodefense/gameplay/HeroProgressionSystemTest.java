@@ -4,8 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.amirrezahadipoor.herodefense.model.EquipmentSlot;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.HeroStat;
+import com.amirrezahadipoor.herodefense.model.Item;
 import org.junit.jupiter.api.Test;
 
 final class HeroProgressionSystemTest {
@@ -37,6 +39,24 @@ final class HeroProgressionSystemTest {
         assertTrue(system.allocateTalentPoint(state, HeroStat.STRENGTH));
         assertEquals(12f, state.hero.damagePerAttack());
         assertFalse(system.allocateTalentPoint(state, HeroStat.LUCK));
+    }
+
+    @Test
+    void healthTalentKeepsEquippedGearBonusesAlive() {
+        GameState state = GameState.newRun(3L);
+        Item gear = new Item("test_charm", "Test Charm", "WEAPON", "COMMON");
+        gear.statBonuses.put(HeroStat.HEALTH.name(), 30f);
+        state.equippedItems.put(EquipmentSlot.WEAPON.name(), gear);
+        state.synchronizeEquipmentHealth();
+        assertEquals(400f, state.hero.maxHealth);
+        state.hero.health = 200f;
+        state.unspentTalentPoints = 1;
+
+        assertTrue(system.allocateTalentPoint(state, HeroStat.HEALTH));
+
+        assertEquals(410f, state.hero.maxHealth, "the gear bonus survives the talent");
+        assertEquals(210f, state.hero.health, "the point heals only by its own grant");
+        assertEquals(0, state.unspentTalentPoints);
     }
 
     @Test

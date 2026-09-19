@@ -56,7 +56,8 @@ public final class HeroProgressionSystem {
             return false;
         }
         Hero hero = state.hero;
-        float previousMaxHealth = hero.maxHealth;
+        boolean healthTalent = stat == HeroStat.HEALTH;
+        float previousMaxHealth = healthTalent ? hero.maxHealth : 0f;
         switch (stat) {
             case STRENGTH -> hero.stats.strength++;
             case AGILITY -> hero.stats.agility++;
@@ -64,9 +65,8 @@ public final class HeroProgressionSystem {
             case DODGE -> hero.stats.dodge++;
             case HEALTH -> hero.stats.health++;
         }
-        hero.maxHealth = hero.stats.maxHealth()
-            * TrialEffects.heroMaxHealthMultiplier(state.activeTrials);
-        if (stat == HeroStat.HEALTH) {
+        if (healthTalent) {
+            state.synchronizeEquipmentHealth();
             hero.health = Math.min(hero.maxHealth, hero.health + hero.maxHealth - previousMaxHealth);
         }
         state.unspentTalentPoints--;

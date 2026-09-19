@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.Item;
 import java.util.HashSet;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +44,28 @@ final class BossRewardCardSystemTest {
         assertEquals("HEALTH", state.chosenRewardCards.get("3"));
         assertTrue(state.pendingRewardCards.isEmpty());
         assertTrue(!state.awaitingBossReward);
+    }
+
+    @Test
+    void healthCardKeepsEquippedGearBonuses() {
+        GameState state = GameState.newRun(54L);
+        Item gear = new Item("test_charm", "Test Charm", "WEAPON", "COMMON");
+        gear.statBonuses.put(com.amirrezahadipoor.herodefense.model.HeroStat.HEALTH.name(), 30f);
+        state.equippedItems.put(
+            com.amirrezahadipoor.herodefense.model.EquipmentSlot.WEAPON.name(), gear);
+        state.synchronizeEquipmentHealth();
+        state.hero.health = 50f;
+        state.awaitingBossReward = true;
+        state.pendingRewardBossNumber = 3;
+        state.pendingRewardCards.add("HEALTH");
+        state.pendingRewardCards.add("GENERAL_POWER");
+        state.pendingRewardCards.add("LIFESTEAL");
+
+        assertTrue(rewards.chooseCard(state, 0));
+
+        assertEquals(1, state.hero.stats.health);
+        assertEquals(410f, state.hero.maxHealth, "the gear bonus survives the card");
+        assertEquals(60f, state.hero.health);
     }
 
     @Test
