@@ -17,12 +17,9 @@ import java.util.Map;
  * Draws the procedural Blender Hero atlas wherever the Hero currently stands, plus the wave's step meter under
  * its feet (roadmap A1) — E2 adds WALK clip support and procedural bob.
  *
- * <p>The atlas now has five clips -- idle, walk, attack, hit and death. Walk reuses idle frames as fallback until
- * the Blender art pipeline delivers a true walk cycle, but the controller and renderer already distinguish walk from
- * idle so the first-run coach and the balance simulator can tell a stepping Hero from a rooted one. When walking,
- * a subtle vertical bob (2 units at walk FPS) breaks the glide that A1 documented as the honest option until a fifth
- * clip existed. That bob is the step towards something else that E2 asked for: not a second source of truth for feet
- * (feet remain at hero.y), but a visual cue that the Hero is spending its budget.
+ * <p>The atlas has five clips -- idle, walk, attack, hit and death. Walk is the real eight-frame
+ * ceremony walk clip (same engine, same character); the idle fallback remains only for an atlas
+ * without it. A subtle vertical bob at walk FPS stays as a spending cue; feet remain at hero.y.
  *
  * <p>The meter is drawn only once some of the budget has been spent. An untouched wave therefore renders exactly
  * the pixels it rendered before the Hero could move, which is what keeps the emulator smoke journeys' reference
@@ -30,6 +27,8 @@ import java.util.Map;
  */
 public final class HeroSpriteRenderer implements AutoCloseable {
     private static final String ATLAS_PATH = "generated/sprites/hero.atlas";
+    private static final String CEREMONY_ATLAS_PATH = "generated/sprites/hero_ceremony.atlas";
+    private static final String WALK_CLIP_REGION = "hero_ceremony_walk";
     static final float FRAME_SIZE = 192f;
     static final float FEET_OFFSET_FROM_FRAME_BOTTOM = 23f;
     /** The meter's box, in world units, centred under the feet. */
@@ -40,15 +39,23 @@ public final class HeroSpriteRenderer implements AutoCloseable {
     static final float WALK_BOB_AMPLITUDE = 2.5f;
 
     private final TextureAtlas atlas;
+    private final TextureAtlas ceremonyAtlas;
     private Texture pixel;
     private final Map<HeroAnimationState, Array<TextureAtlas.AtlasRegion>> frames =
         new EnumMap<>(HeroAnimationState.class);
 
     public HeroSpriteRenderer() {
         atlas = SheetPayloads.atlas(Gdx.files.internal(ATLAS_PATH));
+        ceremonyAtlas = SheetPayloads.atlas(Gdx.files.internal(CEREMONY_ATLAS_PATH));
         register(HeroAnimationState.IDLE, "hero_idle", HeroAnimationController.IDLE_FRAMES);
-        // E2: walk clip — try hero_walk, fallback to hero_idle if not yet rendered
-        registerWithFallback(HeroAnimationState.WALK, "hero_walk", HeroAnimationController.WALK_FRAMES, "hero_idle");
+        // The real walk cycle is the ceremony clip (8 frames, same engine, same character). The
+        // old hero_walk fallback stays for an atlas without it.
+        Array<TextureAtlas.AtlasRegion> walk = ceremonyAtlas.findRegions(WALK_CLIP_REGION);
+        if (walk.size == HeroAnimationController.WALK_FRAMES) {
+            frames.put(HeroAnimationState.WALK, walk);
+        } else {
+            registerWithFallback(HeroAnimationState.WALK, "hero_walk", HeroAnimationController.WALK_FRAMES, "hero_idle");
+        }
         register(HeroAnimationState.ATTACK, "hero_attack", HeroAnimationController.ATTACK_FRAMES);
         register(HeroAnimationState.HIT, "hero_hit", HeroAnimationController.HIT_FRAMES);
         register(HeroAnimationState.DEATH, "hero_death", HeroAnimationController.DEATH_FRAMES);
@@ -188,5 +195,6 @@ public final class HeroSpriteRenderer implements AutoCloseable {
             pixel = null;
         }
         atlas.dispose();
+        ceremonyAtlas.dispose();
     }
 }

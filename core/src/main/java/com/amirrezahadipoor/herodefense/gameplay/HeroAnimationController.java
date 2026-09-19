@@ -8,7 +8,8 @@ public final class HeroAnimationController {
     public static final float RENDERED_FRAMES_PER_SECOND = 12f;
     public static final float WALK_FRAMES_PER_SECOND = 14f;
     public static final int IDLE_FRAMES = 6;
-    public static final int WALK_FRAMES = 6;
+    /** The shipped walk clip has eight frames: the ceremony walk, shared with the field Hero. */
+    public static final int WALK_FRAMES = 8;
     public static final int ATTACK_FRAMES = 8;
     public static final int HIT_FRAMES = 4;
     public static final int DEATH_FRAMES = 10;
