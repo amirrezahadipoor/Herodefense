@@ -124,7 +124,7 @@ public final class InventoryOverlayRenderer implements AutoCloseable {
         // E4: shorter, icon-first titles for arm's length
         drawText(batch, "GEAR", 40f, 1232f, 1.35f, GOLD);
         drawText(batch, "Tap slot to unequip", 40f, 1189f, 0.76f, SUBTLE);
-        drawText(batch, "A-SELL", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1102f, 0.62f, GOLD);
+        drawText(batch, "AUTO-SELL", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1102f, 0.62f, GOLD);
         drawText(batch, "on pickup", InventoryTouchLayout.AUTO_SELL_LABEL_X, 1072f, 0.54f, SUBTLE);
         for (int index = 0; index < InventoryTouchLayout.AUTO_SELL_TIERS.size(); index++) {
             ItemTier tier = InventoryTouchLayout.AUTO_SELL_TIERS.get(index);
