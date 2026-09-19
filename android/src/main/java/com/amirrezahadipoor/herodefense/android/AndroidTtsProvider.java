@@ -33,9 +33,7 @@ public final class AndroidTtsProvider implements NarrationSystem.TtsProvider, Te
 
     @Override
     public void speak(String text, boolean interrupt) {
-        if (!ready || tts == null || text == null) return;
-        int queue = interrupt ? TextToSpeech.QUEUE_FLUSH : TextToSpeech.QUEUE_ADD;
-        tts.speak(text, queue, null, "herodefense_" + System.currentTimeMillis());
+        // TTS speech generation disabled: HeroDefense uses ambient audio, SFX, and on-screen story text
     }
 
     @Override
