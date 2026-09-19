@@ -132,4 +132,18 @@ final class GameStateTest {
         assertEquals(1, state.inventory.size());
         assertEquals(GameState.MAX_ITEM_UPGRADE, state.inventory.get(0).upgradeLevel);
     }
+
+    @Test
+    void aFreshRunLeavesNoCarryoverPityRotOrSpeed() {
+        GameState state = GameState.newRun(12L);
+        state.dryKillsSinceItemDrop = 17;
+        state.simulationSpeed = 3f;
+        state.rotTrail.add(new RotTrailSegment(99L, 10f, 10f, 3f, 5f, 2L));
+
+        state.resetForNewRun(77L);
+
+        assertEquals(0, state.dryKillsSinceItemDrop, "the pity counter belongs to one run only");
+        assertEquals(1f, state.simulationSpeed, "a fresh run never opens fast-forwarded");
+        assertTrue(state.rotTrail.isEmpty(), "the previous run's rot burns nobody in the new one");
+    }
 }
