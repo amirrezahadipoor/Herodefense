@@ -20,7 +20,7 @@ public enum Trophy {
     TWELFTH_DESCENT("Twelfth Descent", "Ascend twelve times.", 12),
     THORN_COLLECTOR("Thorn Collector", "Put down a hundred elites.", 100),
     LOREKEEPER("Lorekeeper", "Have twenty codex entries written.", 20),
-    WITNESS("Witness", "Meet all four boss identities at least once.", 4);
+    WITNESS("Witness", "Meet all eight boss identities at least once.", 8);
 
     private final String title;
     private final String hint;
