@@ -45,4 +45,34 @@ public final class AmbientMoteField {
         mixed ^= mixed >>> 13;
         return (mixed & 0xFFFF) / 65536f;
     }
+
+    /** Pollen count, kept beside the spore count so the ambient budget reads as one number. */
+    public static int pollenCount() {
+        return VfxBudget.AMBIENT_POLLEN_COUNT;
+    }
+
+    /** Pollen rides a slower current and a wider sway, so the two layers never sync up. */
+    public static float pollenX(int index, float timeSeconds) {
+        float base = ARENA_LEFT + ARENA_WIDTH * fraction(index * 13 + 5);
+        float sway = 44f * (float) Math.sin(timeSeconds * (0.18f + fraction(index * 3) * 0.15f) + index * 1.3f);
+        return base + sway;
+    }
+
+    public static float pollenY(int index, float timeSeconds) {
+        float speed = 5f + fraction(index * 17 + 2) * 5f;
+        float travel = (timeSeconds * speed + fraction(index * 19) * ARENA_HEIGHT) % ARENA_HEIGHT;
+        return ARENA_BOTTOM + travel;
+    }
+
+    public static float pollenSize(int index) {
+        return 3.5f + fraction(index * 23 + 4) * 3f;
+    }
+
+    /** Same envelope discipline as the spores: fades at both ends, never past the budget. */
+    public static float pollenAlpha(int index, float timeSeconds) {
+        float progress = (pollenY(index, timeSeconds) - ARENA_BOTTOM) / ARENA_HEIGHT;
+        float envelope = Math.min(1f, Math.min(progress / 0.2f, (1f - progress) / 0.3f));
+        float breathe = 0.7f + 0.3f * (float) Math.sin(timeSeconds * 0.9f + index * 2.7f);
+        return Math.max(0f, VfxBudget.AMBIENT_MAX_ALPHA * 0.8f * envelope * breathe);
+    }
 }

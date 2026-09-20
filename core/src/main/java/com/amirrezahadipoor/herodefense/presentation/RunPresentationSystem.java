@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.presentation;
 
 import com.amirrezahadipoor.herodefense.audio.NarrationRequest;
 import com.amirrezahadipoor.herodefense.audio.NarrationSystem;
+import com.amirrezahadipoor.herodefense.gameplay.BossFightScript;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
@@ -186,6 +187,24 @@ public final class RunPresentationSystem {
         String bossHalfBeat = presentBossHalfBeat(state);
         if (bossHalfBeat != null) {
             beats.showBeat(bossHalfBeat);
+        }
+        presentBossEvolutions(state);
+    }
+
+    /**
+     * The evolution signature (roadmap C2): the frame a boss crosses its fight's evolution
+     * threshold — the enrage window's edge, or half health for the fights that only change
+     * gear at the midpoint — one crimson-gold ring fires from its body. Exactly once per fight.
+     */
+    private void presentBossEvolutions(GameState state) {
+        for (Boss boss : state.aliveBosses) {
+            if (boss == null || !boss.alive || boss.evolutionPresented || boss.maxHealth <= 0f) {
+                continue;
+            }
+            if (boss.health <= boss.maxHealth * BossFightScript.of(boss).evolutionHealthRatio()) {
+                boss.evolutionPresented = true;
+                particleSystem.emitEvolution(boss.x, boss.y + 40f);
+            }
         }
     }
 

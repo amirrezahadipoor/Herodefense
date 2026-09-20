@@ -64,7 +64,7 @@ final class PostProcessShaderTest {
         assertTrue(undeclared.isEmpty(), "uniforms set against no fragment declaration: " + undeclared);
 
         assertEquals(
-            Set.of("u_threshold", "u_texelStep", "u_bloom", "u_bloomIntensity", "u_vignette"),
+            Set.of("u_threshold", "u_texelStep", "u_bloom", "u_bloomIntensity", "u_vignette", "u_pulse"),
             declared);
     }
 

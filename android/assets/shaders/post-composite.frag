@@ -9,6 +9,7 @@ uniform sampler2D u_texture;
 uniform sampler2D u_bloom;
 uniform float u_bloomIntensity;
 uniform float u_vignette;
+uniform float u_pulse;
 
 // Roadmap E1, pass 3: the frame comes back. The blurred light is added where it was born,
 // and a radial vignette darkens the corners so the lane reads as lit from inside the fight.
@@ -20,5 +21,10 @@ void main() {
     float dist = length(offset);
     float falloff = smoothstep(0.48, 0.75, dist);
     vec3 rgb = (sceneColor.rgb + bloom * u_bloomIntensity) * (1.0 - u_vignette * falloff);
+    // A critical hit re-tints the vignette edge red while its pulse decays: the frame itself
+    // answers the hit without a HUD element or a screen shake of its own.
+    float pulse = u_pulse * falloff;
+    rgb += vec3(0.85, 0.10, 0.08) * pulse * 0.45;
+    rgb *= 1.0 - pulse * 0.22;
     gl_FragColor = vec4(rgb, sceneColor.a);
 }

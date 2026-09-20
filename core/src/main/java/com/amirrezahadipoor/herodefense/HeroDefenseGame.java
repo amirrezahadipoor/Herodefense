@@ -582,7 +582,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
     }
 
-    /** Single writer for the story line the HUD draws, so the beat timer cannot be forgotten. */
     private void showStoryBeat(String line) {
         frameDriver.showStoryBeat(line);
     }
@@ -617,12 +616,13 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         presentationSystem.presentPlaytime(gameState);
         showStoryBeat(DailyGift.claim(gameState, settingsRepository, java.time.LocalDate.now().toEpochDay()));
         CombatSystem.Frame frame = combatSystem.update(gameState, simulationDelta, settings);
+        if (frame.criticalHits() > 0) {
+            renderers.postProcessRenderer.pulseCrit();
+        }
         waveDirector.afterCombat(frame.gameOver(), frame.leveledUp());
         simulationSeconds += simulationDelta;
     }
 
-    /** Adapter for the frame composer; one line per member, like the touch host. */
-    /** What the frame needs from the game: its state, saving, the two update paths and the draw call. */
     private final class FrameHost implements FrameDriver.Host {
         @Override public HapticFeedback hapticFeedback() { return hapticFeedback; }
 

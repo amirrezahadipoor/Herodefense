@@ -21,10 +21,13 @@ public enum ParticleType {
     /** Lilac star that orbits a stunned enemy's head. */
     STUN_SPARK,
     /** Falling water droplet from the ceremony watering can. */
-    WATER_DROP;
+    WATER_DROP,
+    /** One crimson-gold ring when a boss evolves past its enrage threshold. */
+    EVOLUTION_RING;
 
     public boolean isRing() {
-        return this == CRITICAL_RING || this == DEATH_RING || this == BOSS_SHOCKWAVE;
+        return this == CRITICAL_RING || this == DEATH_RING || this == BOSS_SHOCKWAVE
+            || this == EVOLUTION_RING;
     }
 
     public boolean isBeam() {

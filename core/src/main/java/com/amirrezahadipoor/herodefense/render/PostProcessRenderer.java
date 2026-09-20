@@ -40,6 +40,8 @@ public final class PostProcessRenderer implements AutoCloseable {
     static final float BLOOM_INTENSITY = 0.22f;
     /** Corner darkening at full radial falloff. */
     static final float VIGNETTE_STRENGTH = 0.16f;
+    /** How long a critical hit's red edge pulse lasts, and the cap on stacked pulses. */
+    static final float CRIT_PULSE_SECONDS = 0.35f;
 
     private final ShaderProgram brightShader;
     private final ShaderProgram blurShader;
@@ -53,6 +55,7 @@ public final class PostProcessRenderer implements AutoCloseable {
     private int sceneWidth;
     private int sceneHeight;
     private boolean enabled = true;
+    private float critPulseSeconds;
 
     public PostProcessRenderer() {
         brightShader = compile("shaders/post-bright.frag", "Post bright-pass");
@@ -135,6 +138,8 @@ public final class PostProcessRenderer implements AutoCloseable {
         compositeShader.setUniformi("u_bloom", 1);
         compositeShader.setUniformf("u_bloomIntensity", BLOOM_INTENSITY);
         compositeShader.setUniformf("u_vignette", VIGNETTE_STRENGTH);
+        compositeShader.setUniformf("u_pulse", critPulse());
+        critPulseSeconds = Math.max(0f, critPulseSeconds - Gdx.graphics.getDeltaTime());
         bloomA.getColorBufferTexture().bind(1);
         // bind(1) leaves GL_TEXTURE1 active, and SpriteBatch flushes by binding the drawn texture to
         // whatever unit is active -- without this restore the scene would land on unit 1 and the
@@ -152,6 +157,24 @@ public final class PostProcessRenderer implements AutoCloseable {
     /** True when the chain is live; false once a device has proven it cannot hold the buffers. */
     public boolean enabled() {
         return enabled;
+    }
+
+    /**
+     * A critical hit just landed: the composite tints its vignette edge red while the pulse
+     * decays. Stacked crits re-arm the pulse rather than brighten past its cap.
+     */
+    public void pulseCrit() {
+        critPulseSeconds = CRIT_PULSE_SECONDS;
+    }
+
+    /** Pulse strength 0..1 for the composite shader, decayed by the frame's own delta. */
+    float critPulse() {
+        return pulseRatio(critPulseSeconds);
+    }
+
+    /** The pulse's ratio maths, testable without a GPU: armed at one, clamped at zero. */
+    static float pulseRatio(float remainingSeconds) {
+        return Math.max(0f, remainingSeconds) / CRIT_PULSE_SECONDS;
     }
 
     private boolean ensureBuffers() {

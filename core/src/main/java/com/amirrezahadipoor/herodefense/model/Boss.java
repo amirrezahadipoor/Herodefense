@@ -19,6 +19,8 @@ public final class Boss extends Enemy {
     public int bossNumber;
     /** The Hollow's half-health line has been spoken for this fight (roadmap ST4). */
     public boolean halfBeatSpoken;
+    /** The enrage-crossing evolution burst has fired for this fight (roadmap C2). */
+    public boolean evolutionPresented;
 
     public Boss() {
         super();

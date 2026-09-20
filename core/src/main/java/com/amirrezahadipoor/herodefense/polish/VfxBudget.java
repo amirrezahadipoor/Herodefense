@@ -20,6 +20,8 @@ public final class VfxBudget {
     public static final int CHAIN_ARC_MAX_MOTES = 4;
     public static final int STUN_SPARKS = 3;
     public static final int AMBIENT_MOTE_COUNT = 14;
+    /** Warm pollen motes drifting on their own slower current, drawn over the spores. */
+    public static final int AMBIENT_POLLEN_COUNT = 12;
     public static final float AMBIENT_MAX_ALPHA = 0.22f;
 
     private VfxBudget() {

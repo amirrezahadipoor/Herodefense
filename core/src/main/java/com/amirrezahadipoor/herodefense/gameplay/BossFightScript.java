@@ -153,6 +153,14 @@ public enum BossFightScript {
             && boss.health / boss.maxHealth <= enrageHealthRatio;
     }
 
+    /**
+     * Where this fight evolves: the script's enrage threshold when it has one, half health for
+     * the fights that only change gear at the midpoint (roadmap C2).
+     */
+    public float evolutionHealthRatio() {
+        return enrageHealthRatio > 0f ? enrageHealthRatio : 0.50f;
+    }
+
     /** The warning a boss gives right now. Pinned at the reference length for the whole roster. */
     public float currentTelegraphSeconds(Boss boss) {
         return telegraphSeconds;

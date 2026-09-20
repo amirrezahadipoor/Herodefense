@@ -151,6 +151,15 @@ public final class ParticleSystem {
         emitBurst(ParticleType.BOSS_DUST, x, y, bossMotes(), 130f, 0.60f, 9f);
     }
 
+    /**
+     * A boss evolving past its enrage threshold: one crimson-gold ring out from its body and
+     * an angry dust burst, quieter than the entrance so it reads as a change, not an arrival.
+     */
+    public void emitEvolution(float x, float y) {
+        add(ParticleType.EVOLUTION_RING, x, y, 0f, 0f, 0.55f, 175f);
+        emitBurst(ParticleType.BOSS_DUST, x, y, bossMotes(), 120f, 0.55f, 9f);
+    }
+
     /** Falling leaves as the World Tree collapses; slow, wide, and never brighter than actors. */
     public void emitTreeDestruction(float x, float y) {
         for (int index = 0; index < 18; index++) {

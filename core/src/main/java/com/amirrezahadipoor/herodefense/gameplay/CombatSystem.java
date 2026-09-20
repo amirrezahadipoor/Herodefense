@@ -29,7 +29,7 @@ import com.amirrezahadipoor.herodefense.story.CodexSystem;
 public final class CombatSystem {
 
     /** What one frame of combat decided: whether the run ended and whether a level-up opened. */
-    public record Frame(boolean gameOver, boolean leveledUp) {
+    public record Frame(boolean gameOver, boolean leveledUp, int criticalHits) {
     }
 
     private final HeroAutoAttackSystem heroAutoAttackSystem;
@@ -193,6 +193,6 @@ public final class CombatSystem {
             );
             audioManager.play(AudioCue.ITEM_DROP);
         }
-        return new Frame(gameOver, killRewards.levelsGained() > 0);
+        return new Frame(gameOver, killRewards.levelsGained() > 0, attackEvents.criticalHits());
     }
 }

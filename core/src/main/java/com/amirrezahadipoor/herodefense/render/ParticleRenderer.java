@@ -29,6 +29,15 @@ public final class ParticleRenderer implements AutoCloseable {
                 6
             );
         }
+        for (int index = 0; index < AmbientMoteField.pollenCount(); index++) {
+            shapes.setColor(0.93f, 0.85f, 0.45f, AmbientMoteField.pollenAlpha(index, timeSeconds));
+            shapes.circle(
+                AmbientMoteField.pollenX(index, timeSeconds),
+                AmbientMoteField.pollenY(index, timeSeconds),
+                AmbientMoteField.pollenSize(index),
+                6
+            );
+        }
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
     }
@@ -160,6 +169,7 @@ public final class ParticleRenderer implements AutoCloseable {
             case CHAIN_FLASH -> shapes.setColor(0.80f, 0.96f, 1.00f, alpha * 0.9f);
             case STUN_SPARK -> shapes.setColor(0.86f, 0.76f, 0.98f, Math.min(1f, alpha * 3f));
             case WATER_DROP -> shapes.setColor(0.56f, 0.80f, 0.96f, Math.min(1f, alpha * 1.6f));
+            case EVOLUTION_RING -> shapes.setColor(0.96f, 0.38f, 0.20f, alpha * 0.85f);
         }
     }
 
