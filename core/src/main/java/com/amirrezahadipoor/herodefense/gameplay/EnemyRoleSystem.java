@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.WorldLayout;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -90,6 +91,16 @@ public final class EnemyRoleSystem {
 
     /** The wave from which sap hounds lunge (inclusive). */
     public static final int LUNGE_FROM_WAVE = 181;
+    /** The wave from which some rootlings become flankers (inclusive): the run's final exam. */
+    public static final int FLANK_FROM_WAVE = 191;
+    /** The share of rootlings that spawn as flankers, in percent of the body's deterministic hash. */
+    public static final int FLANK_HASH_SHARE = 25;
+    /** A flanker spits bark-acid at a tree it passes this close to: the raid never leaves the lane. */
+    public static final float FLANK_SPIT_DISTANCE = 120f;
+    /** The share of a tree's max health one bite takes. The tree is scarred, never felled. */
+    public static final float FLANK_BITE_SHARE = 0.02f;
+    /** A bite never fells a tree: the health floor a bite cannot cross. */
+    public static final float TREE_BITE_HEALTH_FLOOR = 1f;
     /** The still windup before a dash, in seconds -- the tell. */
     public static final float LUNGE_WINDUP_SECONDS = 0.45f;
     /** The dash itself, in seconds. */
@@ -162,11 +173,62 @@ public final class EnemyRoleSystem {
             if (state.waveNumber >= LUNGE_FROM_WAVE && EnemyType.SAP_HOUND.name().equals(enemy.enemyType)) {
                 tickLunge(state, enemy, deltaSeconds);
             }
+            tickFlanker(state, enemy);
         }
         if (fragments != null) {
             state.aliveEnemies.addAll(fragments);
         }
     }
+
+    /**
+     * The flanker (roadmap A3): a rootling of the last ten waves that, in passing, spits bark-acid
+     * at the nearest planted tree -- one bite, the tree scarred but never felled, the lane's
+     * pressure untouched because the raider never leaves the march. The assignment is a pure hash
+     * of run seed and body id, so a save, a reload and a simulator all agree on which rootlings
+     * raid; the bitten body never bites twice.
+     */
+    private static void tickFlanker(GameState state, Enemy enemy) {
+        if (state.waveNumber < FLANK_FROM_WAVE || enemy.flanker
+            || !EnemyType.ROOTLING.name().equals(enemy.enemyType)
+            || !isFlankerAssignment(state.runSeed, enemy.id)) {
+            return;
+        }
+        int treeIndex = nearestPlantedTree(state, enemy);
+        if (treeIndex < 1) {
+            return;
+        }
+        float treeMaxHealth = state.getTreeMaxHealth(treeIndex);
+        if (treeMaxHealth <= 0f
+            || enemy.distanceSquaredTo(WorldLayout.groveTreeX(treeIndex - 1),
+                WorldLayout.groveTreeY(treeIndex - 1)) > FLANK_SPIT_DISTANCE * FLANK_SPIT_DISTANCE) {
+            return;
+        }
+        float bitten = state.getTreeHealth(treeIndex) - treeMaxHealth * FLANK_BITE_SHARE;
+        state.setTreeHealth(treeIndex, Math.max(TREE_BITE_HEALTH_FLOOR, bitten));
+        enemy.flanker = true;
+    }
+
+    /** True when this exact body flanks this exact run; stable across saves, loads and sims. */
+    public static boolean isFlankerAssignment(long runSeed, long enemyId) {
+        return Math.floorMod(Long.hashCode(runSeed * 31L + enemyId * 0x9E3779B1L), 100)
+            < FLANK_HASH_SHARE;
+    }
+
+    /** The 1-based index of the nearest planted tree, or 0 when the grove is empty. */
+    public static int nearestPlantedTree(GameState state, Enemy enemy) {
+        int best = 0;
+        float bestDistanceSquared = Float.MAX_VALUE;
+        for (int index = 1; index <= state.plantedTreesCount; index++) {
+            float distanceSquared = enemy.distanceSquaredTo(
+                WorldLayout.groveTreeX(index - 1), WorldLayout.groveTreeY(index - 1));
+            if (distanceSquared < bestDistanceSquared) {
+                bestDistanceSquared = distanceSquared;
+                best = index;
+            }
+        }
+        return best;
+    }
+
 
     private static void latchBerserk(Enemy enemy) {
         if (enemy.enraged || enemy.maxHealth <= 0f || enemy.health / enemy.maxHealth >= ENRAGE_HEALTH_RATIO) {

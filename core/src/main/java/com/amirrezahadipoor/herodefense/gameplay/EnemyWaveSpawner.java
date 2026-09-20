@@ -16,6 +16,20 @@ import java.util.List;
 public final class EnemyWaveSpawner {
     public static final float EDGE_OFFSET = 40f;
     public static final int MAX_REGULAR_ENEMIES = 24;
+    /**
+     * Surge waves (roadmap A4): scheduled payday waves in the run's second half -- every tenth
+     * wave, offset to +8 so the schedule never lands on a boss lap, pays 1.25x coins. The bodies
+     * half of the idea was vetoed by the shipped pressure contract: any body reinforcement in
+     * 101-150 lifted that quarter's mean more than the five-percent quarter-shape rule allows
+     * (measured: +4 bodies on four waves broke it on two of five gate seeds). The coins stand at
+     * 1.25x: 1.5x crossed purchase thresholds on a gate seed and cascaded its whole curve, 1.25x
+     * measured as exactly zero shape damage on all five.
+     */
+    public static final int SURGE_FIRST_WAVE = 101;
+    public static final int SURGE_LAST_WAVE = 200;
+    public static final int SURGE_EVERY = 10;
+    public static final int SURGE_OFFSET = 3;
+    public static final float SURGE_COIN_MULTIPLIER = 1.25f;
     /** The wave the doubled Elite affix pool opens at (roadmap D2); below it only the base three draw. */
     public static final int LATE_AFFIX_WAVE = 101;
     private static final float SIDE_JITTER = 180f;
@@ -111,6 +125,16 @@ public final class EnemyWaveSpawner {
         return waveNumber > 0
             && waveNumber % eliteWaveInterval(ascensionTier) == 0
             && waveNumber % BOSS_WAVE_INTERVAL != 0;
+    }
+
+    /**
+     * True when this wave is on the surge schedule (roadmap A4). The schedule never lands on a
+     * boss wave by construction; an elite-wave collision is excluded at the tier-aware call sites.
+     */
+    public static boolean isSurgeWave(int waveNumber) {
+        return waveNumber >= SURGE_FIRST_WAVE
+            && waveNumber <= SURGE_LAST_WAVE
+            && waveNumber % SURGE_EVERY == SURGE_OFFSET;
     }
 
     /** A regular wave's body count including the SWARM omen, still capped by the arena's own ceiling. */

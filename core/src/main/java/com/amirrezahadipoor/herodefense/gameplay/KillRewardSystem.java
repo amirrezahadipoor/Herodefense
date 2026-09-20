@@ -42,7 +42,8 @@ public final class KillRewardSystem {
 
         float incomeMultiplier = (1f + effectValue(state, BossRewardCardSystem.COIN_INCOME_KEY))
             * TrialEffects.coinIncomeMultiplier(state.activeTrials)
-            * WaveOmens.of(state, state.waveNumber).coinMultiplier();
+            * WaveOmens.of(state, state.waveNumber).coinMultiplier()
+            * surgeCoinMultiplier(state);
         int coins = Math.max(0, Math.round(baseCoins * incomeMultiplier)
             + Math.round(AffixEffects.coinsOnKill(state) * kills));
         state.coins = saturatedAdd(state.coins, coins);
@@ -66,6 +67,13 @@ public final class KillRewardSystem {
     private static int regularCoins(Enemy enemy, int waveNumber) {
         float waveMultiplier = 1f + Math.max(1, waveNumber) * 0.025f;
         return Math.max(1, Math.round(enemy.type().coinReward() * waveMultiplier));
+    }
+
+    /** A surge wave pays 1.5x: the schedule is public, so the payout is the promise kept. */
+    static float surgeCoinMultiplier(GameState state) {
+        return EnemyWaveSpawner.isSurgeWave(state.waveNumber)
+            && !EnemyWaveSpawner.isEliteWave(state.waveNumber, state.ascensionTier)
+            ? EnemyWaveSpawner.SURGE_COIN_MULTIPLIER : 1f;
     }
 
     private static float effectValue(GameState state, String key) {

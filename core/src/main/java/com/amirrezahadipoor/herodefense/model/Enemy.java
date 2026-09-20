@@ -60,6 +60,16 @@ public class Enemy extends ArenaEntity {
     public int spareTouches;
     /** A dying blightburst has thinned below its warn threshold; the telegraph is owed. */
     public boolean blastWarned;
+    /** A shared copy of a rootward elite's ward: damage lands at a reduced share while it holds. */
+    public float affixWardRemainingSeconds;
+    /** The share of damage a ward-carrying body takes while its shared ward holds. */
+    public static final float SHARED_WARD_MULTIPLIER = 0.96f;
+    /** A late-wave flanker: runs past the lane, bites the nearest planted tree, rejoins (roadmap A3). */
+    public boolean flanker;
+    /** This flanker's live target; recomputed every tick, so it never persists. */
+    public boolean flankTargetValid;
+    public float flankTargetX;
+    public float flankTargetY;
 
     public Enemy() {
         super();
@@ -90,7 +100,8 @@ public class Enemy extends ArenaEntity {
         if (affixShieldRemainingSeconds > 0f) {
             return;
         }
-        health = Math.max(0f, health - amount);
+        float taken = affixWardRemainingSeconds > 0f ? amount * SHARED_WARD_MULTIPLIER : amount;
+        health = Math.max(0f, health - taken);
         if (health == 0f) {
             alive = false;
             active = false;

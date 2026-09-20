@@ -33,6 +33,12 @@ public final class EliteAffixSystem {
     public static final float CINDERHALO_DAMAGE_SHARE = 0.08f;
     /** A blightburst at or below this health share counts as dying and warns its blast ring. */
     public static final float BLIGHT_WARN_HEALTH_FRACTION = 0.35f;
+    /** The rootward share (roadmap A3): radius, shared ward duration, and how many allies hold one. */
+    public static final float ROOTWARD_SHARE_RADIUS = 90f;
+    public static final float ROOTWARD_SHARE_DURATION = 3f;
+    public static final int ROOTWARD_SHARE_ALLIES = 2;
+    /** Out of a living elite's reach the shared ward melts this many times faster: the grip dies with its root. */
+    public static final float ROOTWARD_ORPHAN_DECAY = 10f;
 
     private final HeroDamageSystem heroDamageSystem;
 
@@ -45,6 +51,29 @@ public final class EliteAffixSystem {
             return;
         }
         // Hollowmolt children are collected, not added in-loop: state.aliveEnemies is being iterated.
+        // Shared wards decay in their own pass: a ward granted later in the tick must keep its
+        // full duration, not pay for the frames of the bodies ahead of it in the list. The share
+        // is the elite's grip -- a warded body carried out of any living elite's reach loses it
+        // tenfold fast, so no warded straggler softens the wave that follows.
+        float radiusSquared = ROOTWARD_SHARE_RADIUS * ROOTWARD_SHARE_RADIUS;
+        for (Enemy enemy : state.aliveEnemies) {
+            if (enemy == null || enemy.affixWardRemainingSeconds <= 0f) {
+                continue;
+            }
+            boolean inEliteReach = false;
+            for (Enemy other : state.aliveEnemies) {
+                if (other == null || other.eliteAffix == null || !other.alive) {
+                    continue;
+                }
+                if (enemy.distanceSquaredTo(other.x, other.y) <= radiusSquared) {
+                    inEliteReach = true;
+                    break;
+                }
+            }
+            float decay = inEliteReach ? 1f : ROOTWARD_ORPHAN_DECAY;
+            enemy.affixWardRemainingSeconds =
+                Math.max(0f, enemy.affixWardRemainingSeconds - deltaSeconds * decay);
+        }
         List<Enemy> spawned = null;
         for (Enemy enemy : state.aliveEnemies) {
             if (enemy == null || enemy.eliteAffix == null) continue;
@@ -64,7 +93,7 @@ public final class EliteAffixSystem {
             }
             if (enemy.stunned()) continue;
             if (EliteAffix.ROOTWARD_WARD.id().equals(enemy.eliteAffix)) {
-                updateRootward(enemy, deltaSeconds);
+                updateRootward(state, enemy, deltaSeconds);
             } else if (EliteAffix.WEEPING_ROT.id().equals(enemy.eliteAffix)) {
                 updateWeeping(state, enemy, deltaSeconds);
             } else if (EliteAffix.GRAVEMOSS.id().equals(enemy.eliteAffix)) {
@@ -127,7 +156,7 @@ public final class EliteAffixSystem {
         }
     }
 
-    private static void updateRootward(Enemy enemy, float deltaSeconds) {
+    private static void updateRootward(GameState state, Enemy enemy, float deltaSeconds) {
         if (enemy.affixShieldRemainingSeconds > 0f) {
             enemy.affixShieldRemainingSeconds =
                 Math.max(0f, enemy.affixShieldRemainingSeconds - deltaSeconds);
@@ -137,6 +166,34 @@ public final class EliteAffixSystem {
         if (enemy.affixTimerSeconds >= ROOTWARD_SHIELD_PERIOD) {
             enemy.affixTimerSeconds = 0f;
             enemy.affixShieldRemainingSeconds = ROOTWARD_SHIELD_DURATION;
+            shareShield(state, enemy);
+        }
+    }
+
+    /**
+     * The rootward share (roadmap A3): when the elite's own shield raises, the two nearest
+     * regulars in reach catch a shorter copy of it as a shared ward -- damage lands at a reduced
+     * share while it holds, never at zero, so it bends a volley without ever stalling a fight.
+     * The ward always decays, so no body is ever permanently harder to kill.
+     */
+    private static void shareShield(GameState state, Enemy elite) {
+        if (state.aliveEnemies == null) {
+            return;
+        }
+        float radiusSquared = ROOTWARD_SHARE_RADIUS * ROOTWARD_SHARE_RADIUS;
+        int shared = 0;
+        for (Enemy ally : state.aliveEnemies) {
+            if (shared >= ROOTWARD_SHARE_ALLIES) {
+                return;
+            }
+            if (ally == null || ally == elite || !ally.alive || !ally.active
+                || ally.silentWatcher || ally.eliteAffix != null) {
+                continue;
+            }
+            if (ally.distanceSquaredTo(elite.x, elite.y) <= radiusSquared) {
+                ally.affixWardRemainingSeconds = ROOTWARD_SHARE_DURATION;
+                shared++;
+            }
         }
     }
 
