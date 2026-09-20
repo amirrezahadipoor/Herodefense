@@ -1,6 +1,6 @@
 # Hero Defense — Story Content
 
-> **Voice rules are frozen in `docs/STORY_VOICE.md`:** short lines, common words, one idea per line. Hero = terse-white, Tree = leaf-green. Every line below follows those rules since Phase 31.
+> **Voice rules live in `docs/STORY_VOICE.md`:** short lines, common words, one idea per line. Hero = terse-white, Tree = leaf-green. Every line below follows those rules since Phase 31, and every one ships in two languages — the English here is the source voice, and its Persian twin lives in the same line of code, reviewed and recorded in `docs/PERSIAN_PROOFREAD.md`.
 
 Full narrative text to drop straight into the systems described in Phases 20, 21, 23, and 25 of
 the roadmap addendum. Two voices only, kept distinct on purpose:
@@ -105,10 +105,10 @@ Tier-independent, always the same:
 - **Thorn Matriarch.** She grew half the arena's Rootlings herself, back when growing things was all she did. What she plants now still takes root. It simply does not ask, and it is not kind.
 - **Ember Wyrm.** When the Hollow first touched this ground, a thing here caught fire and never fully went out. The Wyrm is what that ember became once it learned to want more fuel.
 - **Void Knight.** No one here recalls what it looked like before. It does not either. It only recalls falling, and it has spent every year since trying to make another thing fall with it.
-- **Frost Titan.** The frost came after the Hollow fell, not before. It kept what it touched. The Titan is what kept walking after everything else froze.
-- **Shadow Lich.** It was not a boss before. It was a record keeper. Now it keeps the record of how many times the grove has fallen and how.
-- **Storm Colossus.** Stone that learned to hold thunder instead of moss. It does not hurry. Thunder never does.
-- **Bloodroot Avatar.** The World Tree's own root, taken and twisted. It bleeds sap that never dries. The Tree knows its shape.
+- **Frost Titan.** There was frost in this grove before the Hollow, and all of it stayed where the cold put it. The Titan is the first of that frost to move. The Hollow only had to teach it which way to walk.
+- **Shadow Lich.** The records it keeps are older than the Hollow. It wrote down every fall the grove took and never wrote down the name of what pushed. It still cannot write the difference.
+- **Storm Colossus.** It learned thunder from the Hollow's storms, and stillness from the mountain it was cut from. It chose both. That is why it does not hurry.
+- **Bloodroot Avatar.** It remembers being part of me the way a branch remembers the rain it no longer feels. That memory was all the Hollow needed to dress in bark and call a traitor.
 
 ## 4. Elite Affixes — "Whispering Wounds" (two Codex fragments each)
 

@@ -222,9 +222,20 @@ public final class GameFonts implements AutoCloseable {
             entry.persian().codePoints().forEach(codepoints::add);
             PersianShaper.shape(entry.persian()).codePoints().forEach(codepoints::add);
         }
+        // Story prose that lives outside the string tables (the Grove Codex bodies and the boss bios) still has
+        // to be drawable when a Persian player opens the codex, so its glyphs join the atlas the same way a table
+        // entry's would.
+        storyPersian().codePoints().forEach(codepoints::add);
+        PersianShaper.shape(storyPersian()).codePoints().forEach(codepoints::add);
         StringBuilder characters = new StringBuilder(codepoints.size());
         codepoints.forEach(characters::appendCodePoint);
         return characters.toString();
+    }
+
+    /** Every Persian-script sentence the story classes can put on screen, in one string for shaping and coverage. */
+    static String storyPersian() {
+        return com.amirrezahadipoor.herodefense.story.LoreCatalog.persianText()
+            + com.amirrezahadipoor.herodefense.story.BossLore.persianText();
     }
 
     private BitmapFont generate(Role role, GameLanguage language) {

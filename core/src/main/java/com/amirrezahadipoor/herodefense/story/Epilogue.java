@@ -1,5 +1,8 @@
 package com.amirrezahadipoor.herodefense.story;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
+import com.amirrezahadipoor.herodefense.i18n.Translated;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.List;
 
@@ -9,46 +12,39 @@ import java.util.List;
  * tier-independent §2.5 transition lines follow the epilogue before the Ascend prompt.
  */
 public enum Epilogue {
-    A(List.of(
-        "Two hundred waves. No step lost.",
-        "The Hollow needs a new plan.",
-        "Till then, the Tree and I stand."
-    )),
-    B(List.of(
-        "Two hundred waves. All were close.",
-        "I do not recall it all. I recall not letting go.",
-        "That is enough. It has to be."
-    )),
-    C(List.of(
-        "Not to the middle.",
-        "The Tree falls soft and quiet this early.",
-        "Next time it will be loud."
-    )),
-    D(List.of(
-        "Close to the second root.",
-        "I went farther than last time. Far is not far enough.",
-        "Again."
-    )),
-    E(List.of(
-        "One tree stood when I fell. That must count.",
-        "The Hollow paid past wave one hundred. It just lasted a bit more.",
-        "Next time it pays for all."
-    ));
+    A(StoryStrings.EPILOGUE_A_ONE, StoryStrings.EPILOGUE_A_TWO, StoryStrings.EPILOGUE_A_THREE),
+    B(StoryStrings.EPILOGUE_B_ONE, StoryStrings.EPILOGUE_B_TWO, StoryStrings.EPILOGUE_B_THREE),
+    C(StoryStrings.EPILOGUE_C_ONE, StoryStrings.EPILOGUE_C_TWO, StoryStrings.EPILOGUE_C_THREE),
+    D(StoryStrings.EPILOGUE_D_ONE, StoryStrings.EPILOGUE_D_TWO, StoryStrings.EPILOGUE_D_THREE),
+    E(StoryStrings.EPILOGUE_E_ONE, StoryStrings.EPILOGUE_E_TWO, StoryStrings.EPILOGUE_E_THREE);
 
     /** Tier-independent Ascension transition, shown after the epilogue on wins only (§2.5). */
-    public static final List<String> TRANSITION = List.of(
-        "The Hollow is not gone. It is quiet while it learns to fall again.",
-        "Rise again. The Tree will still stand."
+    public static final List<Translated> TRANSITION = List.of(
+        StoryStrings.EPILOGUE_TRANSITION_ONE, StoryStrings.EPILOGUE_TRANSITION_TWO
     );
 
-    private final List<String> lines;
+    private final Translated[] lines;
 
-    Epilogue(List<String> lines) {
-        this.lines = List.copyOf(lines);
+    Epilogue(Translated... lines) {
+        this.lines = lines;
     }
 
+    /** The three beats in the language the game is speaking now. */
     public List<String> lines() {
-        return lines;
+        String[] out = new String[lines.length];
+        for (int index = 0; index < lines.length; index++) {
+            out[index] = GameLocale.text(lines[index]);
+        }
+        return List.of(out);
+    }
+
+    /** The two §2.5 transition beats in the current language. */
+    public static List<String> transitionLines() {
+        String[] out = new String[TRANSITION.size()];
+        for (int index = 0; index < TRANSITION.size(); index++) {
+            out[index] = GameLocale.text(TRANSITION.get(index));
+        }
+        return List.of(out);
     }
 
     /**

@@ -1,5 +1,9 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
+import com.amirrezahadipoor.herodefense.i18n.Translated;
+
 /**
  * Deterministic timeline of the new-run opening: the camera pushes in on the Hero, a dark
  * cloud rolls over the arena, the Hero speaks three lines in white, the cloud clears, and the
@@ -9,21 +13,13 @@ package com.amirrezahadipoor.herodefense.gameplay;
 public final class OpeningCinematic {
     public enum Phase { IDLE, ZOOM_IN, LINE_ONE, LINE_TWO, LINE_THREE, ZOOM_OUT, DONE }
 
-    public static final String LINE_ONE = "Can you protect the World Tree?!";
-    public static final String LINE_TWO = "Can you?";
-    public static final String LINE_THREE = "Are you sure?!";
-    /** Ascension tier 1 opening, verbatim (§1). */
-    public static final String TIER1_LINE_ONE = "Dark comes again.";
-    public static final String TIER1_LINE_TWO = "I stand again.";
-    public static final String TIER1_LINE_THREE = "This time I go far.";
-    /** Ascension tier 2 opening, verbatim (§1). */
-    public static final String TIER2_LINE_ONE = "The Hollow knows me now.";
-    public static final String TIER2_LINE_TWO = "Good. Let it fear.";
-    public static final String TIER2_LINE_THREE = "Roots first. Then flesh. Then Tree. Not today.";
-    /** Tier 3 and every tier after reuse this one set as-is (§1). */
-    public static final String TIER3_LINE_ONE = "New dawn. New fight.";
-    public static final String TIER3_LINE_TWO = "The Tree asks once.";
-    public static final String TIER3_LINE_THREE = "So do I.";
+    /** The opening line sets, from {@code StoryStrings}: tier 0 shipped, 1 and 2 their own, 3+ shared. */
+    private static final Translated[][] LINE_SETS = {
+        {StoryStrings.OPENING_0_ONE, StoryStrings.OPENING_0_TWO, StoryStrings.OPENING_0_THREE},
+        {StoryStrings.OPENING_1_ONE, StoryStrings.OPENING_1_TWO, StoryStrings.OPENING_1_THREE},
+        {StoryStrings.OPENING_2_ONE, StoryStrings.OPENING_2_TWO, StoryStrings.OPENING_2_THREE},
+        {StoryStrings.OPENING_3_ONE, StoryStrings.OPENING_3_TWO, StoryStrings.OPENING_3_THREE}
+    };
 
     public static final float ZOOM_IN_SECONDS = 1.1f;
     public static final float LINE_ONE_SECONDS = 2.2f;
@@ -55,18 +51,18 @@ public final class OpeningCinematic {
         active = true;
     }
 
-    /** Line set for a tier: 0 shipped, 1 and 2 their own, 3+ one shared set (§1). */
+    /** The line set a tier speaks. Indexes plain; only the caller knows how many line sets there are. */
+    static Translated[] setForTier(int ascensionTier) {
+        int index = ascensionTier >= 3 ? 3 : Math.max(0, ascensionTier);
+        return LINE_SETS[index];
+    }
+
+    /** Line set for a tier, in the language the game is currently speaking (§1). */
     public static String[] linesForTier(int ascensionTier) {
-        if (ascensionTier == 1) {
-            return new String[] {TIER1_LINE_ONE, TIER1_LINE_TWO, TIER1_LINE_THREE};
-        }
-        if (ascensionTier == 2) {
-            return new String[] {TIER2_LINE_ONE, TIER2_LINE_TWO, TIER2_LINE_THREE};
-        }
-        if (ascensionTier >= 3) {
-            return new String[] {TIER3_LINE_ONE, TIER3_LINE_TWO, TIER3_LINE_THREE};
-        }
-        return new String[] {LINE_ONE, LINE_TWO, LINE_THREE};
+        Translated[] set = setForTier(ascensionTier);
+        return new String[] {
+            GameLocale.text(set[0]), GameLocale.text(set[1]), GameLocale.text(set[2])
+        };
     }
 
     /** Advances presentation time; returns true on the frame the opening completes. */

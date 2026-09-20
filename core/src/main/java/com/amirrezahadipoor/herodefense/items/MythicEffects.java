@@ -1,5 +1,7 @@
 package com.amirrezahadipoor.herodefense.items;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Item;
@@ -145,12 +147,12 @@ public final class MythicEffects {
     public static String flavorLine(String itemId) {
         if (itemId == null) return null;
         return switch (itemId) {
-            case SUNFALL_LAST_ARROW -> "Shot once, long ago, at a high fall. The arrow did not come back whole. Nor did what it hit.";
-            case CROWN_HOLLOW_EYE -> "Wear it and you see weak spots as the Hollow sees strength. The one true thing to aim for.";
-            case BARK_FIRST_ROOT -> "Cut from the World Tree's bark when it could spare wood. It knows how to close a wound.";
-            case WINDRUNNER_LAST_STEPS -> "Made for running. He never ran again after putting them on. He no longer needed to.";
-            case VERDANT_OATH -> "A promise in sap. What heals you lets you keep healing.";
-            case EMBERLESS_CORE -> "The ember that never went out, cooled and put to work. No longer left to spread.";
+            case SUNFALL_LAST_ARROW -> GameLocale.text(StoryStrings.MYTHIC_SUNFALL);
+            case CROWN_HOLLOW_EYE -> GameLocale.text(StoryStrings.MYTHIC_CROWN);
+            case BARK_FIRST_ROOT -> GameLocale.text(StoryStrings.MYTHIC_BARK);
+            case WINDRUNNER_LAST_STEPS -> GameLocale.text(StoryStrings.MYTHIC_WINDRUNNER);
+            case VERDANT_OATH -> GameLocale.text(StoryStrings.MYTHIC_VERDANT);
+            case EMBERLESS_CORE -> GameLocale.text(StoryStrings.MYTHIC_EMBERLESS);
             default -> null;
         };
     }

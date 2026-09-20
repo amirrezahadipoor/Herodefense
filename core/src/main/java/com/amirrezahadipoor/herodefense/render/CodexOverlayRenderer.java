@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.CodexTouchLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -132,17 +134,25 @@ public final class CodexOverlayRenderer implements AutoCloseable {
     /** "12 / 30 WRITTEN" on the lore shelf, "7 / 12 EARNED" on the trophy shelf. */
     private String headerLine(GameState state, CodexTouchController controller) {
         if (controller.tab() == CodexTouchLayout.Tab.TROPHIES) {
-            return state.trophies.earnedCount() + HALF_SEPARATOR + Trophy.values().length + " EARNED";
+            return GameLocale.text(
+                StoryStrings.CODEX_EARNED,
+                GameLocale.number(state.trophies.earnedCount()),
+                GameLocale.number(Trophy.values().length)
+            );
         }
-        return codex.unlockedCount(state) + HALF_SEPARATOR + LoreCatalog.all().size() + " WRITTEN";
+        return GameLocale.text(
+            StoryStrings.CODEX_WRITTEN,
+            GameLocale.number(codex.unlockedCount(state)),
+            GameLocale.number(LoreCatalog.all().size())
+        );
     }
 
     private void drawTabs(
         SpriteBatch batch, CodexTouchController controller, UiFrameRenderer frames
     ) {
         boolean trophies = controller.tab() == CodexTouchLayout.Tab.TROPHIES;
-        drawTab(batch, frames, "LORE", CodexTouchLayout.TAB_LEFT_X, !trophies);
-        drawTab(batch, frames, "TROPHIES", CodexTouchLayout.TAB_RIGHT_X, trophies);
+        drawTab(batch, frames, GameLocale.text(StoryStrings.CODEX_TAB_LORE), CodexTouchLayout.TAB_LEFT_X, !trophies);
+        drawTab(batch, frames, GameLocale.text(StoryStrings.CODEX_TAB_TROPHIES), CodexTouchLayout.TAB_RIGHT_X, trophies);
     }
 
     private void drawTab(
@@ -155,8 +165,8 @@ public final class CodexOverlayRenderer implements AutoCloseable {
         );
         text.draw(batch, label, x + 22f, CodexTouchLayout.TAB_Y + 46f, TAB_SCALE,
             active ? OverlayText.GOLD : OverlayText.MUTED);
-        text.draw(batch, active ? "showing" : "tap to show", x + 22f, CodexTouchLayout.TAB_Y + 18f, 0.5f,
-            OverlayText.MUTED);
+        text.draw(batch, GameLocale.text(active ? StoryStrings.CODEX_SHOWING : StoryStrings.CODEX_TAP_TO_SHOW),
+            x + 22f, CodexTouchLayout.TAB_Y + 18f, 0.5f, OverlayText.MUTED);
     }
 
     private void drawTrophyRows(
@@ -190,9 +200,9 @@ public final class CodexOverlayRenderer implements AutoCloseable {
         int selected = controller.selectedIndex();
         Trophy trophy = selected >= 0 && selected < Trophy.values().length ? Trophy.values()[selected] : null;
         float titleY = DETAILS_Y + DETAILS_HEIGHT - 48f;
-        text.draw(batch, "WARDEN'S TROPHIES", DETAILS_X + DETAILS_PADDING, titleY, 1.0f, OverlayText.GOLD);
+        text.draw(batch, GameLocale.text(StoryStrings.TROPHY_HEADER), DETAILS_X + DETAILS_PADDING, titleY, 1.0f, OverlayText.GOLD);
         if (trophy == null) {
-            text.draw(batch, "Tap a trophy to read what earns it.",
+            text.draw(batch, GameLocale.text(StoryStrings.TROPHY_TAP_HINT),
                 DETAILS_X + DETAILS_PADDING, titleY - 48f, BODY_SCALE, OverlayText.MUTED);
             return;
         }
@@ -220,7 +230,7 @@ public final class CodexOverlayRenderer implements AutoCloseable {
         float titleY = DETAILS_Y + DETAILS_HEIGHT - 48f;
         if (detail == null || !codex.isUnlocked(state, detail.id())) {
             text.draw(batch, "??????", DETAILS_X + DETAILS_PADDING, titleY, 1.0f, OverlayText.MUTED);
-            text.draw(batch, "The grove has not written this yet.", DETAILS_X + DETAILS_PADDING,
+            text.draw(batch, GameLocale.text(StoryStrings.CODEX_LOCKED_HINT), DETAILS_X + DETAILS_PADDING,
                 titleY - 48f, BODY_SCALE, OverlayText.MUTED);
             return;
         }

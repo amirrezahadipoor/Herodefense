@@ -22,12 +22,13 @@ final class BossLoreTest {
 
     @Test
     void bossEntriesComposeTreeVoiceFirstAndBioSecond() {
-        for (String id : new String[] {"codex_09", "codex_10", "codex_11", "codex_12"}) {
+        for (String id : new String[] {"codex_09", "codex_10", "codex_11", "codex_12", "codex_13", "codex_14", "codex_15", "codex_16"}) {
             LoreEntry entry = LoreCatalog.byId(id);
-            String detail = BossLore.detailFor(entry);
-            assertTrue(detail.startsWith(entry.body()), id);
-            assertTrue(detail.contains(BossLore.bioFor(entry.triggerParam())), id);
-            assertTrue(detail.indexOf(entry.body()) < detail.indexOf(BossLore.bioFor(entry.triggerParam())), id);
+            String bio = BossLore.bioFor(entry.triggerParam());
+            assertTrue(bio != null, id);
+            // D3's four new bosses reuse the bio as the codex body, so the two paragraphs can be identical;
+            // the strict check here is the composition itself: body, blank line, bio.
+            assertEquals(entry.body() + "\n\n" + bio, BossLore.detailFor(entry), id);
         }
     }
 

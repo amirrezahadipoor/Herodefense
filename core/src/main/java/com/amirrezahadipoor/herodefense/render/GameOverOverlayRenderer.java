@@ -237,7 +237,7 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
         }
         if (victory) {
             y -= EPILOGUE_STANZA_GAP;
-            for (String beat : Epilogue.TRANSITION) {
+            for (String beat : Epilogue.transitionLines()) {
                 for (String line : CodexOverlayRenderer.wrapLines(
                     beat, this::epilogueWidth, EPILOGUE_MAX_WIDTH)) {
                     text.drawCentered(

@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 final class WhisperLinesTest {
     @Test
     void poolHoldsSixSingleSentenceTreeLines() {
-        assertEquals(6, WhisperLines.LINES.size());
-        for (String line : WhisperLines.LINES) {
+        assertEquals(6, WhisperLines.lines().size());
+        for (String line : WhisperLines.lines()) {
             long terminals = line.chars().filter(c -> c == '.' || c == '!' || c == '?').count();
             assertEquals(1, terminals, line);
         }
@@ -20,7 +20,7 @@ final class WhisperLinesTest {
     @Test
     void firstUnusedWalksThePoolInOrderThenStaysSilent() {
         Map<String, Boolean> used = new LinkedHashMap<>();
-        for (String expected : WhisperLines.LINES) {
+        for (String expected : WhisperLines.lines()) {
             String next = WhisperLines.firstUnused(used);
             assertEquals(expected, next);
             WhisperLines.markUsed(used, next);

@@ -207,7 +207,7 @@ final class FrameDriverTest {
 
         assertNotNull(driver.whisperLine());
         assertFalse(first.equals(driver.whisperLine()), "each long pause tells the player something new");
-        assertTrue(Boolean.TRUE.equals(state.usedWhisperIds.get(WhisperLines.idFor(WhisperLines.LINES.indexOf(first)))),
+        assertTrue(Boolean.TRUE.equals(state.usedWhisperIds.get(WhisperLines.idFor(WhisperLines.lines().indexOf(first)))),
             "and the line is marked as told");
     }
 

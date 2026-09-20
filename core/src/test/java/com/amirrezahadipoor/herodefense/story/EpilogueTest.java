@@ -2,11 +2,20 @@ package com.amirrezahadipoor.herodefense.story;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.List;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 final class EpilogueTest {
+
+    @AfterEach
+    void leaveTheLanguageAsItWasFound() {
+        GameLocale.use(GameLanguage.ENGLISH);
+    }
+
     @Test
     void flawlessVictoryNeedsNoDeathFewPotionsAndThirtyPercentHealth() {
         assertEquals(Epilogue.A, select(win(false, 2, 30f, 100f)));
@@ -81,7 +90,20 @@ final class EpilogueTest {
                 "The Hollow is not gone. It is quiet while it learns to fall again.",
                 "Rise again. The Tree will still stand."
             ),
-            Epilogue.TRANSITION
+            Epilogue.transitionLines()
+        );
+    }
+
+    @Test
+    void everyEpilogueSpeaksPersianWhenPersianIsAsked() {
+        GameLocale.use(GameLanguage.PERSIAN);
+        assertEquals(List.of("دویست موج. بی‌آنکه گامی از دست برود.",
+            "دره به نقشهٔ تازه‌ای نیاز دارد.",
+            "تا آن زمان، درخت و من می‌ایستیم."), Epilogue.A.lines());
+        assertEquals(
+            List.of("دره نرفته است. خاموش است، در حالی که دوباره افتادن می‌آموزد.",
+                "دوباره برخیز. درخت همچنان خواهد ایستاد."),
+            Epilogue.transitionLines()
         );
     }
 

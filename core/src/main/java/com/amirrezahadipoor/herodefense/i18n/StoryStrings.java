@@ -120,7 +120,99 @@ public enum StoryStrings implements Translated {
     DEED_BOSSES_5("Deed: five giants in one vigil  |  + %1$s coins", "کارنامه: پنج غول در یک بیداری  |  + %1$s سکه"),
     DEED_CLEAN_25("Deed: wave 25 without a potion  |  + %1$s coins", "کارنامه: موج ۲۵ بدون معجون  |  + %1$s سکه"),
     DEED_FLAWLESS_50("Deed: wave 50 unfallen and dry  |  + %1$s coins", "کارنامه: موج ۵۰ بی‌مرگ و بی‌معجون  |  + %1$s سکه"),
-    DEED_CODEX_10("Deed: read ten codex pages  |  + %1$s coins", "کارنامه: خواندن ده صفحه از دانشنامه  |  + %1$s سکه");
+    DEED_CODEX_10("Deed: read ten codex pages  |  + %1$s coins", "کارنامه: خواندن ده صفحه از دانشنامه  |  + %1$s سکه"),
+
+    /** The Grove Codex screen's labels (moved out of {@code render/CodexOverlayRenderer} so the
+     *  screen speaks both languages instead of pinning its chrome to English while the entries
+     *  beneath it are read in Persian). */
+    CODEX_TAB_LORE("LORE", "دانش‌ها"),
+    CODEX_TAB_TROPHIES("TROPHIES", "جام‌ها"),
+    CODEX_SHOWING("showing", "نمایش"),
+    CODEX_TAP_TO_SHOW("tap to show", "برای نمایش بزنید"),
+    CODEX_WRITTEN("%1$s / %2$s WRITTEN", "%1$s / %2$s نوشته شد"),
+    CODEX_EARNED("%1$s / %2$s EARNED", "%1$s / %2$s یافت شد"),
+    CODEX_LOCKED_HINT("The grove has not written this yet.", "بیشه هنوز این را ننوشته است."),
+    TROPHY_HEADER("WARDEN'S TROPHIES", "جام‌های نگهبان"),
+    TROPHY_TAP_HINT("Tap a trophy to read what earns it.", "روی جامی بزنید تا بدانید چه چیز آن را می‌آورد."),
+
+    /** The new-run opening, one line set per ascension tier (§1). Tier 0 shipped, 1 and 2 their own,
+     *  3+ one shared set. Three lines each, spoken in white over the push-in. */
+    OPENING_0_ONE("Can you protect the World Tree?!", "می‌توانی از درخت جهان نگهبانی کنی؟!"),
+    OPENING_0_TWO("Can you?", "می‌توانی؟"),
+    OPENING_0_THREE("Are you sure?!", "مطمئنی؟!"),
+    OPENING_1_ONE("Dark comes again.", "تاریکی دوباره می‌آید."),
+    OPENING_1_TWO("I stand again.", "دوباره می‌ایستم."),
+    OPENING_1_THREE("This time I go far.", "این بار دور می‌روم."),
+    OPENING_2_ONE("The Hollow knows me now.", "دره حالا مرا می‌شناسد."),
+    OPENING_2_TWO("Good. Let it fear.", "خوب است. بگذار بترسد."),
+    OPENING_2_THREE("Roots first. Then flesh. Then Tree. Not today.", "اول ریشه‌ها. بعد گوشت. بعد درخت. امروز نه."),
+    OPENING_3_ONE("New dawn. New fight.", "پگاه تازه. نبرد تازه."),
+    OPENING_3_TWO("The Tree asks once.", "درخت یک بار می‌پرسد."),
+    OPENING_3_THREE("So do I.", "من هم همین‌طور."),
+
+    /** Branching end-of-run epilogues (§6). A = flawless, B = hard-fought, C/D/E = falls. */
+    EPILOGUE_A_ONE("Two hundred waves. No step lost.", "دویست موج. بی‌آنکه گامی از دست برود."),
+    EPILOGUE_A_TWO("The Hollow needs a new plan.", "دره به نقشهٔ تازه‌ای نیاز دارد."),
+    EPILOGUE_A_THREE("Till then, the Tree and I stand.", "تا آن زمان، درخت و من می‌ایستیم."),
+    EPILOGUE_B_ONE("Two hundred waves. All were close.", "دویست موج. همه از نفس‌افتاده."),
+    EPILOGUE_B_TWO("I do not recall it all. I recall not letting go.", "همه‌اش را به یاد ندارم. به یاد دارم که رها نکردم."),
+    EPILOGUE_B_THREE("That is enough. It has to be.", "همین بس است. باید بس باشد."),
+    EPILOGUE_C_ONE("Not to the middle.", "نه تا میانه."),
+    EPILOGUE_C_TWO("The Tree falls soft and quiet this early.", "درخت این‌قدر زود، نرم و خاموش می‌افتد."),
+    EPILOGUE_C_THREE("Next time it will be loud.", "بار بعد پرصدا خواهد بود."),
+    EPILOGUE_D_ONE("Close to the second root.", "نزدیک ریشهٔ دوم."),
+    EPILOGUE_D_TWO("I went farther than last time. Far is not far enough.", "از دفعهٔ پیش دورتر رفتم. دور هنوز کافی نیست."),
+    EPILOGUE_D_THREE("Again.", "دوباره."),
+    EPILOGUE_E_ONE("One tree stood when I fell. That must count.", "وقتی افتادم یک درخت ایستاده بود. این باید به حساب بیاید."),
+    EPILOGUE_E_TWO("The Hollow paid past wave one hundred. It just lasted a bit more.", "دره از موج صدم گذشته تاوان داد. فقط کمی بیشتر دوام آورد."),
+    EPILOGUE_E_THREE("Next time it pays for all.", "بار بعد برای همه چیز تاوان می‌دهد."),
+    EPILOGUE_TRANSITION_ONE("The Hollow is not gone. It is quiet while it learns to fall again.", "دره نرفته است. خاموش است، در حالی که دوباره افتادن می‌آموزد."),
+    EPILOGUE_TRANSITION_TWO("Rise again. The Tree will still stand.", "دوباره برخیز. درخت همچنان خواهد ایستاد."),
+
+    /** Whispering Wounds, one fragment pair per Elite affix (§4). */
+    ELITE_BLIGHTBURST_ONE("It does not die so much as let go. What was holding it together was never its own to keep.",
+        "آن‌قدر نمی‌میرد که رها می‌کند. آنچه پیوندش می‌داد هرگز از خودش نبود که نگه دارد."),
+    ELITE_BLIGHTBURST_TWO("The burst is not rage. It's relief.", "آن انفجار خشم نیست؛ آسودگی است."),
+    ELITE_ROOTWARD_ONE("The shield is not armor. It's a root, briefly recalling what it was for.",
+        "آن سپر زره نیست؛ ریشه‌ای است که یک‌دم کار سابقش را به یاد می‌آورد."),
+    ELITE_ROOTWARD_TWO("Even changed, a thing in it still tries to protect a thing. It's just no longer sure what.",
+        "حتی با این شکل، چیزی درونش هنوز می‌کوشد از چیزی نگهبانی کند؛ فقط دیگر مطمئن نیست از چه."),
+    ELITE_WEEPING_ONE("The ground it crosses does not heal. Not yet. Maybe not ever.",
+        "زمینی که از آن می‌گذرد التیام نمی‌یابد. هنوز نه. شاید هرگز."),
+    ELITE_WEEPING_TWO("Every trail leads back the same direction, if you follow it far enough: toward the Tree.",
+        "هر ردّی را اگر به‌قدر کافی دنبال کنی به یک سو برمی‌گردد: سوی درخت."),
+    ELITE_HOLLOWMOLT_ONE("It does not leave empty. Nothing here does.", "اینجا را خالی ترک نمی‌کند. هیچ‌چیز اینجا نمی‌کند."),
+    ELITE_HOLLOWMOLT_TWO("Two smaller silences where one loud one stood. The Tree counts them as the same wound.",
+        "دو خاموشی کوچک‌تر به‌جای یک صدای بلند. درخت هر دو را یک زخم می‌شمارد."),
+    ELITE_GRAVEMOSS_ONE("The moss grows over the wound while the wound is still wearing it.",
+        "خزه روی زخم می‌روید در حالی که زخم هنوز آن را به تن دارد."),
+    ELITE_GRAVEMOSS_TWO("It is not healing. It is being reclaimed, slowly, by something patient.",
+        "این التیام نیست؛ چیزی شکیبا دارد آهسته آن را بازپس می‌گیرد."),
+    ELITE_CINDERHALO_ONE("Stand close and it will love you the way an ember loves a dry wind.",
+        "نزدیکش بایست تا دوستت بدارد، آن‌گونه که اخگر دوست‌دار باد خشک است."),
+    ELITE_CINDERHALO_TWO("The heat is not attack. It is grief, still warm from the fire that made it.",
+        "آن گرما حمله نیست؛ سوگی است که هنوز از آتشی که ساختش گرم مانده."),
+
+    /** Idle-whisper pool (§8): six Tree-voice lines, one per long pause, each shown once ever. */
+    WHISPER_ONE("The roots kept your place while you were gone.", "ریشه‌ها جای تو را در نبودنت نگه داشتند."),
+    WHISPER_TWO("Even the Tree dreams, little guardian, but it always wakes.", "حتی درخت هم خواب می‌بیند، نگهبان کوچک؛ اما همیشه بیدار می‌شود."),
+    WHISPER_THREE("I counted every breath of your absence in falling leaves.", "هر نفسِ نبودنت را در برگ‌های ریخته شمردم."),
+    WHISPER_FOUR("Rest is also a weapon, and you are learning to wield it.", "آسایش نیز سلاحی است، و تو می‌آموزی به کارش بگیری."),
+    WHISPER_FIVE("The dark between battles is where roots grow deepest.", "تاریکیِ میان نبردها جایی است که ریشه‌ها عمیق‌تر می‌رویند."),
+    WHISPER_SIX("Welcome back — the grove never stopped watching the paths.", "خوش آمدی — بیشه هرگز از نگریستن به راه‌ها دست نکشید."),
+
+    /** Mythic item flavor (§7), one per slot's Mythic. */
+    MYTHIC_SUNFALL("Shot once, long ago, at a high fall. The arrow did not come back whole. Nor did what it hit.",
+        "زمانی، یک بار، به‌سوی پرتگاهی بلند رها شد. تیر هرگز سالم برنگشت؛ آنچه را زد هم سالم نماند."),
+    MYTHIC_CROWN("Wear it and you see weak spots as the Hollow sees strength. The one true thing to aim for.",
+        "بر سر بگذار تا نقطه‌ضعف را ببینی، آن‌سان که دره نیرو را می‌بیند. همان، یگانه. هدفِ راستین."),
+    MYTHIC_BARK("Cut from the World Tree's bark when it could spare wood. It knows how to close a wound.",
+        "از پوست درخت جهان جدا شد، در روزگاری که می‌توانست چوب ببخشد. راهِ بستن زخم را می‌داند."),
+    MYTHIC_WINDRUNNER("Made for running. He never ran again after putting them on. He no longer needed to.",
+        "برای دویدن ساخته شد. پس از پوشیدنشان دیگر ندوید. دیگر نیازی نداشت."),
+    MYTHIC_VERDANT("A promise in sap. What heals you lets you keep healing.", "پیمانی در شیره. آنچه درمانت می‌کند می‌گذارد درمان بمانی."),
+    MYTHIC_EMBERLESS("The ember that never went out, cooled and put to work. No longer left to spread.",
+        "اخگری که هرگز خاموش نشد، سرد شد و به کار گرفته شد. دیگر برای پراکندن رها نیست.");
 
     private final String english;
     private final String persian;
