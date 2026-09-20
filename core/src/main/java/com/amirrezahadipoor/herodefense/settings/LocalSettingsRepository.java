@@ -22,6 +22,7 @@ public final class LocalSettingsRepository {
     private static final String REDUCED_MOTION_KEY = "display.reducedMotion";
     private static final String COLOUR_BLIND_RARITY_KEY = "display.colourBlindRarity";
     private static final String TEXT_SIZE_KEY = "display.textSize";
+    private static final String LAST_GIFT_DAY_KEY = "tree.lastGiftEpochDay";
     private final Preferences preferences;
 
     public LocalSettingsRepository(Preferences preferences) {
@@ -70,6 +71,17 @@ public final class LocalSettingsRepository {
         preferences.putBoolean(COLOUR_BLIND_RARITY_KEY, settings.colourBlindRarity);
         preferences.putInteger(TEXT_SIZE_KEY, settings.textSizeIndex);
         preferences.putString(LANGUAGE_KEY, settings.language.code());
+        preferences.flush();
+    }
+
+    /** The epoch day the Tree last paid its daily gift, or -1 before the first visit. */
+    public long lastGiftEpochDay() {
+        return preferences.getLong(LAST_GIFT_DAY_KEY, -1L);
+    }
+
+    /** Records that today's gift has been paid; device-level, so a new run cannot re-earn it. */
+    public void markGifted(long epochDay) {
+        preferences.putLong(LAST_GIFT_DAY_KEY, epochDay);
         preferences.flush();
     }
 }

@@ -133,6 +133,7 @@ import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
 import com.amirrezahadipoor.herodefense.story.BossTitleCards;
 import com.amirrezahadipoor.herodefense.story.CeremonyLines;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
+import com.amirrezahadipoor.herodefense.story.DailyGift;
 import com.amirrezahadipoor.herodefense.story.MercySystem;
 import com.amirrezahadipoor.herodefense.story.ReflectionLines;
 import com.amirrezahadipoor.herodefense.story.EliteFragments;
@@ -546,14 +547,12 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     /**
-     * Tap-to-focus (roadmap R3.1): marks the enemy under the finger for the bow, clears the mark on a miss,
-     * and answers with the same ripple and haptic the rest of the UI uses so the tap is never silent.
+     * Tap-to-focus (roadmap R3.1): marks the enemy under the finger for the bow, clears the mark on a miss.
      * A tap on a silent watcher greets it instead (roadmap ST3); three greetings and it departs.
      */
     private void focusFireAt(float worldX, float worldY) {
         if (gameState == null || !gameState.hero.alive) return;
         if (MercySystem.greet(gameState, worldX, worldY) == MercySystem.Result.SPARED) {
-            // A spared watcher: one sparkle where it stood, a haptic receipt, the Hollow's word on mercy.
             showStoryBeat(presentationSystem.presentMercySpare(gameState, worldX, worldY));
             hapticFeedback.tap();
             return;
@@ -616,6 +615,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         enemyMovementSystem.update(gameState, simulationDelta);
         FocusFireSystem.tick(gameState, simulationDelta);
         presentationSystem.presentPlaytime(gameState);
+        showStoryBeat(DailyGift.claim(gameState, settingsRepository, java.time.LocalDate.now().toEpochDay()));
         CombatSystem.Frame frame = combatSystem.update(gameState, simulationDelta, settings);
         waveDirector.afterCombat(frame.gameOver(), frame.leveledUp());
         simulationSeconds += simulationDelta;
