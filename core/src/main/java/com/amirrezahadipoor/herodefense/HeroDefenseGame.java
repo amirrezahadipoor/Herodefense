@@ -312,7 +312,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             screenShakeSystem, presentationSystem, codexSystem
         );
         frameDriver = new FrameDriver(
-            new FrameHost(), flow, audioManager, settings, touchFeedbackSystem, inventoryTouchController,
+            new FrameHost(), flow, audioManager, audioManager, settings, touchFeedbackSystem, inventoryTouchController,
             statShopSystem, skillShopSystem, rootNetworkSystem, hitStopSystem, screenShakeSystem, particleSystem,
             codexSystem,
             System::nanoTime
@@ -583,7 +583,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     private void showStoryBeat(String line) {
-        frameDriver.showStoryBeat(line);
+        frameDriver.showStoryBeat(line, com.amirrezahadipoor.herodefense.audio.SpeechBlip.voiceForRunningText(line));
     }
 
     private void beginPlantingCeremony() {

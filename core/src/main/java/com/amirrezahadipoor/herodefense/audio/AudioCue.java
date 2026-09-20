@@ -35,7 +35,12 @@ public enum AudioCue {
     DEATH_HEAVY("audio/sfx/death_heavy.ogg", 0.46f, 0.06f),
     BOSS_ENTRANCE_DEEP("audio/sfx/boss_entrance_deep.ogg", 0.44f, 0.50f),
     BOSS_ENTRANCE_SHRIEK("audio/sfx/boss_entrance_shriek.ogg", 0.42f, 0.50f),
-    BOSS_ENTRANCE_VOID("audio/sfx/boss_entrance_void.ogg", 0.42f, 0.50f);
+    BOSS_ENTRANCE_VOID("audio/sfx/boss_entrance_void.ogg", 0.42f, 0.50f),
+    // The conversation voices (roadmap ST-voice): an Undertale-style blip under a typed line, never a spoken
+    // word. Three short tones so a line's speaker is recognisable by ear -- Hero, Tree, Hollow.
+    SPEECH_HERO("audio/sfx/speech_hero.ogg", 0.34f, 0.05f),
+    SPEECH_TREE("audio/sfx/speech_tree.ogg", 0.32f, 0.06f),
+    SPEECH_HOLLOW("audio/sfx/speech_hollow.ogg", 0.35f, 0.06f);
 
     private final String path;
     private final float volume;

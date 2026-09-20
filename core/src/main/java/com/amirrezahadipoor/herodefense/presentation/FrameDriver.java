@@ -5,6 +5,10 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioFrame;
+import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.audio.SpeechBlip;
+import com.amirrezahadipoor.herodefense.audio.SpeechTyper;
+import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 import com.amirrezahadipoor.herodefense.audio.MusicBed;
 import com.amirrezahadipoor.herodefense.audio.MusicSelectionPolicy;
 import com.amirrezahadipoor.herodefense.gameplay.ArenaQueries;
@@ -92,11 +96,14 @@ public final class FrameDriver {
     private float storyBeatSeconds;
     private float ambientSeconds;
     private float gameOverPresentationSeconds;
+    /** The typing voice (roadmap ST-voice): Undertale-style blips one per word, spaced over time. */
+    private final SpeechTyper typer;
 
     public FrameDriver(
         Host host,
         GameFlowController flow,
         AudioFrame audioManager,
+        AudioPlayback playback,
         GameSettings settings,
         TouchFeedbackSystem touchFeedbackSystem,
         InventoryTouchController inventoryTouchController,
@@ -123,6 +130,7 @@ public final class FrameDriver {
         this.particleSystem = particleSystem;
         this.codexSystem = codexSystem;
         this.clock = clock == null ? System::nanoTime : clock;
+        this.typer = new SpeechTyper(playback);
     }
 
     /**
@@ -163,6 +171,7 @@ public final class FrameDriver {
         guideMusic();
         watchHaptics(deltaSeconds);
         audioManager.tick(deltaSeconds);
+        typer.tick(deltaSeconds);
         touchFeedbackSystem.update(deltaSeconds);
         if (inventoryTouchController != null) inventoryTouchController.update(deltaSeconds);
         statShopSystem.update(deltaSeconds);
@@ -218,7 +227,7 @@ public final class FrameDriver {
                 if (whisperLine == null && seconds >= LONG_PAUSE_SECONDS && now == GameScreenState.PLAYING) {
                     String line = WhisperLines.firstUnused(state.usedWhisperIds);
                     if (line != null) {
-                        whisperLine = line;
+                        setWhisperLine(line);
                         whisperSeconds = 0f;
                         WhisperLines.markUsed(state.usedWhisperIds, line);
                     }
@@ -229,11 +238,22 @@ public final class FrameDriver {
         lastFrameState = now;
     }
 
-    /** Shows a story line for {@link #LINE_SECONDS}, restarting its timer. */
+    /** Shows a story line for {@link #LINE_SECONDS}, restarting its timer, and types its Undertale voice. */
     public void showStoryBeat(String line) {
-        if (line == null || line.isBlank()) return;
+        showStoryBeat(line, SpeechVoice.HERO);
+    }
+
+    /**
+     * Shows a story line in a specific speaker's tone (roadmap ST-voice): the line's words stay silent but
+     * its blips type in the speaker's voice. Non-blank only, exactly like the plain {@link #showStoryBeat(String)}.
+     */
+    public void showStoryBeat(String line, SpeechVoice voice) {
+        if (line == null || line.isBlank()) {
+            return;
+        }
         storyBeatLine = line;
         storyBeatSeconds = 0f;
+        typer.type(line, voice != null ? voice : SpeechVoice.HERO);
     }
 
     public String storyBeatLine() {
@@ -254,6 +274,9 @@ public final class FrameDriver {
 
     public void setWhisperLine(String line) {
         whisperLine = line;
+        if (line != null && !line.isBlank()) {
+            typer.type(line, SpeechVoice.TREE);
+        }
     }
 
     public void setStoryBeatLine(String line) {

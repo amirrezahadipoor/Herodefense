@@ -185,6 +185,24 @@ def build(name: str) -> np.ndarray:
         fade = np.linspace(0.0, 1.0, wrap, dtype=np.float32)
         out[:wrap] = out[:wrap] * fade + out[-wrap:] * (1.0 - fade)
         return out[:-wrap]
+    # The three conversation voices (roadmap ST-voice): no spoken word, only the Undertale-style blip a
+    # text line speaks as it types. Each speaker gets their own short tone -- the Hero bright, the Tree calm,
+    # the Hollow low and hollow -- so a line's voice is recognisable without a single recorded syllable.
+    if name == "speech_hero":
+        length = seconds(0.055)
+        tone = sweep(920.0, 740.0, length, "triangle") * decay(length, 7.0)
+        body = sweep(1460.0, 1240.0, length) * decay(length, 9.0) * 0.6
+        return tone * 0.7 + body
+    if name == "speech_tree":
+        length = seconds(0.07)
+        tone = sweep(620.0, 500.0, length, "triangle") * decay(length, 5.5)
+        body = sweep(310.0, 260.0, length) * decay(length, 7.0) * 0.5
+        return tone * 0.7 + body
+    if name == "speech_hollow":
+        length = seconds(0.085)
+        tone = sweep(300.0, 210.0, length, "triangle") * decay(length, 4.5)
+        body = sweep(150.0, 120.0, length) * decay(length, 6.0) * 0.6
+        return tone * 0.75 + body
     raise KeyError(name)
 
 
@@ -207,6 +225,11 @@ EFFECTS = {
     "boss_entrance_deep": 0.72,
     "boss_entrance_shriek": 0.70,
     "boss_entrance_void": 0.70,
+    # The conversation voices: short, quiet blips that type under a story line, Undertale-style. Kept well
+    # below the ceiling because three of them can follow each other across a single line.
+    "speech_hero": 0.42,
+    "speech_tree": 0.40,
+    "speech_hollow": 0.44,
 }
 
 

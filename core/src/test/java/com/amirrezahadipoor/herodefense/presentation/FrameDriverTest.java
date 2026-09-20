@@ -43,7 +43,7 @@ final class FrameDriverTest {
 
     private FrameDriver driver(boolean withInventory) {
         return new FrameDriver(
-            host, flow, audio, settings, new TouchFeedbackSystem(),
+            host, flow, audio, audio, settings, new TouchFeedbackSystem(),
             withInventory ? new InventoryTouchController(new InventoryEquipmentSystem()) : null,
             new StatShopSystem(), new SkillShopSystem(), new RootNetworkSystem(), hitStop,
             new ScreenShakeSystem(), new ParticleSystem(), codex, () -> nanos
@@ -243,11 +243,12 @@ final class FrameDriverTest {
         }
     }
 
-    private static final class RecordingAudio implements AudioFrame {
+    private static final class RecordingAudio implements AudioFrame, com.amirrezahadipoor.herodefense.audio.AudioPlayback {
         private MusicBed bed;
         private float gain = -1f;
         private boolean ambience;
         private int ticks;
+        private final java.util.List<com.amirrezahadipoor.herodefense.audio.AudioCue> played = new java.util.ArrayList<>();
 
         @Override
         public void update(GameSettings settings) {
@@ -267,6 +268,15 @@ final class FrameDriverTest {
         @Override
         public void tick(float realDeltaSeconds) {
             ticks++;
+        }
+
+        @Override
+        public void play(com.amirrezahadipoor.herodefense.audio.AudioCue cue) {
+            played.add(cue);
+        }
+
+        java.util.List<com.amirrezahadipoor.herodefense.audio.AudioCue> played() {
+            return played;
         }
     }
 }

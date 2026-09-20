@@ -101,6 +101,9 @@ vigil to sound like a place. Measured peaks are in `LEVELS.md`, generated from t
 | `audio/sfx/ui_close.ogg` | *(none)* | generated in-repo | Closing an overlay | `756eb67c92e06f9f08b7504e7d395c1f9f1e0450e9f4893f06095aa269da940a` |
 | `audio/sfx/ui_tap.ogg` | *(none)* | generated in-repo | Menu and overlay button | `87637004ecad74dffe8abca58fb4613800caa2b3c230f7ee48704c7dd420d955` |
 | `audio/sfx/wave_clear.ogg` | *(none)* | generated in-repo | A wave is behind the player | `f70785f43898c5db01b71a1a369956b2a9c8dc839ef550e19224b139b89b3044` |
+| `audio/sfx/speech_hero.ogg` | *(none)* | generated in-repo | Hero's typed-line blip (Undertale-style) | `c0d14d8c6d3e43155583a78f545d4f2ee4cb0413ad72e07fcb92c854ce9d80fb` |
+| `audio/sfx/speech_tree.ogg` | *(none)* | generated in-repo | Tree's typed-line blip (Undertale-style) | `7aaea77289108c5f2f3e30d0b16c13eefc55c3d2cd8907ff0c2ffff22423f86e` |
+| `audio/sfx/speech_hollow.ogg` | *(none)* | generated in-repo | Hollow's typed-line blip (Undertale-style) | `573d31e9d59e16cd5f119a9a336fc5e96c68c7baf76ea0e939a647c479dda7fb` |
 
 ## Per-file ledger
 

@@ -3,11 +3,14 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.IdentityCues;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.audio.IdentityCues;
+import com.amirrezahadipoor.herodefense.audio.SpeechTyper;
+import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
+import com.amirrezahadipoor.herodefense.story.CeremonyLines;
 
 /**
  * The two ceremonies a run is built around: the prologue that opens it and the planting of the grove trees every
@@ -41,6 +44,8 @@ public final class CinematicFlow {
     private final AudioPlayback audioManager;
 
     private float waterDropAccumulator;
+    private String lastTypedLine = "";
+    private final SpeechTyper typer;
 
     public CinematicFlow(
         Host host,
@@ -62,6 +67,7 @@ public final class CinematicFlow {
         this.heroAnimationController = heroAnimationController;
         this.presentationSystem = presentationSystem;
         this.audioManager = audioManager;
+        this.typer = new SpeechTyper(audioManager);
     }
 
     /** Snapshots the run's opening tier, then plays that tier's lines. */
@@ -93,7 +99,9 @@ public final class CinematicFlow {
     /** Presentation-only ceremony tick; the wave-101 hand-off happens once it completes. */
     public void update(float deltaSeconds) {
         GameState state = host.gameState();
+        tickTyping(deltaSeconds);
         if (openingCinematic.isActive()) {
+            typeOpeningLine();
             state.anchorHeroAtArenaCenter();
             heroAnimationController.update(state.hero, deltaSeconds);
             if (openingCinematic.update(deltaSeconds)) {
@@ -103,6 +111,7 @@ public final class CinematicFlow {
             }
             return;
         }
+        typeCeremonyBeat();
         boolean finished = plantingCeremony.update(deltaSeconds);
         if (plantingCeremony.pouring()) {
             waterDropAccumulator += deltaSeconds;
@@ -125,5 +134,31 @@ public final class CinematicFlow {
             }
             host.saveNow();
         }
+    }
+
+    /** Types the opening line once, when it changes, in the Hero's terse voice (roadmap ST-voice). */
+    private void typeOpeningLine() {
+        String line = openingCinematic.line();
+        if (line == null || line.equals(lastTypedLine)) {
+            return;
+        }
+        lastTypedLine = line;
+        typer.type(line, SpeechVoice.HERO);
+    }
+
+    /** Types the ceremony beat once per phase in the speaker's own tone: the Tree owns the growth line. */
+    private void typeCeremonyBeat() {
+        PlantingCeremony.Phase phase = plantingCeremony.phase();
+        String line = CeremonyLines.lineFor(phase);
+        if (line == null || line.equals(lastTypedLine)) {
+            return;
+        }
+        lastTypedLine = line;
+        typer.type(line, CeremonyLines.isTreeVoice(phase) ? SpeechVoice.TREE : SpeechVoice.HERO);
+    }
+
+    /** Advances the typing voice so the opening and the ceremony tap out over time, not at once. */
+    private void tickTyping(float deltaSeconds) {
+        typer.tick(deltaSeconds);
     }
 }
