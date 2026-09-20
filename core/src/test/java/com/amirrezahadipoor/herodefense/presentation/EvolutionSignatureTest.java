@@ -15,12 +15,15 @@ import org.junit.jupiter.api.Test;
 /** A boss's evolution ring fires exactly once, the frame it first crosses the enrage threshold. */
 class EvolutionSignatureTest {
 
+    /** A BeatSink that swallows every beat; named class so SpotBugs sees it as static. */
+    private static final class NoopBeatSink implements RunPresentationSystem.BeatSink {
+        @Override public void showBeat(String line) { }
+        @Override public void save() { }
+    }
+
     private final ParticleSystem particles = new ParticleSystem();
     private final RunPresentationSystem presentation = new RunPresentationSystem(
-        particles, new ScreenShakeSystem(), new CodexSystem(), new RunPresentationSystem.BeatSink() {
-            @Override public void showBeat(String line) { }
-            @Override public void save() { }
-        });
+        particles, new ScreenShakeSystem(), new CodexSystem(), new NoopBeatSink());
 
     private GameState stateWithWoundedBoss() {
         GameState state = GameState.newRun(40L);

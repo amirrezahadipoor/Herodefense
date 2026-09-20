@@ -14,14 +14,16 @@ class TouchInputControllerGuardTest {
 
     /** A viewport whose unproject is the identity: screen coords are world coords. */
     private static Viewport identityViewport() {
-        return new Viewport() {
-            @Override
-            public com.badlogic.gdx.math.Vector3 unproject(
-                com.badlogic.gdx.math.Vector3 screenCoords
-            ) {
-                return screenCoords;
-            }
-        };
+        return new IdentityViewport();
+    }
+
+    private static final class IdentityViewport extends Viewport {
+        @Override
+        public com.badlogic.gdx.math.Vector3 unproject(
+            com.badlogic.gdx.math.Vector3 screenCoords
+        ) {
+            return screenCoords;
+        }
     }
 
     private static final class ExplodingListener implements TouchInputController.Listener {
@@ -38,6 +40,21 @@ class TouchInputControllerGuardTest {
         }
     }
 
+    /** Listener that returns true on down/drag and the isTap flag on up; named for SpotBugs. */
+    private static final class TappyListener implements TouchInputController.Listener {
+        @Override public boolean onTouchDown(float x, float y, int pointer) {
+            return true;
+        }
+
+        @Override public boolean onTouchDragged(float x, float y, float dx, float dy, int p) {
+            return true;
+        }
+
+        @Override public boolean onTouchUp(float x, float y, int pointer, boolean isTap) {
+            return isTap;
+        }
+    }
+
     @Test
     void aHandlerThatThrowsStillAnswersAsAConsumedTouch() {
         TouchInputController controller =
@@ -49,19 +66,7 @@ class TouchInputControllerGuardTest {
 
     @Test
     void aHealthyListenerStillReachesThePlayer() {
-        TouchInputController.Listener healthy = new TouchInputController.Listener() {
-            @Override public boolean onTouchDown(float x, float y, int pointer) {
-                return true;
-            }
-
-            @Override public boolean onTouchDragged(float x, float y, float dx, float dy, int p) {
-                return true;
-            }
-
-            @Override public boolean onTouchUp(float x, float y, int pointer, boolean isTap) {
-                return isTap;
-            }
-        };
+        TouchInputController.Listener healthy = new TappyListener();
         TouchInputController controller = new TouchInputController(identityViewport(), healthy);
         assertTrue(controller.touchDown(0, 0, 0, 0));
         assertTrue(controller.touchUp(1, 1, 0, 0));

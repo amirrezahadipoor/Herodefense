@@ -142,7 +142,10 @@ public final class RunPresentationSystem {
      * falls through to the Warden's reflection.
      */
     public String waveOpenLine(GameState state) {
-        if (state != null && state.waveNumber == 1) {
+        if (state == null) {
+            return null;
+        }
+        if (state.waveNumber == 1) {
             String greeting = HollowVoice.lineForGreeting(state);
             if (greeting != null) {
                 return greeting;
@@ -152,6 +155,9 @@ public final class RunPresentationSystem {
     }
 
     public String waveStartLine(GameState state) {
+        if (state == null) {
+            return null;
+        }
         if (state.waveNumber >= 100) {
             String hollow = HollowVoice.lineForGroveCeremony(state);
             if (hollow != null) {

@@ -66,10 +66,6 @@ public class Enemy extends ArenaEntity {
     public static final float SHARED_WARD_MULTIPLIER = 0.96f;
     /** A late-wave flanker: runs past the lane, bites the nearest planted tree, rejoins (roadmap A3). */
     public boolean flanker;
-    /** This flanker's live target; recomputed every tick, so it never persists. */
-    public boolean flankTargetValid;
-    public float flankTargetX;
-    public float flankTargetY;
 
     public Enemy() {
         super();

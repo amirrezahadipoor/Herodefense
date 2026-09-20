@@ -126,7 +126,7 @@ public final class HollowVoice {
         if (key == null) {
             return false;
         }
-        if (key.equals(KEY_SPARE)) {
+        if (KEY_SPARE.equals(key)) {
             return true;
         }
         if (!key.startsWith(KEY_SPARE_MILESTONE)) {

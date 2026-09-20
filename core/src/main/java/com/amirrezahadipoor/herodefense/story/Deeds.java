@@ -6,6 +6,7 @@ import com.amirrezahadipoor.herodefense.model.GameState;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The Vigil Deeds (roadmap ST2): named goals the run itself completes, each paid once in coins.
@@ -77,9 +78,10 @@ public enum Deeds {
             return 0;
         }
         int pages = 0;
-        for (String key : state.codexUnlocked.keySet()) {
+        for (Map.Entry<String, Boolean> entry : state.codexUnlocked.entrySet()) {
+            String key = entry.getKey();
             if (key != null && key.startsWith("codex_")
-                && Boolean.TRUE.equals(state.codexUnlocked.get(key))) {
+                && Boolean.TRUE.equals(entry.getValue())) {
                 pages++;
             }
         }
