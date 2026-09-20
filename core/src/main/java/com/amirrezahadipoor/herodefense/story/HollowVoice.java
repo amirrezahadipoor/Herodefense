@@ -70,17 +70,19 @@ public final class HollowVoice {
      * The first spare is noticed; the third is named as what it has become. Each spare claims the
      * next numbered key, so the ledger of spared lives is the ledger of hollow_spare_N keys and
      * nothing new has to be persisted.
+     *
+     * <p>Before commit f0143f9 the ledger used a single unnumbered key {@code hollow_spare}
+     * (the constant {@link #KEY_SPARE}) for the first spare. A save that carries that legacy key
+     * is migrated forward: the first numbered slot is claimed in place of it, so a player who
+     * spared once before the arc shipped still hears the mercy-as-habit line on their third spare
+     * instead of re-hearing the first-spare line.
      */
     public static String lineForSpare(GameState state) {
         if (state == null || state.codexUnlocked == null) {
             return null;
         }
-        int spared = 0;
-        for (String key : state.codexUnlocked.keySet()) {
-            if (key != null && key.startsWith(KEY_SPARE_MILESTONE)) {
-                spared++;
-            }
-        }
+        migrateLegacySpareLedger(state);
+        int spared = countSpared(state);
         if (!claim(state, KEY_SPARE_MILESTONE + (spared + 1))) {
             return null;
         }
@@ -91,6 +93,49 @@ public final class HollowVoice {
             return GameLocale.text(StoryStrings.HOLLOW_MERCY_HABIT);
         }
         return null;
+    }
+
+    /**
+     * Rewrites a pre-arc ledger (one unnumbered {@code hollow_spare} key) into the numbered form
+     * ({@code hollow_spare_1}). Safe to call on every spare: once migrated the legacy key is gone
+     * and the call becomes a no-op map scan.
+     */
+    private static void migrateLegacySpareLedger(GameState state) {
+        if (Boolean.TRUE.equals(state.codexUnlocked.get(KEY_SPARE))) {
+            state.codexUnlocked.remove(KEY_SPARE);
+            state.codexUnlocked.put(KEY_SPARE_MILESTONE + FIRST_SPARE, Boolean.TRUE);
+        }
+    }
+
+    private static int countSpared(GameState state) {
+        int spared = 0;
+        for (String key : state.codexUnlocked.keySet()) {
+            if (isSpareMilestone(key)) {
+                spared++;
+            }
+        }
+        return spared;
+    }
+
+    /**
+     * Recognises both the numbered spare keys ({@code hollow_spare_1}, ...) that the arc writes
+     * and the legacy unnumbered key ({@code hollow_spare}) that older saves still carry before
+     * migration, so a verdict read before any new spare still sees the old save as merciful.
+     */
+    private static boolean isSpareMilestone(String key) {
+        if (key == null) {
+            return false;
+        }
+        if (key.equals(KEY_SPARE)) {
+            return true;
+        }
+        if (!key.startsWith(KEY_SPARE_MILESTONE)) {
+            return false;
+        }
+        // Must actually be followed by a digit: hollow_spare_ itself is the prefix constant but
+        // is never written to the ledger, and hollow_spared_...-style collisions must not count.
+        int after = KEY_SPARE_MILESTONE.length();
+        return after < key.length() && Character.isDigit(key.charAt(after));
     }
 
     /**
@@ -113,10 +158,10 @@ public final class HollowVoice {
         return null;
     }
 
-    /** Whether this save has ever let a watcher walk away. */
+    /** Whether this save has ever let a watcher walk away (legacy or numbered ledger). */
     private static boolean sparedAnything(GameState state) {
         for (String key : state.codexUnlocked.keySet()) {
-            if (key != null && key.startsWith(KEY_SPARE_MILESTONE)) {
+            if (isSpareMilestone(key)) {
                 return true;
             }
         }
