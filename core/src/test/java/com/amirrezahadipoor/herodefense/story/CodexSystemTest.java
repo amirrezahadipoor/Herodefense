@@ -46,17 +46,26 @@ final class CodexSystemTest {
     }
 
     @Test
-    void secretThirtyTwoNeedsAllThreeAffixesKilled() {
+    void secretThirtyTwoNeedsOneKillOfEveryAffixTheDeepPoolCanDraw() {
         GameState state = GameState.newRun(7L);
         state.eliteKillCounts.put("blightburst", 2);
         state.eliteKillCounts.put("rootward_ward", 1);
         assertEquals(List.of("codex_17"), codex.unlockForEliteKill(state, "blightburst"));
         assertEquals(List.of("codex_18"), codex.unlockForEliteKill(state, "rootward_ward"));
         assertFalse(codex.isUnlocked(state, "codex_32"));
+
+        // The shallow three once sufficed; the deep pool (D2) needs all six counted.
         state.eliteKillCounts.put("weeping_rot", 1);
-        assertEquals(
-            List.of("codex_19", "codex_32"), codex.unlockForEliteKill(state, "weeping_rot"));
+        state.eliteKillCounts.put("hollowmolt", 1);
+        state.eliteKillCounts.put("gravemoss", 1);
+        assertEquals(List.of("codex_19"), codex.unlockForEliteKill(state, "weeping_rot"));
+        assertFalse(codex.isUnlocked(state, "codex_32"));
+
+        state.eliteKillCounts.put("cinderhalo", 1);
+        assertEquals(List.of("codex_32"), codex.unlockForEliteKill(state, "cinderhalo"));
         assertTrue(codex.isUnlocked(state, "codex_32"));
+        // Idempotent: claimed once, not announced again.
+        assertEquals(List.of(), codex.unlockForEliteKill(state, "cinderhalo"));
     }
 
     @Test

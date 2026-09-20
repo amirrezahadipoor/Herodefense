@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.story;
 
 import com.amirrezahadipoor.herodefense.items.EquipmentSetBonus;
 import com.amirrezahadipoor.herodefense.items.MythicEffects;
+import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Item;
 
@@ -75,7 +76,7 @@ public final class CodexSystem {
                 unlocked.add(entry.id());
             }
         }
-        if (allThreeAffixesKilled(state) && unlock(state, "codex_32")) {
+        if (everyAffixKilled(state) && unlock(state, "codex_32")) {
             unlocked.add("codex_32");
         }
         return unlocked;
@@ -161,11 +162,18 @@ public final class CodexSystem {
     }
 
     /** Secret 32 Every Elite: all three affixes killed at least once. */
-    private static boolean allThreeAffixesKilled(GameState state) {
+    /** Secret 32 \"Every Elite, Once\" needs one kill of every affix the pool can draw, not just the
+     *  three that shipped first: D2 grew the family to six (hollowmolt, gravemoss, cinderhalo),
+     *  and a secret that claims \"every\" must count them too. The set is read from {@link EliteAffix}
+     *  rather than from a copy of the first three ids, so a future affix cannot leave this behind again. */
+    private static boolean everyAffixKilled(GameState state) {
         if (state.eliteKillCounts == null) return false;
-        return state.eliteKillCounts.getOrDefault("blightburst", 0) >= 1
-            && state.eliteKillCounts.getOrDefault("rootward_ward", 0) >= 1
-            && state.eliteKillCounts.getOrDefault("weeping_rot", 0) >= 1;
+        for (EliteAffix affix : EliteAffix.values()) {
+            if (state.eliteKillCounts.getOrDefault(affix.id(), 0) < 1) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static boolean anyMaxForged(GameState state) {
