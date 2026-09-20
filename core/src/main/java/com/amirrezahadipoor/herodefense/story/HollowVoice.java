@@ -24,6 +24,15 @@ public final class HollowVoice {
     public static final String KEY_WAVE100 = "hollow_wave100";
     /** Bookkeeping key: a claimed death line has been revealed on the game-over panel. */
     public static final String KEY_DEATH_SHOWN = "hollow_death_shown";
+    /** One spare key per spared watcher: "hollow_spare_1", "hollow_spare_2", ... -- the count IS the ledger. */
+    public static final String KEY_SPARE_MILESTONE = "hollow_spare_";
+    /** The greeting of a first session, and the verdict that waits for the session after a finished run. */
+    public static final String KEY_HELLO = "hollow_hello";
+    public static final String KEY_RUN_COMPLETE = "hollow_run_complete";
+    public static final String KEY_VERDICT = "hollow_verdict";
+    /** Which spare milestone speaks: the first (mercy noticed) and the third (mercy as habit). */
+    private static final int FIRST_SPARE = 1;
+    private static final int MERCY_HABIT_SPARE = 3;
 
     private HollowVoice() {
     }
@@ -56,12 +65,67 @@ public final class HollowVoice {
         }
     }
 
-    /** The line for the first creature the player spared, or null once it has been said. */
+    /**
+     * The line for sparing a watcher, or null on the spares the Hollow lets pass in silence.
+     * The first spare is noticed; the third is named as what it has become. Each spare claims the
+     * next numbered key, so the ledger of spared lives is the ledger of hollow_spare_N keys and
+     * nothing new has to be persisted.
+     */
     public static String lineForSpare(GameState state) {
-        if (claim(state, KEY_SPARE)) {
+        if (state == null || state.codexUnlocked == null) {
+            return null;
+        }
+        int spared = 0;
+        for (String key : state.codexUnlocked.keySet()) {
+            if (key != null && key.startsWith(KEY_SPARE_MILESTONE)) {
+                spared++;
+            }
+        }
+        if (!claim(state, KEY_SPARE_MILESTONE + (spared + 1))) {
+            return null;
+        }
+        if (spared + 1 == FIRST_SPARE) {
             return GameLocale.text(StoryStrings.HOLLOW_SPARE);
         }
+        if (spared + 1 == MERCY_HABIT_SPARE) {
+            return GameLocale.text(StoryStrings.HOLLOW_MERCY_HABIT);
+        }
         return null;
+    }
+
+    /**
+     * The wave-one line of a session: a first meeting, or -- for the session after a finished
+     * run -- the verdict, which depends on how the run treated its watchers. Everything is
+     * claimed once-ever, so the Hollow greets the player exactly one way, exactly once.
+     */
+    public static String lineForGreeting(GameState state) {
+        if (state == null || state.codexUnlocked == null) {
+            return null;
+        }
+        if (Boolean.TRUE.equals(state.codexUnlocked.get(KEY_RUN_COMPLETE))
+            && claim(state, KEY_VERDICT)) {
+            return GameLocale.text(sparedAnything(state)
+                ? StoryStrings.HOLLOW_VERDICT_MERCIFUL : StoryStrings.HOLLOW_VERDICT_STERN);
+        }
+        if (claim(state, KEY_HELLO)) {
+            return GameLocale.text(StoryStrings.HOLLOW_HELLO);
+        }
+        return null;
+    }
+
+    /** Whether this save has ever let a watcher walk away. */
+    private static boolean sparedAnything(GameState state) {
+        for (String key : state.codexUnlocked.keySet()) {
+            if (key != null && key.startsWith(KEY_SPARE_MILESTONE)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** The silent fact that a run reached its end through the reward card; the verdict reads it. */
+    public static void markRunComplete(GameState state) {
+        claim(state, KEY_RUN_COMPLETE);
     }
 
     /** The line for the grove's first centennial planting, or null once it has been said. */

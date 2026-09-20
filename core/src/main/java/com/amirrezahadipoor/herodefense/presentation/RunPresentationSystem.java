@@ -136,6 +136,21 @@ public final class RunPresentationSystem {
     }
 
     /** What a freshly started wave opens with: the Hollow's halfway mark once, then reflections. */
+    /**
+     * The line a freshly started wave opens with: wave 1 belongs to the Hollow first (a first
+     * session's hello, or the verdict on the run before it), and only an unclaimed greeting
+     * falls through to the Warden's reflection.
+     */
+    public String waveOpenLine(GameState state) {
+        if (state != null && state.waveNumber == 1) {
+            String greeting = HollowVoice.lineForGreeting(state);
+            if (greeting != null) {
+                return greeting;
+            }
+        }
+        return waveStartLine(state);
+    }
+
     public String waveStartLine(GameState state) {
         if (state.waveNumber >= 100) {
             String hollow = HollowVoice.lineForGroveCeremony(state);

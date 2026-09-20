@@ -69,6 +69,27 @@ final class LanguageSettingsTest {
     }
 
     @Test
+    void aPersianDeviceOpensInPersianUntilThePlayerChoosesOtherwise() {
+        MemoryPreferences preferences = new MemoryPreferences();
+        // First launch: no language row saved yet, so the device leads.
+        assertEquals(GameLanguage.PERSIAN,
+            new LocalSettingsRepository(preferences, java.util.Locale.forLanguageTag("fa-IR"))
+                .load().language,
+            "a fresh install on a fa device speaks Persian");
+        // The player cycles back to English once; the choice is saved and the device is done voting.
+        GameSettings english = new GameSettings();
+        english.language = GameLanguage.ENGLISH;
+        new LocalSettingsRepository(preferences).save(english);
+        assertEquals(GameLanguage.ENGLISH,
+            new LocalSettingsRepository(preferences, java.util.Locale.forLanguageTag("fa-IR"))
+                .load().language,
+            "the saved choice outranks the device on every launch after");
+        // An English device keeps the shipped default on a fresh install.
+        assertEquals(GameLanguage.ENGLISH,
+            new LocalSettingsRepository(new MemoryPreferences(), java.util.Locale.US).load().language);
+    }
+
+    @Test
     void theSettingWordsSpeakTheChosenLanguage() {
         GameSettings settings = new GameSettings();
         assertEquals(GameLanguage.ENGLISH, settings.language, "a fresh install speaks English");

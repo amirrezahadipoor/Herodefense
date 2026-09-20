@@ -24,10 +24,20 @@ public final class LocalSettingsRepository {
     private static final String TEXT_SIZE_KEY = "display.textSize";
     private static final String LAST_GIFT_DAY_KEY = "tree.lastGiftEpochDay";
     private final Preferences preferences;
+    private final java.util.Locale systemLocale;
 
     public LocalSettingsRepository(Preferences preferences) {
+        this(preferences, null);
+    }
+
+    /**
+     * {@code systemLocale} is what a first run speaks (a Persian device opens in Persian); once the
+     * player has cycled the language row, their choice wins and the device is ignored.
+     */
+    public LocalSettingsRepository(Preferences preferences, java.util.Locale systemLocale) {
         if (preferences == null) throw new IllegalArgumentException("preferences cannot be null");
         this.preferences = preferences;
+        this.systemLocale = systemLocale;
     }
 
     public GameSettings load() {
@@ -48,7 +58,13 @@ public final class LocalSettingsRepository {
         settings.colourBlindRarity = preferences.getBoolean(COLOUR_BLIND_RARITY_KEY, false);
         settings.textSizeIndex = preferences.getInteger(TEXT_SIZE_KEY, settings.textSizeIndex);
         settings.normalizeTextSize();
-        settings.language = GameLanguage.fromCode(preferences.getString(LANGUAGE_KEY, settings.language.code()));
+        if (preferences.contains(LANGUAGE_KEY)) {
+            settings.language = GameLanguage.fromCode(
+                preferences.getString(LANGUAGE_KEY, settings.language.code())
+            );
+        } else if (systemLocale != null) {
+            settings.language = GameLanguage.forSystemLocale(systemLocale);
+        }
         GameLocale.use(settings.language);
         GameFonts.applyTextScale(settings.textSizeScale());
         return settings;

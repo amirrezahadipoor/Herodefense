@@ -266,7 +266,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         // Session records live beside the save: readable with `adb exec-out run-as` (roadmap R3.6).
         runRecords = new RunRecordStore(Gdx.files.local("playtests"));
         settingsRepository = new LocalSettingsRepository(
-            Gdx.app.getPreferences(LocalSettingsRepository.PREFERENCES_NAME)
+            Gdx.app.getPreferences(LocalSettingsRepository.PREFERENCES_NAME),
+            java.util.Locale.getDefault()
         );
         settings = settingsRepository.load();
         audioManager = new GameAudioManager(settings);
@@ -463,10 +464,9 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     /** Writes the session record of the run that just ended; the store ignores a repeated call (roadmap R3.6). */
     private void recordRunEnd() {
-        if (runRecords == null) {
-            return;
-        }
+        if (runRecords == null) return;
         runRecords.record(gameState, Gdx.app.getType().name(), Gdx.app.getVersion(), System.currentTimeMillis());
+        com.amirrezahadipoor.herodefense.story.HollowVoice.markRunComplete(gameState);
     }
 
     private void saveNow() {
@@ -576,7 +576,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         if (frameDriver.storyBeatLine() != null) {
             return;
         }
-        String reflection = presentationSystem.waveStartLine(gameState);
+        String reflection = presentationSystem.waveOpenLine(gameState);
         if (reflection != null) {
             showStoryBeat(reflection);
         }

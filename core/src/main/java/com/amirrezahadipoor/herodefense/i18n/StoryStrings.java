@@ -78,6 +78,14 @@ public enum StoryStrings implements Translated {
         "داشت تماشایت می‌کرد و رهایش کردی؟ رحمتت را به خاطر می‌سپارم؛ بعداً."),
     HOLLOW_WAVE100("Halfway. The Tree thanks you. I am not in a hurry. Are you?",
         "نیمه‌ی راه. درخت از تو ممنون است. من عجله ندارم. تو چِی؟"),
+    HOLLOW_HELLO("There you are. Not the Hero -- the one holding the phone. I have been counting your heartbeats since the menu.",
+        "بفرما، رسیدی. نه قهرمان — همان که گوشی را در دستش است. از همان صفحه‌ی منو، ضربان‌هایت را می‌شمردم."),
+    HOLLOW_MERCY_HABIT("Three spared, and you still call it kindness. So do I. Everything in this grove grows roots; mercy does too.",
+        "سه نفر را رها کردی و هنوز اسمش را مهربانی می‌گذاری. من هم می‌گذارم. در این بیشه هر چیزی ریشه می‌دهد؛ رحمت هم."),
+    HOLLOW_VERDICT_MERCIFUL("Your last run ended the way it began: with you deciding who deserves the morning. The grove calls it mercy. I call it a debt.",
+        "دفتر پیشرت همان‌طور تمام شد که شروع شد: با تو که تصمیم گرفتی کدام‌یک سحر را می‌ارزد. بیشه اسمش را رحمت می‌گذارد؛ من اسمش را بدهی."),
+    HOLLOW_VERDICT_STERN("Your last run ended, and nothing on that field lives because you loved it. The grove calls it victory. I call it inventory.",
+        "دفتر پیشرت تمام شد، و هیچ‌چیز از آن میدان به محبتِ تو زنده نمانده. بیشه اسمش را پیروزی می‌گذارد؛ من اسمش را سیاهه."),
 
     /** The Hollow's half-health beat, one per boss identity. */
     HOLLOW_BOSS_GOLEM("The old guard wavers. Its boundary was never you.",

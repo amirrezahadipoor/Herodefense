@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.input;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
@@ -8,6 +9,10 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 /**
  * Converts Android pointer coordinates into fixed world coordinates and emits only
  * tap/drag callbacks. Keyboard and mouse-specific controls are intentionally absent.
+ *
+ * <p>A finger never kills the game: whatever a handler throws, the dispatch catches, logs,
+ * and answers as a consumed touch. A crashed run loses the wave, the vigil, and the save
+ * cadence with it; a swallowed tap only loses the tap.
  */
 public final class TouchInputController extends InputAdapter {
     public interface Listener {
@@ -43,7 +48,7 @@ public final class TouchInputController extends InputAdapter {
         downPositions[pointer].set(world.x, world.y);
         previousPositions[pointer].set(world.x, world.y);
         dragging[pointer] = false;
-        return listener.onTouchDown(world.x, world.y, pointer);
+        return guard(() -> listener.onTouchDown(world.x, world.y, pointer), "touchDown");
     }
 
     @Override
@@ -60,7 +65,8 @@ public final class TouchInputController extends InputAdapter {
             dragging[pointer] = true;
         }
         previous.set(world.x, world.y);
-        return listener.onTouchDragged(world.x, world.y, deltaX, deltaY, pointer);
+        return guard(() -> listener.onTouchDragged(world.x, world.y, deltaX, deltaY, pointer),
+            "touchDragged");
     }
 
     @Override
@@ -73,7 +79,24 @@ public final class TouchInputController extends InputAdapter {
             && downPositions[pointer].dst2(world.x, world.y)
             <= TAP_SLOP_WORLD_UNITS * TAP_SLOP_WORLD_UNITS;
         dragging[pointer] = false;
-        return listener.onTouchUp(world.x, world.y, pointer, isTap);
+        return guard(() -> listener.onTouchUp(world.x, world.y, pointer, isTap), "touchUp");
+    }
+
+    /**
+     * Runs one dispatch leg; anything it throws is logged and answered as a consumed touch.
+     * Throwable is deliberate: an input handler is the one place the game must survive even an
+     * Error, because the alternative is a dead app holding an unsaved run.
+     */
+    @SuppressWarnings({"PMD.AvoidCatchingThrowable", "PMD.GuardLogStatement"})
+    private boolean guard(java.util.concurrent.Callable<Boolean> leg, String where) {
+        try {
+            return leg.call();
+        } catch (Throwable problem) {
+            if (Gdx.app != null && Gdx.app.getLogLevel() >= com.badlogic.gdx.Application.LOG_ERROR) {
+                Gdx.app.error("TouchInputController", "touch handler threw in " + where, problem);
+            }
+            return true;
+        }
     }
 
     private Vector3 toWorld(int screenX, int screenY) {
