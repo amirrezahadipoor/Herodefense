@@ -98,11 +98,14 @@ public final class AndroidTouchSmokeTest {
             assertEquals(1, game.gameState().waveNumber);
             assertTrue(game.gameState().waveActive);
             assertTrue(game.gameState().livingEnemyCount() > 0);
-            // Wave 1 opens with the Hollow's one-line first-session greeting (storyBeatLine); a tap
-            // while the beat is showing only dismisses the beat so the HUD button behind it stays
-            // untouched. Sleep long enough for the beat to expire before the first utility-row tap
-            // lands, otherwise the first "direct shop opens" await never sees SHOP.
-            SystemClock.sleep(5_000L);
+            // Wave 1 opens with the Hollow's one-line first-session greeting (storyBeatLine). A tap
+            // while the beat is showing only dismisses the beat instead of reaching the HUD button
+            // behind it, which is the same rule that protects whisper lines -- so the first utility
+            // tap here is a deliberate beat-dismissal tap in open arena, THEN we sleep for the
+            // remainder of its timer and tap the shop. Without that first tap the test can land the
+            // shop tap inside the beat window on slower runners and never see SHOP.
+            tapWorld(surface, 360f + correction[0], 640f + correction[1]); // arena midpoint, dismisses beat
+            SystemClock.sleep(4_200L);
             captureScreen("live-hud-premium-v2.png");
 
             tapWorld(surface, 450f + correction[0], utilityRowY(surface) + correction[1]); // Direct Shop
