@@ -98,18 +98,15 @@ public final class AndroidTouchSmokeTest {
             assertEquals(1, game.gameState().waveNumber);
             assertTrue(game.gameState().waveActive);
             assertTrue(game.gameState().livingEnemyCount() > 0);
-            // Wave 1 opens with the Hollow's one-line first-session greeting (storyBeatLine). A tap
-            // while the beat is showing only dismisses the beat instead of reaching the HUD button
-            // behind it, which is the same rule that protects whisper lines -- so the first utility
-            // tap here is a deliberate beat-dismissal tap in open arena, THEN we sleep for the
-            // remainder of its timer and tap the shop. Without that first tap the test can land the
-            // shop tap inside the beat window on slower runners and never see SHOP.
-            tapWorld(surface, 360f + correction[0], 640f + correction[1]); // arena midpoint, dismisses beat
-            SystemClock.sleep(4_200L);
             captureScreen("live-hud-premium-v2.png");
 
-            tapWorld(surface, 450f + correction[0], utilityRowY(surface) + correction[1]); // Direct Shop
-            await("direct shop opens", () -> game.screenState() == GameScreenState.SHOP);
+            // Wave 1 opens with the Hollow's one-line first-session greeting (storyBeatLine). A tap
+            // while the beat is showing dismisses the beat instead of reaching the HUD button
+            // underneath -- the same rule that protects whisper lines -- so a single tap can
+            // disappear into the beat on slow emulators. Retry the shop tap until SHOP is on screen
+            // (each retry either opens the shop or advances one tick of beat dismissal); the
+            // screen arrives on the first tap once the beat is gone.
+            awaitDirectShop(surface, game, correction);
             tapWorld(surface, 620f + correction[0], 1_170f + correction[1]); // Close Shop
             await("direct shop returns to play", () -> game.screenState() == GameScreenState.PLAYING);
 
@@ -787,6 +784,24 @@ public final class AndroidTouchSmokeTest {
             SystemClock.sleep(50L);
         }
         throw new AssertionError("Timed out waiting for " + label);
+    }
+
+    /**
+     * Taps the Direct Shop button repeatedly until SHOP is actually on screen. A single tap can
+     * be eaten by the wave-one story beat (the beat dismiss rule), so retry on a short cadence
+     * until either the shop opens or the wait expires -- the shop opens on the first tap after
+     * the beat has cleared.
+     */
+    private static void awaitDirectShop(View surface, HeroDefenseGame game, float[] correction) {
+        long deadline = SystemClock.uptimeMillis() + 15_000L;
+        float shopX = 450f + correction[0];
+        float shopY = utilityRowY(surface) + correction[1];
+        while (SystemClock.uptimeMillis() < deadline) {
+            if (game.screenState() == GameScreenState.SHOP) return;
+            tapWorld(surface, shopX, shopY);
+            SystemClock.sleep(500L);
+        }
+        throw new AssertionError("Timed out waiting for direct shop opens");
     }
 
     private static final Map<String, float[]> BRIGHTNESS = new LinkedHashMap<>();
