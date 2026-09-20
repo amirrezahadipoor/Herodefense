@@ -110,10 +110,7 @@ public final class AndroidTouchSmokeTest {
             tapWorld(surface, 620f + correction[0], 1_170f + correction[1]); // Close Shop
             await("direct shop returns to play", () -> game.screenState() == GameScreenState.PLAYING);
 
-            tapWorld(surface, 270f + correction[0], utilityRowY(surface) + correction[1]); // Direct Inventory
-            await("direct inventory pauses", () ->
-                game.screenState() == GameScreenState.INVENTORY && game.inventoryOpen()
-            );
+            awaitDirectInventory(surface, game, correction);
             tapWorld(surface, 620f + correction[0], 1_160f + correction[1]); // Close Inventory
             await("direct inventory returns to play", () ->
                 game.screenState() == GameScreenState.PLAYING && !game.inventoryOpen()
@@ -787,21 +784,37 @@ public final class AndroidTouchSmokeTest {
     }
 
     /**
-     * Taps the Direct Shop button repeatedly until SHOP is actually on screen. A single tap can
-     * be eaten by the wave-one story beat (the beat dismiss rule), so retry on a short cadence
-     * until either the shop opens or the wait expires -- the shop opens on the first tap after
-     * the beat has cleared.
+     * Retry-polls a HUD tap until the supplied condition becomes true (or the wait expires).
+     * A tap in PLAYING state can be consumed by a story beat/whisper/beat panel on its way down;
+     * re-tapping on a short cadence deterministically advances through the beat and lands on the
+     * button once the beat clears, so a slow CI emulator cannot miss the target.
      */
-    private static void awaitDirectShop(View surface, HeroDefenseGame game, float[] correction) {
+    private static void awaitTap(View surface, HeroDefenseGame game,
+                                 float tapX, float tapY, String label,
+                                 java.util.function.BooleanSupplier until) {
         long deadline = SystemClock.uptimeMillis() + 15_000L;
-        float shopX = 450f + correction[0];
-        float shopY = utilityRowY(surface) + correction[1];
         while (SystemClock.uptimeMillis() < deadline) {
-            if (game.screenState() == GameScreenState.SHOP) return;
-            tapWorld(surface, shopX, shopY);
+            if (until.getAsBoolean()) return;
+            tapWorld(surface, tapX, tapY);
             SystemClock.sleep(500L);
         }
-        throw new AssertionError("Timed out waiting for direct shop opens");
+        throw new AssertionError("Timed out waiting for " + label);
+    }
+
+    /** Opens the Direct Shop from PLAYING even if a story beat is showing. */
+    private static void awaitDirectShop(View surface, HeroDefenseGame game, float[] correction) {
+        awaitTap(surface, game,
+            450f + correction[0], utilityRowY(surface) + correction[1],
+            "direct shop opens",
+            () -> game.screenState() == GameScreenState.SHOP);
+    }
+
+    /** Opens the Inventory from PLAYING even if a story beat is showing. */
+    private static void awaitDirectInventory(View surface, HeroDefenseGame game, float[] correction) {
+        awaitTap(surface, game,
+            270f + correction[0], utilityRowY(surface) + correction[1],
+            "direct inventory pauses",
+            () -> game.screenState() == GameScreenState.INVENTORY && game.inventoryOpen());
     }
 
     private static final Map<String, float[]> BRIGHTNESS = new LinkedHashMap<>();
