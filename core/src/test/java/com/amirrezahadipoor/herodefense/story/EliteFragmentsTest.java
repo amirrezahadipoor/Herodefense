@@ -10,36 +10,36 @@ final class EliteFragmentsTest {
     @Test
     void oddKillsShowFragmentOneAndEvenKillsFragmentTwo() {
         assertEquals(
-            "It does not die so much as let go. What was holding it together was never its own to keep.",
+            "It does not die. It just lets go — everything at once.",
             EliteFragments.fragmentFor("blightburst", 1));
-        assertEquals("The burst is not rage. It's relief.",
+        assertEquals("That burst is not anger. It is relief.",
             EliteFragments.fragmentFor("blightburst", 2));
         assertEquals(
-            "The shield is not armor. It's a root, briefly recalling what it was for.",
+            "That shield is not armor. It is a root, remembering its job.",
             EliteFragments.fragmentFor("rootward_ward", 3));
         assertEquals(
-            "Even changed, a thing in it still tries to protect a thing. It's just no longer sure what.",
+            "Even like this, it still tries to protect. It just forgot what.",
             EliteFragments.fragmentFor("rootward_ward", 4));
-        assertEquals("The ground it crosses does not heal. Not yet. Maybe not ever.",
+        assertEquals("Where it walks, the ground never heals.",
             EliteFragments.fragmentFor("weeping_rot", 5));
         assertEquals(
-            "Every trail leads back the same direction, if you follow it far enough: toward the Tree.",
+            "Follow its trail long enough. It leads to the Tree.",
             EliteFragments.fragmentFor("weeping_rot", 6));
     }
 
     @Test
     void theDeepPoolAffixesCarryTheirOwnTwoPartThreads() {
-        assertEquals("It does not leave empty. Nothing here does.",
+        assertEquals("It never leaves a place empty. Nothing here does.",
             EliteFragments.fragmentFor("hollowmolt", 1));
-        assertEquals("Two smaller silences where one loud one stood. The Tree counts them as the same wound.",
+        assertEquals("Two small silences where one loud one stood.",
             EliteFragments.fragmentFor("hollowmolt", 2));
-        assertEquals("The moss grows over the wound while the wound is still wearing it.",
+        assertEquals("The moss covers the wound while the wound is still there.",
             EliteFragments.fragmentFor("gravemoss", 3));
-        assertEquals("It is not healing. It is being reclaimed, slowly, by something patient.",
+        assertEquals("That is not healing. That is something patient taking it back.",
             EliteFragments.fragmentFor("gravemoss", 4));
-        assertEquals("Stand close and it will love you the way an ember loves a dry wind.",
+        assertEquals("Stand too close and it loves you — the way an ember loves wind.",
             EliteFragments.fragmentFor("cinderhalo", 5));
-        assertEquals("The heat is not attack. It is grief, still warm from the fire that made it.",
+        assertEquals("That heat is not attack. It is grief, still warm.",
             EliteFragments.fragmentFor("cinderhalo", 6));
     }
 

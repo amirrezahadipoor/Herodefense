@@ -47,48 +47,48 @@ final class EpilogueTest {
     void textMatchesStoryContentVerbatim() {
         assertEquals(
             List.of(
-                "Two hundred waves. No step lost.",
-                "The Hollow needs a new plan.",
-                "Till then, the Tree and I stand."
+                "Two hundred nights. Not one step lost.",
+                "The night needs a new plan.",
+                "Until then, the Tree and I stand."
             ),
             Epilogue.A.lines()
         );
         assertEquals(
             List.of(
-                "Two hundred waves. All were close.",
-                "I do not recall it all. I recall not letting go.",
+                "Two hundred nights. Every one of them close.",
+                "I do not remember all of it. I remember not letting go.",
                 "That is enough. It has to be."
             ),
             Epilogue.B.lines()
         );
         assertEquals(
             List.of(
-                "Not to the middle.",
-                "The Tree falls soft and quiet this early.",
-                "Next time it will be loud."
+                "Not even the middle.",
+                "The Tree fell quiet so early. It should not have.",
+                "Next time it is loud."
             ),
             Epilogue.C.lines()
         );
         assertEquals(
             List.of(
-                "Close to the second root.",
-                "I went farther than last time. Far is not far enough.",
+                "So close to the second root.",
+                "I went farther than before. Far is not far enough.",
                 "Again."
             ),
             Epilogue.D.lines()
         );
         assertEquals(
             List.of(
-                "One tree stood when I fell. That must count.",
-                "The Hollow paid past wave one hundred. It just lasted a bit more.",
-                "Next time it pays for all."
+                "One tree stood when I fell. That counts.",
+                "The night paid for this run. It just lasted a little longer than me.",
+                "Next time it pays for everything."
             ),
             Epilogue.E.lines()
         );
         assertEquals(
             List.of(
-                "The Hollow is not gone. It is quiet while it learns to fall again.",
-                "Rise again. The Tree will still stand."
+                "The night is not gone. It is quiet, learning how to fall again.",
+                "Stand up. The Tree is still standing."
             ),
             Epilogue.transitionLines()
         );
@@ -97,12 +97,12 @@ final class EpilogueTest {
     @Test
     void everyEpilogueSpeaksPersianWhenPersianIsAsked() {
         GameLocale.use(GameLanguage.PERSIAN);
-        assertEquals(List.of("دویست موج. بی‌آنکه گامی از دست برود.",
-            "دره به نقشهٔ تازه‌ای نیاز دارد.",
-            "تا آن زمان، درخت و من می‌ایستیم."), Epilogue.A.lines());
+        assertEquals(List.of("دویست شب. بی‌آنکه گامی از دست بدهم.",
+            "شب به نقشهٔ تازه‌ای نیاز دارد.",
+            "تا آن زمان، من و درخت می‌ایستیم."), Epilogue.A.lines());
         assertEquals(
-            List.of("دره نرفته است. خاموش است، در حالی که دوباره افتادن می‌آموزد.",
-                "دوباره برخیز. درخت همچنان خواهد ایستاد."),
+            List.of("شب نرفته. ساکت است. دارد دوباره یاد می‌گیرد چگونه بریزد.",
+                "بلند شو. درخت هنوز ایستاده است."),
             Epilogue.transitionLines()
         );
     }

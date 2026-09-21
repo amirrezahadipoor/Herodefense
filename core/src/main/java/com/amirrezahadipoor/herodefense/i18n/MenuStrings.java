@@ -17,20 +17,20 @@ public enum MenuStrings implements Translated {
     TITLE("HERO DEFENSE", "دفاع قهرمان"),
 
     /** The line above the title. */
-    TAGLINE("THE WORLD TREE AWAITS", "درخت جهان در انتظار است"),
+    TAGLINE("ONE TREE LEFT STANDING", "یک درخت ایستاده مانده"),
 
     /** The two-line pitch under the title. */
-    PITCH("Hold the last green sanctuary through 200 waves, or thirty",
-        "آخرین پناهگاه سبز را در ۲۰۰ موج نگه دارید، یا سی موج"),
+    PITCH("The dark comes every night. Hold the last tree through 200 of them — or just thirty.",
+        "تاریکی هر شب می‌آید. آخرین درخت را ۲۰۰ شب نگه دار — یا فقط سی شب."),
 
     /** Row 1. */
     NEW_GAME("NEW GAME", "بازی جدید"),
-    NEW_GAME_SUBTITLE("Begin a fresh defense", "یک دفاع تازه را آغاز کنید"),
+    NEW_GAME_SUBTITLE("Begin your first night", "اولین شب را شروع کن"),
 
     /** Row 2, present only when the thirty-wave vigil is unlocked. */
     BRIEF_VIGIL("BRIEF VIGIL", "پاسداری کوتاه"),
-    BRIEF_VIGIL_SUBTITLE("Thirty waves | same vigil, half the heartwood",
-        "سی موج | همان پاسداری، نیمی از چوب دل"),
+    BRIEF_VIGIL_SUBTITLE("Thirty nights | same watch, half the heartwood",
+        "سی شب | همان پاس، نیمی چوب‌جان"),
 
     /** Row 3, present only while a run is live. */
     CONTINUE("CONTINUE", "ادامه"),
@@ -45,15 +45,15 @@ public enum MenuStrings implements Translated {
 
     /** Row 5. */
     GROVE_CODEX("GROVE CODEX", "دانشنامهٔ بیشه"),
-    GROVE_CODEX_SUBTITLE("Thirty entries the Tree remembers", "سی مدخلی که درخت به یاد دارد"),
+    GROVE_CODEX_SUBTITLE("Thirty entries the Tree remembers", "سی یادداشتی که درخت به‌خاطر دارد"),
 
     /** Row 6. */
     SETTINGS("SETTINGS", "تنظیمات"),
     SETTINGS_SUBTITLE("Comfort, music, and effects", "راحتی، موسیقی و جلوه‌ها"),
 
     /** The strip along the bottom of the screen. */
-    FOOTER("200 WAVES  |  ONE LAST TREE  |  ASCEND FOREVER  |  T%1$s",
-        "۲۰۰ موج  |  یک درخت آخر  |  صعود همیشگی  |  ردهٔ %1$s"),
+    FOOTER("200 NIGHTS  |  ONE LAST TREE  |  DAWN  |  T%1$s",
+        "۲۰۰ شب  |  یک درخت آخر  |  سحر  |  ردهٔ %1$s"),
 
     /** The coin count in the top corner. */
     COINS("$ %1$s", "%1$s سکه");

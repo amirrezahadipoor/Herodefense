@@ -16,7 +16,7 @@ The game ships every story line in **two languages**: simple, understandable Eng
 - The English is the source voice above; the Persian is a plain, native rendering of the same line, never a
   word-for-word calque.
 - The Persian follows `docs/PERSIAN_PROOFREAD.md`: no Latin letters, no ASCII digits, the grove's own
-  vocabulary «دره» (the Hollow), «دانشنامهٔ بیشه» (the codex), «چوب دل» (heartwood), «معجون» (potion).
+  vocabulary «حُفره» (the Hollow — the night itself), «دانشنامهٔ بیشه» (the codex), «چوب دل» (heartwood), «معجون» (potion).
 - A player sees one language per run, chosen by the game's language setting. The story does not mix them.
 
 ## Checks
@@ -28,3 +28,9 @@ The game ships every story line in **two languages**: simple, understandable Eng
 
 Revised 2026-09-20: the game is bilingual. Earlier drafts froze the story as English-only; that direction was
 reversed by explicit requirement.
+
+Revised 2026-09-22: the full story (code + `STORY_CONTENT.md` + the proofread ledger) was rewritten for a
+young reader — common words, short sentences, one spine: the waves are the nights, the Hollow is the night
+speaking directly to the player, and two hundred nights later the dawn comes back. The Hollow's Persian name
+changed from «دره" (which reads as "valley" to a young Persian reader) to «حُفره" (the hollow). Tier 0 opening
+lines remain the shipped text — do not rewrite them.
