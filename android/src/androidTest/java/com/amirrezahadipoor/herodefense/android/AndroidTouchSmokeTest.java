@@ -976,7 +976,12 @@ public final class AndroidTouchSmokeTest {
     /** The device-evidence matrix's api33 pixel_7 table, measured by run 35462188576 at commit 39383ed. */
     private static final Map<String, float[]> API33_PIXEL_7 = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 43.29f, 0.8641f),
-        ref("vfx-tree-collapse-premium-v2.png", 40.89f, 0.8993f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // Re-measured 2026-09-21 (run 35656392421, brightness-measurements.txt: mean=37.40 lit=0.7857):
+        // the parting word is up in the box across the collapse capture, and the frame lands at a
+        // different point of the collapse animation each run -- this profile's two consecutive runs
+        // measured 0.8870 (run 35654155526) and 0.7857, so the reference is the darker of the two and
+        // the standard band covers both.
+        ref("vfx-tree-collapse-premium-v2.png", 37.40f, 0.7857f, ANIMATED_MEAN_LUMA_TOLERANCE),
         // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155526,
         // brightness-measurements.txt: mean=37.38 lit=0.7780): the parting word is up in the box across
         // the whole defeat capture, so the reference is the box-present frame.
