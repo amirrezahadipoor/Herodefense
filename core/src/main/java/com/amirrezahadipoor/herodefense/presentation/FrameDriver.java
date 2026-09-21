@@ -6,8 +6,6 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioFrame;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
-import com.amirrezahadipoor.herodefense.audio.SpeechBlip;
-import com.amirrezahadipoor.herodefense.audio.SpeechTyper;
 import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 import com.amirrezahadipoor.herodefense.audio.MusicBed;
 import com.amirrezahadipoor.herodefense.audio.MusicSelectionPolicy;
@@ -29,11 +27,12 @@ import com.amirrezahadipoor.herodefense.story.WhisperLines;
  * One frame of the game, in order (roadmap R2.2, slice 9).
  *
  * <p>This is what {@code HeroDefenseGame.render()} used to be, plus the per-frame bookkeeping that lived beside
- * it: the wall-clock pause record behind the Long Pause secret, the two timed story lines (a wave reflection and
- * an idle whisper), the ambient clock the arena reads, and the game-over presentation timer. They are one object
- * now because they are one thing — the frame. The logic is moved, not re-decided: a whisper still holds the
- * simulation while it is up and a story line still does not, and the pause record still fires the Long Pause
- * secret once per absence.
+ * it: the wall-clock pause record behind the Long Pause secret, the message box (a wave reflection, a boss
+ * beat, an idle whisper), the ambient clock the arena reads, and the game-over presentation timer. They are
+ * one object now because they are one thing — the frame. The logic is moved, not re-decided: a whisper still
+ * holds the simulation while it is up, and now a story line does too -- the page stays still for the whole
+ * message, the way Undertale waits for its dialog -- and the pause record still fires the Long Pause secret
+ * once per absence.
  *
  * <p>The frame decides; the game still does. Simulation, cinematics and drawing come back through {@link Host},
  * and the systems the frame only ticks are handed in once at construction.
@@ -57,9 +56,6 @@ public final class FrameDriver {
             return null;
         }
     }
-
-    /** How long a story line stays on screen; the HUD and the whisper renderer share it. */
-    public static final float LINE_SECONDS = IdleWhisperRenderer.SHOW_SECONDS;
 
     /** The wall clock the pause record reads; injected so a test can hold a pause for five minutes at once. */
     public interface NanoClock {
@@ -90,14 +86,13 @@ public final class FrameDriver {
     private GameScreenState lastFrameState = GameScreenState.MENU;
     private long pauseStartNanos;
     private long lastFrameNanos;
-    private String whisperLine;
-    private float whisperSeconds;
-    private String storyBeatLine;
-    private float storyBeatSeconds;
+    /**
+     * The message box (roadmap ST-voice): beats and whispers are both lines in one Undertale-style box,
+     * typed out under the speaker's blips. The frame keeps the beat and the whisper apart by source.
+     */
+    private final DialogueBox dialogue;
     private float ambientSeconds;
     private float gameOverPresentationSeconds;
-    /** The typing voice (roadmap ST-voice): Undertale-style blips one per word, spaced over time. */
-    private final SpeechTyper typer;
 
     public FrameDriver(
         Host host,
@@ -130,7 +125,22 @@ public final class FrameDriver {
         this.particleSystem = particleSystem;
         this.codexSystem = codexSystem;
         this.clock = clock == null ? System::nanoTime : clock;
-        this.typer = new SpeechTyper(playback);
+        this.dialogue = new DialogueBox(playback);
+    }
+
+    /** The frame's message box: what a beat or whisper is typing out, in whose voice. */
+    public DialogueBox storyDialogue() {
+        return dialogue;
+    }
+
+    /** Whether a message is on the screen; a tap goes to the box, not the HUD underneath. */
+    public boolean storyDialogueActive() {
+        return dialogue.active();
+    }
+
+    /** A tap on the box: the first finishes the typing, the next closes it. */
+    public void advanceStoryDialogue() {
+        dialogue.advance();
     }
 
     /**
@@ -171,25 +181,23 @@ public final class FrameDriver {
         guideMusic();
         watchHaptics(deltaSeconds);
         audioManager.tick(deltaSeconds);
-        typer.tick(deltaSeconds);
         touchFeedbackSystem.update(deltaSeconds);
         if (inventoryTouchController != null) inventoryTouchController.update(deltaSeconds);
         statShopSystem.update(deltaSeconds);
         skillShopSystem.update(deltaSeconds);
         if (rootNetworkSystem != null) rootNetworkSystem.update(deltaSeconds);
-        if (flow.simulationRunning() && whisperLine == null) {
+        // The message holds the arena for its whole life -- typing and reading both -- the way Undertale
+        // waits for its dialog. The box keeps running during a ceremony, but it may only close itself on
+        // the arena, where a closed box is what lets the fight resume.
+        GameScreenState frameState = flow.state();
+        if (frameState == GameScreenState.PLAYING || frameState == GameScreenState.CINEMATIC) {
+            dialogue.tick(deltaSeconds, frameState == GameScreenState.PLAYING);
+        }
+        if (flow.simulationRunning() && !dialogue.active()) {
             float gameplayDelta = hitStopSystem.consume(deltaSeconds);
             if (gameplayDelta > 0f) host.updatePlaying(gameplayDelta);
-        } else if (flow.state() == GameScreenState.CINEMATIC) {
+        } else if (frameState == GameScreenState.CINEMATIC) {
             host.updateCinematic(deltaSeconds);
-        }
-        if (whisperLine != null && flow.state() == GameScreenState.PLAYING) {
-            whisperSeconds += deltaSeconds;
-            if (whisperSeconds >= LINE_SECONDS) whisperLine = null;
-        }
-        if (storyBeatLine != null && flow.state() == GameScreenState.PLAYING) {
-            storyBeatSeconds += deltaSeconds;
-            if (storyBeatSeconds >= LINE_SECONDS) storyBeatLine = null;
         }
         ambientSeconds += deltaSeconds;
         if (flow.state() == GameScreenState.GAME_OVER) {
@@ -220,15 +228,14 @@ public final class FrameDriver {
         if (now == GameScreenState.PAUSED && lastFrameState != GameScreenState.PAUSED) {
             pauseStartNanos = clock.nanos();
         } else if (now != GameScreenState.PAUSED && lastFrameState == GameScreenState.PAUSED) {
-            float seconds = (clock.nanos() - pauseStartNanos) / 1_000_000_000f;
-            if (seconds > 0f) {
-                state.longestPauseSeconds = Math.max(state.longestPauseSeconds, seconds);
-                codexSystem.unlockSecretsForPause(state);
-                if (whisperLine == null && seconds >= LONG_PAUSE_SECONDS && now == GameScreenState.PLAYING) {
+                float seconds = (clock.nanos() - pauseStartNanos) / 1_000_000_000f;
+                if (seconds > 0f) {
+                    state.longestPauseSeconds = Math.max(state.longestPauseSeconds, seconds);
+                    codexSystem.unlockSecretsForPause(state);
+                    if (!dialogue.active() && seconds >= LONG_PAUSE_SECONDS && now == GameScreenState.PLAYING) {
                     String line = WhisperLines.firstUnused(state.usedWhisperIds);
                     if (line != null) {
                         setWhisperLine(line);
-                        whisperSeconds = 0f;
                         WhisperLines.markUsed(state.usedWhisperIds, line);
                     }
                 }
@@ -238,49 +245,56 @@ public final class FrameDriver {
         lastFrameState = now;
     }
 
-    /** Shows a story line for {@link #LINE_SECONDS}, restarting its timer, and types its Undertale voice. */
+    /** Shows a story line in the Warden's voice; the box types it out under his blips. */
     public void showStoryBeat(String line) {
         showStoryBeat(line, SpeechVoice.HERO);
     }
 
     /**
-     * Shows a story line in a specific speaker's tone (roadmap ST-voice): the line's words stay silent but
-     * its blips type in the speaker's voice. Non-blank only, exactly like the plain {@link #showStoryBeat(String)}.
+     * Shows a story line in a specific speaker's tone (roadmap ST-voice): the line types out in the box and
+     * its blips tap in the speaker's voice, and the arena waits for the whole reading. Non-blank only,
+     * exactly like the plain {@link #showStoryBeat(String)}.
      */
     public void showStoryBeat(String line, SpeechVoice voice) {
-        if (line == null || line.isBlank()) {
-            return;
-        }
-        storyBeatLine = line;
-        storyBeatSeconds = 0f;
-        typer.type(line, voice != null ? voice : SpeechVoice.HERO);
+        dialogue.speak(line, voice, DialogueBox.Source.BEAT);
     }
 
+    /** The beat's line while it is up, or null; a whisper up instead reads as null, as before. */
     public String storyBeatLine() {
-        return storyBeatLine;
+        return dialogue.active() && dialogue.source() == DialogueBox.Source.BEAT ? dialogue.text() : null;
     }
 
+    /** Seconds the beat has been up; the box's own clock, kept for the readers that measure it. */
     public float storyBeatSeconds() {
-        return storyBeatSeconds;
+        return dialogue.active() && dialogue.source() == DialogueBox.Source.BEAT ? dialogue.seconds() : 0f;
     }
 
     public String whisperLine() {
-        return whisperLine;
+        return dialogue.active() && dialogue.source() == DialogueBox.Source.WHISPER ? dialogue.text() : null;
     }
 
     public float whisperSeconds() {
-        return whisperSeconds;
+        return dialogue.active() && dialogue.source() == DialogueBox.Source.WHISPER ? dialogue.seconds() : 0f;
     }
 
     public void setWhisperLine(String line) {
-        whisperLine = line;
-        if (line != null && !line.isBlank()) {
-            typer.type(line, SpeechVoice.TREE);
+        if (line == null || line.isBlank()) {
+            if (dialogue.active() && dialogue.source() == DialogueBox.Source.WHISPER) {
+                dialogue.clear();
+            }
+            return;
         }
+        dialogue.speak(line, SpeechVoice.TREE, DialogueBox.Source.WHISPER);
     }
 
     public void setStoryBeatLine(String line) {
-        storyBeatLine = line;
+        if (line == null || line.isBlank()) {
+            if (dialogue.active() && dialogue.source() == DialogueBox.Source.BEAT) {
+                dialogue.clear();
+            }
+            return;
+        }
+        dialogue.speak(line, SpeechVoice.HERO, DialogueBox.Source.BEAT);
     }
 
     public float ambientSeconds() {

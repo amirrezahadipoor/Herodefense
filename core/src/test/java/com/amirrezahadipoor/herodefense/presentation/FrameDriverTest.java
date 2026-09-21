@@ -102,25 +102,27 @@ final class FrameDriverTest {
     }
 
     @Test
-    void aWhisperHoldsTheSimulationUntilItsWindowIsOver() {
+    void aWhisperHoldsTheSimulationForItsWholeTypedLife() {
         FrameDriver driver = driver(false);
         host.state = GameState.newRun(21L);
         flow.transitionTo(GameScreenState.PLAYING);
-        driver.setWhisperLine("the tree remembers");
+        // "the tree remembers" is eighteen characters: it types for 17 intervals, then reads.
+        String line = "the tree remembers";
+        driver.setWhisperLine(line);
 
         driver.update(0.5f);
-        assertEquals(0, host.played, "the simulation waits while a whisper is on screen");
+        assertEquals(0, host.played, "the simulation waits while the whisper types");
 
-        driver.update(FrameDriver.LINE_SECONDS);
-        assertEquals(0, host.played, "and stays held for the whole window");
+        driver.update(1.5f); // 2.0s: the typing is done, the reading is running
+        assertEquals(0, host.played, "and stays held through the reading");
 
-        driver.update(0.01f);
-        assertEquals(1, host.played, "and releases the arena the moment the line expires");
+        driver.update(1.0f); // 3.0s: past typing + reading + the closing fade
+        assertEquals(1, host.played, "and releases the arena the moment the box is gone");
         assertNull(driver.whisperLine());
     }
 
     @Test
-    void aStoryLineAlsoExpiresAndDoesNotHoldTheArena() {
+    void aStoryLineHoldsTheArenaUntilItsReadingIsOver() {
         FrameDriver driver = driver(false);
         host.state = GameState.newRun(21L);
         flow.transitionTo(GameScreenState.PLAYING);
@@ -129,11 +131,35 @@ final class FrameDriverTest {
         assertEquals("wave 7", driver.storyBeatLine());
         driver.update(0.4f);
 
-        assertEquals(1, host.played, "a story line is read while the fight continues");
+        // The page stays still for the whole message, the way Undertale waits for its dialog: the arena
+        // no longer fights underneath the line, which is the stricter contract the old test named.
+        assertEquals(0, host.played, "the arena waits while a message is on screen");
         assertEquals("wave 7", driver.storyBeatLine(), "and it is still up inside its window");
 
-        driver.update(FrameDriver.LINE_SECONDS);
+        driver.update(2.0f);
         assertNull(driver.storyBeatLine(), "then it clears itself");
+        assertEquals(1, host.played, "and the arena runs the frame the box is gone");
+    }
+
+    @Test
+    void aTapFinishesTheTypingAndTheNextTapClosesTheBox() {
+        FrameDriver driver = driver(false);
+        host.state = GameState.newRun(21L);
+        flow.transitionTo(GameScreenState.PLAYING);
+
+        driver.showStoryBeat("a longer line than the eye follows");
+        assertTrue(driver.storyDialogueActive());
+        assertTrue(driver.storyDialogue().typing());
+
+        driver.advanceStoryDialogue();
+        assertFalse(driver.storyDialogue().typing(), "the first tap lands the rest at once");
+        assertEquals("a longer line than the eye follows", driver.storyBeatLine(), "the line is still up");
+
+        driver.advanceStoryDialogue();
+        assertTrue(driver.storyDialogue().fading(), "the second tap closes the box");
+        driver.update(DialogueBox.FADE_OUT_SECONDS);
+        assertNull(driver.storyBeatLine());
+        assertFalse(driver.storyDialogueActive());
     }
 
     @Test

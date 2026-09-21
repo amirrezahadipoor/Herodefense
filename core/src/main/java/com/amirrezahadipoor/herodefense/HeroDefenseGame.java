@@ -512,15 +512,13 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public SkillShopSystem skillShopSystem() { return skillShopSystem; }
         @Override public StatShopSystem statShopSystem() { return statShopSystem; }
         @Override public StatShopTouchLayout.Tab shopTab() { return shopTab; }
-        @Override public String storyBeatLine() { return frameDriver.storyBeatLine(); }
-        @Override public String whisperLine() { return frameDriver.whisperLine(); }
+        @Override public boolean storyDialogueActive() { return frameDriver.storyDialogueActive(); }
         @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
         @Override public TrialDraftTouchController trialDraftTouchController() { return trialDraftTouchController; }
         @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
         @Override public WaveLifecycleSystem waveLifecycleSystem() { return waveLifecycleSystem; }
         @Override public void setShopTab(StatShopTouchLayout.Tab tab) { shopTab = tab; }
-        @Override public void setStoryBeatLine(String line) { frameDriver.setStoryBeatLine(line); }
-        @Override public void setWhisperLine(String line) { frameDriver.setWhisperLine(line); }
+        @Override public void advanceStoryDialogue() { frameDriver.advanceStoryDialogue(); }
         @Override public void setLastTouchWorldX(float value) { lastTouchWorldX = value; }
         @Override public void setLastTouchWorldY(float value) { lastTouchWorldY = value; }
         @Override public void countHandledTouchUp() { handledTouchUpCount.incrementAndGet(); }

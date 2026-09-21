@@ -335,12 +335,8 @@ final class BackButtonRoutingTest {
             throw refused("shopTab");
         }
 
-        @Override public String storyBeatLine() {
-            throw refused("storyBeatLine");
-        }
-
-        @Override public String whisperLine() {
-            throw refused("whisperLine");
+        @Override public boolean storyDialogueActive() {
+            throw refused("storyDialogueActive");
         }
 
         @Override public TouchFeedbackSystem touchFeedbackSystem() {
@@ -363,12 +359,8 @@ final class BackButtonRoutingTest {
             throw refused("setShopTab");
         }
 
-        @Override public void setStoryBeatLine(String line) {
-            throw refused("setStoryBeatLine");
-        }
-
-        @Override public void setWhisperLine(String line) {
-            throw refused("setWhisperLine");
+        @Override public void advanceStoryDialogue() {
+            throw refused("advanceStoryDialogue");
         }
 
         @Override public void setLastTouchWorldX(float x) {

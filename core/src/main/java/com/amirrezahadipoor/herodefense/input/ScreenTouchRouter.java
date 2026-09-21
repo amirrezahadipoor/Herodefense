@@ -120,9 +120,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
 
         StatShopTouchLayout.Tab shopTab();
 
-        String storyBeatLine();
-
-        String whisperLine();
+        /** Whether a message box is on the screen; a tap goes to the box, not the HUD underneath. */
+        boolean storyDialogueActive();
 
         TouchFeedbackSystem touchFeedbackSystem();
 
@@ -134,9 +133,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
 
         void setShopTab(StatShopTouchLayout.Tab tab);
 
-        void setStoryBeatLine(String line);
-
-        void setWhisperLine(String line);
+        /** A tap on the box: the first finishes the typing, the next closes it. */
+        void advanceStoryDialogue();
 
         void setLastTouchWorldX(float x);
 
@@ -407,12 +405,10 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 }
                 return true;
             }
-            if (host.flow().state() == GameScreenState.PLAYING && host.whisperLine() != null) {
-                host.setWhisperLine(null);
-                return true;
-            }
-            if (host.flow().state() == GameScreenState.PLAYING && host.storyBeatLine() != null) {
-                host.setStoryBeatLine(null);
+            // A message box is up (beat or whisper): the first tap finishes the typing, the next closes
+            // the box, so a single tap can never fall through to a HUD button the box is sitting on.
+            if (host.flow().state() == GameScreenState.PLAYING && host.storyDialogueActive()) {
+                host.advanceStoryDialogue();
                 return true;
             }
             if (host.flow().state() == GameScreenState.PLAYING
