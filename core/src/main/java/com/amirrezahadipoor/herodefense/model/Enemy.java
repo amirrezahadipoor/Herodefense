@@ -56,6 +56,12 @@ public class Enemy extends ArenaEntity {
     public float lungeBaseSpeed;
     /** The elite kill has been claimed for counts, codex, and its lore fragment. */
     public boolean eliteKillClaimed;
+    /**
+     * How long this body has been dead, in seconds. Written by {@code ReaperSystem} once {@code alive} is false and
+     * read by nothing else: it is what lets a corpse finish its own presentation (particles, loot, the death cue)
+     * before the body leaves the run's actor list instead of living in it for the rest of the run (roadmap B4).
+     */
+    public float deadSeconds;
     /** Greetings received from the player; three and a silent watcher departs (roadmap ST3). */
     public int spareTouches;
     /** A dying blightburst has thinned below its warn threshold; the telegraph is owed. */

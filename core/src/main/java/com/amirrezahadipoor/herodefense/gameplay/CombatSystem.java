@@ -193,6 +193,10 @@ public final class CombatSystem {
             );
             audioManager.play(AudioCue.ITEM_DROP);
         }
+        // B4: last in the frame, and only here. Everything that wants a corpse -- the death cue that names the
+        // body class, the three loot passes above, the defeat particles -- has already read it this tick, so the
+        // reaper cannot beat a reader to the body it is about to take away.
+        ReaperSystem.update(state, simulationDelta);
         return new Frame(gameOver, killRewards.levelsGained() > 0, attackEvents.criticalHits());
     }
 }

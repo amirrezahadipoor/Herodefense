@@ -63,6 +63,9 @@ public final class WaveLifecycleSystem {
             || state.hero == null || !state.hero.alive || state.livingEnemyCount() > 0) {
             return WaveCompletion.NO_CHANGE;
         }
+        // B4: the wave is over, so the corpses of it are not carried into the next one. This is what keeps a
+        // between-waves save (the level-up write, the pause write) proportional to one wave and not to the run.
+        ReaperSystem.clear(state);
         if (bossSpawner.isBossWave(state.waveNumber)) {
             int bossNumber = state.waveNumber / 5;
             state.defeatedBosses = Math.max(state.defeatedBosses, bossNumber);

@@ -453,6 +453,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     @Override
     public void dispose() {
         saveNow();
+        if (saves != null) saves.close(); // B4: the disk is the writer's; a queued save must not be dropped here
         GameFonts.closeSharedFor(Gdx.app);
         if (audioManager != null) {
             audioManager.close();
@@ -468,7 +469,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         runRecords.record(gameState, Gdx.app.getType().name(), Gdx.app.getVersion(), System.currentTimeMillis());
         com.amirrezahadipoor.herodefense.story.HollowVoice.markRunComplete(gameState);
     }
-
     private void saveNow() {
         if (saves != null && gameState != null) {
             trophyPresenter.announce(TrophyBook.evaluate(gameState));
