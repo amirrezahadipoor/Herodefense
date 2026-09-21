@@ -112,13 +112,40 @@ final class LocalSaveRepositoryTest {
 
     @Test
     void closeIsIdempotentAndLeavesNoThreadBehind() {
-        // The whole contract is that three closes in a row throw nothing; the try-with-resources
-        // fourth close stays in the chain, so an idempotency break fails the test at the boundary.
+        // The contract has two halves: three closes in a row throw nothing (the fourth, the
+        // resource's closing close, stays in the chain, so an idempotency break fails the test
+        // at the boundary), and the writer's worker thread actually exits rather than lingering.
         try (LocalSaveRepository repository = new LocalSaveRepository(new MemoryPreferences())) {
             repository.save(GameState.newRun(3L));
             repository.close();
             repository.close();
             repository.close();
+        }
+        awaitWriterThreadExit(2_000L);
+        assertFalse(saveWriterThreadIsAlive(),
+            "the close lets the worker exit; a thread left behind would keep writing after the game is gone");
+    }
+
+    /** The writer's worker is the daemon it names at creation; a closed writer leaves it to die. */
+    private static boolean saveWriterThreadIsAlive() {
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if ("hero-defense-save-writer".equals(thread.getName()) && thread.isAlive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Waits up to {@code timeoutMillis} for the worker to die (it wakes within a wait tick of the close). */
+    private static void awaitWriterThreadExit(long timeoutMillis) {
+        long deadline = System.currentTimeMillis() + timeoutMillis;
+        while (saveWriterThreadIsAlive() && System.currentTimeMillis() < deadline) {
+            try {
+                Thread.sleep(10L);
+            } catch (InterruptedException interrupted) {
+                Thread.currentThread().interrupt();
+                return;
+            }
         }
     }
 
