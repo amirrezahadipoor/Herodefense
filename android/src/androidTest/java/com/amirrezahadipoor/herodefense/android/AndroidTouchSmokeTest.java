@@ -566,24 +566,40 @@ public final class AndroidTouchSmokeTest {
             SystemClock.sleep(1_400L); // let the arena settle before the frame is taken
             Bitmap screenshot = null;
             float[] brightness = null;
-            // Same rule as captureScreen: a transient frame is retried, not captured.
+            float[] band = null;
+            // Same rule as captureScreen: a transient frame is retried, not captured. These two frames are
+            // not in the brightness tables (they are *live* waves, so no reference can pin them), and a
+            // shockwave, telegraph or death burst sitting in the ground rows for one frame is exactly as
+            // transient as a black one -- the band's own check is what catches it.
             for (int attempt = 0; attempt < 8; attempt++) {
                 if (screenshot != null) screenshot.recycle();
                 screenshot = InstrumentationRegistry.getInstrumentation().getUiAutomation().takeScreenshot();
                 assertNotNull(screenshot);
                 brightness = measureBrightness(screenshot, name);
-                if (!transientFrame(name, brightness[0])) {
+                band = measureGroundBand(screenshot, surface);
+                if (!transientFrame(name, brightness[0]) && !flashFrame(band)) {
                     break;
                 }
+                System.out.println("grade frame " + name + " is transient (mean " + brightness[0]
+                    + ", band r/g/b " + band[0] + "/" + band[1] + "/" + band[2] + "), retrying");
                 SystemClock.sleep(300L);
             }
             BRIGHTNESS.put(name, brightness);
             writeScreenshot(screenshot, name);
             assertBrightnessContract(name, brightness);
-            float[] band = measureGroundBand(screenshot, surface);
             screenshot.recycle();
             return band;
         }
+    }
+
+    /**
+     * Whether the ground band caught a flash: a shockwave, a telegraph or a death burst sitting in the
+     * ground rows for one frame. The night arena's ground sustains a red of about 25 of 255 on the
+     * reference profile; a channel mean at or above 120 is five times that, so it is content the grade
+     * does not own -- retry it instead of measuring it.
+     */
+    private static boolean flashFrame(float[] band) {
+        return band[0] >= 120f || band[1] >= 120f || band[2] >= 120f;
     }
 
     /**
