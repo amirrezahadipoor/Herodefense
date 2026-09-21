@@ -45,7 +45,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 
 ---
 
-## 2. Exhaustive Proofreading Ledger (259 Entries across 12 String Tables)
+## 2. Exhaustive Proofreading Ledger (262 Entries across 12 String Tables)
 
 ### 2.1 MenuStrings (18 entries)
 
@@ -277,7 +277,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `HOLLOW_OMENS_RISK` | Every sixth wave carries an omen | هر موج ششم یک نشان دارد | Approved. Frequency schedule. |
 | `HOLLOW_OMENS_REWARD` | +25% coins on omen waves | ۲۵٪ سکه بیشتر در موج‌های نشان‌دار | Approved. Targeted coin multiplier. |
 
-### 2.11 StoryStrings (112 entries)
+### 2.11 StoryStrings (115 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
@@ -393,6 +393,9 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `MYTHIC_WINDRUNNER` | Made for running. He never ran again after putting them on. He no longer needed to. | برای دویدن ساخته شد. پس از پوشیدنشان دیگر ندوید. دیگر نیازی نداشت. | Approved. |
 | `MYTHIC_VERDANT` | A promise in sap. What heals you lets you keep healing. | پیمانی در شیره. آنچه درمانت می‌کند می‌گذارد درمان بمانی. | Approved. |
 | `MYTHIC_EMBERLESS` | The ember that never went out, cooled and put to work. No longer left to spread. | اخگری که هرگز خاموش نشد، سرد شد و به کار گرفته شد. دیگر برای پراکندن رها نیست. | Approved. |
+| `SPEAKER_WARDEN` | WARDEN | نگهبان | Approved. The Hero's name tag over the dialogue box; «نگهبان» per the Warden's TROPHY_HEADER convention. |
+| `SPEAKER_TREE` | TREE | درخت | Approved. The Tree's name tag; the plain noun the run's own lines already use. |
+| `SPEAKER_HOLLOW` | HOLLOW | دره | Approved. The Hollow's name tag; «دره» per the OPENING/EPILOGUE convention. |
 
 ### 2.12 SettingsStrings (37 entries)
 

@@ -201,6 +201,12 @@ public enum StoryStrings implements Translated {
     WHISPER_FIVE("The dark between battles is where roots grow deepest.", "تاریکیِ میان نبردها جایی است که ریشه‌ها عمیق‌تر می‌رویند."),
     WHISPER_SIX("Welcome back — the grove never stopped watching the paths.", "خوش آمدی — بیشه هرگز از نگریستن به راه‌ها دست نکشید."),
 
+    /** Speaker labels over the dialogue box: the box types every message in the speaker's own voice, and
+     *  the label tells who is speaking. Same three speakers the blips already tell apart by ear. */
+    SPEAKER_WARDEN("WARDEN", "نگهبان"),
+    SPEAKER_TREE("TREE", "درخت"),
+    SPEAKER_HOLLOW("HOLLOW", "دره"),
+
     /** Mythic item flavor (§7), one per slot's Mythic. */
     MYTHIC_SUNFALL("Shot once, long ago, at a high fall. The arrow did not come back whole. Nor did what it hit.",
         "زمانی، یک بار، به‌سوی پرتگاهی بلند رها شد. تیر هرگز سالم برنگشت؛ آنچه را زد هم سالم نماند."),
