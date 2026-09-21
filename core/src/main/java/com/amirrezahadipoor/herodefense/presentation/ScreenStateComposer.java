@@ -251,7 +251,8 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
         host.gameState(),
         host.simulationSeconds(),
         presentationDeltaSeconds,
-        reducedMotion
+        reducedMotion,
+        host.flow().state() == GameScreenState.GAME_OVER
     );
     spriteBatch.end();
     if (!reducedMotion) {

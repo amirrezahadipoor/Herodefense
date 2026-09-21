@@ -274,12 +274,21 @@ per the rule noted next to it.
   - Storm Colossus: "Thunder never hurries. You should."
   - Bloodroot Avatar: "The wound fights the cure. It always has."
 
-## 10. The Dawn (the victory sky -- visual, no new words)
+## 10. The Night's Face (visual, no new words): the gaze and the dawn
 
-The run's colour arc (see `render/StageGrade`) is named for the day: **DAWN** 1-50, **AMBER**
-51-100, **TEAL** 101-150, **HOLLOW** 151-200. The victory closes that arc.
+The night in this story is watching -- "I felt it happen", "I never get tired of
+watching" -- and the reviewed HOLLOW arena leaves its dark upper field empty. Two cold lights
+live there, deep in the backdrop under everything else.
 
-When a run completes, the sky behind the premium summary breaks from the HOLLOW's night into dawn
+- **The gaze.** In the HOLLOW arena (waves 101-200) the Hollow's two eyes are visible in the
+  dark, a whisper of cold light -- felt more than found. They fade in between waves 101 and 121,
+  sharpen by 1.6x while a boss stands, blink shut (0.45s) when the tree falls, and drift apart
+  and away over six seconds when the run is won. The forest arena (waves 1-100) never sees
+  them. Reduced motion removes the breath and slows the drift; it never removes the night.
+- **The dawn.** The run's colour arc (see `render/StageGrade`) is named for the day: **DAWN**
+  1-50, **AMBER** 51-100, **TEAL** 101-150, **HOLLOW** 151-200. The victory closes that arc.
+
+When a run completes -- on the victory screen, not earlier -- the sky behind the premium summary breaks from the HOLLOW's night into dawn
 gold over eight seconds, procedural light (one shader pass, no new art): a glow at the horizon and
 two slow bands rising out of it, breathing once per minute. The light lives at the bottom half of
 the frame and dies before the top, so the epilogue lines and the title panel keep their contrast

@@ -47,6 +47,8 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     private final ArenaAtmosphereRenderer atmosphere = new ArenaAtmosphereRenderer();
     private final DawnReveal dawnReveal = new DawnReveal();
     private final DawnGlowRenderer dawnGlow = new DawnGlowRenderer();
+    private final HollowGaze hollowGaze = new HollowGaze();
+    private final HollowGazeRenderer hollowGazeRenderer = new HollowGazeRenderer();
     /** The state the dawn clock is ticking for; a new state is a new run, and a new run is night. */
     private GameState dawnState;
 
@@ -85,18 +87,50 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         GameState state,
         float runTimeSeconds,
         float presentationDeltaSeconds,
-        boolean motionSuppressed
+        boolean motionSuppressed,
+        boolean gameOverActive
     ) {
         // D1: second arena — forest for waves 1-100, hollow for 101-200, matching StageGrade TEAL/HOLLOW.
         Texture activeBackdrop = state.waveNumber >= 101 ? backdrop2 : backdrop;
         ScreenEdges.drawCover(batch, activeBackdrop);
+        drawHollowGaze(batch, state, runTimeSeconds, presentationDeltaSeconds, motionSuppressed, gameOverActive);
         drawGround(batch, state.waveNumber);
         drawCrystals(batch, state.waveNumber);
         drawWorldTree(batch, state, runTimeSeconds, presentationDeltaSeconds);
         // D4: the air and the bosses' ground auras, over the finished arena and under the actors.
         // A suppressed-motion frame gets a frozen clock, which holds both effects on a calm still.
         atmosphere.draw(batch, state, motionSuppressed ? 0f : runTimeSeconds, motionSuppressed);
-        drawDawn(batch, state, runTimeSeconds, presentationDeltaSeconds, motionSuppressed);
+        drawDawn(batch, state, runTimeSeconds, presentationDeltaSeconds, motionSuppressed, gameOverActive);
+    }
+
+    /**
+     * The night in the story is watching: the Hollow's two lights live in the dark upper field of
+     * the HOLLOW arena, deep in the backdrop under everything else. They sharpen while a boss
+     * stands, blink shut when the tree falls, and drift away into the dawn when the run is won.
+     * The forest arena (waves 1-100) never sees them.
+     */
+    private void drawHollowGaze(
+        SpriteBatch batch, GameState state, float runTimeSeconds,
+        float presentationDeltaSeconds, boolean motionSuppressed, boolean gameOverActive
+    ) {
+        boolean bossAlive = false;
+        for (var boss : state.aliveBosses) {
+            if (boss != null && boss.alive) {
+                bossAlive = true;
+                break;
+            }
+        }
+        // The night stands watch during the fight; only on the game-over screen does it react --
+        // blink shut for a defeat, drift away for a dawn.
+        hollowGaze.update(
+            state.waveNumber, bossAlive, state.hero.alive, state.runComplete,
+            gameOverActive ? presentationDeltaSeconds : 0f, motionSuppressed
+        );
+        if (!hollowGaze.present()) {
+            return;
+        }
+        float strength = hollowGaze.strength(bossAlive, motionSuppressed ? 0f : runTimeSeconds, motionSuppressed);
+        hollowGazeRenderer.draw(batch, strength, hollowGaze.drift());
     }
 
     /**
@@ -107,13 +141,15 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
      */
     private void drawDawn(
         SpriteBatch batch, GameState state, float runTimeSeconds,
-        float presentationDeltaSeconds, boolean motionSuppressed
+        float presentationDeltaSeconds, boolean motionSuppressed, boolean gameOverActive
     ) {
         if (dawnState != state) {
             dawnState = state;
             dawnReveal.reset();
         }
-        if (!state.runComplete) {
+        // The sunrise begins on the victory screen, not earlier: runComplete is already true
+        // while the final reward cards are chosen, and the dawn belongs to the summary.
+        if (!state.runComplete || !gameOverActive) {
             return;
         }
         dawnReveal.tick(presentationDeltaSeconds);
@@ -208,6 +244,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         for (Texture texture : ground) texture.dispose();
         for (Texture texture : crystals) texture.dispose();
         dawnGlow.close();
+        hollowGazeRenderer.close();
         healthyTreeAtlas.dispose();
         damagedTreeAtlas.dispose();
         atmosphere.close();
