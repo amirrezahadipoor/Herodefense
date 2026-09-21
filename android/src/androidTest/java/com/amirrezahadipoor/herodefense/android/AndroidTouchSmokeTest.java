@@ -862,7 +862,11 @@ public final class AndroidTouchSmokeTest {
     private static final Map<String, float[]> SCREEN_REFERENCE = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 44.35f, 0.9141f),
         ref("vfx-tree-collapse-premium-v2.png", 37.14f, 0.9840f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        ref("defeat-premium-v2.png", 37.28f, 0.9786f),
+        // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155777,
+        // brightness-measurements.txt: mean=37.50 lit=0.8178): the Hollow's parting word is up in the box
+        // across the whole defeat capture and the reveal is held until it is done, so the reference is the
+        // box-present frame.
+        ref("defeat-premium-v2.png", 37.50f, 0.8178f),
         ref("trial-draft-premium-v2.png", 43.44f, 0.9737f),
         // Re-measured on 2026-09-18 after roadmap G3a put a sixth row on this screen: the rows went from 150f
         // on a 150f pitch to 130f on a 140f pitch, which is more frame and text and less empty backdrop, so the
@@ -873,7 +877,12 @@ public final class AndroidTouchSmokeTest {
         ref("level-up-premium-v2.png", 41.93f, 0.9741f),
         ref("inventory-details-premium-v2.png", 44.93f, 0.9644f),
         ref("inventory-sell-feedback-premium-v2.png", 43.94f, 0.9624f),
-        ref("vfx-boss-entrance-premium-v2.png", 47.47f, 0.9410f),
+        // Re-measured 2026-09-21 (run 35654155777: mean=44.24 lit=0.8237): the boss wave opens with the
+        // Warden's once-ever title card, which types out in the box at the arrival moment. This reference
+        // had stayed at its pre-box value, so any run whose capture lands on the card went red. It now
+        // carries the box-present value, like the six vfx-combat frames below, and it also passes on a
+        // frame the card is not on, so the gate holds either way.
+        ref("vfx-boss-entrance-premium-v2.png", 44.24f, 0.8237f),
         // Re-measured 2026-09-21 after the dialogue box landed: the boss wave opens with the Warden's
         // once-ever title card, which now types out in the box and stays up across the whole 6-frame
         // capture (run 35643649963, brightness-measurements.txt: frame 0 mean=43.36 lit=0.8199). The card
@@ -917,13 +926,20 @@ public final class AndroidTouchSmokeTest {
     private static final Map<String, float[]> API30_PIXEL_3A = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 46.16f, 0.9083f),
         ref("vfx-tree-collapse-premium-v2.png", 43.46f, 0.9552f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        ref("defeat-premium-v2.png", 35.46f, 0.9747f),
+        // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155526,
+        // brightness-measurements.txt: mean=37.31 lit=0.8169): the parting word is up in the box across
+        // the whole defeat capture, so the reference is the box-present frame.
+        ref("defeat-premium-v2.png", 37.31f, 0.8169f),
         ref("trial-draft-premium-v2.png", 43.90f, 0.9741f),
         ref("settings-premium-v2.png", 44.98f, 0.9570f),
         ref("level-up-premium-v2.png", 43.55f, 0.9688f),
         ref("inventory-details-premium-v2.png", 44.96f, 0.9626f),
         ref("inventory-sell-feedback-premium-v2.png", 44.96f, 0.9626f),
-        ref("vfx-boss-entrance-premium-v2.png", 43.57f, 0.9689f),
+        // This profile's arrival frame landed before the Warden's title card box came up (run 35654155526:
+        // mean=43.57 lit=0.9689), so the reference carries the card's box-present value from that same
+        // run's vfx-combat-0 (mean=42.84 lit=0.8177) -- the same card over the same arena. The value passes
+        // on a card-up frame and on a card-free one, so the gate holds either way.
+        ref("vfx-boss-entrance-premium-v2.png", 42.84f, 0.8177f),
         // Re-measured 2026-09-21 after the dialogue box landed: the boss title card types out in the box
         // and stays up across the whole 6-frame capture (run 35643650151: frame 0 mean=43.48 lit=0.8187).
         // All six frames share that box-present reference over the same arena.
@@ -961,13 +977,20 @@ public final class AndroidTouchSmokeTest {
     private static final Map<String, float[]> API33_PIXEL_7 = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 43.29f, 0.8641f),
         ref("vfx-tree-collapse-premium-v2.png", 40.89f, 0.8993f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        ref("defeat-premium-v2.png", 34.39f, 0.9170f),
+        // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155526,
+        // brightness-measurements.txt: mean=37.38 lit=0.7780): the parting word is up in the box across
+        // the whole defeat capture, so the reference is the box-present frame.
+        ref("defeat-premium-v2.png", 37.38f, 0.7780f),
         ref("trial-draft-premium-v2.png", 41.37f, 0.9139f),
         ref("settings-premium-v2.png", 42.11f, 0.9138f),
         ref("level-up-premium-v2.png", 41.09f, 0.9067f),
         ref("inventory-details-premium-v2.png", 42.37f, 0.9108f),
         ref("inventory-sell-feedback-premium-v2.png", 42.37f, 0.9108f),
-        ref("vfx-boss-entrance-premium-v2.png", 41.08f, 0.9066f),
+        // This profile's arrival frame landed before the Warden's title card box came up (run 35654155526:
+        // mean=41.08 lit=0.9066), so the reference carries the card's box-present value from that same
+        // run's vfx-combat-0 (mean=43.69 lit=0.7900) -- the same card over the same arena. The value passes
+        // on a card-up frame and on a card-free one, so the gate holds either way.
+        ref("vfx-boss-entrance-premium-v2.png", 43.69f, 0.7900f),
         // Re-measured 2026-09-21 after the dialogue box landed: the boss title card types out in the box
         // and stays up across the whole 6-frame capture (run 35643650151: frame 0 mean=43.39 lit=0.7885).
         // All six frames share that box-present reference over the same arena.
