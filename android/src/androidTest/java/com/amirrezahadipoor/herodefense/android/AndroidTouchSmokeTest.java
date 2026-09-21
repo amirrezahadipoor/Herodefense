@@ -911,7 +911,11 @@ public final class AndroidTouchSmokeTest {
         // (run 35643649963: mean=43.52 lit=0.8244) until a green run measures it directly.
         ref("ceremony-water-premium-v2.png", 43.52f, 0.8244f),
         ref("second-tree-standing-premium-v2.png", 47.98f, 0.9218f),
-        ref("victory-premium-v2.png", 45.70f, 0.9808f),
+        // Re-measured 2026-09-22 after the victory line began to speak in the box and the dawn
+        // broke behind the summary (run 35663454153, brightness-measurements.txt: mean=40.61
+        // lit=0.8431): the capture lands mid-typing, so the reference is the box-present,
+        // dawn-breaking frame.
+        ref("victory-premium-v2.png", 40.61f, 0.8431f),
         ref("main-menu-premium-v2.png", 41.01f, 0.9602f),
         ref("opening-line-one-premium-v2.png", 34.45f, 0.9658f),
         // Re-measured 2026-09-21 after the opening became a boxed dialogue: the box is a permanent part
@@ -931,7 +935,11 @@ public final class AndroidTouchSmokeTest {
      */
     private static final Map<String, float[]> API30_PIXEL_3A = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 46.16f, 0.9083f),
-        ref("vfx-tree-collapse-premium-v2.png", 43.46f, 0.9552f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // Re-measured 2026-09-22 after the Hollow's gaze began to blink shut on the defeat
+        // (device evidence, run 35663454121, brightness-measurements.txt: mean=36.85 lit=0.8163):
+        // the collapse frame lands at a different point of the animation each run, as it always
+        // has, so the reference is this run's own frame under the animated band.
+        ref("vfx-tree-collapse-premium-v2.png", 36.85f, 0.8163f, ANIMATED_MEAN_LUMA_TOLERANCE),
         // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155526,
         // brightness-measurements.txt: mean=37.31 lit=0.8169): the parting word is up in the box across
         // the whole defeat capture, so the reference is the box-present frame.
@@ -967,7 +975,11 @@ public final class AndroidTouchSmokeTest {
         // emulator the boxed line is still up when the capture lands, so the reference is the box-present
         // frame; a box-free frame (mean ~49.8, lit ~0.96) also passes it.
         ref("second-tree-standing-premium-v2.png", 43.43f, 0.8243f),
-        ref("victory-premium-v2.png", 45.86f, 0.9807f),
+        // Re-measured 2026-09-22 after the victory line began to speak in the box and the dawn
+        // broke behind the summary (device evidence, run 35663454121, brightness-measurements.txt:
+        // mean=39.71 lit=0.8358): the capture lands mid-typing, so the reference is the
+        // box-present, dawn-breaking frame.
+        ref("victory-premium-v2.png", 39.71f, 0.8358f),
         ref("main-menu-premium-v2.png", 42.85f, 0.9691f),
         ref("opening-line-one-premium-v2.png", 43.47f, 0.9932f),
         // Pinned 2026-09-21 from run 35647129943, the first run whose journey reached it (mean=35.77 lit=0.8495).
@@ -1020,7 +1032,11 @@ public final class AndroidTouchSmokeTest {
         // mean=43.73 lit=0.7998); the water frame was not reached, so it shares that value until measured.
         ref("ceremony-water-premium-v2.png", 43.73f, 0.7998f),
         ref("second-tree-standing-premium-v2.png", 48.05f, 0.9044f),
-        ref("victory-premium-v2.png", 42.36f, 0.9148f),
+        // Re-measured 2026-09-22 after the victory line began to speak in the box, the dawn
+        // broke behind the summary, and the Hollow's gaze began to drift away on the win
+        // (device evidence, run 35663454121, brightness-measurements.txt: mean=38.86 lit=0.7919):
+        // the capture lands mid-typing, so the reference is the box-present, dawn-breaking frame.
+        ref("victory-premium-v2.png", 38.86f, 0.7919f),
         ref("main-menu-premium-v2.png", 40.36f, 0.9071f),
         ref("opening-line-one-premium-v2.png", 37.23f, 0.9323f),
         // Re-measured 2026-09-21 after the opening became a boxed dialogue (run 35643650151: mean=36.23 lit=0.8099).
