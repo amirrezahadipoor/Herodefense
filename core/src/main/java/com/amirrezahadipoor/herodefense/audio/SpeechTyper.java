@@ -40,13 +40,16 @@ public final class SpeechTyper {
         }
     }
 
+    /** The drift float leaves behind on an exact sum; a whole line is not held hostage to it. */
+    private static final float EPSILON = 1e-4f;
+
     /** Advances the typing: each newly revealed character taps the voice's blip. */
     public void tick(float deltaSeconds) {
         if (revealed >= totalChars || playback == null) {
             return;
         }
         clock += deltaSeconds;
-        while (revealed < totalChars && clock >= SECONDS_PER_CHAR) {
+        while (revealed < totalChars && clock >= SECONDS_PER_CHAR - EPSILON) {
             clock -= SECONDS_PER_CHAR;
             revealed++;
             playback.play(voice.cue());

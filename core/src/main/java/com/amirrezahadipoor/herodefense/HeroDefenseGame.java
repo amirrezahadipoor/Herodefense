@@ -92,7 +92,6 @@ import com.amirrezahadipoor.herodefense.render.RenderStack;
 import com.amirrezahadipoor.herodefense.render.SheetPayloads;
 import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
 import com.amirrezahadipoor.herodefense.render.CodexOverlayRenderer;
-import com.amirrezahadipoor.herodefense.render.IdleWhisperRenderer;
 import com.amirrezahadipoor.herodefense.render.CombatEntityRenderer;
 import com.amirrezahadipoor.herodefense.render.DialogueBoxRenderer;
 import com.amirrezahadipoor.herodefense.render.PostProcessRenderer;
@@ -758,7 +757,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public HeroAnimationController heroAnimationController() { return heroAnimationController; }
         @Override public HeroSpriteRenderer heroSpriteRenderer() { return renderers.heroSpriteRenderer; }
         @Override public HudRenderer hudRenderer() { return renderers.hudRenderer; }
-        @Override public IdleWhisperRenderer idleWhisperRenderer() { return renderers.idleWhisperRenderer; }
         @Override public InventoryOverlayRenderer inventoryOverlayRenderer() { return renderers.inventoryOverlayRenderer; }
         @Override public InventoryTouchController inventoryTouchController() { return inventoryTouchController; }
         @Override public LevelUpOverlayRenderer levelUpOverlayRenderer() { return renderers.levelUpOverlayRenderer; }
@@ -783,6 +781,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public StatShopOverlayRenderer statShopOverlayRenderer() { return renderers.statShopOverlayRenderer; }
         @Override public StatShopSystem statShopSystem() { return statShopSystem; }
         @Override public DialogueBox storyDialogue() { return frameDriver.storyDialogue(); }
+        @Override public DialogueBox cinematicDialogue() { return cinematicFlow.dialogue(); }
         @Override public TouchFeedbackRenderer touchFeedbackRenderer() { return renderers.touchFeedbackRenderer; }
         @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
         @Override public TrialDraftOverlayRenderer trialDraftOverlayRenderer() { return renderers.trialDraftOverlayRenderer; }

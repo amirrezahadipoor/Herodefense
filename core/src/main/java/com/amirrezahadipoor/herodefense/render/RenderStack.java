@@ -29,7 +29,6 @@ public final class RenderStack {
     public final HudRenderer hudRenderer = new HudRenderer();
     public final EquipmentSpriteRenderer equipmentSpriteRenderer = new EquipmentSpriteRenderer();
     public final CodexOverlayRenderer codexOverlayRenderer = new CodexOverlayRenderer();
-    public final IdleWhisperRenderer idleWhisperRenderer = new IdleWhisperRenderer();
     public final DialogueBoxRenderer dialogueBoxRenderer = new DialogueBoxRenderer();
     public final InventoryOverlayRenderer inventoryOverlayRenderer = new InventoryOverlayRenderer();
     public final LevelUpOverlayRenderer levelUpOverlayRenderer = new LevelUpOverlayRenderer();
@@ -60,7 +59,6 @@ public final class RenderStack {
         hudRenderer.close();
         equipmentSpriteRenderer.close();
         codexOverlayRenderer.close();
-        idleWhisperRenderer.close();
         dialogueBoxRenderer.close();
         inventoryOverlayRenderer.close();
         levelUpOverlayRenderer.close();

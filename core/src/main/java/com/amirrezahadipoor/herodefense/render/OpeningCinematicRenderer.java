@@ -1,27 +1,22 @@
 package com.amirrezahadipoor.herodefense.render;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
-import com.amirrezahadipoor.herodefense.model.GameState;
 
 /**
- * Screen-space layer for the new-run opening: a dark storm cloud rolling over the arena and the
- * Hero's spoken line in white. Drawn with the un-zoomed camera so text keeps its physical size.
+ * Screen-space layer for the new-run opening: the dark storm cloud rolling over the arena. The Hero's
+ * own lines are not drawn here anymore -- they type out in the dialogue box, the same box the arena's
+ * beats use, which the composer draws after this cloud. Rendered with the un-zoomed camera so it stays
+ * put while the camera pushes in behind it.
  */
 public final class OpeningCinematicRenderer implements AutoCloseable {
-    static final Color SPEECH = Color.WHITE;
-    /** Speech sits a little above the Hero's head in the zoomed framing. */
-    static final float SPEECH_Y = GameState.ARENA_CENTER_Y + 250f;
-    static final float SPEECH_SCALE = 1.6f;
     private static final int CLOUD_PUFFS = 9;
 
     private final ShapeRenderer shapes = new ShapeRenderer();
-    private final OverlayText text = new OverlayText();
 
     public void draw(SpriteBatch batch, Matrix4 projection, OpeningCinematic opening) {
         float cloud = opening.cloudAlpha();
@@ -48,19 +43,10 @@ public final class OpeningCinematicRenderer implements AutoCloseable {
             shapes.end();
             Gdx.gl.glDisable(GL20.GL_BLEND);
         }
-        String line = opening.line();
-        float alpha = opening.lineAlpha();
-        if (line != null && alpha > 0.001f) {
-            batch.setProjectionMatrix(projection);
-            batch.begin();
-            text.drawCentered(batch, line, 360f, SPEECH_Y, SPEECH_SCALE, SPEECH, alpha);
-            batch.end();
-        }
     }
 
     @Override
     public void close() {
         shapes.dispose();
-        text.close();
     }
 }

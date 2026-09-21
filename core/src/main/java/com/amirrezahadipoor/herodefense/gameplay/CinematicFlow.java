@@ -5,8 +5,8 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.audio.IdentityCues;
-import com.amirrezahadipoor.herodefense.audio.SpeechTyper;
 import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
+import com.amirrezahadipoor.herodefense.presentation.DialogueBox;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
@@ -44,8 +44,12 @@ public final class CinematicFlow {
     private final AudioPlayback audioManager;
 
     private float waterDropAccumulator;
-    private String lastTypedLine = "";
-    private final SpeechTyper typer;
+    /**
+     * The ceremony's message box: the opening's lines and the planting's beats type out in the same
+     * Undertale box the arena's beats use. It is sticky, because the scene -- not a reading timer --
+     * moves each line off.
+     */
+    private final DialogueBox dialogue;
 
     public CinematicFlow(
         Host host,
@@ -67,7 +71,13 @@ public final class CinematicFlow {
         this.heroAnimationController = heroAnimationController;
         this.presentationSystem = presentationSystem;
         this.audioManager = audioManager;
-        this.typer = new SpeechTyper(audioManager);
+        this.dialogue = new DialogueBox(audioManager);
+        this.dialogue.setSticky(true);
+    }
+
+    /** The ceremony's message box, for the frame to draw. */
+    public DialogueBox dialogue() {
+        return dialogue;
     }
 
     /** Snapshots the run's opening tier, then plays that tier's lines. */
@@ -75,6 +85,7 @@ public final class CinematicFlow {
         GameState state = host.gameState();
         state.openingTier = state.ascensionTier;
         openingCinematic.begin(state.openingTier);
+        dialogue.clear();
     }
 
     /**
@@ -94,14 +105,15 @@ public final class CinematicFlow {
         boolean shortCeremony = groveIndex == 0 || groveIndex == 2;
         plantingCeremony.begin(shortCeremony, groveIndex);
         state.anchorHeroAtArenaCenter();
+        dialogue.clear();
     }
 
     /** Presentation-only ceremony tick; the wave-101 hand-off happens once it completes. */
     public void update(float deltaSeconds) {
         GameState state = host.gameState();
-        tickTyping(deltaSeconds);
+        dialogue.tick(deltaSeconds, false);
         if (openingCinematic.isActive()) {
-            typeOpeningLine();
+            speakLine(openingCinematic.line(), SpeechVoice.HERO);
             state.anchorHeroAtArenaCenter();
             heroAnimationController.update(state.hero, deltaSeconds);
             if (openingCinematic.update(deltaSeconds)) {
@@ -111,7 +123,8 @@ public final class CinematicFlow {
             }
             return;
         }
-        typeCeremonyBeat();
+        speakLine(CeremonyLines.lineFor(plantingCeremony.phase()),
+            CeremonyLines.isTreeVoice(plantingCeremony.phase()) ? SpeechVoice.TREE : SpeechVoice.HERO);
         boolean finished = plantingCeremony.update(deltaSeconds);
         if (plantingCeremony.pouring()) {
             waterDropAccumulator += deltaSeconds;
@@ -136,29 +149,20 @@ public final class CinematicFlow {
         }
     }
 
-    /** Types the opening line once, when it changes, in the Hero's terse voice (roadmap ST-voice). */
-    private void typeOpeningLine() {
-        String line = openingCinematic.line();
-        if (line == null || line.equals(lastTypedLine)) {
+    /**
+     * Puts the scene's current line in the box, in its speaker's voice. A new line types from its first
+     * character; a line the scene has moved off clears the box. The box's tick runs on the frame the
+     * ceremony runs in, so the blips tap out over time, not at once (roadmap ST-voice).
+     */
+    private void speakLine(String line, SpeechVoice voice) {
+        if (line == null || line.isBlank()) {
+            if (dialogue.active()) {
+                dialogue.clear();
+            }
             return;
         }
-        lastTypedLine = line;
-        typer.type(line, SpeechVoice.HERO);
-    }
-
-    /** Types the ceremony beat once per phase in the speaker's own tone: the Tree owns the growth line. */
-    private void typeCeremonyBeat() {
-        PlantingCeremony.Phase phase = plantingCeremony.phase();
-        String line = CeremonyLines.lineFor(phase);
-        if (line == null || line.equals(lastTypedLine)) {
-            return;
+        if (!line.equals(dialogue.text())) {
+            dialogue.speak(line, voice, DialogueBox.Source.BEAT);
         }
-        lastTypedLine = line;
-        typer.type(line, CeremonyLines.isTreeVoice(phase) ? SpeechVoice.TREE : SpeechVoice.HERO);
-    }
-
-    /** Advances the typing voice so the opening and the ceremony tap out over time, not at once. */
-    private void tickTyping(float deltaSeconds) {
-        typer.tick(deltaSeconds);
     }
 }

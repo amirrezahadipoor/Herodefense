@@ -30,7 +30,6 @@ import com.amirrezahadipoor.herodefense.render.FloatingDamageTextRenderer;
 import com.amirrezahadipoor.herodefense.render.GameOverOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.HeroSpriteRenderer;
 import com.amirrezahadipoor.herodefense.render.HudRenderer;
-import com.amirrezahadipoor.herodefense.render.IdleWhisperRenderer;
 import com.amirrezahadipoor.herodefense.render.InventoryOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.LevelUpOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.MainMenuRenderer;
@@ -50,7 +49,6 @@ import com.amirrezahadipoor.herodefense.render.UiIconRenderer;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
 import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
-import com.amirrezahadipoor.herodefense.story.CeremonyLines;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -129,8 +127,6 @@ public final class ScreenStateComposer {
 
         HudRenderer hudRenderer();
 
-        IdleWhisperRenderer idleWhisperRenderer();
-
         InventoryOverlayRenderer inventoryOverlayRenderer();
 
         InventoryTouchController inventoryTouchController();
@@ -179,6 +175,9 @@ public final class ScreenStateComposer {
 
         /** The frame's message box; what a beat or whisper is typing out, in whose voice. */
         DialogueBox storyDialogue();
+
+        /** The ceremony's message box; the opening's lines and the planting's beats. */
+        DialogueBox cinematicDialogue();
 
         TouchFeedbackRenderer touchFeedbackRenderer();
 
@@ -296,19 +295,10 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
     camera.zoom = 1f;
     camera.position.set(baseCameraX, baseCameraY, camera.position.z);
     camera.update();
-    if (opening) {
+    if (opening || host.plantingCeremony().isActive()) {
+        // The opening's cloud, then the scene's line typing out in the same box the arena's beats use.
         host.openingCinematicRenderer().draw(spriteBatch, camera.combined, host.openingCinematic());
-    } else if (host.plantingCeremony().isActive()) {
-        String beat = CeremonyLines.lineFor(host.plantingCeremony().phase());
-        if (beat != null) {
-            host.idleWhisperRenderer().draw(
-                spriteBatch,
-                camera.combined,
-                beat,
-                host.plantingCeremony().lineAlpha(),
-                CeremonyLines.isTreeVoice(host.plantingCeremony().phase())
-            );
-        }
+        host.dialogueBoxRenderer().draw(spriteBatch, camera.combined, host.cinematicDialogue());
     }
     host.postProcessRenderer().endSceneAndComposite();
 }
