@@ -26,7 +26,7 @@ final class CinematicFlowDialogueTest {
 
     private final List<AudioCue> played = new ArrayList<>();
 
-    private final class Host implements CinematicFlow.Host {
+    private static final class Host implements CinematicFlow.Host {
         private final GameState state;
 
         Host(GameState state) {

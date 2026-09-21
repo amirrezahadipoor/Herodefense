@@ -95,7 +95,7 @@ public final class DialogueBox {
         float typingDone = (text.length() - 1) * SpeechTyper.SECONDS_PER_CHAR;
         float holdBefore = holdClock;
         holdClock = Math.max(0f, clock - typingDone);
-        if (!fading && holdBefore < HOLD_SECONDS && holdClock >= HOLD_SECONDS
+        if (holdBefore < HOLD_SECONDS && holdClock >= HOLD_SECONDS
             && allowExpiry && !sticky && !typer.typing()) {
             // The fade starts in this same frame, at the point past the reading the frame already ran.
             fading = true;
