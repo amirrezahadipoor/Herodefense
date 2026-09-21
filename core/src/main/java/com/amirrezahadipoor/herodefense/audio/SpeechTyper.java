@@ -1,50 +1,74 @@
 package com.amirrezahadipoor.herodefense.audio;
 
 /**
- * The Undertale-style typing voice, as a ticking object (roadmap ST-voice): a story line speaks as a run of
- * short blips, one per word, the first immediately and the rest spaced out so a line taps across its first
- * moment instead of beeping at once. Nothing is spoken aloud; the ear only hears which speaker is typing.
+ * The Undertale-style typing voice, as a ticking object (roadmap ST-voice): a story line speaks as a run
+ * of short blips, one per character, the first immediately and the rest one per
+ * {@link #SECONDS_PER_CHAR}, so a line taps across its whole reading instead of beeping at once.
+ * Nothing is spoken aloud; the ear only hears which speaker is typing.
+ *
+ * <p>The reveal count this object owns is the clock the text layer reads: the dialogue box draws exactly
+ * the characters {@link #revealed()} has counted out, so the letter on the screen and the tap in the ear
+ * can never drift apart.
  */
 public final class SpeechTyper {
 
-    /** Undertale's typing tap: one blip per word, never faster than this. */
-    static final float BLIP_SECONDS = 0.11f;
+    /**
+     * Undertale's typing tap: seconds per character. Fixed at the slowest speaker's blip interval so
+     * every tap the typer counts passes the audio throttle and stays audible, not just the odd one.
+     */
+    public static final float SECONDS_PER_CHAR = 0.06f;
 
     private final AudioPlayback playback;
     private SpeechVoice voice = SpeechVoice.HERO;
-    private int blipsLeft;
+    private int totalChars;
+    private int revealed;
     private float clock;
 
     public SpeechTyper(AudioPlayback playback) {
         this.playback = playback;
     }
 
-    /** Starts typing {@code line} in {@code voice}: the first blip lands now, the rest follow on {@code tick}. */
+    /** Starts typing {@code line} in {@code voice}: the first character lands now, the rest follow on time. */
     public void type(String line, SpeechVoice voice) {
         this.voice = voice != null ? voice : SpeechVoice.HERO;
-        this.blipsLeft = SpeechBlip.blipsFor(line);
+        this.totalChars = line == null || line.isBlank() ? 0 : line.length();
+        this.revealed = 0;
         this.clock = 0f;
-        if (blipsLeft > 0 && playback != null) {
+        if (totalChars > 0 && playback != null) {
+            revealed = 1;
             playback.play(this.voice.cue());
-            blipsLeft--;
         }
     }
 
-    /** Advances the typing: blips land one per {@value #BLIP_SECONDS} seconds until the line is typed out. */
+    /** Advances the typing: each newly revealed character taps the voice's blip. */
     public void tick(float deltaSeconds) {
-        if (blipsLeft <= 0 || playback == null) {
+        if (revealed >= totalChars || playback == null) {
             return;
         }
         clock += deltaSeconds;
-        while (blipsLeft > 0 && clock >= BLIP_SECONDS) {
-            clock -= BLIP_SECONDS;
+        while (revealed < totalChars && clock >= SECONDS_PER_CHAR) {
+            clock -= SECONDS_PER_CHAR;
+            revealed++;
             playback.play(voice.cue());
-            blipsLeft--;
         }
+    }
+
+    /** Tap-to-skip: the rest of the line lands at once under one closing blip. */
+    public void skipToEnd() {
+        if (revealed < totalChars && playback != null) {
+            playback.play(voice.cue());
+        }
+        revealed = totalChars;
+        clock = 0f;
+    }
+
+    /** How many characters of the current line have been typed out; the text layer draws exactly this many. */
+    public int revealed() {
+        return revealed;
     }
 
     /** Whether a line is still ticking out. */
     public boolean typing() {
-        return blipsLeft > 0;
+        return revealed < totalChars;
     }
 }

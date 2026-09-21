@@ -14,17 +14,6 @@ final class SpeechBlipTest {
     }
 
     @Test
-    void theBlipCountFollowsTheLineAndCaps() {
-        assertEquals(0, SpeechBlip.blipsFor(null));
-        assertEquals(0, SpeechBlip.blipsFor("   "));
-        assertEquals(1, SpeechBlip.blipsFor("Again."));
-        assertEquals(4, SpeechBlip.blipsFor("The Tree asks once."));
-        assertEquals(2, SpeechBlip.blipsFor("Can you?"));
-        String longLine = "word ".repeat(60).trim();
-        assertEquals(12, SpeechBlip.blipsFor(longLine), "a wall of text never machine-guns");
-    }
-
-    @Test
     void theTablesRouteEachSpeakerToTheirOwnVoice() {
         assertEquals(SpeechVoice.HERO, SpeechBlip.voiceFor(null));
         assertEquals(SpeechVoice.TREE, SpeechBlip.voiceFor(StoryStrings.WHISPER_ONE));

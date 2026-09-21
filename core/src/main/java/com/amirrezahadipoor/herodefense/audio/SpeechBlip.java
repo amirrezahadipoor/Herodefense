@@ -4,29 +4,14 @@ import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 
 /**
- * The Undertale-style typing voice (roadmap ST-voice): a story line speaks as a run of short blips, one per
- * syllable, in the tone of the speaker that owns it. Nothing is spoken aloud — the reading voice stays in the
- * player's head — but the ear still knows whether a line is the Hero's, the Tree's or the Hollow's.
- *
- * <p>The blip count is capped; a long line does not machine-gun. The silent pause between blips is the rate
- * limiter's own interval, so a line reads as a scattering of taps rather than a beep.
+ * Which of the three conversation voices a line speaks in (roadmap ST-voice): the blips themselves are the
+ * {@code SpeechTyper}'s, one per character, in the tone of the speaker that owns the line. Nothing is
+ * spoken aloud — the reading voice stays in the player's head — but the ear still knows whether a line is
+ * the Hero's, the Tree's or the Hollow's.
  */
 public final class SpeechBlip {
 
-    /** A line longer than this many characters caps its blips, so a wall of text never sounds busy. */
-    private static final int MAX_BLIPS = 12;
-
     private SpeechBlip() {
-    }
-
-    /** How many blips the given text speaks, proportional to its length and never absurd. */
-    public static int blipsFor(String text) {
-        if (text == null || text.isBlank()) {
-            return 0;
-        }
-        // Roughly one blip per word, minimum one, capped.
-        int words = text.trim().split("\\s+").length;
-        return Math.max(1, Math.min(MAX_BLIPS, words));
     }
 
     /**
