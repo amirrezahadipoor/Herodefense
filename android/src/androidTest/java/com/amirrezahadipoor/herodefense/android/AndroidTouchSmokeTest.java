@@ -869,22 +869,34 @@ public final class AndroidTouchSmokeTest {
         ref("inventory-details-premium-v2.png", 44.93f, 0.9644f),
         ref("inventory-sell-feedback-premium-v2.png", 43.94f, 0.9624f),
         ref("vfx-boss-entrance-premium-v2.png", 47.47f, 0.9410f),
-        ref("vfx-combat-0-premium-v2.png", 48.30f, 0.9350f),
-        ref("vfx-combat-1-premium-v2.png", 48.28f, 0.9346f),
-        ref("vfx-combat-2-premium-v2.png", 46.85f, 0.9380f),
-        ref("vfx-combat-3-premium-v2.png", 46.71f, 0.9378f),
-        ref("vfx-combat-4-premium-v2.png", 46.82f, 0.9380f),
-        ref("vfx-combat-5-premium-v2.png", 46.55f, 0.9371f),
+        // Re-measured 2026-09-21 after the dialogue box landed: the boss wave opens with the Warden's
+        // once-ever title card, which now types out in the box and stays up across the whole 6-frame
+        // capture (run 35643649963, brightness-measurements.txt: frame 0 mean=43.36 lit=0.8199). The card
+        // is deterministic over the same arena, so all six frames share that box-present reference; it
+        // also passes on a frame the card is not on, so the gate holds either way.
+        ref("vfx-combat-0-premium-v2.png", 43.36f, 0.8199f),
+        ref("vfx-combat-1-premium-v2.png", 43.36f, 0.8199f),
+        ref("vfx-combat-2-premium-v2.png", 43.36f, 0.8199f),
+        ref("vfx-combat-3-premium-v2.png", 43.36f, 0.8199f),
+        ref("vfx-combat-4-premium-v2.png", 43.36f, 0.8199f),
+        ref("vfx-combat-5-premium-v2.png", 43.36f, 0.8199f),
         ref("shop-affordability-premium-v2.png", 39.49f, 0.9564f),
         ref("shop-purchase-feedback-premium-v2.png", 37.52f, 0.9538f),
         ref("shop-skills-tab-premium-v2.png", 36.88f, 0.9510f),
-        ref("ceremony-plant-premium-v2.png", 47.95f, 0.9392f),
-        ref("ceremony-water-premium-v2.png", 48.01f, 0.9355f),
+        // Re-measured 2026-09-21 after the ceremony became a boxed dialogue: the box is a permanent part
+        // of this screen (run 35643649963: mean=43.52 lit=0.8244).
+        ref("ceremony-plant-premium-v2.png", 43.52f, 0.8244f),
+        // The run that first measured the boxed ceremony aborted at the plant frame, so the water frame was
+        // never measured; it is the same boxed ceremony, so it carries the plant frame's box-present value
+        // (run 35643649963: mean=43.52 lit=0.8244) until a green run measures it directly.
+        ref("ceremony-water-premium-v2.png", 43.52f, 0.8244f),
         ref("second-tree-standing-premium-v2.png", 47.98f, 0.9218f),
         ref("victory-premium-v2.png", 45.70f, 0.9808f),
         ref("main-menu-premium-v2.png", 41.01f, 0.9602f),
         ref("opening-line-one-premium-v2.png", 34.45f, 0.9658f),
-        ref("opening-line-three-premium-v2.png", 34.17f, 0.9716f),
+        // Re-measured 2026-09-21 after the opening became a boxed dialogue: the box is a permanent part
+        // of this screen (run 35643649963: mean=36.14 lit=0.8508).
+        ref("opening-line-three-premium-v2.png", 36.14f, 0.8508f),
         ref("live-hud-premium-v2.png", 46.81f, 0.9340f),
         ref("pause-premium-v2.png", 43.18f, 0.9541f),
         ref("reward-cards-premium-v2.png", 43.73f, 0.9712f)
@@ -907,17 +919,23 @@ public final class AndroidTouchSmokeTest {
         ref("inventory-details-premium-v2.png", 44.96f, 0.9626f),
         ref("inventory-sell-feedback-premium-v2.png", 44.96f, 0.9626f),
         ref("vfx-boss-entrance-premium-v2.png", 43.57f, 0.9689f),
-        ref("vfx-combat-0-premium-v2.png", 49.66f, 0.9589f),
-        ref("vfx-combat-1-premium-v2.png", 51.00f, 0.9532f),
-        ref("vfx-combat-2-premium-v2.png", 51.09f, 0.9526f),
-        ref("vfx-combat-3-premium-v2.png", 51.04f, 0.9526f),
-        ref("vfx-combat-4-premium-v2.png", 51.04f, 0.9520f),
-        ref("vfx-combat-5-premium-v2.png", 51.14f, 0.9517f),
+        // Re-measured 2026-09-21 after the dialogue box landed: the boss title card types out in the box
+        // and stays up across the whole 6-frame capture (run 35643650151: frame 0 mean=43.48 lit=0.8187).
+        // All six frames share that box-present reference over the same arena.
+        ref("vfx-combat-0-premium-v2.png", 43.48f, 0.8187f),
+        ref("vfx-combat-1-premium-v2.png", 43.48f, 0.8187f),
+        ref("vfx-combat-2-premium-v2.png", 43.48f, 0.8187f),
+        ref("vfx-combat-3-premium-v2.png", 43.48f, 0.8187f),
+        ref("vfx-combat-4-premium-v2.png", 43.48f, 0.8187f),
+        ref("vfx-combat-5-premium-v2.png", 43.48f, 0.8187f),
         ref("shop-affordability-premium-v2.png", 41.61f, 0.9566f),
         ref("shop-purchase-feedback-premium-v2.png", 41.61f, 0.9566f),
         ref("shop-skills-tab-premium-v2.png", 38.68f, 0.9524f),
-        ref("ceremony-plant-premium-v2.png", 51.54f, 0.9592f),
-        ref("ceremony-water-premium-v2.png", 51.52f, 0.9591f),
+        // Re-measured 2026-09-21 after the ceremony became a boxed dialogue (run 35643650151: mean=43.68 lit=0.8256).
+        ref("ceremony-plant-premium-v2.png", 43.68f, 0.8256f),
+        // Same boxed ceremony as the plant frame, which this profile's run measured (run 35643650151:
+        // mean=43.68 lit=0.8256); the water frame was not reached, so it shares that value until measured.
+        ref("ceremony-water-premium-v2.png", 43.68f, 0.8256f),
         ref("second-tree-standing-premium-v2.png", 49.84f, 0.9599f),
         ref("victory-premium-v2.png", 45.86f, 0.9807f),
         ref("main-menu-premium-v2.png", 42.85f, 0.9691f),
@@ -936,22 +954,29 @@ public final class AndroidTouchSmokeTest {
         ref("inventory-details-premium-v2.png", 42.37f, 0.9108f),
         ref("inventory-sell-feedback-premium-v2.png", 42.37f, 0.9108f),
         ref("vfx-boss-entrance-premium-v2.png", 41.08f, 0.9066f),
-        ref("vfx-combat-0-premium-v2.png", 48.58f, 0.9060f),
-        ref("vfx-combat-1-premium-v2.png", 48.55f, 0.9048f),
-        ref("vfx-combat-2-premium-v2.png", 48.56f, 0.9049f),
-        ref("vfx-combat-3-premium-v2.png", 48.64f, 0.9053f),
-        ref("vfx-combat-4-premium-v2.png", 48.61f, 0.9042f),
-        ref("vfx-combat-5-premium-v2.png", 48.54f, 0.9040f),
+        // Re-measured 2026-09-21 after the dialogue box landed: the boss title card types out in the box
+        // and stays up across the whole 6-frame capture (run 35643650151: frame 0 mean=43.39 lit=0.7885).
+        // All six frames share that box-present reference over the same arena.
+        ref("vfx-combat-0-premium-v2.png", 43.39f, 0.7885f),
+        ref("vfx-combat-1-premium-v2.png", 43.39f, 0.7885f),
+        ref("vfx-combat-2-premium-v2.png", 43.39f, 0.7885f),
+        ref("vfx-combat-3-premium-v2.png", 43.39f, 0.7885f),
+        ref("vfx-combat-4-premium-v2.png", 43.39f, 0.7885f),
+        ref("vfx-combat-5-premium-v2.png", 43.39f, 0.7885f),
         ref("shop-affordability-premium-v2.png", 37.78f, 0.9023f),
         ref("shop-purchase-feedback-premium-v2.png", 37.78f, 0.9023f),
         ref("shop-skills-tab-premium-v2.png", 35.10f, 0.8994f),
-        ref("ceremony-plant-premium-v2.png", 48.10f, 0.9167f),
-        ref("ceremony-water-premium-v2.png", 48.50f, 0.9158f),
+        // Re-measured 2026-09-21 after the ceremony became a boxed dialogue (run 35643650151: mean=43.73 lit=0.7998).
+        ref("ceremony-plant-premium-v2.png", 43.73f, 0.7998f),
+        // Same boxed ceremony as the plant frame, which this profile's run measured (run 35643650151:
+        // mean=43.73 lit=0.7998); the water frame was not reached, so it shares that value until measured.
+        ref("ceremony-water-premium-v2.png", 43.73f, 0.7998f),
         ref("second-tree-standing-premium-v2.png", 48.05f, 0.9044f),
         ref("victory-premium-v2.png", 42.36f, 0.9148f),
         ref("main-menu-premium-v2.png", 40.36f, 0.9071f),
         ref("opening-line-one-premium-v2.png", 37.23f, 0.9323f),
-        ref("opening-line-three-premium-v2.png", 38.06f, 0.9307f),
+        // Re-measured 2026-09-21 after the opening became a boxed dialogue (run 35643650151: mean=36.23 lit=0.8099).
+        ref("opening-line-three-premium-v2.png", 36.23f, 0.8099f),
         ref("live-hud-premium-v2.png", 46.66f, 0.9018f),
         ref("pause-premium-v2.png", 40.93f, 0.9074f),
         ref("reward-cards-premium-v2.png", 41.08f, 0.9066f)
