@@ -332,7 +332,7 @@ public final class FrameDriver {
                 int tier = Math.min(state.totalAscensionsCompleted, TreeLetters.TIERS);
                 if (!Boolean.TRUE.equals(state.codexUnlocked.get(TreeLetters.readKey(tier)))) {
                     String text = TreeLetters.text(tier);
-                    if (text != null && !text.isEmpty()) {
+                    if (!text.isEmpty()) {
                         dialogue.setSticky(true);
                         dialogue.speak(text, SpeechVoice.TREE, DialogueBox.Source.LETTER);
                         letterBoxTier = tier;

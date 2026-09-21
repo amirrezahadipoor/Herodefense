@@ -97,6 +97,13 @@ tests, because a broken test is as expensive as a broken system.
   control variable by `Character.charCount` (`AvoidReassigningLoopVariables`), and the three embedding-level
   parity tests changed from `level % 2 == 1` to `(level & 1) == 1` (`IM_BAD_CHECK_FOR_ODD` — levels are never
   negative here, but the modulo form would be wrong if one ever were, and the bitwise form says what is meant).
+* The night's face: `HollowGaze.drift` dropped its redundant `= 0f` initialiser (`RedundantFieldInitializer`),
+  `HollowGazeTest`'s breath curve stepped by integer `step` instead of a float index
+  (`DontUseFloatTypeForLoopIndices`), and `RootNetworkOverlayRenderer.drawDawnLedgerShapes` lost its unused
+  `batch` parameter (`UnusedFormalParameter`).
+* ST5's letter: `FrameDriver.watchLetter`'s `text != null` guard was redundant
+  (`RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE`) — every branch of `TreeLetters.text` returns a written letter, so
+  the emptiness check alone is enough.
 
 ## Excluded, with the reason
 
