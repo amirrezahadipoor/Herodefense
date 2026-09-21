@@ -371,8 +371,12 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     }
 
     /** Read-only test visibility: a message box on screen (a beat, a whisper, the parting word). */
-    public boolean storyDialogueActive() {
-        return frameDriver.storyDialogueActive();
+    public boolean storyDialogueActive() { return frameDriver.storyDialogueActive(); }
+
+    /** Read-only test visibility: defeat panel buttons revealed and tappable. */
+    public boolean gameOverRevealInteractive() {
+        return GameOverOverlayRenderer.isInteractive(
+            frameDriver.gameOverPresentationSeconds(), gameState.runComplete);
     }
 
     /** Read-only test visibility; action feedback still originates only from touch. */
@@ -540,9 +544,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
         @Override public void beginPlantingCeremony() { HeroDefenseGame.this.beginPlantingCeremony(); }
 
-        @Override public void focusFireAt(float worldX, float worldY) {
-            HeroDefenseGame.this.focusFireAt(worldX, worldY);
-        }
+        @Override public void focusFireAt(float worldX, float worldY) { HeroDefenseGame.this.focusFireAt(worldX, worldY); }
 
         @Override public void exitApplication() { Gdx.app.exit(); }
     }

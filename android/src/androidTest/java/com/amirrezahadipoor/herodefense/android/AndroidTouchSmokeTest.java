@@ -455,6 +455,7 @@ public final class AndroidTouchSmokeTest {
             long preRestartTouch = game.handledTouchUpCount();
             tapWorld(surface, 360f + correction[0], 290f + correction[1]); // The box: the word finishes
             await("the parting word box closes", 30_000L, () -> !game.storyDialogueActive());
+            await("the restart panel is revealed", 30_000L, () -> game.gameOverRevealInteractive());
             tapWorld(surface, 360f + correction[0], 290f + correction[1]); // Restart at Wave 1
             await("restart touch dispatched", 30_000L, () -> game.handledTouchUpCount() > preRestartTouch);
             draftTwoTrials(surface, game, correction);
