@@ -69,7 +69,7 @@ final class BackgroundSaveWriter implements AutoCloseable {
 
     /** Waits until nothing is pending and nothing is being written. A no-op when called from the worker itself. */
     void flush() {
-        if (Thread.currentThread().getName().equals("hero-defense-save-writer")) {
+        if ("hero-defense-save-writer".equals(Thread.currentThread().getName())) {
             return;
         }
         synchronized (lock) {
