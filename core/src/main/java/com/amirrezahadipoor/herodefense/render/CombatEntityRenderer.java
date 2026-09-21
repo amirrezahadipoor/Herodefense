@@ -11,7 +11,6 @@ import com.badlogic.gdx.utils.Array;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.items.EquipmentDefinition;
 import com.amirrezahadipoor.herodefense.model.Boss;
-import com.amirrezahadipoor.herodefense.gameplay.BossFightScript;
 import com.amirrezahadipoor.herodefense.gameplay.FocusFireSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossSpecialAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
@@ -51,11 +50,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     private static final float DROP_HOMING_ARC_HEIGHT = 86f;
     static final int PROJECTILE_TRAIL_STEPS = 3;
     static final int MAX_PROGRESSION_STEP = 10;
-    static final int TELEGRAPH_SEGMENTS = 28;
-    static final float TELEGRAPH_RADIUS = 95f;
-    static final float TELEGRAPH_STACK_STEP = 12f;
     static final float TELEGRAPH_SQUASH = 0.42f;
-    static final float TELEGRAPH_GROUND_Y_OFFSET = -20f;
     static final float ELITE_DRAW_SCALE = 1.25f;
     static final int FOCUS_RING_SEGMENTS = 36;
     static final float FOCUS_RING_RADIUS = 108f;
@@ -268,22 +263,8 @@ public final class CombatEntityRenderer implements AutoCloseable {
         }
         int stack = 0;
         for (Boss boss : state.aliveBosses) {
-            if (boss == null || !boss.alive || !boss.specialPending) continue;
-            BossType type = boss.bossDefinition();
-            BossFightScript script = BossFightScript.of(boss);
-            float fraction = boss.specialAnimationSeconds / script.telegraphSeconds();
-            float radius = (TELEGRAPH_RADIUS + stack * TELEGRAPH_STACK_STEP) * script.currentTellScale(boss);
-            float centerX = state.hero.x;
-            float centerY = state.hero.y + TELEGRAPH_GROUND_Y_OFFSET;
-            batch.setColor(
-                type.telegraphRed(), type.telegraphGreen(), type.telegraphBlue(),
-                telegraphAlpha(runTimeSeconds, fraction));
-            for (int index = 0; index < TELEGRAPH_SEGMENTS; index++) {
-                double angle = index * Math.PI * 2.0 / TELEGRAPH_SEGMENTS;
-                float x = centerX + (float) Math.cos(angle) * radius;
-                float y = centerY + (float) Math.sin(angle) * radius * TELEGRAPH_SQUASH;
-                batch.draw(pixel, x - 3f, y - 3f, 6f, 6f);
-            }
+            if (boss == null || !boss.alive) continue;
+            TelegraphZoneRenderer.draw(batch, pixel, boss, stack, runTimeSeconds);
             stack++;
         }
         batch.setColor(1f, 1f, 1f, 1f);

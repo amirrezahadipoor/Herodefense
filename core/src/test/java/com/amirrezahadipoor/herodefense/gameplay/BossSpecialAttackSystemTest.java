@@ -132,6 +132,82 @@ final class BossSpecialAttackSystemTest {
         specials.update(scenario.state, BossSpecialAttackSystem.TELEGRAPH_SECONDS);
     }
 
+    /**
+     * The telegraph draws a hitbox now, and this is the decision it creates (audit item 2): the same warning, two
+     * outcomes, decided by where the hero is standing when it ends.
+     */
+    @Test
+    void theSlamOnlyLandsOnTheGroundItWarnedAbout() {
+        Scenario inside = scenario(BossType.ANCIENT_GOLEM, 0f);
+        specials.update(inside.state, 0f);
+        detonate(inside);
+        assertTrue(inside.state.hero.health < 1_000f, "standing in the slam must cost the hero");
+
+        Scenario outside = scenario(BossType.ANCIENT_GOLEM, 0f);
+        specials.update(outside.state, 0f);
+        // Leave the planted disc by a margin, from wherever the body that slammed happened to be standing.
+        outside.state.hero.x = outside.boss.specialZoneX - BossSpecialZone.SLAM_RADIUS - 40f;
+        outside.state.hero.y = outside.boss.specialZoneY;
+        detonate(outside);
+        assertEquals(1_000f, outside.state.hero.health, "leaving the zone must cost nothing");
+        assertTrue(outside.boss.specialMissFlashSeconds > 0f,
+            "and the miss has to leave a mark on the ground to be readable");
+        assertEquals(1, outside.boss.specialUseCount, "a missed special is still spent");
+    }
+
+    /** The slam is centred on the body that slammed, so backing off the boss is the answer rather than stepping. */
+    @Test
+    void theSlamIsCentredOnTheBossAndTheCageUnderTheHero() {
+        // Offsets are inside each identity's trigger range -- the golem's is the shortest at 145 units -- so the
+        // telegraph really starts and there is a zone to read.
+        Scenario slam = scenario(BossType.ANCIENT_GOLEM, 100f);
+        specials.update(slam.state, 0f);
+        assertEquals(slam.boss.x, slam.boss.specialZoneX, 0.001f);
+        assertEquals(slam.boss.y, slam.boss.specialZoneY, 0.001f);
+        assertEquals(BossSpecialZone.SLAM_RADIUS, slam.boss.specialZoneRadius, 0.001f);
+
+        Scenario cage = scenario(BossType.THORN_MATRIARCH, 150f);
+        specials.update(cage.state, 0f);
+        assertEquals(cage.state.hero.x, cage.boss.specialZoneX, 0.001f);
+        assertEquals(cage.state.hero.y, cage.boss.specialZoneY, 0.001f);
+        assertEquals(BossSpecialZone.PLANTED_RADIUS, cage.boss.specialZoneRadius, 0.001f);
+    }
+
+    /**
+     * The warning is a question, and a question with one answer is not a decision (audit item 2): every identity's
+     * telegraph has to cover the spot the hero was standing on when it appeared -- the stand-off each encounter
+     * takes its own special at included -- or the "outside is a full miss" rule is a way to lose to arithmetic
+     * rather than to a choice.
+     */
+    @Test
+    void everyWarningCoversTheSpotTheHeroWasStandingOnWhenItAppeared() {
+        for (BossType type : BossType.values()) {
+            Scenario scenario = scenario(type, type.attackRange() + 5f);
+            specials.update(scenario.state, 0f);
+            assertTrue(scenario.boss.specialPending, type + " must reach its special from its own stand-off");
+            assertTrue(BossSpecialZone.contains(scenario.boss, scenario.state.hero.x, scenario.state.hero.y),
+                type + " warned about ground the hero was not standing on");
+        }
+    }
+
+    /** The sweep is an arc from the boss: sidestep it and it misses, back out along its own axis and it does not. */
+    @Test
+    void theSweepMissesWhatStandsBesideItAndCatchesWhatItPointsAt() {
+        Scenario beside = scenario(BossType.EMBER_WYRM, -200f);
+        specials.update(beside.state, 0f);
+        assertTrue(beside.boss.specialZoneCone, "the wyrm's special is a cone");
+        beside.state.hero.y += 400f;
+        detonate(beside);
+        assertEquals(1_000f, beside.state.hero.health, "stepping out of the arc must beat it");
+
+        Scenario alongTheAxis = scenario(BossType.EMBER_WYRM, -200f);
+        specials.update(alongTheAxis.state, 0f);
+        alongTheAxis.state.hero.x -= 120f;
+        detonate(alongTheAxis);
+        assertTrue(alongTheAxis.state.hero.health < 1_000f,
+            "walking backwards along the sweep is still inside it");
+    }
+
     @Test
     void everyEncounterWarnsForTheReferenceWindow() {
         // The warning *length* is pinned at the reference for the whole roster (see BossFightScript and the

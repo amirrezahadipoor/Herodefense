@@ -11,6 +11,8 @@ import com.amirrezahadipoor.herodefense.model.GameState;
  */
 public final class BossSpecialAttackSystem {
     public static final float TELEGRAPH_SECONDS = 0.5f;
+    /** How long the "the zone came down and you were not in it" flash stays on the ground (audit item 2). */
+    public static final float MISS_FLASH_SECONDS = 0.35f;
     private final HeroDamageSystem heroDamageSystem;
     private final DifficultyCurve curve = new DifficultyCurve();
     private int telegraphsStarted;
@@ -29,6 +31,7 @@ public final class BossSpecialAttackSystem {
             }
             BossFightScript script = BossFightScript.of(boss);
             boss.specialCooldownSeconds -= deltaSeconds;
+            boss.specialMissFlashSeconds = Math.max(0f, boss.specialMissFlashSeconds - deltaSeconds);
             if (boss.specialPending) {
                 if (!boss.stunned()) {
                     boss.specialAnimationSeconds -= deltaSeconds;
@@ -60,6 +63,9 @@ public final class BossSpecialAttackSystem {
                     if (type == BossType.VOID_KNIGHT || type == BossType.SHADOW_LICH) {
                         chargeToMeleeRange(state, boss);
                     }
+                    // The zone is planted where the warning appears, not where the hit lands: from here until
+                    // detonation the hero can leave it, which is the whole decision (audit item 2, roadmap A5).
+                    BossSpecialZone.plant(boss, state);
                     boss.specialPending = true;
                     telegraphsStarted++;
                     boss.specialAnimationSeconds = script.currentTelegraphSeconds(boss);
@@ -82,6 +88,13 @@ public final class BossSpecialAttackSystem {
     }
 
     private void executeOnce(GameState state, Boss boss, BossFightScript script) {
+        // One question, asked once, in the one place every identity's special passes through: is the hero standing
+        // in the zone the telegraph drew? Outside is a full miss -- no damage, no dodge roll spent, a flash on the
+        // ground where it landed -- and inside is the hit the bar was priced for (audit item 2).
+        if (!BossSpecialZone.contains(boss, state.hero.x, state.hero.y)) {
+            boss.specialMissFlashSeconds = MISS_FLASH_SECONDS;
+            return;
+        }
         // The base is a share of the expected bar, not a multiple of the boss's melee swing (audit item 1): a
         // telegraphed special is a different kind of event from a contact hit, and pricing it off the contact
         // damage is what left the game's loudest warning attached to 0.9% of the hero's health. The per-boss

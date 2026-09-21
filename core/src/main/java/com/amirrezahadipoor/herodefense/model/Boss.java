@@ -21,6 +21,22 @@ public final class Boss extends Enemy {
     public boolean halfBeatSpoken;
     /** The enrage-crossing evolution burst has fired for this fight (roadmap C2). */
     public boolean evolutionPresented;
+    /**
+     * The ground the pending special will cover, planted when the telegraph starts and read when it ends
+     * (audit item 2). A special is a zone now, not a guaranteed hit: where the hero stands at detonation decides
+     * whether it lands at all, which is what turns "step or brace" into one decision with two answers.
+     */
+    public float specialZoneX;
+    public float specialZoneY;
+    /** Circle radius; ignored by a cone. */
+    public float specialZoneRadius;
+    /** True for the sweep identities, whose zone is an arc from the boss rather than a circle. */
+    public boolean specialZoneCone;
+    public float specialZoneAngleRadians;
+    public float specialZoneHalfAngle;
+    public float specialZoneReach;
+    /** Presentation-only: how long the "the zone missed" flash has left to draw. */
+    public float specialMissFlashSeconds;
 
     public Boss() {
         super();
