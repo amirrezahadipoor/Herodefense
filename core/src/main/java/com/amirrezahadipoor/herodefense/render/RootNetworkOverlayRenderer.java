@@ -79,7 +79,7 @@ public final class RootNetworkOverlayRenderer implements AutoCloseable {
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
-        drawDawnLedgerShapes(batch, projection, state);
+        drawDawnLedgerShapes(projection, state);
 
         batch.setProjectionMatrix(projection);
         batch.begin();
@@ -123,7 +123,7 @@ public final class RootNetworkOverlayRenderer implements AutoCloseable {
      * brought back (one per completed ascension). The band is the record where a player can look
      * at it -- the tree remembers, and this is what remembering looks like.
      */
-    private void drawDawnLedgerShapes(SpriteBatch batch, Matrix4 projection, GameState state) {
+    private void drawDawnLedgerShapes(Matrix4 projection, GameState state) {
         Gdx.gl.glEnable(GL20.GL_BLEND);
         shapes.setProjectionMatrix(projection);
         shapes.begin(ShapeRenderer.ShapeType.Filled);

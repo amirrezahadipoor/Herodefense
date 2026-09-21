@@ -29,7 +29,7 @@ public final class HollowGaze {
 
     private int wave;
     private float blink = 1f;
-    private float drift = 0f;
+    private float drift;
     private boolean inHollowArena;
 
     /**

@@ -89,9 +89,9 @@ final class HollowGazeTest {
     @Test
     void theBreathHoldsStillForReducedMotion() {
         assertEquals(0f, HollowGaze.breath(3f, true), 1e-6f, "no shaking, no drifting breath");
-        for (float t = 0f; t < 14f; t += 0.5f) {
-            float b = HollowGaze.breath(t, false);
-            assertTrue(b >= -1f && b <= 1f, "the breath stays a breath at t=" + t);
+        for (int step = 0; step <= 28; step++) {
+            float b = HollowGaze.breath(step / 2f, false);
+            assertTrue(b >= -1f && b <= 1f, "the breath stays a breath at step " + step);
         }
     }
 }
