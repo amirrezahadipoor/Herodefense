@@ -394,10 +394,11 @@ if (host.flow().state() == GameScreenState.MENU) {
         host.uiIconRenderer(), host.uiFrameRenderer(), host.saplingTreeRenderer(), host.ambientSeconds()
     );
 }
-if (host.flow().state() == GameScreenState.PLAYING || host.flow().state() == GameScreenState.GAME_OVER) {
+if (host.flow().state() == GameScreenState.PLAYING || host.flow().state() == GameScreenState.GAME_OVER
+    || host.flow().state() == GameScreenState.ROOT_NETWORK) {
     // The message box: a beat or a whisper on the arena, the Hollow's parting word on the game-over
-    // screen. It is drawn after the HUD rows and overlays so the box sits over them, and it is on the
-    // un-zoomed camera like the HUD itself.
+    // screen, and the Tree's letter on the hub. It is drawn after the HUD rows and overlays so the
+    // box sits over them, and it is on the un-zoomed camera like the HUD itself.
     host.dialogueBoxRenderer().draw(spriteBatch, camera.combined, host.storyDialogue());
 }
 host.touchFeedbackRenderer().draw(camera.combined, host.touchFeedbackSystem());

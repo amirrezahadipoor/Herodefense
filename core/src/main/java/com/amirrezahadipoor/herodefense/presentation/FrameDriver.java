@@ -23,7 +23,9 @@ import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
 import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
 import com.amirrezahadipoor.herodefense.story.HollowVoice;
+import com.amirrezahadipoor.herodefense.story.TreeLetters;
 import com.amirrezahadipoor.herodefense.story.WhisperLines;
+import java.util.LinkedHashMap;
 
 /**
  * One frame of the game, in order (roadmap R2.2, slice 9).
@@ -103,6 +105,9 @@ public final class FrameDriver {
     private GameScreenState lastDeathLineState = GameScreenState.MENU;
     private boolean victoryLineBox;
     private GameScreenState lastVictoryLineState = GameScreenState.MENU;
+    /** Whether a Tree letter is up (or was) on the hub; the letter's dawn number follows it. */
+    private boolean letterBox;
+    private int letterBoxTier;
 
     public FrameDriver(
         Host host,
@@ -201,13 +206,17 @@ public final class FrameDriver {
         // the arena, where a closed box is what lets the fight resume.
         GameScreenState frameState = flow.state();
         if (frameState == GameScreenState.PLAYING || frameState == GameScreenState.CINEMATIC
-            || frameState == GameScreenState.GAME_OVER) {
+            || frameState == GameScreenState.GAME_OVER || frameState == GameScreenState.ROOT_NETWORK) {
             // The game-over box may expire on its own: the summary waits for the word, then the word
-            // is over; the ceremony's sticky box still only the arena may close for itself.
-            dialogue.tick(deltaSeconds, frameState != GameScreenState.CINEMATIC);
+            // is over; the ceremony's sticky box still only the arena may close for itself. On the
+            // hub the letter may not: a letter is read at the player's pace, never away from them.
+            dialogue.tick(
+                deltaSeconds,
+                frameState != GameScreenState.CINEMATIC && frameState != GameScreenState.ROOT_NETWORK);
         }
         watchDeathLine();
         watchVictoryLine();
+        watchLetter();
         if (flow.simulationRunning() && !dialogue.active()) {
             float gameplayDelta = hitStopSystem.consume(deltaSeconds);
             if (gameplayDelta > 0f) host.updatePlaying(gameplayDelta);
@@ -295,6 +304,61 @@ public final class FrameDriver {
             victoryLineBox = false;
         }
         lastVictoryLineState = now;
+    }
+
+    /**
+     * The Tree's letter (roadmap ST5): on the hub, the first unread letter for the number of dawns
+     * the player has completed is typed out in the Tree's voice. A letter counts as read the moment
+     * the box is gone while the player is still on the hub, or the moment the player leaves the hub
+     * with the letter still up (hearing it is enough). Reading is stored under the letter's own
+     * key in the save's codex map, so a letter is spoken once per dawn number, ever.
+     */
+    private void watchLetter() {
+        GameScreenState now = flow.state();
+        if (now != GameScreenState.ROOT_NETWORK) {
+            if (letterBox) {
+                // Leaving the hub with the letter still up is hearing it: the box goes with the scene.
+                if (dialogue.source() == DialogueBox.Source.LETTER) {
+                    dialogue.clear();
+                }
+                markLetterRead();
+                letterBox = false;
+            }
+            return;
+        }
+        if (!letterBox && !dialogue.active()) {
+            GameState state = host.gameState();
+            if (state != null && state.totalAscensionsCompleted >= 1) {
+                int tier = Math.min(state.totalAscensionsCompleted, TreeLetters.TIERS);
+                if (!Boolean.TRUE.equals(state.codexUnlocked.get(TreeLetters.readKey(tier)))) {
+                    String text = TreeLetters.text(tier);
+                    if (text != null && !text.isEmpty()) {
+                        dialogue.setSticky(true);
+                        dialogue.speak(text, SpeechVoice.TREE, DialogueBox.Source.LETTER);
+                        letterBoxTier = tier;
+                        letterBox = true;
+                        return;
+                    }
+                }
+            }
+        }
+        if (letterBox && !dialogue.active()) {
+            // The box closed while the player stayed on the hub: the letter is read.
+            markLetterRead();
+            letterBox = false;
+        }
+    }
+
+    private void markLetterRead() {
+        GameState state = host.gameState();
+        if (state == null || letterBoxTier < 1) {
+            return;
+        }
+        if (state.codexUnlocked == null) {
+            state.codexUnlocked = new LinkedHashMap<>();
+        }
+        state.codexUnlocked.put(TreeLetters.readKey(letterBoxTier), Boolean.TRUE);
+        host.saveNow();
     }
 
     /** Wall-clock pause lengths feed the Long Pause secret; a resume persists the record. */

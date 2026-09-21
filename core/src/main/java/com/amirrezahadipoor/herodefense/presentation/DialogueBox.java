@@ -18,7 +18,7 @@ import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 public final class DialogueBox {
 
     /** What a line in the box belongs to; the frame keeps the beat, the whisper and the parting word apart. */
-    public enum Source { BEAT, WHISPER, DEATH, VICTORY }
+    public enum Source { BEAT, WHISPER, DEATH, VICTORY, LETTER }
 
     /** The box slides up from below before the line types. */
     public static final float SLIDE_IN_SECONDS = 0.14f;

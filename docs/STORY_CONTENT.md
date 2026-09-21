@@ -319,3 +319,30 @@ stops it breathing. A defeat never dawns; a new run is night again.
   rare, harmless spawn variant — a Rootling that stands still at the tree line and never attacks —
   so the lore line has something on screen to point at, not just text. Purely visual, zero balance
   impact, and the kind of detail a player notices once and then looks for every run after.
+
+## 12. The Tree's Letters (roadmap ST5 — the Tree that writes)
+
+The Tree already speaks: beats, whispers, the victory line, the death line. A masterpiece-grade
+story layer adds what a tree that has stood this long would actually do — **write**. After each
+dawn (each completed ascension), the Tree writes a short letter. The player hears the first unread
+one typed out in the dialogue box when they next enter the Root Network hub, in the Tree's voice,
+letter by letter, the way every other line in the game arrives.
+
+- **One letter per dawn number** (ten letters; the tenth is re-read for every dawn from the tenth
+  on). Reading a letter — letting the box close on the hub, or leaving the hub with it still up —
+  marks it read under its own key in the save (`letter_<n>` in the codex map, which counts only
+  lore ids, so the written-count is untouched). A letter is therefore spoken **once, ever**.
+- **Pacing:** the box is sticky on the hub — it never closes on its own. A letter is read at the
+  player's pace, never away from them. A tap finishes the typing; the next tap closes it.
+- **The first letter** (first dawn): "So that was you. I felt each step you took, and I am keeping
+  the light you left here. Rest now. The night will learn your name sooner than you think."
+- **The last letter** (tenth dawn and beyond, foreshadowing the door): "This is my last letter in
+  this shape. After you go through the door, I will not be able to write in words anymore. I will
+  write in light. Every dawn you left here will come for you. Walk into it."
+- The middle letters walk the spine in the Tree's voice: the habit of standing up, roots as hands,
+  "you were always the whole tree, only growing", the Hollow asking what you are, the night that
+  keeps losing and does not mind, and the secret that the light comes from the player — "I am only
+  the window." Persian follows the same voice (short sentences, the intimate "you", no digits).
+- **Why this is the layer:** every other record in the game is a number; every other tree line is
+  spoken and gone. A letter is kept, is short, and is addressed to one player. It is the difference
+  between a game that talks and a story that remembers you writing back.

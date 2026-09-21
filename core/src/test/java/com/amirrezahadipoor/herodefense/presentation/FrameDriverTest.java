@@ -21,6 +21,7 @@ import com.amirrezahadipoor.herodefense.polish.HitStopSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
 import com.amirrezahadipoor.herodefense.polish.TouchFeedbackSystem;
+import com.amirrezahadipoor.herodefense.story.TreeLetters;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
 import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
@@ -337,6 +338,88 @@ final class FrameDriverTest {
         driver.update(1f / 15f);
         assertTrue(driver.storyDialogueActive(), "a new completed run hears the victory line again");
         assertEquals(DialogueBox.Source.VICTORY, driver.storyDialogue().source());
+    }
+
+    @Test
+    void theTreeLetterSpeaksOnTheHubAfterADawnAndIsReadOnlyOnce() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        state.totalAscensionsCompleted = 1;
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+
+        flow.transitionTo(GameScreenState.ROOT_NETWORK);
+        driver.update(1f / 60f);
+
+        assertTrue(driver.storyDialogueActive(), "the Tree's first letter is waiting on the hub");
+        assertEquals(DialogueBox.Source.LETTER, driver.storyDialogue().source());
+        assertEquals(SpeechVoice.TREE, driver.storyDialogue().voice(), "in the Tree's own voice");
+        assertEquals(TreeLetters.text(1), driver.storyDialogue().text(), "the first dawn's letter");
+
+        // A tap finishes the typing; the letter is sticky, so it waits to be closed by the player.
+        driver.advanceStoryDialogue();
+        assertFalse(driver.storyDialogue().typing(), "the first tap lands the letter at once");
+        driver.update(1f / 60f);
+        assertTrue(driver.storyDialogueActive(), "a letter never closes on its own");
+        driver.advanceStoryDialogue();
+        driver.update(DialogueBox.FADE_OUT_SECONDS + 1f / 60f);
+        assertFalse(driver.storyDialogueActive(), "the second tap closes the letter");
+        assertTrue(Boolean.TRUE.equals(state.codexUnlocked.get(TreeLetters.readKey(1))),
+            "a closed letter is a read letter");
+
+        // Back on the hub: nothing to read; the letter is spoken once per dawn number, ever.
+        flow.transitionTo(GameScreenState.MENU);
+        driver.update(1f / 60f);
+        flow.transitionTo(GameScreenState.ROOT_NETWORK);
+        driver.update(1f / 60f);
+        assertFalse(driver.storyDialogueActive(), "the first dawn's letter is not spoken twice");
+    }
+
+    @Test
+    void leavingTheHubWithTheLetterStillUpIsHearingIt() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        state.totalAscensionsCompleted = 2;
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+
+        flow.transitionTo(GameScreenState.ROOT_NETWORK);
+        driver.update(1f / 60f);
+        assertTrue(driver.storyDialogueActive());
+        assertEquals(TreeLetters.text(2), driver.storyDialogue().text(), "the second dawn's letter");
+
+        flow.transitionTo(GameScreenState.MENU);
+        driver.update(1f / 60f);
+        assertFalse(driver.storyDialogueActive(), "the letter goes with the scene");
+        assertTrue(Boolean.TRUE.equals(state.codexUnlocked.get(TreeLetters.readKey(2))),
+            "hearing it is enough: it counts as read");
+    }
+
+    @Test
+    void theHubStaysQuietBeforeTheFirstDawn() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+
+        flow.transitionTo(GameScreenState.ROOT_NETWORK);
+        driver.update(1f / 60f);
+        assertFalse(driver.storyDialogueActive(), "no dawn yet, no letter");
+    }
+
+    @Test
+    void dawnsBeyondTheTenthRereadTheLastLetter() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        state.totalAscensionsCompleted = 25;
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+
+        flow.transitionTo(GameScreenState.ROOT_NETWORK);
+        driver.update(1f / 60f);
+        assertEquals(TreeLetters.text(10), driver.storyDialogue().text(),
+            "the last letter is the letter for every dawn from the tenth on");
+        assertEquals(TreeLetters.readKey(10), TreeLetters.readKey(25), "and under the last letter's key");
     }
 
     @Test

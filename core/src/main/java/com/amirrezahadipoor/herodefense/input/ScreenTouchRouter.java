@@ -396,6 +396,12 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 return true;
             }
             if (host.flow().state() == GameScreenState.ROOT_NETWORK) {
+                // The Tree's letter: a tap finishes the typing or closes the letter, never a node
+                // sitting under the box.
+                if (host.storyDialogueActive()) {
+                    host.advanceStoryDialogue();
+                    return true;
+                }
                 com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action rnAction =
                     host.rootNetworkTouchController().tap(host.gameState(), worldX, worldY);
                 if (rnAction == com.amirrezahadipoor.herodefense.input.RootNetworkTouchController.Action.CLOSED) {
@@ -451,19 +457,16 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 host.saveNow();
                 return true;
             }
-            // The first-run coach gets first refusal on a tap (roadmap R7.1): its Skip button is the one
-            // target that must never double as a play input, or skipping the lesson would also send the Hero
-            // walking into the wave it was warning about.
+            // The first-run coach gets first refusal on a tap (roadmap R7.1): its Skip is the one target
+            // that must never double as a play input, or skipping would send the Hero into the wave warned of.
             if (host.flow().state() == GameScreenState.PLAYING
                 && host.flow().onboarding().handleTap(worldX, worldY)) {
                 host.saveNow();
                 return true;
             }
-            // A2: a tap on the Hero's own body raises the shield. It is the one arena tap that meant nothing
-            // before this -- no enemy under the finger, no mark to release -- and it sits after the coach's Skip
-            // so skipping a lesson can never double as bracing for a hit. A tap that finds the Hero mid-cooldown
-            // is still consumed rather than passed to the bow: a shield that refuses is still an answer, and
-            // letting the tap fall through would mark nothing and clear the player's mark as a shrug.
+            // A2: a tap on the Hero's own body raises the shield -- the one arena tap that meant nothing before.
+            // After the coach's Skip so skipping never doubles as bracing; a tap mid-cooldown is still consumed,
+            // not passed to the bow: a shield that refuses is still an answer.
             if (host.flow().state() == GameScreenState.PLAYING
                 && BraceSystem.tapHitsHero(host.gameState(), worldX, worldY)) {
                 if (BraceSystem.tryBrace(host.gameState())) {
