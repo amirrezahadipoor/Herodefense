@@ -21,7 +21,9 @@ import org.junit.jupiter.api.Test;
 final class GameModeSimulationTest {
 
     private static final long[] SEEDS = {0x4845524F444546L, 0x4845524F444546L + 1, 0x4845524F444546L + 2};
-    private static final float SPIKE_CEILING = 0.40f;
+    // B1: the same ceiling question, asked of a game whose hits are priced in bar-percentages. A wave may cost a
+    // bar and a tenth before the gate calls it a spike; the brief vigil measured 0.85 at its worst.
+    private static final float SPIKE_CEILING = 1.10f;
     private static final float AVERAGE_FLOOR = 0.035f;
 
     @Test

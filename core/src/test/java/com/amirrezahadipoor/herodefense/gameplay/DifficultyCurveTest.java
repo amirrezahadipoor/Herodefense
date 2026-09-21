@@ -26,12 +26,72 @@ final class DifficultyCurveTest {
         assertTrue(curve.baselineRegularHealth(100) > curve.baselineRegularHealth(50));
     }
 
+    /**
+     * The property the deleted 28% clamp used to protect, kept as a test instead of a branch (audit item 1).
+     *
+     * <p>The clamp never fired once in two hundred waves -- the damage it was guarding against was 0.095% of the
+     * bar, not 28% -- so it was dead code pretending to be a safety rail. What matters is the live property: at
+     * every wave, every archetype's hit is a bounded share of the bar the hero is expected to be carrying, and the
+     * reference archetype's share is exactly the published curve.
+     */
     @Test
-    void damageGrowsButCannotOneShotReasonablyBuiltHero() {
-        for (EnemyType type : EnemyType.values()) {
-            float damage = curve.regularDamage(type, 100);
-            assertTrue(damage <= curve.reasonableHeroMaxHealth(100) * 0.28f);
+    void everyHitIsABoundedShareOfTheExpectedBar() {
+        for (int wave = 1; wave <= GameState.FINAL_WAVE; wave++) {
+            for (EnemyType type : EnemyType.values()) {
+                float share = curve.regularDamage(type, wave) / DifficultyCurve.expectedHeroMaxHealth(wave);
+                assertTrue(share <= 0.08f,
+                    type + " hits for " + (share * 100f) + "% of the bar on wave " + wave);
+                assertTrue(share > 0f, "and the hit is never nothing");
+            }
+            float reference = curve.regularDamage(EnemyType.ROOTLING, wave)
+                / DifficultyCurve.expectedHeroMaxHealth(wave);
+            assertEquals(DifficultyCurve.damageShareOfExpectedBar(wave), reference, 0.0001f,
+                "the reference archetype carries the published share on wave " + wave);
         }
+    }
+
+    @Test
+    void theAnchorTablesAreWellFormedAndTheShareFallsAcrossTheRun() {
+        assertEquals(DifficultyCurve.EXPECTED_BAR_ANCHOR_WAVES.length,
+            DifficultyCurve.EXPECTED_BAR_ANCHOR_VALUES.length);
+        assertEquals(DifficultyCurve.DAMAGE_SHARE_ANCHOR_WAVES.length,
+            DifficultyCurve.DAMAGE_SHARE_ANCHOR_VALUES.length);
+        for (int index = 1; index < DifficultyCurve.EXPECTED_BAR_ANCHOR_WAVES.length; index++) {
+            assertTrue(DifficultyCurve.EXPECTED_BAR_ANCHOR_WAVES[index]
+                > DifficultyCurve.EXPECTED_BAR_ANCHOR_WAVES[index - 1], "anchor waves ascend");
+            assertTrue(DifficultyCurve.EXPECTED_BAR_ANCHOR_VALUES[index]
+                > DifficultyCurve.EXPECTED_BAR_ANCHOR_VALUES[index - 1], "and so does the bar");
+        }
+        for (int index = 1; index < DifficultyCurve.DAMAGE_SHARE_ANCHOR_WAVES.length; index++) {
+            assertTrue(DifficultyCurve.DAMAGE_SHARE_ANCHOR_WAVES[index]
+                > DifficultyCurve.DAMAGE_SHARE_ANCHOR_WAVES[index - 1], "anchor waves ascend");
+            assertTrue(DifficultyCurve.DAMAGE_SHARE_ANCHOR_VALUES[index]
+                < DifficultyCurve.DAMAGE_SHARE_ANCHOR_VALUES[index - 1],
+                "the share falls: a late wave lands more hits, so each one may be worth less of the bar");
+        }
+        // Interpolation, endpoints and the flat tail the ramp-in clamps to.
+        assertEquals(100f, DifficultyCurve.expectedHeroMaxHealth(1), 0.001f);
+        assertEquals(863f, DifficultyCurve.expectedHeroMaxHealth(GameState.FINAL_WAVE), 0.01f);
+        assertEquals(DifficultyCurve.expectedHeroMaxHealth(1), DifficultyCurve.expectedHeroMaxHealth(0), 0.001f);
+        assertEquals(DifficultyCurve.expectedHeroMaxHealth(GameState.FINAL_WAVE),
+            DifficultyCurve.expectedHeroMaxHealth(500), 0.001f);
+        assertEquals(166f, DifficultyCurve.expectedHeroMaxHealth(10), 0.01f);
+    }
+
+    @Test
+    void theTierChargeOnDamageIsOneAtTierZeroAndBitesDeeperWithEveryTier() {
+        float previous = 0f;
+        for (int tier : new int[] {0, 1, 3, 6, 10}) {
+            float charge = DifficultyCurve.ascensionDamageCharge(GameState.FINAL_WAVE, tier);
+            assertTrue(charge >= previous, "tier " + tier + " is not lighter than the tier below it");
+            previous = charge;
+        }
+        assertEquals(1f, DifficultyCurve.ascensionDamageCharge(1, 10), 0.000001f,
+            "the charge compounds from wave one, so wave one pays nothing");
+        assertEquals(1f, DifficultyCurve.ascensionDamageCharge(GameState.FINAL_WAVE, 0), 0f);
+        assertTrue(curve.baselineRegularDamage(GameState.FINAL_WAVE, 10)
+            > curve.baselineRegularDamage(GameState.FINAL_WAVE, 0) * 1.5f,
+            "and a ten-tier ladder is more than half again as hard by the last wave");
     }
 
     @Test
@@ -51,18 +111,46 @@ final class DifficultyCurveTest {
         assertTrue(curve.bossDamage(wave) > curve.regularDamage(EnemyType.FUNGAL_BRUTE, wave));
     }
 
+    /**
+     * The one telegraphed hit in the game, priced as a share of the bar (audit item 1's other half).
+     *
+     * <p>A special used to be "three times a regular hit", which made the loudest warning in the game worth 0.46% of
+     * the bar by wave 200 -- a telegraph the player learns to ignore. Anchored to the bar instead, the golem's 1.6x
+     * special takes 7.2% of it on wave one and 12% on wave two hundred, and every boss's special is worth at least
+     * four regular hits of the same wave, because a hit the game warns about has to be worth reading. The ceiling is
+     * what keeps a telegraph from being a death sentence: even the golem leaves seven eighths of the bar standing,
+     * and that is before the brace, which multiplies it by 0.4 like any other hit.
+     */
+    @Test
+    void theTelegraphedSpecialIsWorthReadingAndNeverUnpayable() {
+        for (int wave : new int[] {1, 5, 40, 100, 200}) {
+            float bar = DifficultyCurve.expectedHeroMaxHealth(wave);
+            float special = curve.bossSpecialDamage(wave);
+            assertTrue(special <= 0.10f * bar,
+                "the special's base is " + (special / bar * 100f) + "% of the bar on wave " + wave);
+            assertTrue(special * 1.6f <= 0.15f * bar,
+                "the heaviest encounter multiplier takes " + (special * 1.6f / bar * 100f)
+                    + "% of the bar on wave " + wave);
+            assertTrue(special >= 4f * curve.baselineRegularDamage(wave),
+                "a telegraphed special is worth more than four contact hits on wave " + wave);
+            assertTrue(special * 1.6f > curve.baselineRegularDamage(wave) * 8f,
+                "and the golem's is worth more than eight, so the encounter the player meets first is the loudest");
+        }
+        assertTrue(curve.bossSpecialDamage(GameState.FINAL_WAVE) > curve.bossSpecialDamage(100),
+            "the telegraphed hit grows in points across the run");
+        assertEquals(curve.bossSpecialDamage(50), curve.bossSpecialDamage(50, 0), 0f,
+            "tier zero is bit-identical, so every tier-0 gate keeps measuring the shipped game");
+        assertTrue(curve.bossSpecialDamage(50, 10) > curve.bossSpecialDamage(50, 0),
+            "and a deeper ladder charges for it in points as well");
+    }
+
     @Test
     void ascensionScheduleIsBitIdenticalAtTierZero() {
         assertEquals(DifficultyCurve.ENEMY_HEALTH_GROWTH, DifficultyCurve.healthGrowthForTier(0), 0.0f);
-        assertEquals(DifficultyCurve.ENEMY_DAMAGE_GROWTH, DifficultyCurve.damageGrowthForTier(0), 0.0f);
         assertEquals(
             DifficultyCurve.SECOND_HALF_HEALTH_GROWTH, DifficultyCurve.secondHalfHealthGrowthForTier(0), 0.0f);
         assertEquals(
-            DifficultyCurve.SECOND_HALF_DAMAGE_GROWTH, DifficultyCurve.secondHalfDamageGrowthForTier(0), 0.0f);
-        assertEquals(
             DifficultyCurve.FINAL_QUARTER_HEALTH_GROWTH, DifficultyCurve.finalQuarterHealthGrowthForTier(0), 0.0f);
-        assertEquals(
-            DifficultyCurve.FINAL_QUARTER_DAMAGE_GROWTH, DifficultyCurve.finalQuarterDamageGrowthForTier(0), 0.0f);
     }
 
     @Test
@@ -72,22 +160,18 @@ final class DifficultyCurveTest {
             DifficultyCurve.healthGrowthForTier(10),
             0.000001f
         );
-        assertEquals(
-            DifficultyCurve.ENEMY_DAMAGE_GROWTH * (1f + DifficultyCurve.ASCENSION_DAMAGE_BUMP_PER_TIER * 10),
-            DifficultyCurve.damageGrowthForTier(10),
-            0.000001f
-        );
         int[] tiers = {0, 1, 3, 6, 10};
         for (int i = 1; i < tiers.length; i++) {
             assertTrue(DifficultyCurve.healthGrowthForTier(tiers[i])
                 > DifficultyCurve.healthGrowthForTier(tiers[i - 1]));
-            assertTrue(DifficultyCurve.damageGrowthForTier(tiers[i])
-                > DifficultyCurve.damageGrowthForTier(tiers[i - 1]));
+            assertTrue(DifficultyCurve.ascensionDamageCharge(GameState.FINAL_WAVE, tiers[i])
+                > DifficultyCurve.ascensionDamageCharge(GameState.FINAL_WAVE, tiers[i - 1]));
         }
         assertEquals(
             DifficultyCurve.healthGrowthForTier(0), DifficultyCurve.healthGrowthForTier(-4), 0.0f);
         assertEquals(
-            DifficultyCurve.damageGrowthForTier(0), DifficultyCurve.damageGrowthForTier(-4), 0.0f);
+            DifficultyCurve.ascensionDamageCharge(GameState.FINAL_WAVE, 0),
+            DifficultyCurve.ascensionDamageCharge(GameState.FINAL_WAVE, -4), 0.0f);
     }
 
     /**
@@ -143,28 +227,16 @@ final class DifficultyCurveTest {
                 0.000001f
             );
             assertEquals(
-                DifficultyCurve.damageGrowthForTier(tier) / DifficultyCurve.damageGrowthForTier(0),
-                DifficultyCurve.secondHalfDamageGrowthForTier(tier)
-                    / DifficultyCurve.secondHalfDamageGrowthForTier(0),
-                0.000001f
-            );
-            assertEquals(
                 DifficultyCurve.healthGrowthForTier(tier) / DifficultyCurve.healthGrowthForTier(0),
                 DifficultyCurve.finalQuarterHealthGrowthForTier(tier)
                     / DifficultyCurve.finalQuarterHealthGrowthForTier(0),
-                0.000001f
-            );
-            assertEquals(
-                DifficultyCurve.damageGrowthForTier(tier) / DifficultyCurve.damageGrowthForTier(0),
-                DifficultyCurve.finalQuarterDamageGrowthForTier(tier)
-                    / DifficultyCurve.finalQuarterDamageGrowthForTier(0),
                 0.000001f
             );
         }
     }
 
     @Test
-    void wavesBeforeTheMiddleSegmentKeepTheBaseFirstHalfFormula() {
+    void theOpeningWavesKeepTheBaseHealthFormulaAndCarryTheAnchoredHit() {
         assertEquals(
             DifficultyCurve.BASE_ENEMY_HEALTH * Math.pow(DifficultyCurve.ENEMY_HEALTH_GROWTH, 24),
             curve.baselineRegularHealth(24),
@@ -175,12 +247,12 @@ final class DifficultyCurveTest {
             curve.baselineRegularHealth(1),
             0.0001f
         );
-        assertEquals(
-            DifficultyCurve.BASE_ENEMY_DAMAGE * Math.pow(DifficultyCurve.ENEMY_DAMAGE_GROWTH, 23),
-            curve.baselineRegularDamage(24),
-            0.000001f
-        );
-        assertEquals(DifficultyCurve.BASE_ENEMY_DAMAGE, curve.baselineRegularDamage(1), 0.0f);
+        // The B1 anchor, pinned the same way the health formula is: wave 24's bar is 244.4 and its share of that
+        // bar is 0.00258286, so the hit is 0.63125 points. Recomputed from the tables, never carried over.
+        assertEquals(244.4f, DifficultyCurve.expectedHeroMaxHealth(24), 0.01f);
+        assertEquals(0.00258286f, DifficultyCurve.damageShareOfExpectedBar(24), 0.00000001f);
+        assertEquals(0.63125f, curve.baselineRegularDamage(24), 0.0001f);
+        assertEquals(0.75f, curve.baselineRegularDamage(1), 0.0001f);
     }
 
     @Test
@@ -190,11 +262,8 @@ final class DifficultyCurveTest {
             curve.baselineRegularHealth(80) / curve.baselineRegularHealth(24),
             0.0001f
         );
-        assertEquals(
-            Math.pow(DifficultyCurve.MIDDLE_DAMAGE_GROWTH, 56),
-            curve.baselineRegularDamage(80) / curve.baselineRegularDamage(24),
-            0.0001f
-        );
+        assertTrue(curve.baselineRegularDamage(80) / curve.baselineRegularDamage(24) > 1.2f,
+            "the middle span is still where hit points climb fastest");
         assertTrue(curve.baselineRegularHealth(25) > curve.baselineRegularHealth(24));
         assertTrue(curve.baselineRegularHealth(80) > curve.baselineRegularHealth(79));
         assertTrue(curve.baselineRegularDamage(25) > curve.baselineRegularDamage(24));
@@ -208,11 +277,8 @@ final class DifficultyCurveTest {
             curve.baselineRegularHealth(100) / curve.baselineRegularHealth(80),
             0.0001f
         );
-        assertEquals(
-            Math.pow(DifficultyCurve.ENEMY_DAMAGE_GROWTH, 20),
-            curve.baselineRegularDamage(100) / curve.baselineRegularDamage(80),
-            0.0001f
-        );
+        assertTrue(curve.baselineRegularDamage(100) > curve.baselineRegularDamage(80),
+            "and hit points keep climbing on the base rate");
         assertTrue(curve.baselineRegularHealth(81) > curve.baselineRegularHealth(80));
         assertTrue(curve.baselineRegularDamage(81) > curve.baselineRegularDamage(80));
     }
@@ -222,8 +288,6 @@ final class DifficultyCurveTest {
         assertEquals(
             DifficultyCurve.MIDDLE_HEALTH_GROWTH, DifficultyCurve.middleHealthGrowthForTier(0), 0.0f);
         assertEquals(
-            DifficultyCurve.MIDDLE_DAMAGE_GROWTH, DifficultyCurve.middleDamageGrowthForTier(0), 0.0f);
-        assertEquals(
             DifficultyCurve.MIDDLE_HEALTH_GROWTH
                 * (1f + DifficultyCurve.ASCENSION_HEALTH_BUMP_PER_TIER * 10),
             DifficultyCurve.middleHealthGrowthForTier(10),
@@ -232,11 +296,6 @@ final class DifficultyCurveTest {
         assertEquals(
             DifficultyCurve.healthGrowthForTier(6) / DifficultyCurve.healthGrowthForTier(0),
             DifficultyCurve.middleHealthGrowthForTier(6) / DifficultyCurve.middleHealthGrowthForTier(0),
-            0.000001f
-        );
-        assertEquals(
-            DifficultyCurve.damageGrowthForTier(6) / DifficultyCurve.damageGrowthForTier(0),
-            DifficultyCurve.middleDamageGrowthForTier(6) / DifficultyCurve.middleDamageGrowthForTier(0),
             0.000001f
         );
     }

@@ -7,28 +7,84 @@ These coefficients are centralized in renderer-independent Java so the Phase 14 
 For wave `w` clamped to 1–200 (Phase 18.4 extended the run; waves 1–100 keep the Phase 17 curve unchanged):
 
 - The required starting candidate was `20 × 1.045^w`; Phase 14 simulation tuned it to `1.035`, and the Phase 17 lifesteal-and-skills rebalance raised it to the shipped `20 × 1.037^w` (Wave 100 enemies carry 21% more HP than before).
-- Baseline damage growth is `0.27 × 1.003^(w−1)` (Phase 17 raised it from `1.002`), before archetype scaling and before the middle segment's hotter `1.006`.
+- Baseline damage is **not** a rate of its own any more (audit item 1). A regular hit is a *share of the bar the hero
+is expected to be carrying* on that wave: `expectedHeroMaxHealth(w) × damageShareOfExpectedBar(w)`, times the archetype's
+weight, the tier's base-damage charge and the tier's compounding charge. Damage therefore grows with health by construction,
+and no rate of its own can drift away from the bar it lands on. The share falls across the run on purpose —
+the wave lands more hits as the run goes on, and the wave, not the hit, is what a player pays.
 - The shipped curve itself, wave by wave, is generated below from `DifficultyCurve` rather than copied: the numbers this section used to publish were two curve revisions out of date by the time anyone checked.
 
 <!-- balance:generated growth-checkpoints -->
-| Wave | Baseline HP | Baseline damage |
-|---:|---:|---:|
-| 1 | 20.74 | 0.2700 |
-| 25 | 49.79 | 0.2910 |
-| 50 | 135.97 | 0.3379 |
-| 75 | 371.28 | 0.3924 |
-| 100 | 938.72 | 0.4293 |
-| 125 | 1783.28 | 0.5305 |
-| 150 | 3387.69 | 0.6555 |
-| 175 | 5291.74 | 0.7334 |
-| 200 | 8265.95 | 0.8205 |
+| Wave | Baseline HP | Expected hero bar | Baseline damage | Damage as a share of the bar | Damage at tier 10 |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 20.74 | 100.00 | 0.7500 | 0.75% | 3.0000 |
+| 25 | 49.79 | 250.00 | 0.6429 | 0.26% | 2.3792 |
+| 50 | 135.97 | 382.00 | 0.8913 | 0.23% | 2.9717 |
+| 75 | 371.28 | 480.33 | 1.0407 | 0.22% | 3.0225 |
+| 100 | 938.72 | 601.00 | 1.2020 | 0.20% | 2.8913 |
+| 125 | 1783.28 | 695.50 | 1.3562 | 0.19% | 2.4821 |
+| 150 | 3387.69 | 790.00 | 1.5010 | 0.19% | 2.1775 |
+| 175 | 5291.74 | 826.50 | 1.5290 | 0.19% | 2.3610 |
+| 200 | 8265.95 | 863.00 | 1.5534 | 0.18% | 2.5532 |
 <!-- balance:end growth-checkpoints -->
-- **Second half (waves 101–200, after the planting ceremony):** the half climbs in **two spans** (Phase 91, R4.6). Waves 101–150 — the entry — continue from their Wave 100 values at `HP × 1.026^(w−100)` and `damage × 1.0085^(w−100)`; waves 151–200 — the final quarter — climb at `1.018` and `1.0045`. Measured HP checkpoints on the shipped curve: Wave 100 `938.67`, Wave 125 `1783.34`, Wave 150 `3387.71`, Wave 175 `5291.71`, Wave 200 `8266.02`; baseline damage reaches `0.8205` at Wave 200. Phase 18.4 shipped `1.021 / 1.006` against a simulator that ignored the Anvil; once the simulated player reforges equipped Rare/Legendary items (Phase 19.3) the second half fell to 1–3% pressure per wave, so the curve was tightened one notch. `1.024/1.008`, `1.024/1.010`, `1.025/1.010` and `1.0235/1.008` were rejected because their worst single wave exceeded the 35% ceiling (36–43%) or clears passed 80 s. A single `1.023/1.008` rate covering the whole half is what Phase 91 replaced: see the R4.6 section below for why the half is split and what the split cost. The final quarter's damage rate was lowered twice for the gates: `1.0065 → 1.0055` when the curve sweep spiked on seed 4845524f444548, and `1.0055 → 1.0045` when the trial gate caught `GLASS_ARROWS + FAMISHED_EARTH` at a 0.4111 median spike on wave 196 — over the 0.40 ceiling — which `1.0055` still permitted.
-- A regular hit is capped at 28% of the max HP of a reference Hero who invests one of every five earned points in Health.
+- **Second half (waves 101–200, after the planting ceremony):** the half climbs in **two spans** (Phase 91, R4.6). Waves 101–150 — the entry — continue from their Wave 100 values at `HP × 1.026^(w−100)`; waves 151–200 — the final quarter — climb at `1.018`. (The damage halves of those spans, `1.0085` and `1.0045`, are **history**: the damage anchor replaced the damage rate with a share of the expected bar, table above. The rejections in this paragraph are kept because the ceiling they failed against — a wave may not cost more than a bar and a tenth — is still the ceiling.) Measured HP checkpoints on the shipped curve: Wave 100 `938.67`, Wave 125 `1783.34`, Wave 150 `3387.71`, Wave 175 `5291.71`, Wave 200 `8266.02`; baseline damage reaches `1.5534` at Wave 200. Phase 18.4 shipped `1.021 / 1.006` against a simulator that ignored the Anvil; once the simulated player reforges equipped Rare/Legendary items (Phase 19.3) the second half fell to 1–3% pressure per wave, so the curve was tightened one notch. `1.024/1.008`, `1.024/1.010`, `1.025/1.010` and `1.0235/1.008` were rejected because their worst single wave exceeded the 35% ceiling (36–43%) or clears passed 80 s. A single `1.023/1.008` rate covering the whole half is what Phase 91 replaced: see the R4.6 section below for why the half is split and what the split cost. The final quarter's damage rate was lowered twice for the gates: `1.0065 → 1.0055` when the curve sweep spiked on seed 4845524f444548, and `1.0055 → 1.0045` when the trial gate caught `GLASS_ARROWS + FAMISHED_EARTH` at a 0.4111 median spike on wave 196 — over the 0.40 ceiling — which `1.0055` still permitted.
+- The 28%-of-reference-HP clamp is **deleted**: it never fired once in two hundred waves (the damage it guarded against was
+0.095% of the bar, not 28%), so it was dead code pretending to be a safety rail. What it protected is asserted instead, in
+`DifficultyCurveTest`: every archetype's contact hit is a bounded share of the expected bar at every wave, and the reference
+archetype's share is exactly the published curve. See **The damage anchor** below for the measurements.
 - Archetype HP multipliers, relative to the 20-HP Rootling: Rootling `1.00`, Stonekin `1.70`, Gloom Wolf `0.85`, Fungal Brute `2.30`.
 - Archetype damage multipliers, relative to the authored 5-damage Rootling: Rootling `1.00`, Stonekin `1.40`, Gloom Wolf `1.20`, Fungal Brute `2.00`.
 - Regular populations grow from four and cap at 24 so late waves remain a readable melee defense rather than an unbounded swarm.
 - Movement speed, melee reach, and attack interval remain archetype properties rather than wave-scaled values.
+
+## The damage anchor (audit item 1)
+
+The audit's first finding was that the game could not be lost, and that the reason was arithmetic rather than tuning:
+enemy damage grew `1.003` a wave in a game whose hero's bar grew `1.037`, and the 28% clamp that was supposed to keep
+hits honest never fired. Measured before this change: a regular hit took **0.27%** of the bar on wave 1 and **0.07%** by
+wave 100, the boss special — the one telegraphed attack in the game — took **0.46%** of the bar at wave 200, the
+optimiser policy finished two hundred waves on every seed of the fixed sweep, and the naive policy finished thirty of
+thirty brief vigils. Nothing a player did could lose the run.
+
+Damage is now derived from the bar instead of from a growth rate:
+
+| Quantity | Waves 1 → 200 |
+|---|---|
+| Expected hero bar (simulator-measured, anchored) | `100 → 863` |
+| Baseline regular hit | `0.750 → 1.553` points |
+| A hit as a share of the bar | `0.75% → 0.18%` |
+| Golem special (`×1.6` encounter multiplier) | `7.2 → 12.0` points, `7.2% → 12.0%` of the bar |
+
+The share falls because of a number that was measured rather than asserted: a wave lands **0-7 contact hits in waves 1-4,
+151 in the first boss wave, and 110-200 in every late wave**, because a late wave spawns the cap of twenty-four bodies and
+they all reach the hero. A share that held a visible 5% of the bar from wave one to wave two hundred would cost six and a
+half bars in a single late wave. The anchors are therefore set to spend the *wave's* budget, which is the number a player
+feels: waves 1-4 stay under a tenth of a bar, the first boss wave is the first real spike at about 57% of it, and every
+later wave sits between a quarter and a third. The audit's own gate for this is item 10's "% of the bar lost per wave,
+target 15-35%", which this curve now sits inside: measured rank-and-file waves average `0.25-0.35` of a bar, boss waves
+`0.35-0.43`, and the whole run `0.27-0.36`.
+
+**What this bought, measured on the fixed sweep.** The optimiser still finishes all two hundred waves on all five seeds,
+and the policy that ignores potions, cards, reforging and steps now dies at waves 19, 26, 42, 25 and 30 — the run is
+losable, which is the acceptance criterion the audit wrote. `WavePressureCurveTest` asserts both halves of that sentence:
+`theGameIsLosableWhenTheVerbsAreIgnored` fails if a naive run survives past wave 100, and the same test still requires the
+optimiser to reach wave 200, so losability cannot be bought by making the game unwinnable.
+
+**What this did not buy, and why.** The audit asked for a contact hit worth about 5% of the bar, an elite about 9% and a
+boss special about 25%. Two of those three are not reachable from this curve alone, and the arithmetic is the finding:
+5% of a bar against a 15-35% *wave* budget allows three to seven landed hits per wave, and this game lands 110-200. The
+repair is fewer, larger, readable attacks — that is audit item 6 (two attack axes: every attack is either dodgeable with a
+real telegraph or explicitly non-dodgeable) and item 4 (the wave table), not a multiplier. The boss special is the same
+story with a date on it: a boss lands about five and a half specials per boss wave on the shipped cadence, so a quarter of
+a bar per special costs more than a bar per boss wave and the fifth wave — the first boss, met with tier-1 potions and no
+gear — becomes a guaranteed death. It goes to 25% in item 2, where the telegraph gets an inside and an outside.
+
+**The interim cost, recorded.** The passive-player promise in `NonOptimiserBandTest` moved with the measurement: the naive
+policy used to win 12 of 12 brief vigils, and now wins 3 of 12, never dying before wave 15, with a long-vigil reach of
+27.3 waves against 69.7 before. The opening is still survivable for a while and is still won outright on some seeds, but
+"a passive player always finishes the opening" is not something this axis can buy back while the brief vigil contains six
+boss waves. That promise belongs to items 4 and 5 (the wave table's events, and the eighty-wave run that redefines the
+brief), and it is tracked there rather than silently dropped.
 
 ## Boss growth
 
@@ -98,18 +154,20 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.0583 / 0.1121 / 0.1199 / 0.1351` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.923 / x1.069 / x1.127` | the same sweep |
-| Sweep average range | `0.0899 - 0.1233` | the same sweep, inside the 0.05-0.15 band |
-| Deepest single-seed quarter dip | `2.21%` against the `5.00%` allowance | the same sweep |
+| Quarter means (fixed sweep) | `0.1743 / 0.3599 / 0.3769 / 0.3453` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x2.065 / x1.047 / x0.916` | the same sweep |
+| Sweep average range | `0.2663 - 0.3618` | the same sweep, inside the 0.15-0.55 band |
+| Deepest single-seed quarter dip | `17.38%` against the `25.00%` plateau floor | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `0.3706 / 0.3374 / 0.3696` | `TrialSimulationTest`'s five seeds, against the 0.40 ceiling |
+| Riskiest trial pairs, median spike | `1.1063 / 0.8880 / 0.7491` | `TrialSimulationTest`'s five seeds, against the 1.30 ceiling |
 
 The three pairs are the matrix's highest median spikes, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `GLASS_ARROWS + FAMISHED_EARTH`, `MISERS_PACT + FAMISHED_EARTH` (the other seventy-five pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.23249` | `RewardCardSimulationTest`'s seed, against the 0.40 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.62845` | `RewardCardSimulationTest`'s seed, against the 1.10 ceiling |
 <!-- balance:end second-half -->
 
-The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter, which is now the coolest span of the curve. The caveats move with the measurements: roadmap B1's pity rule below had left no seed dipping at all; roadmap D2's deep-pool Elite affixes (wave 101+, six instead of three) put one shallow dip back on the board — `-7.92%` against the `5.00%` allowance — and lifted the deep-run kill income, because a hollowmolt elite that splits into two husks is two more kills to pay for. The reward-card matrix sits at `0.30940` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3947` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first — D2 paid there too, and the final-quarter damage re-tune to `1.0045` is what brought `GLASS_ARROWS + FAMISHED_EARTH` back under the ceiling after the gate caught it at `0.4111`; the tuning loop that keeps the riskiest pairs in band (cinderhalo's burn at 0.08 of the elite's damage per half-second tick, gravemoss regrowing 0.6% of max health a second, the molt husks at 15% health and 45% damage) is the gate working as designed.
+**Pre-anchor history (the numbers in this paragraph are the ones the rate curve was tuned to; the ceilings they were judged against are in the table above, re-measured after audit item 1).** The step into the second half more than doubled, the wave-200 enemy is 9% lighter in health and 5% lighter in damage than the old single rate left it, and the price is carried in the final quarter. The caveats move with the measurements: roadmap B1's pity rule below had left no seed dipping at all; roadmap D2's deep-pool Elite affixes (wave 101+, six instead of three) put one shallow dip back on the board — `-7.92%` against the `5.00%` allowance — and lifted the deep-run kill income, because a hollowmolt elite that splits into two husks is two more kills to pay for. The reward-card matrix sits at `0.30940` against its `0.40` ceiling. The tight margin the table still keeps is the trial pairs: `0.3947` against `0.40`, which is where the late roles landed it and where any future pressure addition has to pay first — D2 paid there too, and the final-quarter damage re-tune to `1.0045` is what brought `GLASS_ARROWS + FAMISHED_EARTH` back under the ceiling after the gate caught it at `0.4111`; the tuning loop that keeps the riskiest pairs in band (cinderhalo's burn at 0.08 of the elite's damage per half-second tick, gravemoss regrowing 0.6% of max health a second, the molt husks at 15% health and 45% damage) is the gate working as designed.
+
+**What the damage anchor did to these numbers (audit item 1).** Every ceiling in the generated table above was re-based on the anchored curve, and the measurements moved with it: on the fixed sweep the rank-and-file waves now average `0.25-0.35` of a bar and boss waves `0.35-0.43` (quarter means `0.1743 / 0.3599 / 0.3769 / 0.3453`), so the run band is `0.15-0.55` instead of `0.05-0.15`; the deepest quarter dip is `17.38%` against the `25%` plateau floor that replaced the old five-percent allowance; the riskiest trial pairs' median spike is `1.1063` against a `1.30` ceiling (the old `0.40` was a ceiling on waves that cost a third of a bar); and the reward-card matrix's worst forced-card spike is `0.62845` against `1.10`. Two findings came out of the re-base and are recorded rather than tuned away: a forced first-boss card can now end a run at wave 15 (two of eight cards on the matrix's seed), and five of the seventy-eight trial pairs finish fewer than two of five seeds — all five of them contain `DRY_VEINS`, the no-potions trial, and two finish no seed at all. A potion-less run is a real decision now, which is what audit item 5 asks for ("potion-less run" as a way to earn a slot) — but it is a decision that has to be paid for over an eighty-wave run, not two hundred, which is item 5's work, not this one's.
 
 **What the headroom bought.** R4.3's pity rule needed about `0.06` of trial headroom (its candidates moved pairs to `0.4146` and `0.4386` against `0.40`) and R4.6 alone returned `0.01–0.03` — not enough, which is what the open ledger finding said from the economy's side. Roadmap A3's role tuning then returned the rest (worst pair `0.3815`), and roadmap B1 spent it: the guaranteed common after thirty dry kills now ships, gated past the brief vigil, and every band above stayed green on the fixed seeds — the riskiest pair unchanged at `0.3815`, and the sweep average's floor raised from `0.0816` to `0.0949`, which is the rule doing exactly its job: the unluckiest runs are no longer the weakest measurements. See the economy section for the rule and its measured price. Roadmap B2a then widened the affix pool from fifteen to twenty — Elite Damage, Thorns, Potion Find, Focus Gain and Fortitude, each wired to exactly one shipped system — and paid for it with a rule instead of a band: the five expansion lanes roll on **Legendaries from wave 101 onward only**, so the early and middle-game loot table is bit-identical to the one every number above was measured on. The naive variant (all Rares diluting across twenty lanes) was measured and refused: it remapped every Legendary loadout, flipped the balanced run's middle-third shape gate (quarters `0.0860 → 0.0857` where the contract demands a rise of `0.01`) and pushed the FAMISHED_EARTH pairs to `0.4536 / 0.4116` against the `0.40` ceiling. The gated variant leaves every block in this document exactly where B1 left it, and the wider table lands in the second half — which is precisely where two runs at the same tier used to converge.
 
@@ -129,12 +187,12 @@ session gate allows (tier 2 is the tightest, at 84% of its own budget), and the 
 including the two mixes and one fade span that were measured and rejected, is in the R4.7 roadmap entry.
 
 <!-- balance:generated ascension-bumps -->
-| Tier | Health growth per wave | Damage growth per wave | Base health charge at wave 1 | Base damage charge at wave 1 | Second-half entry | Final quarter |
-|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 1.0370 | 1.00300 | x1.00 | x1.00 | 1.0260 | 1.0180 |
-| 3 | 1.0382 | 1.00375 | x1.66 | x1.90 | 1.0272 | 1.0192 |
-| 6 | 1.0395 | 1.00450 | x2.32 | x2.80 | 1.0285 | 1.0204 |
-| 10 | 1.0411 | 1.00551 | x3.20 | x4.00 | 1.0301 | 1.0221 |
+| Tier | Health growth per wave | Base health charge at wave 1 | Base damage charge at wave 1 | Second-half entry | Final quarter | Damage at wave 1 | Damage at wave 200 |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 0 | 1.0370 | x1.00 | x1.00 | 1.0260 | 1.0180 | 0.7500 | 1.5534 |
+| 3 | 1.0382 | x1.66 | x1.90 | 1.0272 | 1.0192 | 1.4250 | 1.8033 |
+| 6 | 1.0395 | x2.32 | x2.80 | 1.0285 | 1.0204 | 2.1000 | 2.0933 |
+| 10 | 1.0411 | x3.20 | x4.00 | 1.0301 | 1.0221 | 3.0000 | 2.5532 |
 
 The base charge (R4.7) is health `+22%` and damage `+30%` per tier at wave 1, fading linearly to `+0%` by wave 141.
 

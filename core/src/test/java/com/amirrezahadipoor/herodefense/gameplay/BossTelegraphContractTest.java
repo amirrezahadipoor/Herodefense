@@ -122,8 +122,10 @@ final class BossTelegraphContractTest {
                 BossFightScript script = BossEncounterTable.scriptFor(encounter);
                 Scenario scenario = triggered(GameMode.STANDARD, 0, encounter, type);
                 specials.update(scenario.state, BossFightScript.REFERENCE_TELEGRAPH_SECONDS);
-                float expected = scenario.boss.damage * identityPerStrike
-                    * script.specialDamageMultiplier() * script.hits();
+                // B1: the special's base is a share of the expected bar, not a multiple of the boss's melee
+                // swing. The *identity* still owns the multiplier, so that is what this asserts.
+                float expected = new DifficultyCurve().bossSpecialDamage(scenario.state.waveNumber)
+                    * identityPerStrike * script.specialDamageMultiplier() * script.hits();
                 assertEquals(expected, HERO_HEALTH - scenario.state.hero.health, 1e-3f,
                     type + " boss " + encounter + " must land " + script.hits() + " strike(s) of its authored damage");
             }

@@ -23,16 +23,18 @@ final class FunInstrumentTest {
     private static final long[] SEEDS = {0x5EED01L, 0x5EED02L, 0x5EED03L};
 
     /**
-     * One policy's frozen shape. Measured on the shipped curve (three seeds, two hundred waves):
-     * the optimiser spikes to 0.30, slides at most 4 waves, finds 13 valleys and never stalls; the naive
-     * player spikes to 1.09 (a wave can cost a passive hero almost their whole bar -- and B1's pity is what
-     * keeps that from being the last wave), slides at most 13, finds 3 valleys and stalls on ~1.5% of waves.
+     * One policy's frozen shape, re-measured after audit item 1 re-anchored damage to the bar (three seeds, two
+     * hundred waves): the optimiser's worst neighbour-wave jump is 0.42-0.55 against 0.30 before, slides at most
+     * five waves, finds five to twelve valleys and never stalls; the naive player jumps 0.42-0.54, slides at most
+     * five, finds three or four valleys and never stalls either -- it dies at wave 21, 37 and 46 instead, which is
+     * the trade this instrument exists to record: the same curve that stopped being a walkover stopped leaving
+     * free waves in it, and a passive player is now caught by wave 15 to 50 rather than chipping through thirty.
      */
     private record Bands(float maxSpike, int maxDecline, int minBreathers, float maxStall) {
     }
 
-    private static final Bands OPTIMISER_BANDS = new Bands(0.35f, 6, 10, 0f);
-    private static final Bands NAIVE_BANDS = new Bands(1.25f, 16, 2, 0.03f);
+    private static final Bands OPTIMISER_BANDS = new Bands(0.65f, 6, 4, 0f);
+    private static final Bands NAIVE_BANDS = new Bands(0.65f, 6, 2, 0.03f);
 
     /** Valleys running together longer than this is a wall of nothing -- boring, not safe. Measured at 4 for both policies on the shipped curve; same cap for both. */
     private static final int MAX_BREATHER_STREAK = 6;
@@ -115,18 +117,36 @@ final class FunInstrumentTest {
         }
     }
 
+    /**
+     * Skill buys a margin, and after B1 the margin is measured in waves rather than in pressure.
+     *
+     * <p>The old version of this test compared the two policies' average damage per wave and required the passive
+     * player's to be larger. That comparison stopped meaning anything the moment damage was anchored to the bar: a
+     * landed hit costs both policies the same share of the bar, so a policy's average pressure now measures the
+     * curve, not the player -- measured after B1, the optimiser averaged 0.244-0.322 and the naive 0.235-0.333,
+     * interleaved. What skill actually buys is <em>survival</em>: on these three seeds the passive player is caught
+     * at wave 21, 37 and 46 while the skilled one finishes two hundred, and the gap is the margin this test pins.
+     */
     @Test
     void skillBuysAMeasurableMargin() {
-        float skilled = 0f;
-        float unskilled = 0f;
+        int skilledReach = 0;
+        int unskilledReach = 0;
         for (long seed : SEEDS) {
-            skilled += new BalanceSimulator().runWithPolicy(seed, BalanceSimulator.Policy.OPTIMISER)
-                .averageDamageFraction();
-            unskilled += new BalanceSimulator().runWithPolicy(seed, BalanceSimulator.Policy.NAIVE)
-                .averageDamageFraction();
+            skilledReach += new BalanceSimulator().runWithPolicy(seed, BalanceSimulator.Policy.OPTIMISER)
+                .waves().size();
+            unskilledReach += new BalanceSimulator().runWithPolicy(seed, BalanceSimulator.Policy.NAIVE)
+                .waves().size();
         }
-        assertTrue(unskilled > skilled,
-            "the same curve must cost the passive player more than the skilled one: naive averaged "
-                + unskilled / SEEDS.length + ", optimiser " + skilled / SEEDS.length);
+        assertTrue(unskilledReach * 2 < skilledReach,
+            "the same curve must cost the passive player the run: naive reached " + unskilledReach / 2
+                + " waves on average against " + skilledReach / 2 + " for the skilled one");
+        for (long seed : SEEDS) {
+            assertTrue(new BalanceSimulator().runWithPolicy(seed, BalanceSimulator.Policy.OPTIMISER)
+                    .reachedFinalWave(),
+                "seed " + seed + " must stay winnable by the policy that plays the game");
+            assertTrue(!new BalanceSimulator().runWithPolicy(seed, BalanceSimulator.Policy.NAIVE)
+                    .reachedFinalWave(),
+                "seed " + seed + " must still catch the policy that ignores it");
+        }
     }
 }

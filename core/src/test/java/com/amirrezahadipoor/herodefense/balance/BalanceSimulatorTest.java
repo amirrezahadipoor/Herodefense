@@ -12,9 +12,13 @@ import org.junit.jupiter.api.Test;
 
 final class BalanceSimulatorTest {
     private static final long BASELINE_SEED = 0x4845524F444546L;
-    private static final float MINIMUM_AVERAGE_DAMAGE_FRACTION = 0.05f;
-    private static final float MAXIMUM_AVERAGE_DAMAGE_FRACTION = 0.15f;
-    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 0.35f;
+    // Re-based by audit item 1. The old 0.05-0.15 band described a run whose every hit was worth 0.27% of the bar
+    // and which no policy could lose (WavePressureCurveTest documents the measurement). Damage is a share of the
+    // bar now, so the run averages 0.27-0.36 of a bar per wave and a single wave can cost a bar and a tenth; the
+    // band below is drawn around the post-B1 measurement, with the floor kept as the "not a walkover" guard.
+    private static final float MINIMUM_AVERAGE_DAMAGE_FRACTION = 0.15f;
+    private static final float MAXIMUM_AVERAGE_DAMAGE_FRACTION = 0.55f;
+    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 1.10f;
     private static final float MAXIMUM_CLEAR_TIME_SECONDS = 120f;
     private static final int GATE_WAVE = GameState.FINAL_WAVE;
 

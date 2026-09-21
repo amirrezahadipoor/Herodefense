@@ -12,6 +12,7 @@ import com.amirrezahadipoor.herodefense.model.GameState;
 public final class BossSpecialAttackSystem {
     public static final float TELEGRAPH_SECONDS = 0.5f;
     private final HeroDamageSystem heroDamageSystem;
+    private final DifficultyCurve curve = new DifficultyCurve();
     private int telegraphsStarted;
 
     public BossSpecialAttackSystem(HeroDamageSystem heroDamageSystem) {
@@ -81,19 +82,24 @@ public final class BossSpecialAttackSystem {
     }
 
     private void executeOnce(GameState state, Boss boss, BossFightScript script) {
+        // The base is a share of the expected bar, not a multiple of the boss's melee swing (audit item 1): a
+        // telegraphed special is a different kind of event from a contact hit, and pricing it off the contact
+        // damage is what left the game's loudest warning attached to 0.9% of the hero's health. The per-boss
+        // multipliers below are the encounter's identity and are unchanged; only their base moved.
+        float specialBase = curve.bossSpecialDamage(state.waveNumber, state.ascensionTier);
         switch (boss.bossDefinition()) {
             case ANCIENT_GOLEM, FROST_TITAN -> heroDamageSystem.applyIncomingHitWithRoll(
-                state, boss.damage * 1.6f * script.specialDamageMultiplier(), boss.specialPendingRollA);
+                state, specialBase * 1.6f * script.specialDamageMultiplier(), boss.specialPendingRollA);
             case THORN_MATRIARCH, BLOODROOT_AVATAR -> heroDamageSystem.applyIncomingHitWithRoll(
-                state, boss.damage * 0.5f * script.specialDamageMultiplier(), boss.specialPendingRollA);
+                state, specialBase * 0.5f * script.specialDamageMultiplier(), boss.specialPendingRollA);
             case EMBER_WYRM, STORM_COLOSSUS -> {
                 heroDamageSystem.applyIncomingHitWithRoll(
-                    state, boss.damage * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollA);
+                    state, specialBase * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollA);
                 heroDamageSystem.applyIncomingHitWithRoll(
-                    state, boss.damage * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollB);
+                    state, specialBase * 0.55f * script.specialDamageMultiplier(), boss.specialPendingRollB);
             }
             case VOID_KNIGHT, SHADOW_LICH -> heroDamageSystem.applyIncomingHitWithRoll(
-                state, boss.damage * 1.25f * script.specialDamageMultiplier(), boss.specialPendingRollA);
+                state, specialBase * 1.25f * script.specialDamageMultiplier(), boss.specialPendingRollA);
         }
     }
 

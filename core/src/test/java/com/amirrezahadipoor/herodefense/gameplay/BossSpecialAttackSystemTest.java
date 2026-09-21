@@ -18,7 +18,7 @@ final class BossSpecialAttackSystemTest {
         Scenario scenario = scenario(BossType.ANCIENT_GOLEM, 0f);
         specials.update(scenario.state, 0f);
         detonate(scenario);
-        assertEquals(984f, scenario.state.hero.health);
+        assertEquals(1_000f - specialBase(scenario) * 1.6f, scenario.state.hero.health, 1e-3f);
         assertEquals(1, scenario.boss.specialUseCount);
     }
 
@@ -29,7 +29,7 @@ final class BossSpecialAttackSystemTest {
         assertEquals(1_000f, scenario.state.hero.health);
         assertEquals(2f, scenario.state.hero.attackCooldownSeconds);
         detonate(scenario);
-        assertEquals(995f, scenario.state.hero.health);
+        assertEquals(1_000f - specialBase(scenario) * 0.5f, scenario.state.hero.health, 1e-3f);
         assertEquals(2f, scenario.state.hero.attackCooldownSeconds);
     }
 
@@ -39,7 +39,7 @@ final class BossSpecialAttackSystemTest {
         long before = scenario.state.combatRandomState;
         specials.update(scenario.state, 0f);
         detonate(scenario);
-        assertEquals(989f, scenario.state.hero.health);
+        assertEquals(1_000f - specialBase(scenario) * 1.1f, scenario.state.hero.health, 1e-3f);
         assertTrue(before != scenario.state.combatRandomState);
     }
 
@@ -52,7 +52,7 @@ final class BossSpecialAttackSystemTest {
             scenario.state.hero.x, scenario.state.hero.y
         ));
         assertEquals(scenario.boss.attackRange, distance, 0.001f);
-        assertEquals(987.5f, scenario.state.hero.health);
+        assertEquals(1_000f - specialBase(scenario) * 1.25f, scenario.state.hero.health, 1e-3f);
     }
 
     @Test
@@ -66,7 +66,7 @@ final class BossSpecialAttackSystemTest {
         assertEquals(0, scenario.boss.specialUseCount);
         assertTrue(scenario.boss.specialCooldownSeconds <= 0f);
         detonate(scenario);
-        assertEquals(984f, scenario.state.hero.health);
+        assertEquals(1_000f - specialBase(scenario) * 1.6f, scenario.state.hero.health, 1e-3f);
         assertFalse(scenario.boss.specialPending);
         assertEquals(0f, scenario.boss.specialAnimationSeconds, 1e-6f);
         assertEquals(1, scenario.boss.specialUseCount);
@@ -85,7 +85,7 @@ final class BossSpecialAttackSystemTest {
             scenario.boss.specialAnimationSeconds, 1e-6f);
         scenario.boss.stunRemainingSeconds = 0f;
         detonate(scenario);
-        assertEquals(984f, scenario.state.hero.health);
+        assertEquals(1_000f - specialBase(scenario) * 1.6f, scenario.state.hero.health, 1e-3f);
     }
 
     @Test
@@ -116,6 +116,16 @@ final class BossSpecialAttackSystemTest {
         ));
         assertEquals(scenario.boss.attackRange, distance, 0.001f);
         assertEquals(1_000f, scenario.state.hero.health);
+    }
+
+    /**
+     * The anchored special base of the scenario's wave (audit item 1). Damage used to be a multiple of the boss's
+     * melee swing, so these assertions could subtract a literal; a special is a share of the expected bar now, and
+     * the literals that follow are the encounter multipliers -- which is the part of the special each test is
+     * about. The wave-one golem number is pinned, once, in DifficultyCurveTest.
+     */
+    private static float specialBase(Scenario scenario) {
+        return new DifficultyCurve().bossSpecialDamage(scenario.state.waveNumber);
     }
 
     private void detonate(Scenario scenario) {

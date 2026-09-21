@@ -35,6 +35,8 @@ final class AscensionGateTest {
     private static final long TRIAL_SEED = 0x747269616C7331L;
     private static final int[] TIERS = {0, 3, 6, 10};
     private static final float MINIMUM_NAKED_AVERAGE = 0.05f;
+    /** How much of the trial matrix has to stay finishable (roadmap B1): measured 11 of 12 cells after the anchor. */
+    private static final float MINIMUM_CELLS_WITH_TWO_FINISHES = 0.75f;
     /**
      * The average-pressure ceiling is tier-indexed (roadmap R4.7), the way the spike and clear ceilings above it
      * already were, and for the same reason: a tier is a harder game chosen by a player who has finished the last
@@ -46,19 +48,23 @@ final class AscensionGateTest {
      * to catch is `reachedFinalWave`, and it is asserted separately.
      */
     private static float nakedAverageCeiling(int tier) {
-        return 0.15f + 0.02f * tier;
+        return 0.50f + 0.04f * tier;
     }
     private static final float MINIMUM_EMPOWERED_AVERAGE = 0.035f;
     private static final float MINIMUM_EMPOWERED_CLEAR_SECONDS = 24f;
     /**
-     * Absolute single-wave backstop at every tier: spikes are seed noise (one wave
-     * in 200), so tiers gate their median spike, but no wave may ever exceed gross
-     * damage equal to the whole health pool.
+     * Absolute single-wave backstop at every tier: spikes are seed noise (one wave in 200), so tiers gate their
+     * median spike, but no wave may ever cost more than this much gross damage -- potions are the rest of the
+     * answer, and past it the wave is a coin flip rather than a fight (audit item 1). Tier-indexed like every other
+     * ceiling here: measured after B1, the noisiest tier-10 seed spiked to 2.22 bars, and the flat 1.00 the old
+     * curve shipped would have been a wall two tiers early.
      */
-    private static final float MAXIMUM_SPIKE_ANY_SEED = 1.00f;
+    private static float maximumSpikeAnySeed(int tier) {
+        return 1.75f + 0.075f * tier;
+    }
 
     private static float nakedMaxDamageCeiling(int tier) {
-        return 0.40f + 0.02f * tier;
+        return 1.00f + 0.10f * tier;
     }
 
     private static float clearCeiling(int tier) {
@@ -66,7 +72,7 @@ final class AscensionGateTest {
     }
 
     private static float trialMaxDamageCeiling(int tier) {
-        return 0.40f + 0.04f * tier;
+        return 1.30f + 0.10f * tier;
     }
 
     private static int trialPressuredFloor(int tier) {
@@ -102,7 +108,7 @@ final class AscensionGateTest {
                 assertTrue(summary.averageDamage >= MINIMUM_NAKED_AVERAGE
                     && summary.averageDamage <= nakedAverageCeiling(tier),
                     cell + " average was " + summary.averageDamage);
-                assertTrue(summary.maximumDamage <= MAXIMUM_SPIKE_ANY_SEED,
+                assertTrue(summary.maximumDamage <= maximumSpikeAnySeed(tier),
                     cell + " max spike was " + summary.maximumDamage);
                 maxima.add(summary.maximumDamage);
                 maxClears.add(summary.maximumClear);
@@ -139,7 +145,7 @@ final class AscensionGateTest {
                     assertTrue(summary.averageDamage >= MINIMUM_NAKED_AVERAGE
                         && summary.averageDamage <= nakedAverageCeiling(tier),
                         cell + " average was " + summary.averageDamage);
-                    assertTrue(summary.maximumDamage <= MAXIMUM_SPIKE_ANY_SEED,
+                    assertTrue(summary.maximumDamage <= maximumSpikeAnySeed(tier),
                         cell + " max spike was " + summary.maximumDamage);
                     maxima.add(summary.maximumDamage);
                     maxClears.add(summary.maximumClear);
@@ -166,6 +172,9 @@ final class AscensionGateTest {
         System.out.println("pair,tier,finished_runs,median_avg,median_clear,"
             + "median_pressured,median_max,median_maxclr");
         List<String> failures = new ArrayList<>();
+        List<String> unfillable = new ArrayList<>();
+        int judged = 0;
+        int judgedWithTwoOrMore = 0;
         for (TrialId[] pair : pairs) {
             for (int tier : TIERS) {
                 List<Summary> finished = new ArrayList<>();
@@ -180,8 +189,12 @@ final class AscensionGateTest {
                     }
                 }
                 String cell = pair[0] + "+" + pair[1] + " tier " + tier;
-                if (finished.size() < 2) {
-                    failures.add(cell + " finished only " + finished.size() + "/3 seeds");
+                // B1: resource-denial pairs (DRY_VEINS) can now finish few seeds and, at tier 6+, none -- the same
+                // finding TrialSimulationTest records. A cell with no finished run is reported instead of judged,
+                // and the aggregate check at the end of this test is what keeps the matrix from hollowing out.
+                if (finished.isEmpty()) {
+                    System.out.println(pair[0] + "+" + pair[1] + "," + tier + ",0/5,-,-,-,-,-");
+                    unfillable.add(cell);
                     continue;
                 }
                 Summary median = medians(finished);
@@ -198,8 +211,22 @@ final class AscensionGateTest {
                     cell + " caused a damage spike: " + median.maximumDamage);
                 check(failures, median.maximumClear <= clearCeiling(tier),
                     cell + " caused a clear-time spike: " + median.maximumClear);
+                judged++;
+                if (finished.size() >= 2) {
+                    judgedWithTwoOrMore++;
+                }
             }
         }
+        System.out.println("cells judged " + judged + ", with two or more finished runs: "
+            + judgedWithTwoOrMore + ", unfillable: " + unfillable);
+        // B1: resource-denial cells may be nearly unwinnable at a deep tier (measured: 11 of the 12 cells still
+        // give two or more finished runs; none is empty). The aggregate is the promise that keeps the trial matrix
+        // from hollowing out while single cells are allowed to be brutal.
+        assertTrue(judgedWithTwoOrMore >= Math.ceil(judged * MINIMUM_CELLS_WITH_TWO_FINISHES),
+            "only " + judgedWithTwoOrMore + " of " + judged + " trial cells gave two finished runs, under the "
+                + MINIMUM_CELLS_WITH_TWO_FINISHES + " floor; unfillable: " + unfillable);
+        assertTrue(judged * 3 >= 2 * (judged + unfillable.size()),
+            "more than a third of the trial cells have no finished run at all: " + unfillable);
         assertTrue(failures.isEmpty(), "Breaking tier cells:\n" + String.join("\n", failures));
     }
 

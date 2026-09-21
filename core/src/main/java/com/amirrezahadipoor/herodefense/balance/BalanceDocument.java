@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.balance;
 
 import com.amirrezahadipoor.herodefense.gameplay.DifficultyCurve;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyWaveSpawner;
+import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.gameplay.ItemDropSystem;
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.model.ItemTier;
@@ -170,11 +171,14 @@ public final class BalanceDocument {
     private static String growthCheckpoints() {
         DifficultyCurve curve = new DifficultyCurve();
         List<String> lines = new ArrayList<>();
-        lines.add("| Wave | Baseline HP | Baseline damage |");
-        lines.add("|---:|---:|---:|");
+        lines.add("| Wave | Baseline HP | Expected hero bar | Baseline damage | Damage as a share of the bar |"
+            + " Damage at tier 10 |");
+        lines.add("|---:|---:|---:|---:|---:|---:|");
         for (int wave : CHECKPOINT_WAVES) {
-            lines.add(String.format(Locale.ROOT, "| %d | %.2f | %.4f |",
-                wave, curve.baselineRegularHealth(wave), curve.baselineRegularDamage(wave)));
+            float bar = DifficultyCurve.expectedHeroMaxHealth(wave);
+            lines.add(String.format(Locale.ROOT, "| %d | %.2f | %.2f | %.4f | %.2f%% | %.4f |",
+                wave, curve.baselineRegularHealth(wave), bar, curve.baselineRegularDamage(wave),
+                100f * curve.baselineRegularDamage(wave) / bar, curve.baselineRegularDamage(wave, 10)));
         }
         return join(lines);
     }
@@ -226,14 +230,14 @@ public final class BalanceDocument {
         lines.add(String.format(Locale.ROOT, "| Quarter steps | `x%.3f / x%.3f / x%.3f` | the same sweep |",
             quarters[1] / quarters[0], quarters[2] / quarters[1], quarters[3] / quarters[2]));
         lines.add(String.format(Locale.ROOT, "| Sweep average range | `%.4f - %.4f` | the same sweep, "
-            + "inside the 0.05-0.15 band |", min(averages), max(averages)));
+            + "inside the 0.15-0.55 band |", min(averages), max(averages)));
         lines.add(String.format(Locale.ROOT, "| Deepest single-seed quarter dip | `%.2f%%` against the "
-            + "`5.00%%` allowance | the same sweep |", max(dips) * 100f));
+            + "`25.00%%` plateau floor | the same sweep |", max(dips) * 100f));
         lines.add(String.format(Locale.ROOT, "| Elite contact multiplier, first half / second half | "
             + "`x%.1f / x%.1f` | `EnemyWaveSpawner` |",
             EnemyWaveSpawner.ELITE_DAMAGE_MULT, EnemyWaveSpawner.ELITE_SECOND_HALF_DAMAGE_MULT));
         lines.add(String.format(Locale.ROOT, "| Riskiest trial pairs, median spike | `%.4f / %.4f / %.4f` | "
-            + "`TrialSimulationTest`'s five seeds, against the 0.40 ceiling |",
+            + "`TrialSimulationTest`'s five seeds, against the 1.30 ceiling |",
             pairSpikes.get(0), pairSpikes.get(1), pairSpikes.get(2)));
         List<String> names = new ArrayList<>();
         for (TrialId[] pair : RISKIEST_PAIRS) {
@@ -243,7 +247,7 @@ public final class BalanceDocument {
         lines.add("The three pairs are the matrix's highest median spikes, in the order of the row: "
             + String.join(", ", names) + " (the other seventy-five pairs of the matrix run in the gate, not here).");
         lines.add(String.format(Locale.ROOT, "| Reward-card spike, AGILITY forced at boss 1 | `%.5f` | "
-            + "`RewardCardSimulationTest`'s seed, against the 0.40 ceiling |", cardSpike));
+            + "`RewardCardSimulationTest`'s seed, against the 1.10 ceiling |", cardSpike));
         return join(lines);
     }
 
@@ -331,15 +335,17 @@ public final class BalanceDocument {
 
     private static String ascensionBumps() {
         List<String> lines = new ArrayList<>();
-        lines.add("| Tier | Health growth per wave | Damage growth per wave | Base health charge at wave 1 |"
-            + " Base damage charge at wave 1 | Second-half entry | Final quarter |");
-        lines.add("|---:|---:|---:|---:|---:|---:|---:|");
+        DifficultyCurve curve = new DifficultyCurve();
+        lines.add("| Tier | Health growth per wave | Base health charge at wave 1 | Base damage charge at wave 1 |"
+            + " Second-half entry | Final quarter | Damage at wave 1 | Damage at wave 200 |");
+        lines.add("|---:|---:|---:|---:|---:|---:|---:|---:|");
         for (int tier : new int[] {0, 3, 6, 10}) {
-            lines.add(String.format(Locale.ROOT, "| %d | %.4f | %.5f | x%.2f | x%.2f | %.4f | %.4f |", tier,
-                DifficultyCurve.healthGrowthForTier(tier), DifficultyCurve.damageGrowthForTier(tier),
+            lines.add(String.format(Locale.ROOT, "| %d | %.4f | x%.2f | x%.2f | %.4f | %.4f | %.4f | %.4f |", tier,
+                DifficultyCurve.healthGrowthForTier(tier),
                 DifficultyCurve.baseScaleForTier(1, tier), DifficultyCurve.baseDamageScaleForTier(1, tier),
                 DifficultyCurve.secondHalfHealthGrowthForTier(tier),
-                DifficultyCurve.finalQuarterHealthGrowthForTier(tier)));
+                DifficultyCurve.finalQuarterHealthGrowthForTier(tier),
+                curve.baselineRegularDamage(1, tier), curve.baselineRegularDamage(GameState.FINAL_WAVE, tier)));
         }
         lines.add("");
         lines.add(String.format(Locale.ROOT,

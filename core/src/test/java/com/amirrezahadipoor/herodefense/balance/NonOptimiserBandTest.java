@@ -47,23 +47,30 @@ final class NonOptimiserBandTest {
     /**
      * The published band, in two halves because the two modes answer two different questions.
      *
-     * <p><b>The brief vigil is a floor, not a range.</b> A player who ignores every system still has to be able to
-     * finish the opening of the game: it is where a new player learns to play, and a tutorial that punishes you for
-     * not knowing the systems yet is a tutorial that loses players. Measured on the dozen seeds, the non-optimiser
-     * wins all twelve, so the floor sits at 90% rather than at 100% to leave a seed's worth of noise.
+     * <p><b>Re-based by B1, and what the opening owes the player now.</b> Before B1 the non-optimiser won every
+     * one of the twelve brief vigils and reached 69.7 waves in the long one: a player who ignored potions, cards,
+     * reforging and steps could not lose, which is exactly what item 1 of the audit asked to change. Anchoring
+     * damage to the bar changed it: measured on the same dozen seeds the non-optimiser now wins 3 of 12 briefs,
+     * never dies before wave 15, and reaches 27.3 waves in the long vigil, dying in most cases on or immediately
+     * after one of the six boss waves the brief contains.
      *
-     * <p><b>The long vigil is the range.</b> The same player has to be caught by the curve somewhere — a run that
-     * cannot be lost is not a run — and has to get far enough to see the game. Measured reach on the dozen seeds is
-     * 69.7 waves on average, so the band is 55 to 90: below it the curve has become a wall for anyone who does not
-     * optimise, above it the run has stopped being able to end badly.
+     * <p>So the two halves of the band moved with the measurement, and the second half is now the promise worth
+     * keeping: the opening is survivable for a while (never a death before wave 15, and it is still won outright
+     * on some seeds), and the long vigil catches the passive player somewhere in its first quarter. The stronger
+     * version of the old promise -- a passive player should finish the opening every time -- is not something the
+     * damage axis can buy back, because the brief vigil holds six boss waves whose contact damage is anchored
+     * like everything else. That is a pacing question, and it belongs to items 4 and 5 of the audit (the wave
+     * table's events and the eighty-wave run), not to a multiplier here. It is recorded in the balance doc.
      */
-    private static final float MINIMUM_BRIEF_WIN_RATE = 0.90f;
-    private static final float MINIMUM_AVERAGE_REACH_WAVES = 55f;
-    private static final float MAXIMUM_AVERAGE_REACH_WAVES = 90f;
+    private static final float MINIMUM_BRIEF_WIN_RATE = 0.25f;
+    private static final int MINIMUM_BRIEF_REACH_WAVES = 15;
+    private static final float MINIMUM_AVERAGE_REACH_WAVES = 20f;
+    private static final float MAXIMUM_AVERAGE_REACH_WAVES = 50f;
 
     @Test
     void theBriefVigilIsWinnableWithoutOptimising() {
         int wins = 0;
+        int shallowest = Integer.MAX_VALUE;
         List<String> readings = new ArrayList<>();
         for (long seed : SEEDS) {
             BalanceReport report = new BalanceSimulator()
@@ -71,6 +78,7 @@ final class NonOptimiserBandTest {
             if (report.reachedFinalWave()) {
                 wins++;
             }
+            shallowest = Math.min(shallowest, report.waves().size());
             readings.add(String.format(Locale.ROOT, "%s: %s at wave %d, average pressure %.4f",
                 Long.toHexString(seed), report.reachedFinalWave() ? "survived" : "fell",
                 report.waves().size(), report.averageDamageFraction()));
@@ -79,6 +87,9 @@ final class NonOptimiserBandTest {
         assertTrue(winRate >= MINIMUM_BRIEF_WIN_RATE, "a player who does not optimise won only " + wins + "/"
             + SEEDS.length + " brief runs (" + winRate + "), under the " + MINIMUM_BRIEF_WIN_RATE
             + " floor: the opening of the game has become an exam on its systems. readings: " + readings);
+        assertTrue(shallowest >= MINIMUM_BRIEF_REACH_WAVES,
+            "a passive player died at wave " + shallowest + ", before the " + MINIMUM_BRIEF_REACH_WAVES
+                + " the opening has to teach them in. readings: " + readings);
     }
 
     /**
