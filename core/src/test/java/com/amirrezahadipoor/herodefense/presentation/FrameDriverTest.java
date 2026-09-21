@@ -11,6 +11,7 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioFrame;
 import com.amirrezahadipoor.herodefense.audio.MusicBed;
+import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
 import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -22,6 +23,7 @@ import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
 import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
+import com.amirrezahadipoor.herodefense.story.HollowVoice;
 import com.amirrezahadipoor.herodefense.story.WhisperLines;
 import org.junit.jupiter.api.Test;
 
@@ -202,6 +204,93 @@ final class FrameDriverTest {
 
         assertTrue(driver.gameOverPresentationSeconds() >= 1f,
             "the restart gate opens in real time, not frame-clamped time");
+    }
+
+    @Test
+    void theDeathLineSpeaksInTheBoxAndHoldsTheRevealUntilItCloses() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+        // Park a death line in the ledger the way the director does at hero fall.
+        String line = HollowVoice.lineForDeath(state);
+        assertNotNull(line, "a first death has a word");
+
+        flow.transitionTo(GameScreenState.GAME_OVER);
+        nanos += 250_000_000L;
+        driver.update(1f / 15f);
+
+        assertEquals(line, driver.storyDialogue().text(), "the word comes up in the box");
+        assertEquals(SpeechVoice.HOLLOW, driver.storyDialogue().voice(), "in the Hollow's own voice");
+        assertEquals(DialogueBox.Source.DEATH, driver.storyDialogue().source());
+        assertEquals(0f, driver.gameOverPresentationSeconds(), 1e-4f, "and the reveal waits for it");
+
+        // Let the word type, be read and close itself; the word is 55 letters, so this covers it all.
+        nanos += 6_000_000_000L;
+        driver.update(6f);
+        assertFalse(driver.storyDialogueActive(), "the box closes on its own once the reading is done");
+
+        driver.update(1f / 15f);
+        assertNull(HollowVoice.pendingDeathLine(state), "the word leaves the ledger once it has closed");
+        assertTrue(driver.gameOverPresentationSeconds() > 0f, "and only then does the summary rise");
+    }
+
+    @Test
+    void aDeathWithNoWordToGiveRevealsWithoutABox() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+        HollowVoice.lineForDeath(state); // the word was claimed...
+        HollowVoice.markDeathLineShown(state); // ...and already heard
+
+        flow.transitionTo(GameScreenState.GAME_OVER);
+        nanos += 250_000_000L;
+        driver.update(1f / 15f); // the wall clock's baseline frame
+        nanos += 250_000_000L;
+        driver.update(1f / 15f);
+
+        assertFalse(driver.storyDialogueActive(), "nothing new to say: no box");
+        assertTrue(driver.gameOverPresentationSeconds() > 0f, "and the reveal does not wait");
+    }
+
+    @Test
+    void aCompletedRunNeverSpeaksTheDeathLine() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        state.runComplete = true;
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+        assertNotNull(HollowVoice.lineForDeath(state), "the word is claimed even if the run is won");
+
+        flow.transitionTo(GameScreenState.GAME_OVER);
+        nanos += 250_000_000L;
+        driver.update(1f / 15f);
+
+        assertFalse(driver.storyDialogueActive(), "a finished run is no death: the word stays parked");
+        assertEquals(0f, driver.gameOverPresentationSeconds(), 1e-4f, "and a completed run never holds the timer");
+    }
+
+    @Test
+    void aTapFinishesAndClosesTheDeathLineAndStillMarksItHeard() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+        HollowVoice.lineForDeath(state);
+
+        flow.transitionTo(GameScreenState.GAME_OVER);
+        driver.update(0.05f);
+        assertTrue(driver.storyDialogueActive());
+        assertTrue(driver.storyDialogue().typing());
+
+        driver.advanceStoryDialogue();
+        assertFalse(driver.storyDialogue().typing(), "the first tap lands the rest of the word at once");
+        driver.advanceStoryDialogue();
+        assertTrue(driver.storyDialogue().fading(), "the second tap closes the box");
+        driver.update(DialogueBox.FADE_OUT_SECONDS);
+        assertFalse(driver.storyDialogueActive());
+        assertNull(HollowVoice.pendingDeathLine(state), "a word closed by hand is still a word heard");
     }
 
     @Test

@@ -450,7 +450,11 @@ public final class AndroidTouchSmokeTest {
             SystemClock.sleep(1_800L); // Let the World Tree destruction reveal finish (0.82s delay + 0.28s fade)
             captureScreen("defeat-premium-v2.png");
 
+            // The Hollow's parting word is up in the box on the defeat panel: the first tap lands the
+            // rest of it, the second closes the box, and only the next one reaches the restart button.
             long preRestartTouch = game.handledTouchUpCount();
+            tapWorld(surface, 360f + correction[0], 290f + correction[1]); // The box: the word finishes
+            await("the parting word box closes", 30_000L, () -> !game.storyDialogueActive());
             tapWorld(surface, 360f + correction[0], 290f + correction[1]); // Restart at Wave 1
             await("restart touch dispatched", 30_000L, () -> game.handledTouchUpCount() > preRestartTouch);
             draftTwoTrials(surface, game, correction);

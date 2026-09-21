@@ -20,6 +20,7 @@ import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import com.amirrezahadipoor.herodefense.shop.StatShopSystem;
 import com.amirrezahadipoor.herodefense.skills.SkillShopSystem;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
+import com.amirrezahadipoor.herodefense.story.HollowVoice;
 import com.amirrezahadipoor.herodefense.story.WhisperLines;
 
 /**
@@ -92,6 +93,12 @@ public final class FrameDriver {
     private final DialogueBox dialogue;
     private float ambientSeconds;
     private float gameOverPresentationSeconds;
+    /**
+     * The Hollow's parting word (roadmap ST1): a death line parked in the ledger speaks in the box on the
+     * game-over screen, in the Hollow's voice, before the summary is allowed to reveal.
+     */
+    private boolean deathLineBox;
+    private GameScreenState lastDeathLineState = GameScreenState.MENU;
 
     public FrameDriver(
         Host host,
@@ -189,9 +196,13 @@ public final class FrameDriver {
         // waits for its dialog. The box keeps running during a ceremony, but it may only close itself on
         // the arena, where a closed box is what lets the fight resume.
         GameScreenState frameState = flow.state();
-        if (frameState == GameScreenState.PLAYING || frameState == GameScreenState.CINEMATIC) {
-            dialogue.tick(deltaSeconds, frameState == GameScreenState.PLAYING);
+        if (frameState == GameScreenState.PLAYING || frameState == GameScreenState.CINEMATIC
+            || frameState == GameScreenState.GAME_OVER) {
+            // The game-over box may expire on its own: the summary waits for the word, then the word
+            // is over; the ceremony's sticky box still only the arena may close for itself.
+            dialogue.tick(deltaSeconds, frameState != GameScreenState.CINEMATIC);
         }
+        watchDeathLine();
         if (flow.simulationRunning() && !dialogue.active()) {
             float gameplayDelta = hitStopSystem.consume(deltaSeconds);
             if (gameplayDelta > 0f) host.updatePlaying(gameplayDelta);
@@ -206,14 +217,51 @@ public final class FrameDriver {
         }
         GameState state = host.gameState();
         if (flow.state() == GameScreenState.GAME_OVER && state != null && !state.runComplete) {
-            gameOverPresentationSeconds = Math.min(
-                GAME_OVER_PRESENTATION_CAP_SECONDS,
-                gameOverPresentationSeconds + wallDelta
-            );
+            // The death line holds the reveal: the summary does not rise until the Hollow's word is done.
+            if (!dialogue.active()) {
+                gameOverPresentationSeconds = Math.min(
+                    GAME_OVER_PRESENTATION_CAP_SECONDS,
+                    gameOverPresentationSeconds + wallDelta
+                );
+            }
         } else {
             gameOverPresentationSeconds = 0f;
         }
         host.draw(deltaSeconds);
+    }
+
+    /**
+     * The Hollow's parting word (roadmap ST1): when the defeat lands and a death line is parked in the
+     * ledger, it speaks in the box in the Hollow's voice, and the game-over reveal waits for it. The line
+     * is marked shown only once the box has closed, so a death that interrupts the app still finds its
+     * line waiting for the next panel.
+     */
+    private void watchDeathLine() {
+        GameScreenState now = flow.state();
+        if (now == GameScreenState.GAME_OVER && lastDeathLineState != GameScreenState.GAME_OVER) {
+            GameState state = host.gameState();
+            if (state != null && !state.runComplete) {
+                String line = HollowVoice.pendingDeathLine(state);
+                if (line != null && !dialogue.active()) {
+                    dialogue.speak(line, SpeechVoice.HOLLOW, DialogueBox.Source.DEATH);
+                    deathLineBox = true;
+                }
+            }
+        }
+        if (now != GameScreenState.GAME_OVER && deathLineBox) {
+            // Leaving the screen with the word still up is hearing it: the box goes and the word leaves
+            // the ledger with it.
+            if (dialogue.source() == DialogueBox.Source.DEATH) {
+                dialogue.clear();
+                HollowVoice.markDeathLineShown(host.gameState());
+            }
+            deathLineBox = false;
+        }
+        if (deathLineBox && !dialogue.active()) {
+            HollowVoice.markDeathLineShown(host.gameState());
+            deathLineBox = false;
+        }
+        lastDeathLineState = now;
     }
 
     /** Wall-clock pause lengths feed the Long Pause secret; a resume persists the record. */

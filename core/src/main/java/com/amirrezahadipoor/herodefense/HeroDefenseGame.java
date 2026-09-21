@@ -176,8 +176,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private ScreenStateComposer screenStateComposer;
     private RenderStack renderers;
     private CodexTouchController codexTouchController;
-    /** Current idle-whisper line, or null when no whisper is showing. */
-    /** Current mid-run story beat (title card, reflection), or null when none is showing. */
     private RunPresentationSystem presentationSystem;
     private InventoryTouchController inventoryTouchController;
     private ItemDropSystem itemDropSystem;
@@ -372,6 +370,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         return inventoryTouchController == null ? -1 : inventoryTouchController.selectedIndex();
     }
 
+    /** Read-only test visibility: a message box on screen (a beat, a whisper, the parting word). */
+    public boolean storyDialogueActive() {
+        return frameDriver.storyDialogueActive();
+    }
+
     /** Read-only test visibility; action feedback still originates only from touch. */
     public String inventoryFeedbackMessage() {
         return inventoryTouchController == null ? null : inventoryTouchController.feedbackMessage();
@@ -530,7 +533,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public void ascendRun() { sessionController.ascendRun(); }
         @Override public void continueRun() { sessionController.continueRun(); }
         @Override public void beginOpening() { HeroDefenseGame.this.beginOpening(); }
-        @Override public void fireUltimate() { HeroDefenseGame.this.fireUltimate(); }
+        @Override public void fireUltimate() {
+            UltimateResult result = new HeroUltimateSystem().fire(gameState);
+            if (!result.fired()) return;
+            new UltimatePresentation(particleSystem, screenShakeSystem, audioManager).release(result);
+        }
         @Override public void beginPlantingCeremony() { HeroDefenseGame.this.beginPlantingCeremony(); }
 
         @Override public void focusFireAt(float worldX, float worldY) {
@@ -561,13 +568,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         if (marked != null) {
             hapticFeedback.tap();
         }
-    }
-
-    /** Fires the Ultimate; its blast, beam fan, shake, and sound live in UltimatePresentation. */
-    private void fireUltimate() {
-        UltimateResult result = new HeroUltimateSystem().fire(gameState);
-        if (!result.fired()) return;
-        new UltimatePresentation(particleSystem, screenShakeSystem, audioManager).release(result);
     }
 
     /** Shows the opening line for a freshly started wave, unless a beat already shows. */

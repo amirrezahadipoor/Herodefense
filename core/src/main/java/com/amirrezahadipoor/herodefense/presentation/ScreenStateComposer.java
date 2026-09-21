@@ -393,9 +393,10 @@ if (host.flow().state() == GameScreenState.MENU) {
         host.uiIconRenderer(), host.uiFrameRenderer(), host.saplingTreeRenderer(), host.ambientSeconds()
     );
 }
-if (host.flow().state() == GameScreenState.PLAYING) {
-    // The message box: a beat or a whisper, typing out in its speaker's voice. It is drawn after the
-    // HUD rows so the box sits over them, and it is on the un-zoomed camera like the HUD itself.
+if (host.flow().state() == GameScreenState.PLAYING || host.flow().state() == GameScreenState.GAME_OVER) {
+    // The message box: a beat or a whisper on the arena, the Hollow's parting word on the game-over
+    // screen. It is drawn after the HUD rows and overlays so the box sits over them, and it is on the
+    // un-zoomed camera like the HUD itself.
     host.dialogueBoxRenderer().draw(spriteBatch, camera.combined, host.storyDialogue());
 }
 host.touchFeedbackRenderer().draw(camera.combined, host.touchFeedbackSystem());

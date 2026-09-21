@@ -241,6 +241,12 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 return true;
             }
             if (host.flow().state() == GameScreenState.GAME_OVER) {
+                // The death line box: a tap finishes the word or closes it, never the buttons the
+                // panel will sit on once the word is done.
+                if (host.storyDialogueActive()) {
+                    host.advanceStoryDialogue();
+                    return true;
+                }
                 if (GameOverOverlayRenderer.isInteractive(
                     host.gameOverPresentationSeconds(),
                     host.gameState().runComplete
