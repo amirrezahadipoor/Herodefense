@@ -23,6 +23,10 @@ public enum RootNetworkStrings implements Translated {
     HINT("Tap a green node to awaken it with Heartwood",
         "روی گره سبز بزنید تا با چوب دل بیدارش کنید"),
 
+    /** The dawn ledger at the hub's foot: the count, and the line for a band that is still empty. */
+    DAWNS("DAWNS: %1$s", "سحرها: %1$s"),
+    DAWNS_EMPTY("the tree is still young", "درخت هنوز جوان است"),
+
     /** The two verdicts the screen flashes under the tree when a node is bought or cannot be. */
     FEEDBACK_NEED("NEED %1$s MORE HEARTWOOD", "%1$s چوب دل دیگر لازم است"),
     FEEDBACK_AWAKENED("ROOT AWAKENED | %1$s", "ریشه بیدار شد | %1$s");

@@ -285,6 +285,11 @@ live there, deep in the backdrop under everything else.
   sharpen by 1.6x while a boss stands, blink shut (0.45s) when the tree falls, and drift apart
   and away over six seconds when the run is won. The forest arena (waves 1-100) never sees
   them. Reduced motion removes the breath and slows the drift; it never removes the night.
+- **The dawn ledger.** At the foot of the Root Network hub, a dark band carries one carved notch
+  per dawn the player has brought back (one per completed ascension) -- the newest dawn still
+  warm gold, the rest set. An empty band says "the tree is still young". Every other record in
+  the game is a number in a corner; this one is carved where a player can look at it. The tree
+  remembers, and this is what remembering looks like.
 - **The dawn.** The run's colour arc (see `render/StageGrade`) is named for the day: **DAWN**
   1-50, **AMBER** 51-100, **TEAL** 101-150, **HOLLOW** 151-200. The victory closes that arc.
 

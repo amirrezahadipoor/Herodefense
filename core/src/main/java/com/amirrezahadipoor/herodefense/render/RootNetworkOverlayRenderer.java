@@ -79,6 +79,8 @@ public final class RootNetworkOverlayRenderer implements AutoCloseable {
         shapes.end();
         Gdx.gl.glDisable(GL20.GL_BLEND);
 
+        drawDawnLedgerShapes(batch, projection, state);
+
         batch.setProjectionMatrix(projection);
         batch.begin();
         for (RootNodeDefinition def : RootNetworkCatalog.all()) {
@@ -112,7 +114,57 @@ public final class RootNetworkOverlayRenderer implements AutoCloseable {
         }
         text.drawCentered(batch, GameLocale.text(RootNetworkStrings.HINT),
             UiMirror.SCREEN_WIDTH * 0.5f, 140f, 0.7f, OverlayText.SUBTLE, 1f);
+        drawDawnLedgerText(batch, state);
         batch.end();
+    }
+
+    /**
+     * The dawn ledger: the dark band at the hub's foot, one carved notch per dawn the player has
+     * brought back (one per completed ascension). The band is the record where a player can look
+     * at it -- the tree remembers, and this is what remembering looks like.
+     */
+    private void drawDawnLedgerShapes(SpriteBatch batch, Matrix4 projection, GameState state) {
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        shapes.setProjectionMatrix(projection);
+        shapes.begin(ShapeRenderer.ShapeType.Filled);
+        shapes.setColor(0.04f, 0.07f, 0.05f, 0.9f);
+        shapes.rect(
+            DawnLedger.BAND_X, DawnLedger.BAND_Y, DawnLedger.BAND_WIDTH, DawnLedger.BAND_HEIGHT
+        );
+        int notches = DawnLedger.notchesFor(Math.max(0, state.totalAscensionsCompleted));
+        for (int i = 0; i < notches; i++) {
+            boolean newest = i == notches - 1;
+            // The newest dawn is the one still warm.
+            shapes.setColor(
+                0.85f, newest ? 0.95f : 0.78f, 0.45f, newest ? 0.95f : 0.65f
+            );
+            shapes.rect(
+                DawnLedger.notchX(i), DawnLedger.notchY(i),
+                DawnLedger.NOTCH_WIDTH, DawnLedger.NOTCH_HEIGHT
+            );
+        }
+        shapes.end();
+        Gdx.gl.glDisable(GL20.GL_BLEND);
+    }
+
+    private void drawDawnLedgerText(SpriteBatch batch, GameState state) {
+        int dawns = Math.max(0, state.totalAscensionsCompleted);
+        text.drawTrailing(
+            batch,
+            GameLocale.text(RootNetworkStrings.DAWNS, GameLocale.number(dawns)),
+            0f, UiMirror.SCREEN_WIDTH,
+            UiMirror.SCREEN_WIDTH - DawnLedger.BAND_X - DawnLedger.BAND_WIDTH + 16f,
+            DawnLedger.BAND_Y + DawnLedger.BAND_HEIGHT * 0.5f - 5f,
+            0.8f, OverlayText.GOLD, 1f
+        );
+        if (dawns == 0) {
+            text.drawCentered(
+                batch, GameLocale.text(RootNetworkStrings.DAWNS_EMPTY),
+                UiMirror.SCREEN_WIDTH * 0.5f,
+                DawnLedger.BAND_Y + DawnLedger.BAND_HEIGHT * 0.5f - 5f,
+                0.7f, OverlayText.SUBTLE, 1f
+            );
+        }
     }
 
     /** Reviewed icon key per node bonus; every key must resolve in `UiIconRenderer`. */

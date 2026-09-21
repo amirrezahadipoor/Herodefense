@@ -45,7 +45,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 
 ---
 
-## 2. Exhaustive Proofreading Ledger (263 Entries across 12 String Tables)
+## 2. Exhaustive Proofreading Ledger (265 Entries across 12 String Tables)
 
 ### 2.1 MenuStrings (18 entries)
 
@@ -191,7 +191,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `SETS_STATUS` | SETS: %1$s \| %2$s | مجموعه‌ها: %1$s \| %2$s | Approved. Active gear sets summary. |
 | `SET_PROGRESS` | %1$s %2$s/%3$s | %1$s %2$s/%3$s | Approved. Set piece bonus counter. |
 
-### 2.8 RootNetworkStrings (8 entries)
+### 2.8 RootNetworkStrings (10 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
@@ -203,6 +203,8 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `HINT` | Tap a green node to awaken it with Heartwood | روی گره سبز بزنید تا با چوب دل بیدارش کنید | Approved. Instruction on node awakening. |
 | `FEEDBACK_NEED` | NEED %1$s MORE HEARTWOOD | %1$s چوب دل دیگر لازم است | Approved. Unlock deficit warning. |
 | `FEEDBACK_AWAKENED` | ROOT AWAKENED \| %1$s | ریشه بیدار شد \| %1$s | Approved. Unlock confirmation toast. |
+| `DAWNS` | DAWNS: %1$s | سحرها: %1$s | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
+| `DAWNS_EMPTY` | the tree is still young | درخت هنوز جوان است | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 
 ### 2.9 PathStrings (16 entries)
 
