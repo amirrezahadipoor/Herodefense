@@ -364,6 +364,12 @@ public final class AndroidTouchSmokeTest {
             SystemClock.sleep(800L);
             captureScreen("victory-premium-v2.png");
 
+            // The Tree's victory line is typing in the box over the premium summary: the first tap
+            // lands the rest of it, the box closes on its own, and only then does the tap reach
+            // the restart button. (The victory reveal itself is instant -- runComplete never
+            // waits on the timer -- so no reveal await is needed here.)
+            tapWorld(surface, 360f + correction[0], 290f + correction[1]); // The box: the word finishes
+            await("the victory line box closes", 30_000L, () -> !game.storyDialogueActive());
             tapWorld(surface, 360f + correction[0], 290f + correction[1]); // Defend again
             draftTwoTrials(surface, game, correction);
             await("fresh run opening", () ->

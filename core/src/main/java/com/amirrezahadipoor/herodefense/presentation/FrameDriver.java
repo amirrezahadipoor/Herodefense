@@ -5,6 +5,8 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioFrame;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 import com.amirrezahadipoor.herodefense.audio.MusicBed;
@@ -99,6 +101,8 @@ public final class FrameDriver {
      */
     private boolean deathLineBox;
     private GameScreenState lastDeathLineState = GameScreenState.MENU;
+    private boolean victoryLineBox;
+    private GameScreenState lastVictoryLineState = GameScreenState.MENU;
 
     public FrameDriver(
         Host host,
@@ -203,6 +207,7 @@ public final class FrameDriver {
             dialogue.tick(deltaSeconds, frameState != GameScreenState.CINEMATIC);
         }
         watchDeathLine();
+        watchVictoryLine();
         if (flow.simulationRunning() && !dialogue.active()) {
             float gameplayDelta = hitStopSystem.consume(deltaSeconds);
             if (gameplayDelta > 0f) host.updatePlaying(gameplayDelta);
@@ -262,6 +267,34 @@ public final class FrameDriver {
             deathLineBox = false;
         }
         lastDeathLineState = now;
+    }
+
+    /**
+     * The Tree's victory line: when a run is completed, the premium summary rises and the Tree speaks its
+     * parting word in the box, in its own blips. There is no ledger here -- the victory line is a reward,
+     * not a one-time gift, so every completed run hears it.
+     */
+    private void watchVictoryLine() {
+        GameScreenState now = flow.state();
+        if (now == GameScreenState.GAME_OVER && lastVictoryLineState != GameScreenState.GAME_OVER) {
+            GameState state = host.gameState();
+            if (state != null && state.runComplete && !dialogue.active()) {
+                dialogue.speak(
+                    GameLocale.text(StoryStrings.TREE_VICTORY), SpeechVoice.TREE, DialogueBox.Source.VICTORY);
+                victoryLineBox = true;
+            }
+        }
+        if (now != GameScreenState.GAME_OVER && victoryLineBox) {
+            // Leaving the screen with the word still up is hearing it: the box goes, and the word goes with it.
+            if (dialogue.source() == DialogueBox.Source.VICTORY) {
+                dialogue.clear();
+            }
+            victoryLineBox = false;
+        }
+        if (victoryLineBox && !dialogue.active()) {
+            victoryLineBox = false;
+        }
+        lastVictoryLineState = now;
     }
 
     /** Wall-clock pause lengths feed the Long Pause secret; a resume persists the record. */

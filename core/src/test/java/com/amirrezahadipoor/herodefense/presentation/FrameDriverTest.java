@@ -11,6 +11,8 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioFrame;
 import com.amirrezahadipoor.herodefense.audio.MusicBed;
+import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 import com.amirrezahadipoor.herodefense.input.InventoryTouchController;
 import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
@@ -225,7 +227,7 @@ final class FrameDriverTest {
         assertEquals(DialogueBox.Source.DEATH, driver.storyDialogue().source());
         assertEquals(0f, driver.gameOverPresentationSeconds(), 1e-4f, "and the reveal waits for it");
 
-        // Let the word type, be read and close itself; the word is 55 letters, so this covers it all.
+        // Let the word type, be read and close itself; the word is 49 letters, so this covers it all.
         nanos += 6_000_000_000L;
         driver.update(6f);
         assertFalse(driver.storyDialogueActive(), "the box closes on its own once the reading is done");
@@ -267,7 +269,13 @@ final class FrameDriverTest {
         nanos += 250_000_000L;
         driver.update(1f / 15f);
 
-        assertFalse(driver.storyDialogueActive(), "a finished run is no death: the word stays parked");
+        assertFalse(
+            driver.storyDialogueActive() && driver.storyDialogue().source() == DialogueBox.Source.DEATH,
+            "a finished run is no death: the death word is never the one spoken");
+        assertTrue(
+            driver.storyDialogueActive() && driver.storyDialogue().source() == DialogueBox.Source.VICTORY,
+            "the summary hears the Tree's victory line instead");
+        assertNotNull(HollowVoice.pendingDeathLine(state), "the death word stays parked for the next defeat");
         assertEquals(0f, driver.gameOverPresentationSeconds(), 1e-4f, "and a completed run never holds the timer");
     }
 
@@ -291,6 +299,44 @@ final class FrameDriverTest {
         driver.update(DialogueBox.FADE_OUT_SECONDS);
         assertFalse(driver.storyDialogueActive());
         assertNull(HollowVoice.pendingDeathLine(state), "a word closed by hand is still a word heard");
+    }
+
+    @Test
+    void theVictoryLineSpeaksInTheTreeVoiceForEveryCompletedRun() {
+        FrameDriver driver = driver(false);
+        GameState state = GameState.newRun(21L);
+        state.runComplete = true;
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
+
+        flow.transitionTo(GameScreenState.GAME_OVER);
+        nanos += 250_000_000L;
+        driver.update(1f / 15f);
+
+        assertEquals(GameLocale.text(StoryStrings.TREE_VICTORY), driver.storyDialogue().text(),
+            "the Tree speaks its victory line in the box");
+        assertEquals(SpeechVoice.TREE, driver.storyDialogue().voice(), "in the Tree's own voice");
+        assertEquals(DialogueBox.Source.VICTORY, driver.storyDialogue().source());
+        assertEquals(0f, driver.gameOverPresentationSeconds(), 1e-4f,
+            "the premium summary rises at once: it never waits on the timer");
+
+        // The word is 67 letters; let it type, be read and close itself.
+        nanos += 6_000_000_000L;
+        driver.update(6f);
+        assertFalse(driver.storyDialogueActive(), "the box closes on its own once the reading is done");
+
+        // No ledger: the next completed run hears the same word again.
+        GameState second = GameState.newRun(22L);
+        second.runComplete = true;
+        host.state = second;
+        flow.transitionTo(GameScreenState.PLAYING);
+        nanos += 250_000_000L;
+        driver.update(1f / 15f); // a frame passes in the new run, so the driver sees it leave and return
+        flow.transitionTo(GameScreenState.GAME_OVER);
+        nanos += 250_000_000L;
+        driver.update(1f / 15f);
+        assertTrue(driver.storyDialogueActive(), "a new completed run hears the victory line again");
+        assertEquals(DialogueBox.Source.VICTORY, driver.storyDialogue().source());
     }
 
     @Test
