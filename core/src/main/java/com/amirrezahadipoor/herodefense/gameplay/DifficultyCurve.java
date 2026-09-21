@@ -55,9 +55,9 @@ public final class DifficultyCurve {
     // and the brace, the step, the dodge and the telegraph all finally multiply, avoid or prevent something that
     // matters. DifficultyCurveTest pins the arithmetic: no type's hit exceeds its share of the expected bar at
     // any wave, and the share falls monotonically.
-    public static final float[] EXPECTED_BAR_ANCHOR_WAVES = {1f, 10f, 25f, 50f, 80f, 100f, 150f, 200f};
-    public static final float[] EXPECTED_BAR_ANCHOR_VALUES = {100f, 166f, 250f, 382f, 500f, 601f, 790f, 863f};
-    public static final float[] DAMAGE_SHARE_ANCHOR_WAVES = {1f, 5f, 40f, 100f, 200f};
+    static final float[] EXPECTED_BAR_ANCHOR_WAVES = {1f, 10f, 25f, 50f, 80f, 100f, 150f, 200f};
+    static final float[] EXPECTED_BAR_ANCHOR_VALUES = {100f, 166f, 250f, 382f, 500f, 601f, 790f, 863f};
+    static final float[] DAMAGE_SHARE_ANCHOR_WAVES = {1f, 5f, 40f, 100f, 200f};
 
     /**
      * What one landed contact hit takes out of the bar the hero is expected to be carrying (audit item 1).
@@ -86,7 +86,7 @@ public final class DifficultyCurve {
      * honest statement of this curve is: a hit is worth between a tenth and a third of a percent of the bar in the
      * late game, and a wave is worth a quarter of it.
      */
-    public static final float[] DAMAGE_SHARE_ANCHOR_VALUES = {0.0075f, 0.0028f, 0.0024f, 0.0020f, 0.0018f};
+    static final float[] DAMAGE_SHARE_ANCHOR_VALUES = {0.0075f, 0.0028f, 0.0024f, 0.0020f, 0.0018f};
 
     /**
      * The share of the bar a boss special takes before the encounter's own multiplier (audit item 1 + A5).
@@ -107,8 +107,8 @@ public final class DifficultyCurve {
      * an inside and an outside (roadmap A5, item 2), which is the next commit. The brace already multiplies this
      * by 0.4 like any other hit.
      */
-    public static final float[] BOSS_SPECIAL_SHARE_ANCHOR_WAVES = {1f, 5f, 40f, 100f, 200f};
-    public static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.050f, 0.058f, 0.066f, 0.075f};
+    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_WAVES = {1f, 5f, 40f, 100f, 200f};
+    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.050f, 0.058f, 0.066f, 0.075f};
 
     // Ascension schedule (Phase 25.3): relative per-tier bumps on every growth constant,
     // tuned against the simulator at tiers 0/3/6/10 (search in docs/BALANCE.md). Phase 89
