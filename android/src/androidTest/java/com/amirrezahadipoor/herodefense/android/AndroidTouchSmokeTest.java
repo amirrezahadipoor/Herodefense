@@ -905,9 +905,9 @@ public final class AndroidTouchSmokeTest {
     /**
      * The device-evidence matrix's api30 pixel_3a table, measured by run 35462188576 at commit 39383ed --
      * the run whose one failure ({@code opening-line-one} at 43.47 against the reference profile's 34.45)
-     * is what made the tables per-profile. Screens this run never reached ({@code opening-line-three},
-     * {@code live-hud}, {@code pause}: their journey stopped at the first drift) are absent and stay
-     * UNREFERENCED on this profile until a green run measures them.
+     * is what made the tables per-profile. The screens that run never reached ({@code opening-line-three},
+     * {@code live-hud}, {@code pause}: its journey stopped at the first drift) were measured by
+     * run 35647129943, whose journey completed, and are pinned below.
      */
     private static final Map<String, float[]> API30_PIXEL_3A = Map.ofEntries(
         ref("tree-siege-premium-v2.png", 46.16f, 0.9083f),
@@ -936,10 +936,19 @@ public final class AndroidTouchSmokeTest {
         // Same boxed ceremony as the plant frame, which this profile's run measured (run 35643650151:
         // mean=43.68 lit=0.8256); the water frame was not reached, so it shares that value until measured.
         ref("ceremony-water-premium-v2.png", 43.68f, 0.8256f),
-        ref("second-tree-standing-premium-v2.png", 49.84f, 0.9599f),
+        // Re-measured 2026-09-21 (run 35647129943: mean=43.43 lit=0.8243): on this profile's slower
+        // emulator the boxed line is still up when the capture lands, so the reference is the box-present
+        // frame; a box-free frame (mean ~49.8, lit ~0.96) also passes it.
+        ref("second-tree-standing-premium-v2.png", 43.43f, 0.8243f),
         ref("victory-premium-v2.png", 45.86f, 0.9807f),
         ref("main-menu-premium-v2.png", 42.85f, 0.9691f),
         ref("opening-line-one-premium-v2.png", 43.47f, 0.9932f),
+        // Pinned 2026-09-21 from run 35647129943, the first run whose journey reached it (mean=35.77 lit=0.8495).
+        ref("opening-line-three-premium-v2.png", 35.77f, 0.8495f),
+        // Pinned 2026-09-21 from run 35647129943 (mean=45.95 lit=0.9862): box-free at the capture.
+        ref("live-hud-premium-v2.png", 45.95f, 0.9862f),
+        // Pinned 2026-09-21 from run 35647129943 (mean=43.56 lit=0.9542).
+        ref("pause-premium-v2.png", 43.56f, 0.9542f),
         ref("reward-cards-premium-v2.png", 43.57f, 0.9689f)
     );
 
