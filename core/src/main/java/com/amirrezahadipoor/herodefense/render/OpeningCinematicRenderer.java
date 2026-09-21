@@ -2,7 +2,6 @@ package com.amirrezahadipoor.herodefense.render;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
@@ -18,7 +17,7 @@ public final class OpeningCinematicRenderer implements AutoCloseable {
 
     private final ShapeRenderer shapes = new ShapeRenderer();
 
-    public void draw(SpriteBatch batch, Matrix4 projection, OpeningCinematic opening) {
+    public void draw(Matrix4 projection, OpeningCinematic opening) {
         float cloud = opening.cloudAlpha();
         if (cloud > 0.001f) {
             Gdx.gl.glEnable(GL20.GL_BLEND);

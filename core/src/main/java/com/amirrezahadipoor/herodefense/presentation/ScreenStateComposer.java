@@ -297,7 +297,7 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
     camera.update();
     if (opening || host.plantingCeremony().isActive()) {
         // The opening's cloud, then the scene's line typing out in the same box the arena's beats use.
-        host.openingCinematicRenderer().draw(spriteBatch, camera.combined, host.openingCinematic());
+        host.openingCinematicRenderer().draw(camera.combined, host.openingCinematic());
         host.dialogueBoxRenderer().draw(spriteBatch, camera.combined, host.cinematicDialogue());
     }
     host.postProcessRenderer().endSceneAndComposite();
