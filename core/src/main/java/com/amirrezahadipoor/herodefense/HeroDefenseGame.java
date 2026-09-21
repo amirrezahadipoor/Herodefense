@@ -49,6 +49,7 @@ import com.amirrezahadipoor.herodefense.gameplay.WaveLifecycleSystem;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.ScreenTouchRouter;
 import com.amirrezahadipoor.herodefense.input.SystemBackKeyHandler;
+import com.amirrezahadipoor.herodefense.presentation.DialogueBox;
 import com.amirrezahadipoor.herodefense.presentation.FrameDriver;
 import com.amirrezahadipoor.herodefense.progression.TrophyBook;
 import com.amirrezahadipoor.herodefense.progression.TrophyPresenter;
@@ -93,6 +94,7 @@ import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
 import com.amirrezahadipoor.herodefense.render.CodexOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.IdleWhisperRenderer;
 import com.amirrezahadipoor.herodefense.render.CombatEntityRenderer;
+import com.amirrezahadipoor.herodefense.render.DialogueBoxRenderer;
 import com.amirrezahadipoor.herodefense.render.PostProcessRenderer;
 import com.amirrezahadipoor.herodefense.render.DisplayMetrics;
 import com.amirrezahadipoor.herodefense.render.GameFonts;
@@ -780,15 +782,13 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public SkillShopSystem skillShopSystem() { return skillShopSystem; }
         @Override public StatShopOverlayRenderer statShopOverlayRenderer() { return renderers.statShopOverlayRenderer; }
         @Override public StatShopSystem statShopSystem() { return statShopSystem; }
-        @Override public String storyBeatLine() { return frameDriver.storyBeatLine(); }
-        @Override public float storyBeatSeconds() { return frameDriver.storyBeatSeconds(); }
+        @Override public DialogueBox storyDialogue() { return frameDriver.storyDialogue(); }
         @Override public TouchFeedbackRenderer touchFeedbackRenderer() { return renderers.touchFeedbackRenderer; }
         @Override public TouchFeedbackSystem touchFeedbackSystem() { return touchFeedbackSystem; }
         @Override public TrialDraftOverlayRenderer trialDraftOverlayRenderer() { return renderers.trialDraftOverlayRenderer; }
         @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
         @Override public UiIconRenderer uiIconRenderer() { return renderers.uiIconRenderer; }
-        @Override public String whisperLine() { return frameDriver.whisperLine(); }
-        @Override public float whisperSeconds() { return frameDriver.whisperSeconds(); }
+        @Override public DialogueBoxRenderer dialogueBoxRenderer() { return renderers.dialogueBoxRenderer; }
     }
 
 }

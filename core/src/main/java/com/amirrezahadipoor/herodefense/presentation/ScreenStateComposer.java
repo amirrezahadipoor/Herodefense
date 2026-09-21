@@ -22,6 +22,7 @@ import com.amirrezahadipoor.herodefense.render.ArenaEnvironmentRenderer;
 import com.amirrezahadipoor.herodefense.render.CeremonyHeroRenderer;
 import com.amirrezahadipoor.herodefense.render.CodexOverlayRenderer;
 import com.amirrezahadipoor.herodefense.render.CombatEntityRenderer;
+import com.amirrezahadipoor.herodefense.render.DialogueBoxRenderer;
 import com.amirrezahadipoor.herodefense.render.PostProcessRenderer;
 import com.amirrezahadipoor.herodefense.render.EquipmentSpriteRenderer;
 import com.amirrezahadipoor.herodefense.render.FloatingCoinTextRenderer;
@@ -176,9 +177,8 @@ public final class ScreenStateComposer {
 
         StatShopSystem statShopSystem();
 
-        String storyBeatLine();
-
-        float storyBeatSeconds();
+        /** The frame's message box; what a beat or whisper is typing out, in whose voice. */
+        DialogueBox storyDialogue();
 
         TouchFeedbackRenderer touchFeedbackRenderer();
 
@@ -190,9 +190,7 @@ public final class ScreenStateComposer {
 
         UiIconRenderer uiIconRenderer();
 
-        String whisperLine();
-
-        float whisperSeconds();
+        DialogueBoxRenderer dialogueBoxRenderer();
     }
 
     /** Builds one frame for the state the flow is currently in. */
@@ -405,14 +403,10 @@ if (host.flow().state() == GameScreenState.MENU) {
         host.uiIconRenderer(), host.uiFrameRenderer(), host.saplingTreeRenderer(), host.ambientSeconds()
     );
 }
-if (host.whisperLine() != null && host.flow().state() == GameScreenState.PLAYING) {
-    host.idleWhisperRenderer().draw(
-        spriteBatch, camera.combined, host.whisperLine(), host.whisperSeconds()
-    );
-} else if (host.storyBeatLine() != null && host.flow().state() == GameScreenState.PLAYING) {
-    host.idleWhisperRenderer().draw(
-        spriteBatch, camera.combined, host.storyBeatLine(), host.storyBeatSeconds()
-    );
+if (host.flow().state() == GameScreenState.PLAYING) {
+    // The message box: a beat or a whisper, typing out in its speaker's voice. It is drawn after the
+    // HUD rows so the box sits over them, and it is on the un-zoomed camera like the HUD itself.
+    host.dialogueBoxRenderer().draw(spriteBatch, camera.combined, host.storyDialogue());
 }
 host.touchFeedbackRenderer().draw(camera.combined, host.touchFeedbackSystem());
     }
