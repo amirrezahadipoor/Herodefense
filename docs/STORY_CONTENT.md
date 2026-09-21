@@ -274,7 +274,25 @@ per the rule noted next to it.
   - Storm Colossus: "Thunder never hurries. You should."
   - Bloodroot Avatar: "The wound fights the cure. It always has."
 
-## 10. A Few Extra Touches (small, optional, not required by any roadmap item)
+## 10. The Dawn (the victory sky -- visual, no new words)
+
+The run's colour arc (see `render/StageGrade`) is named for the day: **DAWN** 1-50, **AMBER**
+51-100, **TEAL** 101-150, **HOLLOW** 151-200. The victory closes that arc.
+
+When a run completes, the sky behind the premium summary breaks from the HOLLOW's night into dawn
+gold over eight seconds, procedural light (one shader pass, no new art): a glow at the horizon and
+two slow bands rising out of it, breathing once per minute. The light lives at the bottom half of
+the frame and dies before the top, so the epilogue lines and the title panel keep their contrast
+while the night behind them turns to morning.
+
+The timing is the story: the Tree's victory line takes the box about six seconds (type, hold,
+close), and the sunrise is eight -- so the player reads "You kept the light alive, night after
+night. The dawn remembers you." **while the dawn is still arriving**, and it is finished breaking
+before they decide whether to ascend. The first tenth of the sunrise is barely visible, on
+purpose: the player reads before they notice. Reduced motion keeps the sunrise advancing and
+stops it breathing. A defeat never dawns; a new run is night again.
+
+## 11. A Few Extra Touches (small, optional, not required by any roadmap item)
 
 - **Idle whisper:** the six lines, each shown once ever, in order:
   1. "The roots kept your seat warm while you were gone."

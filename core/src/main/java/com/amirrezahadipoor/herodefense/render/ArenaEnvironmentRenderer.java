@@ -45,6 +45,10 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     private final WorldTreeAnimationController treeAnimation =
         new WorldTreeAnimationController();
     private final ArenaAtmosphereRenderer atmosphere = new ArenaAtmosphereRenderer();
+    private final DawnReveal dawnReveal = new DawnReveal();
+    private final DawnGlowRenderer dawnGlow = new DawnGlowRenderer();
+    /** The state the dawn clock is ticking for; a new state is a new run, and a new run is night. */
+    private GameState dawnState;
 
     public ArenaEnvironmentRenderer() {
         backdrop = texture("generated/environment/arena_backdrop.png");
@@ -92,6 +96,28 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         // D4: the air and the bosses' ground auras, over the finished arena and under the actors.
         // A suppressed-motion frame gets a frozen clock, which holds both effects on a calm still.
         atmosphere.draw(batch, state, motionSuppressed ? 0f : runTimeSeconds, motionSuppressed);
+        drawDawn(batch, state, runTimeSeconds, presentationDeltaSeconds, motionSuppressed);
+    }
+
+    /**
+     * The arc's last colour: when the run is complete, the HOLLOW's night sky breaks into dawn gold
+     * over the premium summary. The clock ticks on the presentation delta -- the simulation is
+     * stopped at this point -- and a new state object is a new run, which starts in the dark again.
+     * A suppressed-motion frame still dawns: the sunrise advances, it just stops breathing.
+     */
+    private void drawDawn(
+        SpriteBatch batch, GameState state, float runTimeSeconds,
+        float presentationDeltaSeconds, boolean motionSuppressed
+    ) {
+        if (dawnState != state) {
+            dawnState = state;
+            dawnReveal.reset();
+        }
+        if (!state.runComplete) {
+            return;
+        }
+        dawnReveal.tick(presentationDeltaSeconds);
+        dawnGlow.draw(batch, dawnReveal.eased(), motionSuppressed ? 0f : runTimeSeconds);
     }
 
     /** Returns true for the second arena variant (hollow), used for waves 101-200. */
@@ -181,6 +207,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         backdrop2.dispose();
         for (Texture texture : ground) texture.dispose();
         for (Texture texture : crystals) texture.dispose();
+        dawnGlow.close();
         healthyTreeAtlas.dispose();
         damagedTreeAtlas.dispose();
         atmosphere.close();
