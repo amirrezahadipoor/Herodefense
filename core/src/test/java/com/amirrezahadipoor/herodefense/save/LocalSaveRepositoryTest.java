@@ -23,99 +23,103 @@ final class LocalSaveRepositoryTest {
 
     @Test
     void aSaveIsVisibleToTheReadThatFollowsIt() {
-        LocalSaveRepository repository = new LocalSaveRepository(new MemoryPreferences());
-        GameState state = GameState.newRun(5L);
-        state.waveNumber = 42;
-        state.coins = 137;
-        repository.save(state);
+        try (LocalSaveRepository repository = new LocalSaveRepository(new MemoryPreferences())) {
+            GameState state = GameState.newRun(5L);
+            state.waveNumber = 42;
+            state.coins = 137;
+            repository.save(state);
 
-        GameState loaded = repository.load().orElseThrow();
-        assertEquals(42, loaded.waveNumber, "the read waits for the queued write");
-        assertEquals(137, loaded.coins);
-        repository.close();
+            GameState loaded = repository.load().orElseThrow();
+            assertEquals(42, loaded.waveNumber, "the read waits for the queued write");
+            assertEquals(137, loaded.coins);
+        }
     }
 
     @Test
     void theBackupStillHoldsTheGenerationBeforeTheNewest() {
-        LocalSaveRepository repository = new LocalSaveRepository(new MemoryPreferences());
-        GameState first = GameState.newRun(5L);
-        first.waveNumber = 10;
-        repository.save(first);
-        repository.flush();
-
-        GameState second = GameState.newRun(5L);
-        second.waveNumber = 20;
-        repository.save(second);
-        repository.flush();
-
         MemoryPreferences raw = new MemoryPreferences();
-        LocalSaveRepository probe = new LocalSaveRepository(raw);
-        probe.save(first);
-        probe.flush();
-        probe.save(second);
-        probe.flush();
-        assertNotEquals(raw.getString("run.primary"), raw.getString("run.backup"),
-            "primary and backup are two different states");
-        assertTrue(raw.getString("run.primary").contains("\"waveNumber\": 20"), "primary is the newest");
-        assertTrue(raw.getString("run.backup").contains("\"waveNumber\": 10"), "backup is the one before it");
-        repository.close();
-        probe.close();
+        try (LocalSaveRepository repository = new LocalSaveRepository(new MemoryPreferences());
+             LocalSaveRepository probe = new LocalSaveRepository(raw)) {
+            GameState first = GameState.newRun(5L);
+            first.waveNumber = 10;
+            repository.save(first);
+            repository.flush();
+
+            GameState second = GameState.newRun(5L);
+            second.waveNumber = 20;
+            repository.save(second);
+            repository.flush();
+
+            probe.save(first);
+            probe.flush();
+            probe.save(second);
+            probe.flush();
+            assertNotEquals(raw.getString("run.primary"), raw.getString("run.backup"),
+                "primary and backup are two different states");
+            assertTrue(raw.getString("run.primary").contains("\"waveNumber\": 20"), "primary is the newest");
+            assertTrue(raw.getString("run.backup").contains("\"waveNumber\": 10"), "backup is the one before it");
+        }
     }
 
     @Test
     void aCorruptPrimaryFallsBackToTheBackupThroughTheSameWriter() {
         MemoryPreferences preferences = new MemoryPreferences();
-        LocalSaveRepository repository = new LocalSaveRepository(preferences);
-        GameState good = GameState.newRun(9L);
-        good.waveNumber = 7;
-        repository.save(good);
-        repository.flush();
-        String goodJson = preferences.getString("run.primary");
+        try (LocalSaveRepository repository = new LocalSaveRepository(preferences)) {
+            GameState good = GameState.newRun(9L);
+            good.waveNumber = 7;
+            repository.save(good);
+            repository.flush();
+            String goodJson = preferences.getString("run.primary");
 
-        // The next save demotes the good state to the backup, and then the primary is corrupted under it.
-        GameState next = GameState.newRun(9L);
-        next.waveNumber = 8;
-        repository.save(next);
-        repository.flush();
-        preferences.putString("run.backup", goodJson);
-        preferences.putString("run.primary", "{ this is not json");
-        assertEquals(7, repository.load().orElseThrow().waveNumber,
-            "the backup answers when the primary cannot be decoded");
-        repository.close();
+            // The next save demotes the good state to the backup, and then the primary is corrupted under it.
+            GameState next = GameState.newRun(9L);
+            next.waveNumber = 8;
+            repository.save(next);
+            repository.flush();
+            preferences.putString("run.backup", goodJson);
+            preferences.putString("run.primary", "{ this is not json");
+            assertEquals(7, repository.load().orElseThrow().waveNumber,
+                "the backup answers when the primary cannot be decoded");
+        }
     }
 
     @Test
     void clearWaitsForTheWriteItIsUndoingAndThenRemovesBothKeys() {
         MemoryPreferences preferences = new MemoryPreferences();
-        LocalSaveRepository repository = new LocalSaveRepository(preferences);
-        repository.save(GameState.newRun(3L));
-        repository.clear();
-        assertFalse(repository.hasSave(), "a clear that raced the writer would resurrect the save");
-        assertFalse(preferences.contains("run.primary"));
-        assertFalse(preferences.contains("run.backup"));
-        repository.close();
+        try (LocalSaveRepository repository = new LocalSaveRepository(preferences)) {
+            repository.save(GameState.newRun(3L));
+            repository.clear();
+            assertFalse(repository.hasSave(), "a clear that raced the writer would resurrect the save");
+            assertFalse(preferences.contains("run.primary"));
+            assertFalse(preferences.contains("run.backup"));
+        }
     }
 
     @Test
     void aSaveAfterCloseIsWrittenInlineRatherThanDropped() {
         MemoryPreferences preferences = new MemoryPreferences();
-        LocalSaveRepository repository = new LocalSaveRepository(preferences);
-        repository.close();
-        GameState late = GameState.newRun(3L);
-        late.waveNumber = 99;
-        repository.save(late);
-        assertEquals(99, repository.load().orElseThrow().waveNumber,
-            "the close is for the process leaving, not a promise to lose the last save");
+        // The repository is closed on purpose inside the test; the resource's closing close is the
+        // idempotent one the sibling test proves safe.
+        try (LocalSaveRepository repository = new LocalSaveRepository(preferences)) {
+            repository.close();
+            GameState late = GameState.newRun(3L);
+            late.waveNumber = 99;
+            repository.save(late);
+            assertEquals(99, repository.load().orElseThrow().waveNumber,
+                "the close is for the process leaving, not a promise to lose the last save");
+        }
     }
 
     @Test
     void closeIsIdempotentAndLeavesNoThreadBehind() {
-        LocalSaveRepository repository = new LocalSaveRepository(new MemoryPreferences());
-        repository.save(GameState.newRun(3L));
-        repository.close();
-        repository.close();
-        repository.close();
-        assertTrue(true, "three closes in a row are allowed");
+        // The whole contract is that three closes in a row throw nothing; the try-with-resources
+        // fourth close stays in the chain, so an idempotency break fails the test at the boundary.
+        try (LocalSaveRepository repository = new LocalSaveRepository(new MemoryPreferences())) {
+            repository.save(GameState.newRun(3L));
+            repository.close();
+            repository.close();
+            repository.close();
+        }
     }
 
     /** An in-memory {@code Preferences}, the same shape the settings tests use. */
