@@ -250,20 +250,27 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     }
 
     /**
-     * Which family stands on this field, for this kind of outcrop.
+     * Which family stands on this field, for this kind of outcrop: one row per layout, standing first.
      *
-     * <p>Two answers per layout, one for cover that stops bodies and arrows and one for cover that stops only
-     * bodies, and no layout shows a family it has no outcrop of. The point of the table is that a field is
-     * recognisable before a single body walks in: the ring's shelter is a broken wall, the hedge is thorned, the
-     * open hearth is two boulders, and the standing stones are stones.
+     * <p>Two answers per layout, and no layout shows a family it has no outcrop of. The point of the table is that
+     * a field is recognisable before a single body walks in: the ring's shelter is a broken wall, the hedge is
+     * thorned, the open hearth is boulders, and the standing stones are stones. It is a table rather than a switch
+     * because two layouts legitimately share a pair, and a switch would say the same thing four times over.
      */
+    private static final int[][] COVER_BY_LAYOUT = {
+        // Open Hearth: two low boulders, nothing to hide a flank behind.
+        {FAMILY_STANDING_STONE, FAMILY_MOSSY_BOULDER},
+        // Standing Stones: monoliths, the field the tall cover names.
+        {FAMILY_STANDING_STONE, FAMILY_MOSSY_BOULDER},
+        // Thornhedge: a low thorn row, and a broken wall where a shelter is asked for.
+        {FAMILY_RUIN_SLAB, FAMILY_THORN_HEDGE},
+        // Ruined Ring: a broken wall to stand behind, thorned rubble to walk around.
+        {FAMILY_RUIN_SLAB, FAMILY_THORN_HEDGE},
+    };
+
+    /** The family index for one layout and kind of cover. Standing cover is column 0, low cover column 1. */
     static int coverFamily(ArenaLayout layout, boolean shelters) {
-        return switch (layout) {
-            case OPEN_HEARTH -> shelters ? FAMILY_STANDING_STONE : FAMILY_MOSSY_BOULDER;
-            case STANDING_STONES -> shelters ? FAMILY_STANDING_STONE : FAMILY_MOSSY_BOULDER;
-            case THORNHEDGE -> shelters ? FAMILY_RUIN_SLAB : FAMILY_THORN_HEDGE;
-            case RUINED_RING -> shelters ? FAMILY_RUIN_SLAB : FAMILY_THORN_HEDGE;
-        };
+        return COVER_BY_LAYOUT[layout.ordinal()][shelters ? 0 : 1];
     }
 
     private void drawCrystals(SpriteBatch batch, int wave) {
