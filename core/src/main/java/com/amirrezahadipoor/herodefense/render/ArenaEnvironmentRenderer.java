@@ -39,7 +39,22 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     private final Texture backdrop;
     private final Texture backdrop2;
     private final Texture[] ground = new Texture[6];
+    /** The four cover families the render batch produces, in the order their textures are loaded. */
+    static final String[] COVER_FAMILIES = {"standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder"};
+    static final int COVER_VARIANTS = 3;
+    static final int FAMILY_STANDING_STONE = 0;
+    static final int FAMILY_RUIN_SLAB = 1;
+    static final int FAMILY_THORN_HEDGE = 2;
+    static final int FAMILY_MOSSY_BOULDER = 3;
+    /** The cover sprite paints about two thirds of the width the landmark art painted, so its box is larger. */
+    static final float COVER_FRAME_SCALE = 1.55f;
+    /** The share of the box between its lower edge and the painted base, measured on the rendered sprites. */
+    static final float COVER_BASE_SHARE = 0.23f;
+    /** How far below the outcrop's centre its painted base stands, as a share of the collision radius. */
+    static final float COVER_BASE_BELOW_RADIUS = 0.87f;
     private final Texture[] crystals = new Texture[6];
+    /** The field's own cover: four families of three variants, loaded once and never per obstacle. */
+    private final Texture[] cover = new Texture[COVER_FAMILIES.length * COVER_VARIANTS];
     private final TextureAtlas healthyTreeAtlas;
     private final TextureAtlas damagedTreeAtlas;
     private final Array<TextureAtlas.AtlasRegion> healthyTreeFrames;
@@ -62,6 +77,13 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         for (int index = 0; index < 6; index++) {
             ground[index] = texture("generated/environment/ground_tile_" + index + ".png");
             crystals[index] = texture("generated/environment/crystal_prop_" + index + ".png");
+        for (int family = 0; family < COVER_FAMILIES.length; family++) {
+            for (int variant = 0; variant < COVER_VARIANTS; variant++) {
+                cover[family * COVER_VARIANTS + variant] = texture(
+                    "generated/environment/obstacle_" + COVER_FAMILIES[family] + "_" + variant + ".png"
+                );
+            }
+        }
         }
         healthyTreeAtlas = SheetPayloads.atlas(
             Gdx.files.internal("generated/sprites/world_tree_healthy.atlas")
@@ -208,19 +230,40 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
             return;
         }
         boolean second = isSecondArena(state.waveNumber);
-        int variantOffset = second ? 3 : 0;
-        int layoutOffset = ArenaLayout.forSeed(state.runSeed).ordinal();
+        ArenaLayout layout = ArenaLayout.forSeed(state.runSeed);
         for (ArenaObstacle obstacle : ArenaTerrain.fieldFor(state)) {
-            float size = obstacle.drawn;
-            int variant = Math.floorMod(obstacle.variant + layoutOffset + variantOffset, crystals.length);
+            int family = coverFamily(layout, obstacle.shelters);
+            int variant = Math.floorMod(obstacle.variant + (second ? 1 : 0), COVER_VARIANTS);
+            float size = obstacle.drawn * COVER_FRAME_SCALE;
+            // The painted base sits this far up from the box's lower edge, and the box is placed so that base
+            // lands where the landmark art's own footprint did: the ground shadows were measured against that,
+            // so the cover had to arrive on the same line rather than re-derive it.
+            float baseOffset = size * COVER_BASE_SHARE;
             batch.draw(
-                crystals[variant],
+                cover[family * COVER_VARIANTS + variant],
                 obstacle.x - size * 0.5f,
-                obstacle.y - size * 0.38f,
+                obstacle.y - obstacle.radius * COVER_BASE_BELOW_RADIUS - baseOffset,
                 size,
                 size
             );
         }
+    }
+
+    /**
+     * Which family stands on this field, for this kind of outcrop.
+     *
+     * <p>Two answers per layout, one for cover that stops bodies and arrows and one for cover that stops only
+     * bodies, and no layout shows a family it has no outcrop of. The point of the table is that a field is
+     * recognisable before a single body walks in: the ring's shelter is a broken wall, the hedge is thorned, the
+     * open hearth is two boulders, and the standing stones are stones.
+     */
+    static int coverFamily(ArenaLayout layout, boolean shelters) {
+        return switch (layout) {
+            case OPEN_HEARTH -> shelters ? FAMILY_STANDING_STONE : FAMILY_MOSSY_BOULDER;
+            case STANDING_STONES -> shelters ? FAMILY_STANDING_STONE : FAMILY_MOSSY_BOULDER;
+            case THORNHEDGE -> shelters ? FAMILY_RUIN_SLAB : FAMILY_THORN_HEDGE;
+            case RUINED_RING -> shelters ? FAMILY_RUIN_SLAB : FAMILY_THORN_HEDGE;
+        };
     }
 
     private void drawCrystals(SpriteBatch batch, int wave) {
@@ -283,6 +326,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         backdrop2.dispose();
         for (Texture texture : ground) texture.dispose();
         for (Texture texture : crystals) texture.dispose();
+        for (Texture texture : cover) texture.dispose();
         dawnGlow.close();
         hollowGazeRenderer.close();
         healthyTreeAtlas.dispose();

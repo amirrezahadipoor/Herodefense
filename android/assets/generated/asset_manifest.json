@@ -387,6 +387,64 @@
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
+      "backdrop": "layered-heartwood-arena",
+      "categoryReview": {
+        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+        "category": "arena_environment",
+        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+        "status": "accepted"
+      },
+      "clearLaneFraction": 0.55,
+      "clips": {
+        "idle": [
+          {
+            "height": 1280,
+            "index": 0,
+            "page": 0,
+            "width": 720,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "compositionProfile": "portrait-clear-lane-v2",
+      "depthBands": 5,
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "arena",
+      "frameHeight": 1280,
+      "frameSize": 720,
+      "frameWidth": 720,
+      "key": "arena_backdrop_2",
+      "materialCount": 9,
+      "meshParts": 63,
+      "modelRevision": "forest-sanctuary-backdrop-v3-hollow",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+      "sheet": "environment/arena_backdrop_2.png",
+      "sheetHeight": 1280,
+      "sheetWidth": 720,
+      "sheets": [
+        {
+          "decodedBytes": 3686400,
+          "file": "environment/arena_backdrop_2.png",
+          "height": 1280,
+          "width": 720
+        }
+      ],
+      "surfaceLanguage": "broad forest value bands, distant trunks, sanctuary rings, restrained edge leaves",
+      "triangles": 1704,
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
       "animationProfile": "bark-stalker-lurker-v2",
       "armature": "bark_stalker_armature",
       "atlas": "sprites/bark_stalker.atlas",
@@ -701,6 +759,332 @@
       "silhouette": "narrow shoulders, very long arms, moss hood, crown spikes, and a cloak that flares behind",
       "triangles": 1124,
       "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "animationProfile": "bloodroot-avatar-root-wrath-v1",
+      "armature": "thorn_matriarch_armature",
+      "atlas": "sprites/bloodroot_avatar.atlas",
+      "boneAnimated": true,
+      "bones": [
+        "armor_socket",
+        "boot_socket.L",
+        "boot_socket.R",
+        "chest",
+        "foot.L",
+        "foot.R",
+        "forearm.L",
+        "forearm.R",
+        "hand.L",
+        "hand.R",
+        "head",
+        "helmet_socket",
+        "neck",
+        "pelvis",
+        "ring_socket.L",
+        "ring_socket.R",
+        "root",
+        "shin.L",
+        "shin.R",
+        "spine",
+        "thigh.L",
+        "thigh.R",
+        "upper_arm.L",
+        "upper_arm.R",
+        "weapon_socket"
+      ],
+      "builder": "bloodroot_avatar",
+      "categoryReview": {
+        "category": "bosses",
+        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+        "status": "accepted"
+      },
+      "clips": {
+        "attack": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 6,
+            "page": 0,
+            "width": 384,
+            "x": 2304,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 7,
+            "page": 0,
+            "width": 384,
+            "x": 2688,
+            "y": 384
+          }
+        ],
+        "death": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 6,
+            "page": 0,
+            "width": 384,
+            "x": 2304,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 7,
+            "page": 0,
+            "width": 384,
+            "x": 2688,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 8,
+            "page": 0,
+            "width": 384,
+            "x": 3072,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 9,
+            "page": 0,
+            "width": 384,
+            "x": 3456,
+            "y": 1152
+          }
+        ],
+        "hit": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 768
+          }
+        ],
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "boss",
+      "frameClass": "boss",
+      "frameRate": 12,
+      "frameSize": 384,
+      "key": "bloodroot_avatar",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 10,
+        "meshParts": 71,
+        "renderSamples": 48,
+        "renderSupersample": 4,
+        "sheetHeight": 1536,
+        "sheetWidth": 3840
+      },
+      "materialCount": 10,
+      "meshParts": 71,
+      "modelRevision": "bloodroot-avatar-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.12
+      },
+      "renderSamples": 36,
+      "renderSupersample": 3,
+      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+      "rigBoneCount": 25,
+      "rigProfile": "premium-rooted-caster-v2",
+      "sheet": "sprites/bloodroot_avatar.png",
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
+      "sheets": [
+        {
+          "decodedBytes": 23592960,
+          "file": "sprites/bloodroot_avatar.png",
+          "height": 1536,
+          "width": 3840
+        }
+      ],
+      "silhouetteLandmarks": [
+        "ten-petal crown",
+        "rooted royal gown",
+        "paired cage-thorn fans",
+        "briar halo"
+      ],
+      "surfaceLanguage": "layered heartwood, emerald leaves, blood-petal crown, ivory thorns",
+      "triangles": 2008,
+      "unique_attack": "root_wrath",
+      "visualQuality": "studio-v5-hd-pbr"
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
@@ -1207,6 +1591,196 @@
       "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
       "triangles": 896,
       "variant": 2,
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "categoryReview": {
+        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+        "category": "arena_environment",
+        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "key": "crystal_prop_3",
+      "materialCount": 8,
+      "meshParts": 36,
+      "modelRevision": "arena-crystal-premium-v3-hollow-0",
+      "pilotReviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "prop": "azure-waystone-fan",
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/crystal_prop_3.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/crystal_prop_3.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "faceted bedrock",
+        "guard ring",
+        "identity shard rhythm",
+        "moss grounding"
+      ],
+      "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
+      "triangles": 868,
+      "variant": 3,
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "categoryReview": {
+        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+        "category": "arena_environment",
+        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "key": "crystal_prop_4",
+      "materialCount": 8,
+      "meshParts": 36,
+      "modelRevision": "arena-crystal-premium-v3-hollow-1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "prop": "violet-moon-geode",
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/crystal_prop_4.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/crystal_prop_4.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "faceted bedrock",
+        "guard ring",
+        "identity shard rhythm",
+        "moss grounding"
+      ],
+      "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
+      "triangles": 1080,
+      "variant": 4,
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "categoryReview": {
+        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+        "category": "arena_environment",
+        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "key": "crystal_prop_5",
+      "materialCount": 9,
+      "meshParts": 36,
+      "modelRevision": "arena-crystal-premium-v3-hollow-2",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "prop": "amber-root-lantern",
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/crystal_prop_5.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/crystal_prop_5.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "faceted bedrock",
+        "guard ring",
+        "identity shard rhythm",
+        "moss grounding"
+      ],
+      "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
+      "triangles": 896,
+      "variant": 5,
       "visualQuality": "studio-v3"
     },
     {
@@ -15708,6 +16282,333 @@
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
+      "animationProfile": "frost-titan-frost-nova-v1",
+      "armature": "ancient_golem_armature",
+      "atlas": "sprites/frost_titan.atlas",
+      "boneAnimated": true,
+      "bones": [
+        "armor_socket",
+        "boot_socket.L",
+        "boot_socket.R",
+        "chest",
+        "foot.L",
+        "foot.R",
+        "forearm.L",
+        "forearm.R",
+        "hand.L",
+        "hand.R",
+        "head",
+        "helmet_socket",
+        "neck",
+        "pelvis",
+        "ring_socket.L",
+        "ring_socket.R",
+        "root",
+        "shin.L",
+        "shin.R",
+        "spine",
+        "thigh.L",
+        "thigh.R",
+        "upper_arm.L",
+        "upper_arm.R",
+        "weapon_socket"
+      ],
+      "builder": "frost_titan",
+      "categoryReview": {
+        "category": "bosses",
+        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+        "status": "accepted"
+      },
+      "clips": {
+        "attack": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 6,
+            "page": 0,
+            "width": 384,
+            "x": 2304,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 7,
+            "page": 0,
+            "width": 384,
+            "x": 2688,
+            "y": 384
+          }
+        ],
+        "death": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 6,
+            "page": 0,
+            "width": 384,
+            "x": 2304,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 7,
+            "page": 0,
+            "width": 384,
+            "x": 2688,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 8,
+            "page": 0,
+            "width": 384,
+            "x": 3072,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 9,
+            "page": 0,
+            "width": 384,
+            "x": 3456,
+            "y": 1152
+          }
+        ],
+        "hit": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 768
+          }
+        ],
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "boss",
+      "frameClass": "boss",
+      "frameRate": 12,
+      "frameSize": 384,
+      "key": "frost_titan",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 9,
+        "meshParts": 64,
+        "renderSamples": 48,
+        "renderSupersample": 4,
+        "sheetHeight": 1536,
+        "sheetWidth": 3840
+      },
+      "materialCount": 9,
+      "meshParts": 64,
+      "modelRevision": "frost-titan-v1",
+      "pilotReviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.12
+      },
+      "renderSamples": 36,
+      "renderSupersample": 3,
+      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+      "rigBoneCount": 25,
+      "rigProfile": "premium-heavy-humanoid-v2",
+      "sheet": "sprites/frost_titan.png",
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
+      "sheets": [
+        {
+          "decodedBytes": 23592960,
+          "file": "sprites/frost_titan.png",
+          "height": 1536,
+          "width": 3840
+        }
+      ],
+      "silhouetteLandmarks": [
+        "trilithon crest",
+        "exposed heartstone",
+        "paired slam fists",
+        "split pillar feet"
+      ],
+      "surfaceLanguage": "faceted basalt strata, restrained moss, cyan rune seams",
+      "triangles": 3442,
+      "unique_attack": "frost_nova",
+      "visualQuality": "studio-v5-hd-pbr"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
       "animationProfile": "fungal-brute-brawler-v2",
       "armature": "fungal_brute_armature",
       "atlas": "sprites/fungal_brute.atlas",
@@ -16518,6 +17419,180 @@
       "tileable": false,
       "triangles": 504,
       "variant": 2,
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "categoryReview": {
+        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+        "category": "arena_environment",
+        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "groundIdentity": "root-path",
+      "key": "ground_tile_3",
+      "materialCount": 6,
+      "meshParts": 23,
+      "modelRevision": "arena-ground-premium-v3-hollow",
+      "overlapProfile": "staggered-soft-edge-v2",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+      "sheet": "environment/ground_tile_3.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/ground_tile_3.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "surfaceLanguage": "faceted dark soil, restrained waystones, moss leaves, broad root runs",
+      "tileable": false,
+      "triangles": 504,
+      "variant": 3,
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "categoryReview": {
+        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+        "category": "arena_environment",
+        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "groundIdentity": "waystone-crossing",
+      "key": "ground_tile_4",
+      "materialCount": 6,
+      "meshParts": 24,
+      "modelRevision": "arena-ground-premium-v3-hollow",
+      "overlapProfile": "staggered-soft-edge-v2",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+      "sheet": "environment/ground_tile_4.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/ground_tile_4.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "surfaceLanguage": "faceted dark soil, restrained waystones, moss leaves, broad root runs",
+      "tileable": false,
+      "triangles": 524,
+      "variant": 4,
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "categoryReview": {
+        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
+        "category": "arena_environment",
+        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "groundIdentity": "moss-clearing",
+      "key": "ground_tile_5",
+      "materialCount": 6,
+      "meshParts": 23,
+      "modelRevision": "arena-ground-premium-v3-hollow",
+      "overlapProfile": "staggered-soft-edge-v2",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
+      "sheet": "environment/ground_tile_5.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/ground_tile_5.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "surfaceLanguage": "faceted dark soil, restrained waystones, moss leaves, broad root runs",
+      "tileable": false,
+      "triangles": 504,
+      "variant": 5,
       "visualQuality": "studio-v3"
     },
     {
@@ -17817,6 +18892,906 @@
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "low",
+      "coverFamily": "mossy_boulder",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 0.7,
+      "key": "obstacle_mossy_boulder_0",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 4,
+      "meshParts": 12,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_mossy_boulder_0.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_mossy_boulder_0.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "rounded core",
+        "shoulder facet",
+        "lichen plates",
+        "scattered pebbles"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 288,
+      "variant": 0,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "low",
+      "coverFamily": "mossy_boulder",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 0.7,
+      "key": "obstacle_mossy_boulder_1",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 4,
+      "meshParts": 11,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_mossy_boulder_1.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_mossy_boulder_1.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "rounded core",
+        "shoulder facet",
+        "lichen plates",
+        "scattered pebbles"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 280,
+      "variant": 1,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "low",
+      "coverFamily": "mossy_boulder",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 0.7,
+      "key": "obstacle_mossy_boulder_2",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 5,
+      "meshParts": 12,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_mossy_boulder_2.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_mossy_boulder_2.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "rounded core",
+        "shoulder facet",
+        "lichen plates",
+        "scattered pebbles"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 376,
+      "variant": 2,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "shelter",
+      "coverFamily": "ruin_slab",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 2.34,
+      "key": "obstacle_ruin_slab_0",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 5,
+      "meshParts": 15,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_ruin_slab_0.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_ruin_slab_0.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "leaning slab",
+        "broken course",
+        "rubble bed",
+        "ring memory"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 524,
+      "variant": 0,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "shelter",
+      "coverFamily": "ruin_slab",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 2.34,
+      "key": "obstacle_ruin_slab_1",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 6,
+      "meshParts": 15,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_ruin_slab_1.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_ruin_slab_1.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "leaning slab",
+        "broken course",
+        "rubble bed",
+        "ring memory"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 432,
+      "variant": 1,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "shelter",
+      "coverFamily": "ruin_slab",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 2.34,
+      "key": "obstacle_ruin_slab_2",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 6,
+      "meshParts": 15,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_ruin_slab_2.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_ruin_slab_2.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "leaning slab",
+        "broken course",
+        "rubble bed",
+        "ring memory"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 432,
+      "variant": 2,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "shelter",
+      "coverFamily": "standing_stone",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 2.92,
+      "key": "obstacle_standing_stone_0",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 5,
+      "meshParts": 16,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_standing_stone_0.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_standing_stone_0.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "tapered monolith",
+        "chiselled bands",
+        "capstone",
+        "moss at the footing"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 728,
+      "variant": 0,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "shelter",
+      "coverFamily": "standing_stone",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 2.92,
+      "key": "obstacle_standing_stone_1",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 5,
+      "meshParts": 17,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_standing_stone_1.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_standing_stone_1.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "tapered monolith",
+        "chiselled bands",
+        "capstone",
+        "moss at the footing"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 744,
+      "variant": 1,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "shelter",
+      "coverFamily": "standing_stone",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 2.92,
+      "key": "obstacle_standing_stone_2",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 6,
+      "meshParts": 17,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_standing_stone_2.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_standing_stone_2.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "tapered monolith",
+        "chiselled bands",
+        "capstone",
+        "moss at the footing"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 748,
+      "variant": 2,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "low",
+      "coverFamily": "thorn_hedge",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 0.94,
+      "key": "obstacle_thorn_hedge_0",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 4,
+      "meshParts": 36,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_thorn_hedge_0.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_thorn_hedge_0.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "arched branches",
+        "thorn rake",
+        "moss clumps",
+        "low mound"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 568,
+      "variant": 0,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "low",
+      "coverFamily": "thorn_hedge",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 0.94,
+      "key": "obstacle_thorn_hedge_1",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 4,
+      "meshParts": 36,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_thorn_hedge_1.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_thorn_hedge_1.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "arched branches",
+        "thorn rake",
+        "moss clumps",
+        "low mound"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 568,
+      "variant": 1,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "assetKind": "obstacle",
+      "categoryReview": {
+        "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+        "category": "arena_cover",
+        "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+        "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+        "status": "accepted"
+      },
+      "clips": {
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          }
+        ]
+      },
+      "cover": "low",
+      "coverFamily": "thorn_hedge",
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "environment",
+      "frameClass": "environment",
+      "frameHeight": 384,
+      "frameSize": 384,
+      "frameWidth": 384,
+      "heightUnits": 0.94,
+      "key": "obstacle_thorn_hedge_2",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+        "renderSamples": 32,
+        "renderSupersample": 3,
+        "sheetHeight": 384,
+        "sheetWidth": 384
+      },
+      "materialCount": 5,
+      "meshParts": 40,
+      "modelRevision": "arena-obstacle-premium-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.5
+      },
+      "renderSamples": 28,
+      "renderSupersample": 2,
+      "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+      "runtimeGlow": false,
+      "sheet": "environment/obstacle_thorn_hedge_2.png",
+      "sheetHeight": 384,
+      "sheetWidth": 384,
+      "sheets": [
+        {
+          "decodedBytes": 589824,
+          "file": "environment/obstacle_thorn_hedge_2.png",
+          "height": 384,
+          "width": 384
+        }
+      ],
+      "silhouetteLandmarks": [
+        "arched branches",
+        "thorn rake",
+        "moss clumps",
+        "low mound"
+      ],
+      "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+      "triangles": 648,
+      "variant": 2,
+      "visualQuality": "studio-v4-vibrant"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
       "animationProfile": "rootling-skirmisher-v2",
       "armature": "rootling_armature",
       "atlas": "sprites/rootling.atlas",
@@ -18455,6 +20430,320 @@
     },
     {
       "alphaMode": "STRAIGHT_RGBA",
+      "animationProfile": "shadow-lich-soul-drain-v1",
+      "armature": "void_knight_armature",
+      "atlas": "sprites/shadow_lich.atlas",
+      "boneAnimated": true,
+      "bones": [
+        "armor_socket",
+        "boot_socket.L",
+        "boot_socket.R",
+        "chest",
+        "foot.L",
+        "foot.R",
+        "forearm.L",
+        "forearm.R",
+        "hand.L",
+        "hand.R",
+        "head",
+        "helmet_socket",
+        "neck",
+        "pelvis",
+        "ring_socket.L",
+        "ring_socket.R",
+        "root",
+        "shin.L",
+        "shin.R",
+        "spine",
+        "thigh.L",
+        "thigh.R",
+        "upper_arm.L",
+        "upper_arm.R",
+        "weapon_socket"
+      ],
+      "builder": "shadow_lich",
+      "categoryReview": {
+        "category": "bosses",
+        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+        "status": "accepted"
+      },
+      "clips": {
+        "attack": [
+          {
+            "height": 256,
+            "index": 0,
+            "page": 0,
+            "width": 256,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 256,
+            "index": 1,
+            "page": 0,
+            "width": 256,
+            "x": 1792,
+            "y": 0
+          },
+          {
+            "height": 256,
+            "index": 2,
+            "page": 0,
+            "width": 256,
+            "x": 0,
+            "y": 256
+          },
+          {
+            "height": 256,
+            "index": 3,
+            "page": 0,
+            "width": 256,
+            "x": 256,
+            "y": 256
+          },
+          {
+            "height": 256,
+            "index": 4,
+            "page": 0,
+            "width": 256,
+            "x": 512,
+            "y": 256
+          },
+          {
+            "height": 256,
+            "index": 5,
+            "page": 0,
+            "width": 256,
+            "x": 768,
+            "y": 256
+          },
+          {
+            "height": 256,
+            "index": 6,
+            "page": 0,
+            "width": 256,
+            "x": 1024,
+            "y": 256
+          },
+          {
+            "height": 256,
+            "index": 7,
+            "page": 0,
+            "width": 256,
+            "x": 1280,
+            "y": 256
+          }
+        ],
+        "death": [
+          {
+            "height": 256,
+            "index": 0,
+            "page": 0,
+            "width": 256,
+            "x": 512,
+            "y": 512
+          },
+          {
+            "height": 256,
+            "index": 1,
+            "page": 0,
+            "width": 256,
+            "x": 768,
+            "y": 512
+          },
+          {
+            "height": 256,
+            "index": 2,
+            "page": 0,
+            "width": 256,
+            "x": 1024,
+            "y": 512
+          },
+          {
+            "height": 256,
+            "index": 3,
+            "page": 0,
+            "width": 256,
+            "x": 1280,
+            "y": 512
+          },
+          {
+            "height": 256,
+            "index": 4,
+            "page": 0,
+            "width": 256,
+            "x": 1536,
+            "y": 512
+          },
+          {
+            "height": 256,
+            "index": 5,
+            "page": 0,
+            "width": 256,
+            "x": 1792,
+            "y": 512
+          },
+          {
+            "height": 256,
+            "index": 6,
+            "page": 0,
+            "width": 256,
+            "x": 0,
+            "y": 768
+          },
+          {
+            "height": 256,
+            "index": 7,
+            "page": 0,
+            "width": 256,
+            "x": 256,
+            "y": 768
+          },
+          {
+            "height": 256,
+            "index": 8,
+            "page": 0,
+            "width": 256,
+            "x": 512,
+            "y": 768
+          },
+          {
+            "height": 256,
+            "index": 9,
+            "page": 0,
+            "width": 256,
+            "x": 768,
+            "y": 768
+          }
+        ],
+        "hit": [
+          {
+            "height": 256,
+            "index": 0,
+            "page": 0,
+            "width": 256,
+            "x": 1536,
+            "y": 256
+          },
+          {
+            "height": 256,
+            "index": 1,
+            "page": 0,
+            "width": 256,
+            "x": 1792,
+            "y": 256
+          },
+          {
+            "height": 256,
+            "index": 2,
+            "page": 0,
+            "width": 256,
+            "x": 0,
+            "y": 512
+          },
+          {
+            "height": 256,
+            "index": 3,
+            "page": 0,
+            "width": 256,
+            "x": 256,
+            "y": 512
+          }
+        ],
+        "idle": [
+          {
+            "height": 256,
+            "index": 0,
+            "page": 0,
+            "width": 256,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 256,
+            "index": 1,
+            "page": 0,
+            "width": 256,
+            "x": 256,
+            "y": 0
+          },
+          {
+            "height": 256,
+            "index": 2,
+            "page": 0,
+            "width": 256,
+            "x": 512,
+            "y": 0
+          },
+          {
+            "height": 256,
+            "index": 3,
+            "page": 0,
+            "width": 256,
+            "x": 768,
+            "y": 0
+          },
+          {
+            "height": 256,
+            "index": 4,
+            "page": 0,
+            "width": 256,
+            "x": 1024,
+            "y": 0
+          },
+          {
+            "height": 256,
+            "index": 5,
+            "page": 0,
+            "width": 256,
+            "x": 1280,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "boss",
+      "frameClass": "boss",
+      "frameRate": 12,
+      "frameSize": 256,
+      "key": "shadow_lich",
+      "materialCount": 10,
+      "meshParts": 61,
+      "modelRevision": "shadow-lich-v1",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.12
+      },
+      "renderSamples": 36,
+      "renderSupersample": 3,
+      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+      "rigBoneCount": 25,
+      "rigProfile": "premium-armored-humanoid-v2",
+      "sheet": "sprites/shadow_lich.png",
+      "sheetHeight": 1024,
+      "sheetWidth": 2048,
+      "sheets": [
+        {
+          "decodedBytes": 8388608,
+          "file": "sprites/shadow_lich.png",
+          "height": 1024,
+          "width": 2048
+        }
+      ],
+      "silhouetteLandmarks": [
+        "forked void horns",
+        "asymmetric pauldrons",
+        "split torn cape",
+        "socket-driven greatblade"
+      ],
+      "surfaceLanguage": "layered gunmetal plate, silver edges, old gold, restrained violet abyss glow",
+      "triangles": 2082,
+      "unique_attack": "soul_drain",
+      "visualQuality": "studio-v3"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
       "animationProfile": "stonekin-juggernaut-v2",
       "armature": "stonekin_armature",
       "atlas": "sprites/stonekin.atlas",
@@ -18771,6 +21060,333 @@
       ],
       "silhouette": "broad asymmetrical crag shoulders, broken crown, massive fists, and slab feet",
       "triangles": 1800,
+      "visualQuality": "studio-v5-hd-pbr"
+    },
+    {
+      "alphaMode": "STRAIGHT_RGBA",
+      "animationProfile": "storm-colossus-thunder-crash-v1",
+      "armature": "ancient_golem_armature",
+      "atlas": "sprites/storm_colossus.atlas",
+      "boneAnimated": true,
+      "bones": [
+        "armor_socket",
+        "boot_socket.L",
+        "boot_socket.R",
+        "chest",
+        "foot.L",
+        "foot.R",
+        "forearm.L",
+        "forearm.R",
+        "hand.L",
+        "hand.R",
+        "head",
+        "helmet_socket",
+        "neck",
+        "pelvis",
+        "ring_socket.L",
+        "ring_socket.R",
+        "root",
+        "shin.L",
+        "shin.R",
+        "spine",
+        "thigh.L",
+        "thigh.R",
+        "upper_arm.L",
+        "upper_arm.R",
+        "weapon_socket"
+      ],
+      "builder": "storm_colossus",
+      "categoryReview": {
+        "category": "bosses",
+        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+        "status": "accepted"
+      },
+      "clips": {
+        "attack": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 6,
+            "page": 0,
+            "width": 384,
+            "x": 2304,
+            "y": 384
+          },
+          {
+            "height": 384,
+            "index": 7,
+            "page": 0,
+            "width": 384,
+            "x": 2688,
+            "y": 384
+          }
+        ],
+        "death": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 6,
+            "page": 0,
+            "width": 384,
+            "x": 2304,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 7,
+            "page": 0,
+            "width": 384,
+            "x": 2688,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 8,
+            "page": 0,
+            "width": 384,
+            "x": 3072,
+            "y": 1152
+          },
+          {
+            "height": 384,
+            "index": 9,
+            "page": 0,
+            "width": 384,
+            "x": 3456,
+            "y": 1152
+          }
+        ],
+        "hit": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 768
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 768
+          }
+        ],
+        "idle": [
+          {
+            "height": 384,
+            "index": 0,
+            "page": 0,
+            "width": 384,
+            "x": 0,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 1,
+            "page": 0,
+            "width": 384,
+            "x": 384,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 2,
+            "page": 0,
+            "width": 384,
+            "x": 768,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 3,
+            "page": 0,
+            "width": 384,
+            "x": 1152,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 4,
+            "page": 0,
+            "width": 384,
+            "x": 1536,
+            "y": 0
+          },
+          {
+            "height": 384,
+            "index": 5,
+            "page": 0,
+            "width": 384,
+            "x": 1920,
+            "y": 0
+          }
+        ]
+      },
+      "engineVersion": "33.0-studio-v3-3x36-full",
+      "family": "boss",
+      "frameClass": "boss",
+      "frameRate": 12,
+      "frameSize": 384,
+      "key": "storm_colossus",
+      "masterRender": {
+        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+        "frameSize": 384,
+        "lod": "none -- the shipped sheet is the master's own render",
+        "masterCommit": "6449a6d",
+        "materialCount": 9,
+        "meshParts": 64,
+        "renderSamples": 48,
+        "renderSupersample": 4,
+        "sheetHeight": 1536,
+        "sheetWidth": 3840
+      },
+      "materialCount": 9,
+      "meshParts": 64,
+      "modelRevision": "storm-colossus-v1",
+      "pilotReviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
+      "pivot": {
+        "units": "normalized-bottom-left",
+        "x": 0.5,
+        "y": 0.12
+      },
+      "renderSamples": 36,
+      "renderSupersample": 3,
+      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
+      "rigBoneCount": 25,
+      "rigProfile": "premium-heavy-humanoid-v2",
+      "sheet": "sprites/storm_colossus.png",
+      "sheetHeight": 1536,
+      "sheetWidth": 3840,
+      "sheets": [
+        {
+          "decodedBytes": 23592960,
+          "file": "sprites/storm_colossus.png",
+          "height": 1536,
+          "width": 3840
+        }
+      ],
+      "silhouetteLandmarks": [
+        "trilithon crest",
+        "exposed heartstone",
+        "paired slam fists",
+        "split pillar feet"
+      ],
+      "surfaceLanguage": "faceted basalt strata, restrained moss, cyan rune seams",
+      "triangles": 3442,
+      "unique_attack": "thunder_crash",
       "visualQuality": "studio-v5-hd-pbr"
     },
     {
@@ -22150,1733 +24766,17 @@
       "surfaceLanguage": "layered heartwood plates, moss vines, emerald crown, restrained cyan heart",
       "triangles": 4840,
       "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "backdrop": "layered-heartwood-arena",
-      "categoryReview": {
-        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
-        "category": "arena_environment",
-        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
-        "status": "accepted"
-      },
-      "clearLaneFraction": 0.55,
-      "clips": {
-        "idle": [
-          {
-            "height": 1280,
-            "index": 0,
-            "page": 0,
-            "width": 720,
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      "compositionProfile": "portrait-clear-lane-v2",
-      "depthBands": 5,
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "environment",
-      "frameClass": "arena",
-      "frameHeight": 1280,
-      "frameSize": 720,
-      "frameWidth": 720,
-      "key": "arena_backdrop_2",
-      "materialCount": 9,
-      "meshParts": 63,
-      "modelRevision": "forest-sanctuary-backdrop-v3-hollow",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.5
-      },
-      "renderSamples": 28,
-      "renderSupersample": 2,
-      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-      "sheet": "environment/arena_backdrop_2.png",
-      "sheetHeight": 1280,
-      "sheetWidth": 720,
-      "sheets": [
-        {
-          "decodedBytes": 3686400,
-          "file": "environment/arena_backdrop_2.png",
-          "height": 1280,
-          "width": 720
-        }
-      ],
-      "surfaceLanguage": "broad forest value bands, distant trunks, sanctuary rings, restrained edge leaves",
-      "triangles": 1704,
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "categoryReview": {
-        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
-        "category": "arena_environment",
-        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
-        "status": "accepted"
-      },
-      "clips": {
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "environment",
-      "frameClass": "environment",
-      "frameHeight": 384,
-      "frameSize": 384,
-      "frameWidth": 384,
-      "groundIdentity": "root-path",
-      "key": "ground_tile_3",
-      "materialCount": 6,
-      "meshParts": 23,
-      "modelRevision": "arena-ground-premium-v3-hollow",
-      "overlapProfile": "staggered-soft-edge-v2",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.5
-      },
-      "renderSamples": 28,
-      "renderSupersample": 2,
-      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-      "sheet": "environment/ground_tile_3.png",
-      "sheetHeight": 384,
-      "sheetWidth": 384,
-      "sheets": [
-        {
-          "decodedBytes": 589824,
-          "file": "environment/ground_tile_3.png",
-          "height": 384,
-          "width": 384
-        }
-      ],
-      "surfaceLanguage": "faceted dark soil, restrained waystones, moss leaves, broad root runs",
-      "tileable": false,
-      "triangles": 504,
-      "variant": 3,
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "categoryReview": {
-        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
-        "category": "arena_environment",
-        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
-        "status": "accepted"
-      },
-      "clips": {
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "environment",
-      "frameClass": "environment",
-      "frameHeight": 384,
-      "frameSize": 384,
-      "frameWidth": 384,
-      "groundIdentity": "waystone-crossing",
-      "key": "ground_tile_4",
-      "materialCount": 6,
-      "meshParts": 24,
-      "modelRevision": "arena-ground-premium-v3-hollow",
-      "overlapProfile": "staggered-soft-edge-v2",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.5
-      },
-      "renderSamples": 28,
-      "renderSupersample": 2,
-      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-      "sheet": "environment/ground_tile_4.png",
-      "sheetHeight": 384,
-      "sheetWidth": 384,
-      "sheets": [
-        {
-          "decodedBytes": 589824,
-          "file": "environment/ground_tile_4.png",
-          "height": 384,
-          "width": 384
-        }
-      ],
-      "surfaceLanguage": "faceted dark soil, restrained waystones, moss leaves, broad root runs",
-      "tileable": false,
-      "triangles": 524,
-      "variant": 4,
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "categoryReview": {
-        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
-        "category": "arena_environment",
-        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
-        "status": "accepted"
-      },
-      "clips": {
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "environment",
-      "frameClass": "environment",
-      "frameHeight": 384,
-      "frameSize": 384,
-      "frameWidth": 384,
-      "groundIdentity": "moss-clearing",
-      "key": "ground_tile_5",
-      "materialCount": 6,
-      "meshParts": 23,
-      "modelRevision": "arena-ground-premium-v3-hollow",
-      "overlapProfile": "staggered-soft-edge-v2",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.5
-      },
-      "renderSamples": 28,
-      "renderSupersample": 2,
-      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-      "sheet": "environment/ground_tile_5.png",
-      "sheetHeight": 384,
-      "sheetWidth": 384,
-      "sheets": [
-        {
-          "decodedBytes": 589824,
-          "file": "environment/ground_tile_5.png",
-          "height": 384,
-          "width": 384
-        }
-      ],
-      "surfaceLanguage": "faceted dark soil, restrained waystones, moss leaves, broad root runs",
-      "tileable": false,
-      "triangles": 504,
-      "variant": 5,
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "categoryReview": {
-        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
-        "category": "arena_environment",
-        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
-        "status": "accepted"
-      },
-      "clips": {
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "environment",
-      "frameClass": "environment",
-      "frameHeight": 384,
-      "frameSize": 384,
-      "frameWidth": 384,
-      "key": "crystal_prop_3",
-      "materialCount": 8,
-      "meshParts": 36,
-      "modelRevision": "arena-crystal-premium-v3-hollow-0",
-      "pilotReviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.5
-      },
-      "prop": "azure-waystone-fan",
-      "renderSamples": 28,
-      "renderSupersample": 2,
-      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-      "runtimeGlow": false,
-      "sheet": "environment/crystal_prop_3.png",
-      "sheetHeight": 384,
-      "sheetWidth": 384,
-      "sheets": [
-        {
-          "decodedBytes": 589824,
-          "file": "environment/crystal_prop_3.png",
-          "height": 384,
-          "width": 384
-        }
-      ],
-      "silhouetteLandmarks": [
-        "faceted bedrock",
-        "guard ring",
-        "identity shard rhythm",
-        "moss grounding"
-      ],
-      "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
-      "triangles": 868,
-      "variant": 3,
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "categoryReview": {
-        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
-        "category": "arena_environment",
-        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
-        "status": "accepted"
-      },
-      "clips": {
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "environment",
-      "frameClass": "environment",
-      "frameHeight": 384,
-      "frameSize": 384,
-      "frameWidth": 384,
-      "key": "crystal_prop_4",
-      "materialCount": 8,
-      "meshParts": 36,
-      "modelRevision": "arena-crystal-premium-v3-hollow-1",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.5
-      },
-      "prop": "violet-moon-geode",
-      "renderSamples": 28,
-      "renderSupersample": 2,
-      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-      "runtimeGlow": false,
-      "sheet": "environment/crystal_prop_4.png",
-      "sheetHeight": 384,
-      "sheetWidth": 384,
-      "sheets": [
-        {
-          "decodedBytes": 589824,
-          "file": "environment/crystal_prop_4.png",
-          "height": 384,
-          "width": 384
-        }
-      ],
-      "silhouetteLandmarks": [
-        "faceted bedrock",
-        "guard ring",
-        "identity shard rhythm",
-        "moss grounding"
-      ],
-      "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
-      "triangles": 1080,
-      "variant": 4,
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "categoryReview": {
-        "auditSha256": "c0d4efe8c3bb9f0db123d7780b52ba686f1089fe61af304a637f9b39f909330f",
-        "category": "arena_environment",
-        "document": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-        "sourceManifestSha256": "526736515d316dd13cde2320931272c4309e60284d2168e55ade67866f9213d8",
-        "status": "accepted"
-      },
-      "clips": {
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "environment",
-      "frameClass": "environment",
-      "frameHeight": 384,
-      "frameSize": 384,
-      "frameWidth": 384,
-      "key": "crystal_prop_5",
-      "materialCount": 9,
-      "meshParts": 36,
-      "modelRevision": "arena-crystal-premium-v3-hollow-2",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.5
-      },
-      "prop": "amber-root-lantern",
-      "renderSamples": 28,
-      "renderSupersample": 2,
-      "reviewDocument": "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md",
-      "runtimeGlow": false,
-      "sheet": "environment/crystal_prop_5.png",
-      "sheetHeight": 384,
-      "sheetWidth": 384,
-      "sheets": [
-        {
-          "decodedBytes": 589824,
-          "file": "environment/crystal_prop_5.png",
-          "height": 384,
-          "width": 384
-        }
-      ],
-      "silhouetteLandmarks": [
-        "faceted bedrock",
-        "guard ring",
-        "identity shard rhythm",
-        "moss grounding"
-      ],
-      "surfaceLanguage": "dark stone cradle, controlled crystal value facets, sparse moss, no baked glow",
-      "triangles": 896,
-      "variant": 5,
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "animationProfile": "frost-titan-frost-nova-v1",
-      "armature": "ancient_golem_armature",
-      "atlas": "sprites/frost_titan.atlas",
-      "boneAnimated": true,
-      "bones": [
-        "armor_socket",
-        "boot_socket.L",
-        "boot_socket.R",
-        "chest",
-        "foot.L",
-        "foot.R",
-        "forearm.L",
-        "forearm.R",
-        "hand.L",
-        "hand.R",
-        "head",
-        "helmet_socket",
-        "neck",
-        "pelvis",
-        "ring_socket.L",
-        "ring_socket.R",
-        "root",
-        "shin.L",
-        "shin.R",
-        "spine",
-        "thigh.L",
-        "thigh.R",
-        "upper_arm.L",
-        "upper_arm.R",
-        "weapon_socket"
-      ],
-      "builder": "frost_titan",
-      "categoryReview": {
-        "category": "bosses",
-        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-        "status": "accepted"
-      },
-      "clips": {
-        "attack": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 6,
-            "page": 0,
-            "width": 384,
-            "x": 2304,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 7,
-            "page": 0,
-            "width": 384,
-            "x": 2688,
-            "y": 384
-          }
-        ],
-        "death": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 6,
-            "page": 0,
-            "width": 384,
-            "x": 2304,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 7,
-            "page": 0,
-            "width": 384,
-            "x": 2688,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 8,
-            "page": 0,
-            "width": 384,
-            "x": 3072,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 9,
-            "page": 0,
-            "width": 384,
-            "x": 3456,
-            "y": 1152
-          }
-        ],
-        "hit": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 768
-          }
-        ],
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "boss",
-      "frameClass": "boss",
-      "frameRate": 12,
-      "frameSize": 384,
-      "key": "frost_titan",
-      "masterRender": {
-        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
-        "frameSize": 384,
-        "lod": "none -- the shipped sheet is the master's own render",
-        "masterCommit": "6449a6d",
-        "materialCount": 9,
-        "meshParts": 64,
-        "renderSamples": 48,
-        "renderSupersample": 4,
-        "sheetHeight": 1536,
-        "sheetWidth": 3840
-      },
-      "materialCount": 9,
-      "meshParts": 64,
-      "modelRevision": "frost-titan-v1",
-      "pilotReviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.12
-      },
-      "renderSamples": 36,
-      "renderSupersample": 3,
-      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-heavy-humanoid-v2",
-      "sheet": "sprites/frost_titan.png",
-      "sheetHeight": 1536,
-      "sheetWidth": 3840,
-      "sheets": [
-        {
-          "decodedBytes": 23592960,
-          "file": "sprites/frost_titan.png",
-          "height": 1536,
-          "width": 3840
-        }
-      ],
-      "silhouetteLandmarks": [
-        "trilithon crest",
-        "exposed heartstone",
-        "paired slam fists",
-        "split pillar feet"
-      ],
-      "surfaceLanguage": "faceted basalt strata, restrained moss, cyan rune seams",
-      "triangles": 3442,
-      "unique_attack": "frost_nova",
-      "visualQuality": "studio-v5-hd-pbr"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "animationProfile": "shadow-lich-soul-drain-v1",
-      "armature": "void_knight_armature",
-      "atlas": "sprites/shadow_lich.atlas",
-      "boneAnimated": true,
-      "bones": [
-        "armor_socket",
-        "boot_socket.L",
-        "boot_socket.R",
-        "chest",
-        "foot.L",
-        "foot.R",
-        "forearm.L",
-        "forearm.R",
-        "hand.L",
-        "hand.R",
-        "head",
-        "helmet_socket",
-        "neck",
-        "pelvis",
-        "ring_socket.L",
-        "ring_socket.R",
-        "root",
-        "shin.L",
-        "shin.R",
-        "spine",
-        "thigh.L",
-        "thigh.R",
-        "upper_arm.L",
-        "upper_arm.R",
-        "weapon_socket"
-      ],
-      "builder": "shadow_lich",
-      "categoryReview": {
-        "category": "bosses",
-        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-        "status": "accepted"
-      },
-      "clips": {
-        "attack": [
-          {
-            "height": 256,
-            "index": 0,
-            "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 1,
-            "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 2,
-            "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 256
-          },
-          {
-            "height": 256,
-            "index": 3,
-            "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 256
-          },
-          {
-            "height": 256,
-            "index": 4,
-            "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 256
-          },
-          {
-            "height": 256,
-            "index": 5,
-            "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 256
-          },
-          {
-            "height": 256,
-            "index": 6,
-            "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 256
-          },
-          {
-            "height": 256,
-            "index": 7,
-            "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 256
-          }
-        ],
-        "death": [
-          {
-            "height": 256,
-            "index": 0,
-            "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 512
-          },
-          {
-            "height": 256,
-            "index": 1,
-            "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 512
-          },
-          {
-            "height": 256,
-            "index": 2,
-            "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 512
-          },
-          {
-            "height": 256,
-            "index": 3,
-            "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 512
-          },
-          {
-            "height": 256,
-            "index": 4,
-            "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 512
-          },
-          {
-            "height": 256,
-            "index": 5,
-            "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 512
-          },
-          {
-            "height": 256,
-            "index": 6,
-            "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 768
-          },
-          {
-            "height": 256,
-            "index": 7,
-            "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 768
-          },
-          {
-            "height": 256,
-            "index": 8,
-            "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 768
-          },
-          {
-            "height": 256,
-            "index": 9,
-            "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 768
-          }
-        ],
-        "hit": [
-          {
-            "height": 256,
-            "index": 0,
-            "page": 0,
-            "width": 256,
-            "x": 1536,
-            "y": 256
-          },
-          {
-            "height": 256,
-            "index": 1,
-            "page": 0,
-            "width": 256,
-            "x": 1792,
-            "y": 256
-          },
-          {
-            "height": 256,
-            "index": 2,
-            "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 512
-          },
-          {
-            "height": 256,
-            "index": 3,
-            "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 512
-          }
-        ],
-        "idle": [
-          {
-            "height": 256,
-            "index": 0,
-            "page": 0,
-            "width": 256,
-            "x": 0,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 1,
-            "page": 0,
-            "width": 256,
-            "x": 256,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 2,
-            "page": 0,
-            "width": 256,
-            "x": 512,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 3,
-            "page": 0,
-            "width": 256,
-            "x": 768,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 4,
-            "page": 0,
-            "width": 256,
-            "x": 1024,
-            "y": 0
-          },
-          {
-            "height": 256,
-            "index": 5,
-            "page": 0,
-            "width": 256,
-            "x": 1280,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "boss",
-      "frameClass": "boss",
-      "frameRate": 12,
-      "frameSize": 256,
-      "key": "shadow_lich",
-      "materialCount": 10,
-      "meshParts": 61,
-      "modelRevision": "shadow-lich-v1",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.12
-      },
-      "renderSamples": 36,
-      "renderSupersample": 3,
-      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-armored-humanoid-v2",
-      "sheet": "sprites/shadow_lich.png",
-      "sheetHeight": 1024,
-      "sheetWidth": 2048,
-      "sheets": [
-        {
-          "decodedBytes": 8388608,
-          "file": "sprites/shadow_lich.png",
-          "height": 1024,
-          "width": 2048
-        }
-      ],
-      "silhouetteLandmarks": [
-        "forked void horns",
-        "asymmetric pauldrons",
-        "split torn cape",
-        "socket-driven greatblade"
-      ],
-      "surfaceLanguage": "layered gunmetal plate, silver edges, old gold, restrained violet abyss glow",
-      "triangles": 2082,
-      "unique_attack": "soul_drain",
-      "visualQuality": "studio-v3"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "animationProfile": "storm-colossus-thunder-crash-v1",
-      "armature": "ancient_golem_armature",
-      "atlas": "sprites/storm_colossus.atlas",
-      "boneAnimated": true,
-      "bones": [
-        "armor_socket",
-        "boot_socket.L",
-        "boot_socket.R",
-        "chest",
-        "foot.L",
-        "foot.R",
-        "forearm.L",
-        "forearm.R",
-        "hand.L",
-        "hand.R",
-        "head",
-        "helmet_socket",
-        "neck",
-        "pelvis",
-        "ring_socket.L",
-        "ring_socket.R",
-        "root",
-        "shin.L",
-        "shin.R",
-        "spine",
-        "thigh.L",
-        "thigh.R",
-        "upper_arm.L",
-        "upper_arm.R",
-        "weapon_socket"
-      ],
-      "builder": "storm_colossus",
-      "categoryReview": {
-        "category": "bosses",
-        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-        "status": "accepted"
-      },
-      "clips": {
-        "attack": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 6,
-            "page": 0,
-            "width": 384,
-            "x": 2304,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 7,
-            "page": 0,
-            "width": 384,
-            "x": 2688,
-            "y": 384
-          }
-        ],
-        "death": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 6,
-            "page": 0,
-            "width": 384,
-            "x": 2304,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 7,
-            "page": 0,
-            "width": 384,
-            "x": 2688,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 8,
-            "page": 0,
-            "width": 384,
-            "x": 3072,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 9,
-            "page": 0,
-            "width": 384,
-            "x": 3456,
-            "y": 1152
-          }
-        ],
-        "hit": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 768
-          }
-        ],
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "boss",
-      "frameClass": "boss",
-      "frameRate": 12,
-      "frameSize": 384,
-      "key": "storm_colossus",
-      "masterRender": {
-        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
-        "frameSize": 384,
-        "lod": "none -- the shipped sheet is the master's own render",
-        "masterCommit": "6449a6d",
-        "materialCount": 9,
-        "meshParts": 64,
-        "renderSamples": 48,
-        "renderSupersample": 4,
-        "sheetHeight": 1536,
-        "sheetWidth": 3840
-      },
-      "materialCount": 9,
-      "meshParts": 64,
-      "modelRevision": "storm-colossus-v1",
-      "pilotReviewDocument": "docs/art_reviews/PREMIUM_V2_PILOT_REVIEW.md",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.12
-      },
-      "renderSamples": 36,
-      "renderSupersample": 3,
-      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-heavy-humanoid-v2",
-      "sheet": "sprites/storm_colossus.png",
-      "sheetHeight": 1536,
-      "sheetWidth": 3840,
-      "sheets": [
-        {
-          "decodedBytes": 23592960,
-          "file": "sprites/storm_colossus.png",
-          "height": 1536,
-          "width": 3840
-        }
-      ],
-      "silhouetteLandmarks": [
-        "trilithon crest",
-        "exposed heartstone",
-        "paired slam fists",
-        "split pillar feet"
-      ],
-      "surfaceLanguage": "faceted basalt strata, restrained moss, cyan rune seams",
-      "triangles": 3442,
-      "unique_attack": "thunder_crash",
-      "visualQuality": "studio-v5-hd-pbr"
-    },
-    {
-      "alphaMode": "STRAIGHT_RGBA",
-      "animationProfile": "bloodroot-avatar-root-wrath-v1",
-      "armature": "thorn_matriarch_armature",
-      "atlas": "sprites/bloodroot_avatar.atlas",
-      "boneAnimated": true,
-      "bones": [
-        "armor_socket",
-        "boot_socket.L",
-        "boot_socket.R",
-        "chest",
-        "foot.L",
-        "foot.R",
-        "forearm.L",
-        "forearm.R",
-        "hand.L",
-        "hand.R",
-        "head",
-        "helmet_socket",
-        "neck",
-        "pelvis",
-        "ring_socket.L",
-        "ring_socket.R",
-        "root",
-        "shin.L",
-        "shin.R",
-        "spine",
-        "thigh.L",
-        "thigh.R",
-        "upper_arm.L",
-        "upper_arm.R",
-        "weapon_socket"
-      ],
-      "builder": "bloodroot_avatar",
-      "categoryReview": {
-        "category": "bosses",
-        "document": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-        "status": "accepted"
-      },
-      "clips": {
-        "attack": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 6,
-            "page": 0,
-            "width": 384,
-            "x": 2304,
-            "y": 384
-          },
-          {
-            "height": 384,
-            "index": 7,
-            "page": 0,
-            "width": 384,
-            "x": 2688,
-            "y": 384
-          }
-        ],
-        "death": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 6,
-            "page": 0,
-            "width": 384,
-            "x": 2304,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 7,
-            "page": 0,
-            "width": 384,
-            "x": 2688,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 8,
-            "page": 0,
-            "width": 384,
-            "x": 3072,
-            "y": 1152
-          },
-          {
-            "height": 384,
-            "index": 9,
-            "page": 0,
-            "width": 384,
-            "x": 3456,
-            "y": 1152
-          }
-        ],
-        "hit": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 768
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 768
-          }
-        ],
-        "idle": [
-          {
-            "height": 384,
-            "index": 0,
-            "page": 0,
-            "width": 384,
-            "x": 0,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 1,
-            "page": 0,
-            "width": 384,
-            "x": 384,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 2,
-            "page": 0,
-            "width": 384,
-            "x": 768,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 3,
-            "page": 0,
-            "width": 384,
-            "x": 1152,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 4,
-            "page": 0,
-            "width": 384,
-            "x": 1536,
-            "y": 0
-          },
-          {
-            "height": 384,
-            "index": 5,
-            "page": 0,
-            "width": 384,
-            "x": 1920,
-            "y": 0
-          }
-        ]
-      },
-      "engineVersion": "33.0-studio-v3-3x36-full",
-      "family": "boss",
-      "frameClass": "boss",
-      "frameRate": 12,
-      "frameSize": 384,
-      "key": "bloodroot_avatar",
-      "masterRender": {
-        "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
-        "frameSize": 384,
-        "lod": "none -- the shipped sheet is the master's own render",
-        "masterCommit": "6449a6d",
-        "materialCount": 10,
-        "meshParts": 71,
-        "renderSamples": 48,
-        "renderSupersample": 4,
-        "sheetHeight": 1536,
-        "sheetWidth": 3840
-      },
-      "materialCount": 10,
-      "meshParts": 71,
-      "modelRevision": "bloodroot-avatar-v1",
-      "pivot": {
-        "units": "normalized-bottom-left",
-        "x": 0.5,
-        "y": 0.12
-      },
-      "renderSamples": 36,
-      "renderSupersample": 3,
-      "reviewDocument": "docs/art_reviews/BOSSES_PREMIUM_V2_REVIEW.md",
-      "rigBoneCount": 25,
-      "rigProfile": "premium-rooted-caster-v2",
-      "sheet": "sprites/bloodroot_avatar.png",
-      "sheetHeight": 1536,
-      "sheetWidth": 3840,
-      "sheets": [
-        {
-          "decodedBytes": 23592960,
-          "file": "sprites/bloodroot_avatar.png",
-          "height": 1536,
-          "width": 3840
-        }
-      ],
-      "silhouetteLandmarks": [
-        "ten-petal crown",
-        "rooted royal gown",
-        "paired cage-thorn fans",
-        "briar halo"
-      ],
-      "surfaceLanguage": "layered heartwood, emerald leaves, blood-petal crown, ivory thorns",
-      "triangles": 2008,
-      "unique_attack": "root_wrath",
-      "visualQuality": "studio-v5-hd-pbr"
     }
   ],
   "blenderVersion": "4.2.23",
-  "decodedBytes": 605351936,
+  "decodedBytes": 612429824,
   "decodedCatalogBudgetBytes": 630000000,
-  "decodedCombatResidencyBudgetBytes": 209715200,
-  "decodedCombatResidencyNote": "Combat residency = hero + every regular enemy that can share a wave (eight since R3.4) + one boss + six equipped sheets + arena art, computed by RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2). Raised from 104,857,600 to 209,715,200 bytes (200 MiB) on 2026-09-17 at the owner's direction, because the R5.2 composition ships eight genuine master renders at 384 px frames instead of halved copies and the live set now measures 207,765,504 bytes (`:core:residencyReport`). The eight are the sheets the provenance measurement calls independent renders; every other sheet keeps the reviewed tier. This is a budget, not a device limit: the phone's own budget is the measured wave-50 PSS, which the emulator job reports for this tier rather than assuming.",
+  "decodedCombatResidencyBudgetBytes": 226492416,
+  "decodedCombatResidencyNote": "Combat residency = hero + every regular enemy that can share a wave (eight since R3.4) + one boss + six equipped sheets + arena art, computed by RuntimeResidency and enforced by RuntimeResidencyTest (roadmap R8.2). Raised from 104,857,600 to 209,715,200 bytes on 2026-09-17, and to 226,492,416 bytes (216 MiB) on 2026-09-22 when the field's cover art arrived: the arena's twelve outcrop props are resident for every wave, and the model now counts them, which it did not when the outcrops were drawn with the landmark crystals. A previous version of this note claimed the arena art counted; it did not, and the number said so. This is a budget, not a device limit: the phone's own budget is the measured wave-50 PSS, which the emulator job reports for this tier rather than assuming.",
   "engineVersion": "78.0-integrity-recovery-runtime-tier",
   "frameRate": 12,
   "generatedAt": "2026-09-16T00:00:00Z",
-  "generatedBatch": "enemies",
+  "generatedBatch": "arena-cover",
   "generatedCommit": "phase-78-integrity-recovery",
   "integrityRecovery": {
     "anomalies": [

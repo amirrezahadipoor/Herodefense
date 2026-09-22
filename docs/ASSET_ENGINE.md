@@ -44,7 +44,15 @@ Production-path decision (locked by this spike):
 
 ---
 
-## 28.0b The arena's cover (2026-09-22)
+## 28.0b The arena's cover (2026-09-22) — rendered, reviewed, shipped
+
+Status: **shipped**. Twelve props (`obstacle_<family>_<variant>`, revision `arena-obstacle-premium-v1`) rendered by
+`generate-visual-assets.yml` run `35737207100`, audited at
+`docs/art_reviews/arena_cover/arena_cover_audit.json`, accepted in `docs/art_reviews/ARENA_COVER_REVIEW.md`, and
+promoted by `tools/visual/promote_arena_cover_batch.py`. The measured separation between the two kinds is 193 px of
+standing cover against 108 px of low cover (1.79×, floor 1.6×).
+
+
 
 The four fields the arena round added place two kinds of outcrop -- one that stops bodies and arrows, one that
 stops only bodies -- and both used to be drawn with the crystal landmarks. A landmark says "this is the edge of the

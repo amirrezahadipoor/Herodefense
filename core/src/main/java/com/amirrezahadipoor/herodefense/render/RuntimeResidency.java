@@ -110,7 +110,14 @@ public final class RuntimeResidency {
         }
         total += equipment;
         for (String key : List.of("arena_backdrop", "ground_tile_0", "ground_tile_1", "ground_tile_2",
-            "crystal_prop_0", "crystal_prop_1", "crystal_prop_2")) {
+            "crystal_prop_0", "crystal_prop_1", "crystal_prop_2",
+            // The field's own cover (the obstacle round). It is on screen for every wave of a run, so it belongs
+            // in the set this number is about; leaving it out would have been the model describing a game where
+            // the outcrops are invisible.
+            "obstacle_standing_stone_0", "obstacle_standing_stone_1", "obstacle_standing_stone_2",
+            "obstacle_ruin_slab_0", "obstacle_ruin_slab_1", "obstacle_ruin_slab_2",
+            "obstacle_thorn_hedge_0", "obstacle_thorn_hedge_1", "obstacle_thorn_hedge_2",
+            "obstacle_mossy_boulder_0", "obstacle_mossy_boulder_1", "obstacle_mossy_boulder_2")) {
             JsonValue asset = byKey(manifest, key);
             if (asset != null) {
                 total += sheetBytes(asset);

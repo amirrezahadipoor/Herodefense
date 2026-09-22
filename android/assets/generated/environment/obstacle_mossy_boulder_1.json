@@ -1,0 +1,75 @@
+{
+  "alphaMode": "STRAIGHT_RGBA",
+  "assetKind": "obstacle",
+  "categoryReview": {
+    "auditSha256": "d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff",
+    "category": "arena_cover",
+    "document": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+    "sourceManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+    "status": "accepted"
+  },
+  "clips": {
+    "idle": [
+      {
+        "height": 384,
+        "index": 0,
+        "page": 0,
+        "width": 384,
+        "x": 0,
+        "y": 0
+      }
+    ]
+  },
+  "cover": "low",
+  "coverFamily": "mossy_boulder",
+  "engineVersion": "33.0-studio-v3-3x36-full",
+  "family": "environment",
+  "frameClass": "environment",
+  "frameHeight": 384,
+  "frameSize": 384,
+  "frameWidth": 384,
+  "heightUnits": 0.7,
+  "key": "obstacle_mossy_boulder_1",
+  "masterRender": {
+    "engineVersion": "73.0-studio-v5-hd-pbr-4x48-pbr",
+    "frameSize": 384,
+    "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+    "renderSamples": 32,
+    "renderSupersample": 3,
+    "sheetHeight": 384,
+    "sheetWidth": 384
+  },
+  "materialCount": 4,
+  "meshParts": 11,
+  "modelRevision": "arena-obstacle-premium-v1",
+  "pivot": {
+    "units": "normalized-bottom-left",
+    "x": 0.5,
+    "y": 0.5
+  },
+  "renderSamples": 28,
+  "renderSupersample": 2,
+  "reviewDocument": "docs/art_reviews/ARENA_COVER_REVIEW.md",
+  "runtimeGlow": false,
+  "sheet": "environment/obstacle_mossy_boulder_1.png",
+  "sheetHeight": 384,
+  "sheetWidth": 384,
+  "sheets": [
+    {
+      "decodedBytes": 589824,
+      "file": "environment/obstacle_mossy_boulder_1.png",
+      "height": 384,
+      "width": 384
+    }
+  ],
+  "silhouetteLandmarks": [
+    "rounded core",
+    "shoulder facet",
+    "lichen plates",
+    "scattered pebbles"
+  ],
+  "surfaceLanguage": "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale",
+  "triangles": 280,
+  "variant": 1,
+  "visualQuality": "studio-v4-vibrant"
+}
