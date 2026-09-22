@@ -92,7 +92,10 @@ class ArenaObstacleSourceTest(unittest.TestCase):
         self.assertIn("modelRevision", source)
         # `family` in the manifest is the output directory the asset lives in; the cover's own family rides
         # beside it, because the promotion tools key the metadata sidecar off `family`.
-        self.assertIn('"family"', 'family')
+        self.assertNotIn(
+            '"family": family,', source,
+            "the cover's family must not overwrite the manifest's `family`, which is the output directory",
+        )
         self.assertIn("arena-obstacle-premium-v1", source)
         self.assertIn('raise ValueError(f"Unknown obstacle family', source)
         self.assertIn('raise ValueError(f"Unknown obstacle variant', source)
