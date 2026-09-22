@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import math
+import os
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -18,6 +20,49 @@ TOP_TIER_CLASSES = frozenset({"boss", "tree"})
 TOP_TIER_KEY_PREFIX = "hero"
 TOP_TIER_SUPERSAMPLE = 4  # Phase 49: 3->4 sharper edges, cleaner colors
 TOP_TIER_SAMPLES = 48  # Phase 49: 36->48 for bloom + rim firefly free
+
+
+# The arena's display-quality pass was reviewed under a lifted value range, and the pixels it accepted are the ones
+# the game ships: ARENA_PREMIUM_V2_REVIEW.md records the backdrop's mean value rising from about 24 to about 37 of
+# 255, and the device brightness gates were pinned on the tier that came out of it. The render engine has changed
+# since -- same geometry, same materials, a later Blender and a later lighting rig -- and the same keys come back
+# about 40% darker. Measured, not guessed: the arena batch's audit compares every candidate sheet's painted mean
+# value against the pixels it would replace and refuses a loss of more than a tenth.
+#
+# So the arena's full-frame art is rendered with the exposure that puts it back inside that tenth. Calibration, on
+# the shipped pixels' painted mean value (rendered 3x/32, published at the reviewed tier):
+#
+#   key                shipped   @0.0 stops   @0.75 stops
+#   ground_tile_0        34.38       18.96        31.79
+#   ground_tile_1        42.87       33.48        49.31
+#   ground_tile_2        34.54       19.40        32.04
+#   crystal_prop_0       82.21       70.50        86.01
+#   crystal_prop_1       77.99       64.72        79.79
+#   crystal_prop_2       68.99       58.45        72.99
+#
+# Every one of them clears the tenth-of-a-tenth floor at 0.75 stops, and the spread that remains (-7% to +15%) is
+# the tone curve's own, not a per-key grade: one exposure is one lighting rig, and six of them would be six
+# unreviewed looks. The cover props are deliberately absent from this set -- they were authored and reviewed under
+# the current engine's range and they ship in it, so brightening them would be a new look rather than a
+# restoration.
+ARENA_LIFT_PREFIXES = ("arena_backdrop", "ground_tile_", "crystal_prop_")
+#: Stops of exposure the arena's full-frame art is rendered with.
+ARENA_EXPOSURE_STOPS = 0.75
+
+
+def arena_exposure(asset_key: str) -> float:
+    """The exposure a key is rendered with: the arena's lift for its full-frame art, none for everything else."""
+    if not asset_key.startswith(ARENA_LIFT_PREFIXES):
+        return 0.0
+    override = os.environ.get("HD_ARENA_EXPOSURE_STOPS")
+    if override is not None:
+        try:
+            value = float(override)
+        except ValueError:
+            return ARENA_EXPOSURE_STOPS
+        # A typo must not silently render a batch at zero, so only a finite number counts as an override.
+        return value if math.isfinite(value) else ARENA_EXPOSURE_STOPS
+    return ARENA_EXPOSURE_STOPS
 
 
 def render_tier(asset_key: str, frame_class: str) -> tuple[int, int]:

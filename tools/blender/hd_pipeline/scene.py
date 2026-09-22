@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import os
 from array import array
 from pathlib import Path
 from typing import Iterable
@@ -16,6 +17,7 @@ from .config import (
     CAMERA_TARGET,
     FRAME_DIMENSIONS,
     OUTLINE_RGBA,
+    arena_exposure,
     render_tier,
 )
 
@@ -274,7 +276,8 @@ def configure_scene(
             scene.view_settings.look = "AgX - Very High Contrast"  # fallback if Punchy not available
         except TypeError:
             pass
-    scene.view_settings.exposure = 0.0
+    # The arena's full-frame art carries the exposure its own review measured; everything else renders at zero.
+    scene.view_settings.exposure = arena_exposure(asset_key)
     scene.view_settings.gamma = 1.0
     # Phase 51: stronger AO for deeper clothing folds
     try:
