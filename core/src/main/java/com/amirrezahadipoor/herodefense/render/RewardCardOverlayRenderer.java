@@ -22,6 +22,8 @@ public final class RewardCardOverlayRenderer implements AutoCloseable {
     static final float HEADER_PANEL_HEIGHT = 190f;
     static final float FOOTER_PANEL_Y = 140f;
     static final float FOOTER_PANEL_HEIGHT = 104f;
+    /** Breathing room between a card's title and the PERMANENT tag: the title's lane ends here. */
+    static final float TITLE_TAG_GAP = 28f;
 
     private final ShapeRenderer shapes = new ShapeRenderer();
     private final OverlayText text = new OverlayText();
@@ -78,8 +80,15 @@ public final class RewardCardOverlayRenderer implements AutoCloseable {
             float offset = MainMenuRenderer.pressedOffset(cardState);
             icons.draw(batch, card.iconKey(), RewardCardTouchLayout.CARD_X + 26f, y + 47f + offset,
                 96f, cardState);
-            text.draw(batch, card.title().toUpperCase(Locale.ROOT),
-                RewardCardTouchLayout.CARD_X + 140f, y + 148f + offset, 1.18f, OverlayText.IVORY);
+            // The title's lane ends before the PERMANENT tag: the tag is right-aligned at the card's
+            // edge, and a long title drawn to its own width ran straight into it -- "VERDANT POWER"
+            // read as "VERDANT POWERPERMANENT" on the captured frames. The title is fitted to the lane
+            // that remains, shrinking like the menu rows rather than borrowing the tag's space.
+            float tagWidth = text.width("PERMANENT", 0.60f);
+            float titleLaneWidth = RewardCardTouchLayout.CARD_WIDTH - 140f - 26f - tagWidth - TITLE_TAG_GAP;
+            text.drawLeadingFitted(batch, card.title().toUpperCase(Locale.ROOT),
+                RewardCardTouchLayout.CARD_X, RewardCardTouchLayout.CARD_WIDTH, 140f, titleLaneWidth,
+                y + 148f + offset, 1.18f, OverlayText.IVORY);
             text.draw(batch, powerBudget.description(card, bossNumber),
                 RewardCardTouchLayout.CARD_X + 140f, y + 102f + offset, 0.98f, OverlayText.POSITIVE);
             text.draw(batch, effectKind(card), RewardCardTouchLayout.CARD_X + 140f,

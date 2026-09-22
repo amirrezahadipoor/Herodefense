@@ -34,6 +34,8 @@ public final class OnboardingOverlayRenderer implements AutoCloseable {
     static final float PIP_X = 44f;
     static final float PIP_Y_INSET = 112f;
     static final float FADE_SECONDS = 0.22f;
+    /** Room left between the coaching line/hint and the Skip button: text never draws under the button. */
+    static final float SKIP_TEXT_GAP = 24f;
 
     private final ShapeRenderer shapes = new ShapeRenderer();
     private final OverlayText text = new OverlayText();
@@ -75,9 +77,16 @@ public final class OnboardingOverlayRenderer implements AutoCloseable {
         text.drawLeading(batch, GameLocale.text(OnboardingStrings.TITLE), x, width, PIP_X,
             y + PIP_Y_INSET + 14f, TITLE_SCALE, new Color(
             OverlayText.GOLD.r, OverlayText.GOLD.g, OverlayText.GOLD.b, reveal));
-        text.drawLeading(batch, step.line(), x, width, LINE_X, y + LINE_Y_INSET, LINE_SCALE, new Color(
+        // The coaching line and hint must stop before the Skip button they share the banner with: both
+        // run at the same height as the button, and the first vigil's line ("Tap an enemy and the bow
+        // focuses it") drew straight under it on the captured frames. They are fitted to the lane that
+        // remains, shrinking like the menu rows instead of borrowing the button's space.
+        float lineLaneWidth = OnboardingTouchLayout.skipX() - x - LINE_X - SKIP_TEXT_GAP;
+        text.drawLeadingFitted(batch, step.line(), x, width, LINE_X, lineLaneWidth, y + LINE_Y_INSET,
+            LINE_SCALE, new Color(
             OverlayText.IVORY.r, OverlayText.IVORY.g, OverlayText.IVORY.b, reveal));
-        text.drawLeading(batch, step.hint(), x, width, LINE_X, y + HINT_Y_INSET, HINT_SCALE, new Color(
+        text.drawLeadingFitted(batch, step.hint(), x, width, LINE_X, lineLaneWidth, y + HINT_Y_INSET,
+            HINT_SCALE, new Color(
             OverlayText.SUBTLE.r, OverlayText.SUBTLE.g, OverlayText.SUBTLE.b, reveal));
         text.drawCentered(
             batch, GameLocale.text(OnboardingStrings.SKIP),
