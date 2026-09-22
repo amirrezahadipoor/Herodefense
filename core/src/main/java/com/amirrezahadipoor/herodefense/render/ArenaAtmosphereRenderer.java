@@ -35,10 +35,19 @@ public final class ArenaAtmosphereRenderer implements AutoCloseable {
     static final float AURA_HEIGHT = 110f;
     /** Master opacity of the veil. The shader clamps again; this is the look dial. */
     static final float VEIL_STRENGTH = 0.05f;
+    /**
+     * How much of a standing boss's identity colour the veil's mist wears at full strength. The
+     * mist's own alpha tops out at 0.14, so even a full share stays a whisper: the night changes
+     * face without the arena changing light.
+     */
+    static final float NIGHT_FACE_SHARE = 0.6f;
 
     private final ShaderProgram veilShader;
     private final ShaderProgram auraShader;
     private final Texture whitePixel;
+    private final HollowNightTint nightTint = new HollowNightTint();
+    private GameState lastState;
+    private float lastMotionSeconds;
 
     public ArenaAtmosphereRenderer() {
         veilShader = compile("shaders/arena-veil.vert", "shaders/arena-veil.frag", "Arena veil");
@@ -65,8 +74,26 @@ public final class ArenaAtmosphereRenderer implements AutoCloseable {
      * reduced-motion caller hands in a frozen constant and {@code motionSuppressed} true.
      */
     public void draw(SpriteBatch batch, GameState state, float motionSeconds, boolean motionSuppressed) {
+        tickNightTint(state, motionSeconds);
         drawVeil(batch, state.waveNumber, motionSeconds);
         drawBossAuras(batch, state, motionSeconds, motionSuppressed);
+    }
+
+    /**
+     * The night's face follows the boss it is facing: a new state is a new night (the previous
+     * run's boss goes with it), and the tint eases with the arena's own motion clock, which a
+     * reduced-motion caller hands in frozen -- a held clock holds the face still, the way every
+     * other motion in the arena holds.
+     */
+    private void tickNightTint(GameState state, float motionSeconds) {
+        if (lastState != state) {
+            lastState = state;
+            lastMotionSeconds = 0f;
+            nightTint.reset();
+        }
+        float delta = motionSeconds - lastMotionSeconds;
+        lastMotionSeconds = motionSeconds;
+        nightTint.tick(state, delta);
     }
 
     void drawVeil(SpriteBatch batch, int wave, float motionSeconds) {
@@ -76,6 +103,12 @@ public final class ArenaAtmosphereRenderer implements AutoCloseable {
         veilShader.bind();
         veilShader.setUniformf("u_time", motionSeconds);
         float[] tint = veilTint(grade);
+        // The night's face: under a standing boss the mist wears the boss's own identity colour,
+        // eased in and out by the tint's strength.
+        float face = nightTint.strength() * NIGHT_FACE_SHARE;
+        tint[0] += (nightTint.red() - tint[0]) * face;
+        tint[1] += (nightTint.green() - tint[1]) * face;
+        tint[2] += (nightTint.blue() - tint[2]) * face;
         veilShader.setUniformf("u_tint", tint[0], tint[1], tint[2]);
         veilShader.setUniformf("u_aspect", bounds[3] / bounds[2]);
         veilShader.setUniformf("u_strength", VEIL_STRENGTH);
