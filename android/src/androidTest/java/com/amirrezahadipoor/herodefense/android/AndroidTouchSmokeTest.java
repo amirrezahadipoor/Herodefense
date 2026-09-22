@@ -930,79 +930,46 @@ public final class AndroidTouchSmokeTest {
      * measurements can be pinned in the next commit.
      */
     private static final Map<String, float[]> SCREEN_REFERENCE = Map.ofEntries(
-        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35709214986:
-        // tree-siege measured mean=37.66 lit=0.8032 where the table had carried 44.35/0.9141
-        // since before the night gained its ground shadows and weather (R3.1/R3.2), which darken the
-        // world band and, with it, the lit-pixel edge this contract measures. The bands did not move --
-        // only the reference did, because the screen genuinely looks different now, and the difference
-        // is the art the run was asked to draw.
-        ref("tree-siege-premium-v2.png", 37.66f, 0.8032f),
-        // Re-pinned on 2026-09-22 from this run's own brightness-measurements.txt (run 35712218124):
-        // the collapse frame is the same night arena a beat after the tree falls, so the shadow and weather
-        // pass darkens it exactly as it darkens tree-siege above, and the 0.9840 it carried was measured
-        // before that pass existed. The sibling profiles were re-pinned when they were last measured; this
-        // one was the last of the four still holding the brighter value.
-        ref("vfx-tree-collapse-premium-v2.png", 37.61f, 0.8032f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155777,
-        // brightness-measurements.txt: mean=37.50 lit=0.8178): the Hollow's parting word is up in the box
-        // across the whole defeat capture and the reveal is held until it is done, so the reference is the
-        // box-present frame.
-        ref("defeat-premium-v2.png", 37.50f, 0.8178f),
-        ref("trial-draft-premium-v2.png", 43.44f, 0.9737f),
-        // Re-measured on 2026-09-18 after roadmap G3a put a sixth row on this screen: the rows went from 150f
-        // on a 150f pitch to 130f on a 140f pitch, which is more frame and text and less empty backdrop, so the
-        // screen is genuinely brighter. Both numbers are from run 35296081592's own
-        // brightness-measurements.txt (mean=44.40 lit=0.9553), not estimated from the failure message, which
-        // carries the mean and not the lit fraction.
-        ref("settings-premium-v2.png", 44.40f, 0.9553f),
-        ref("level-up-premium-v2.png", 41.93f, 0.9741f),
-        ref("inventory-details-premium-v2.png", 44.93f, 0.9644f),
-        ref("inventory-sell-feedback-premium-v2.png", 43.94f, 0.9624f),
-        // Re-measured 2026-09-21 (run 35654155777: mean=44.24 lit=0.8237): the boss wave opens with the
-        // Warden's once-ever title card, which types out in the box at the arrival moment. This reference
-        // had stayed at its pre-box value, so any run whose capture lands on the card went red. It now
-        // carries the box-present value, like the six vfx-combat frames below, and it also passes on a
-        // frame the card is not on, so the gate holds either way.
-        ref("vfx-boss-entrance-premium-v2.png", 44.24f, 0.8237f),
-        // Re-measured 2026-09-21 after the dialogue box landed: the boss wave opens with the Warden's
-        // once-ever title card, which now types out in the box and stays up across the whole 6-frame
-        // capture (run 35643649963, brightness-measurements.txt: frame 0 mean=43.36 lit=0.8199). The card
-        // is deterministic over the same arena, so all six frames share that box-present reference; it
-        // also passes on a frame the card is not on, so the gate holds either way.
-        ref("vfx-combat-0-premium-v2.png", 43.36f, 0.8199f),
-        ref("vfx-combat-1-premium-v2.png", 43.36f, 0.8199f),
-        ref("vfx-combat-2-premium-v2.png", 43.36f, 0.8199f),
-        ref("vfx-combat-3-premium-v2.png", 43.36f, 0.8199f),
-        ref("vfx-combat-4-premium-v2.png", 43.36f, 0.8199f),
-        ref("vfx-combat-5-premium-v2.png", 43.36f, 0.8199f),
-        ref("shop-affordability-premium-v2.png", 39.49f, 0.9564f),
-        ref("shop-purchase-feedback-premium-v2.png", 37.52f, 0.9538f),
-        ref("shop-skills-tab-premium-v2.png", 36.88f, 0.9510f),
-        // Re-measured 2026-09-21 after the ceremony became a boxed dialogue: the box is a permanent part
-        // of this screen (run 35643649963: mean=43.52 lit=0.8244).
-        ref("ceremony-plant-premium-v2.png", 43.52f, 0.8244f),
-        // The run that first measured the boxed ceremony aborted at the plant frame, so the water frame was
-        // never measured; it is the same boxed ceremony, so it carries the plant frame's box-present value
-        // (run 35643649963: mean=43.52 lit=0.8244) until a green run measures it directly.
-        ref("ceremony-water-premium-v2.png", 43.52f, 0.8244f),
-        ref("second-tree-standing-premium-v2.png", 47.98f, 0.9218f),
-        // Re-measured 2026-09-22 after the victory line began to speak in the box and the dawn
-        // broke behind the summary (run 35663454153, brightness-measurements.txt: mean=40.61
-        // lit=0.8431): the capture lands mid-typing, so the reference is the box-present,
-        // dawn-breaking frame.
-        ref("victory-premium-v2.png", 40.61f, 0.8431f),
-        ref("main-menu-premium-v2.png", 41.01f, 0.9602f),
-        ref("opening-line-one-premium-v2.png", 34.45f, 0.9658f),
-        // Re-measured 2026-09-21 after the opening became a boxed dialogue: the box is a permanent part
-        // of this screen (run 35643649963: mean=36.14 lit=0.8508).
-        ref("opening-line-three-premium-v2.png", 36.14f, 0.8508f),
-        ref("live-hud-premium-v2.png", 46.81f, 0.9340f),
-        ref("pause-premium-v2.png", 43.18f, 0.9541f),
-        ref("reward-cards-premium-v2.png", 43.73f, 0.9712f),
-        // The stage-grade band's two stills were captured by every profile and pinned by none, so they
-        // came back UNREFERENCED on every run; they carry this run's measurements here.
-        ref("grade-dawn-wave-20.png", 42.60f, 0.8169f),
-        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f)
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt (run 35771990848)
+        // after the composite pass gained its exposure lift (EXPOSURE 1.5, commit 951b848): every screen
+        // genuinely changed -- the dark ground gains roughly a third and bright pixels keep their place --
+        // so each reference below is this run's own measurement of the lifted night, tree-siege moving
+        // from 37.66/0.8032 to the 57.59/0.9014 pinned here. The tablet measures inside its band and its
+        // table is untouched.
+        ref("tree-siege-premium-v2.png", 57.59f, 0.9014f),
+        // The collapse frame still lands at a different point of the collapse animation each run, so it
+        // keeps the wider animated band.
+        ref("vfx-tree-collapse-premium-v2.png", 58.44f, 0.9469f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        ref("defeat-premium-v2.png", 38.18f, 0.9784f),
+        ref("trial-draft-premium-v2.png", 45.17f, 0.9736f),
+        ref("settings-premium-v2.png", 47.26f, 0.9578f),
+        ref("level-up-premium-v2.png", 45.94f, 0.9737f),
+        ref("inventory-details-premium-v2.png", 44.97f, 0.9626f),
+        ref("inventory-sell-feedback-premium-v2.png", 44.97f, 0.9626f),
+        ref("vfx-boss-entrance-premium-v2.png", 45.96f, 0.9738f),
+        // The Warden's title card still types out in the box across the whole six-frame capture, so all
+        // six frames share this run's box-present frame-0 value, as they have since the box landed.
+        ref("vfx-combat-0-premium-v2.png", 62.38f, 0.8982f),
+        ref("vfx-combat-1-premium-v2.png", 62.38f, 0.8982f),
+        ref("vfx-combat-2-premium-v2.png", 62.38f, 0.8982f),
+        ref("vfx-combat-3-premium-v2.png", 62.38f, 0.8982f),
+        ref("vfx-combat-4-premium-v2.png", 62.38f, 0.8982f),
+        ref("vfx-combat-5-premium-v2.png", 62.38f, 0.8982f),
+        ref("shop-affordability-premium-v2.png", 41.63f, 0.9530f),
+        ref("shop-purchase-feedback-premium-v2.png", 41.63f, 0.9530f),
+        ref("shop-skills-tab-premium-v2.png", 38.89f, 0.9482f),
+        ref("ceremony-plant-premium-v2.png", 61.63f, 0.9062f),
+        ref("ceremony-water-premium-v2.png", 61.31f, 0.9036f),
+        ref("second-tree-standing-premium-v2.png", 62.63f, 0.9064f),
+        ref("victory-premium-v2.png", 46.34f, 0.9800f),
+        ref("main-menu-premium-v2.png", 45.25f, 0.9740f),
+        ref("opening-line-one-premium-v2.png", 49.40f, 0.9525f),
+        ref("opening-line-three-premium-v2.png", 49.81f, 0.9515f),
+        ref("live-hud-premium-v2.png", 59.44f, 0.8915f),
+        ref("pause-premium-v2.png", 45.95f, 0.9547f),
+        ref("reward-cards-premium-v2.png", 45.26f, 0.9712f),
+        ref("grade-dawn-wave-20.png", 62.49f, 0.8970f),
+        ref("grade-hollow-wave-175.png", 62.29f, 0.9084f)
     );
 
     /**
@@ -1013,147 +980,86 @@ public final class AndroidTouchSmokeTest {
      * run 35647129943, whose journey completed, and are pinned below.
      */
     private static final Map<String, float[]> API30_PIXEL_3A = Map.ofEntries(
-        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35709214825:
-        // tree-siege measured mean=37.61 lit=0.8032 where the table had carried 46.16/0.9083
-        // since before the night gained its ground shadows and weather (R3.1/R3.2), which darken the
-        // world band and, with it, the lit-pixel edge this contract measures. The bands did not move --
-        // only the reference did, because the screen genuinely looks different now, and the difference
-        // is the art the run was asked to draw.
-        ref("tree-siege-premium-v2.png", 37.61f, 0.8032f),
-        // Re-measured 2026-09-22 after the Hollow's gaze began to blink shut on the defeat
-        // (device evidence, run 35663454121, brightness-measurements.txt: mean=36.85 lit=0.8163):
-        // the collapse frame lands at a different point of the animation each run, as it always
-        // has, so the reference is this run's own frame under the animated band.
-        ref("vfx-tree-collapse-premium-v2.png", 36.85f, 0.8163f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155526,
-        // brightness-measurements.txt: mean=37.31 lit=0.8169): the parting word is up in the box across
-        // the whole defeat capture, so the reference is the box-present frame.
-        ref("defeat-premium-v2.png", 37.31f, 0.8169f),
-        ref("trial-draft-premium-v2.png", 43.90f, 0.9741f),
-        ref("settings-premium-v2.png", 44.98f, 0.9570f),
-        ref("level-up-premium-v2.png", 43.55f, 0.9688f),
-        ref("inventory-details-premium-v2.png", 44.96f, 0.9626f),
-        ref("inventory-sell-feedback-premium-v2.png", 44.96f, 0.9626f),
-        // This profile's arrival frame landed before the Warden's title card box came up (run 35654155526:
-        // mean=43.57 lit=0.9689), so the reference carries the card's box-present value from that same
-        // run's vfx-combat-0 (mean=42.84 lit=0.8177) -- the same card over the same arena. The value passes
-        // on a card-up frame and on a card-free one, so the gate holds either way.
-        ref("vfx-boss-entrance-premium-v2.png", 42.84f, 0.8177f),
-        // Re-measured 2026-09-21 after the dialogue box landed: the boss title card types out in the box
-        // and stays up across the whole 6-frame capture (run 35643650151: frame 0 mean=43.48 lit=0.8187).
-        // All six frames share that box-present reference over the same arena.
-        ref("vfx-combat-0-premium-v2.png", 43.48f, 0.8187f),
-        ref("vfx-combat-1-premium-v2.png", 43.48f, 0.8187f),
-        ref("vfx-combat-2-premium-v2.png", 43.48f, 0.8187f),
-        ref("vfx-combat-3-premium-v2.png", 43.48f, 0.8187f),
-        ref("vfx-combat-4-premium-v2.png", 43.48f, 0.8187f),
-        ref("vfx-combat-5-premium-v2.png", 43.48f, 0.8187f),
-        ref("shop-affordability-premium-v2.png", 41.61f, 0.9566f),
-        ref("shop-purchase-feedback-premium-v2.png", 41.61f, 0.9566f),
-        ref("shop-skills-tab-premium-v2.png", 38.68f, 0.9524f),
-        // Re-measured 2026-09-21 after the ceremony became a boxed dialogue (run 35643650151: mean=43.68 lit=0.8256).
-        ref("ceremony-plant-premium-v2.png", 43.68f, 0.8256f),
-        // Same boxed ceremony as the plant frame, which this profile's run measured (run 35643650151:
-        // mean=43.68 lit=0.8256); the water frame was not reached, so it shares that value until measured.
-        ref("ceremony-water-premium-v2.png", 43.68f, 0.8256f),
-        // Re-measured 2026-09-21 (run 35647129943: mean=43.43 lit=0.8243): on this profile's slower
-        // emulator the boxed line is still up when the capture lands, so the reference is the box-present
-        // frame; a box-free frame (mean ~49.8, lit ~0.96) also passes it.
-        ref("second-tree-standing-premium-v2.png", 43.43f, 0.8243f),
-        // Re-measured 2026-09-22 after the victory line began to speak in the box and the dawn
-        // broke behind the summary (device evidence, run 35663454121, brightness-measurements.txt:
-        // mean=39.71 lit=0.8358): the capture lands mid-typing, so the reference is the
-        // box-present, dawn-breaking frame.
-        ref("victory-premium-v2.png", 39.71f, 0.8358f),
-        ref("main-menu-premium-v2.png", 42.85f, 0.9691f),
-        ref("opening-line-one-premium-v2.png", 43.47f, 0.9932f),
-        // Pinned 2026-09-21 from run 35647129943, the first run whose journey reached it (mean=35.77 lit=0.8495).
-        ref("opening-line-three-premium-v2.png", 35.77f, 0.8495f),
-        // Pinned 2026-09-21 from run 35647129943 (mean=45.95 lit=0.9862): box-free at the capture.
-        ref("live-hud-premium-v2.png", 45.95f, 0.9862f),
-        // Pinned 2026-09-21 from run 35647129943 (mean=43.56 lit=0.9542).
-        ref("pause-premium-v2.png", 43.56f, 0.9542f),
-        ref("reward-cards-premium-v2.png", 43.57f, 0.9689f),
-        // The stage-grade band's two stills were captured by every profile and pinned by none, so they
-        // came back UNREFERENCED on every run; they carry this run's measurements here.
-        ref("grade-dawn-wave-20.png", 43.91f, 0.8223f),
-        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f)
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt (run 35771990474)
+        // after the composite pass gained its exposure lift (EXPOSURE 1.5, commit 951b848): every screen
+        // genuinely changed, so each reference below is this run's own measurement of the lifted night --
+        // the same arithmetic the reference profile's re-pin records above.
+        ref("tree-siege-premium-v2.png", 57.59f, 0.9014f),
+        // The collapse frame still lands at a different point of the collapse animation each run, so it
+        // keeps the wider animated band.
+        ref("vfx-tree-collapse-premium-v2.png", 38.18f, 0.9784f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        ref("defeat-premium-v2.png", 38.18f, 0.9784f),
+        ref("trial-draft-premium-v2.png", 45.22f, 0.9731f),
+        ref("settings-premium-v2.png", 47.26f, 0.9578f),
+        ref("level-up-premium-v2.png", 45.94f, 0.9737f),
+        ref("inventory-details-premium-v2.png", 44.97f, 0.9626f),
+        ref("inventory-sell-feedback-premium-v2.png", 43.81f, 0.9602f),
+        ref("vfx-boss-entrance-premium-v2.png", 45.96f, 0.9738f),
+        // The Warden's title card still types out in the box across the whole six-frame capture, so all
+        // six frames share this run's box-present frame-0 value, as they have since the box landed.
+        ref("vfx-combat-0-premium-v2.png", 62.63f, 0.8993f),
+        ref("vfx-combat-1-premium-v2.png", 62.63f, 0.8993f),
+        ref("vfx-combat-2-premium-v2.png", 62.63f, 0.8993f),
+        ref("vfx-combat-3-premium-v2.png", 62.63f, 0.8993f),
+        ref("vfx-combat-4-premium-v2.png", 62.63f, 0.8993f),
+        ref("vfx-combat-5-premium-v2.png", 62.63f, 0.8993f),
+        ref("shop-affordability-premium-v2.png", 41.63f, 0.9530f),
+        ref("shop-purchase-feedback-premium-v2.png", 41.63f, 0.9530f),
+        ref("shop-skills-tab-premium-v2.png", 38.89f, 0.9482f),
+        ref("ceremony-plant-premium-v2.png", 61.74f, 0.9068f),
+        ref("ceremony-water-premium-v2.png", 62.04f, 0.9046f),
+        ref("second-tree-standing-premium-v2.png", 62.65f, 0.9065f),
+        ref("victory-premium-v2.png", 46.35f, 0.9800f),
+        ref("main-menu-premium-v2.png", 45.25f, 0.9740f),
+        ref("opening-line-one-premium-v2.png", 49.69f, 0.9999f),
+        ref("opening-line-three-premium-v2.png", 49.49f, 0.9511f),
+        ref("live-hud-premium-v2.png", 59.74f, 0.8920f),
+        ref("pause-premium-v2.png", 46.02f, 0.9545f),
+        ref("reward-cards-premium-v2.png", 45.96f, 0.9738f),
+        ref("grade-dawn-wave-20.png", 62.52f, 0.8971f),
+        ref("grade-hollow-wave-175.png", 62.37f, 0.9086f)
     );
 
     /** The device-evidence matrix's api33 pixel_7 table, measured by run 35462188576 at commit 39383ed. */
     private static final Map<String, float[]> API33_PIXEL_7 = Map.ofEntries(
-        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35709214825:
-        // tree-siege measured mean=37.65 lit=0.7645 where the table had carried 43.29/0.8641
-        // since before the night gained its ground shadows and weather (R3.1/R3.2), which darken the
-        // world band and, with it, the lit-pixel edge this contract measures. The bands did not move --
-        // only the reference did, because the screen genuinely looks different now, and the difference
-        // is the art the run was asked to draw.
-        ref("tree-siege-premium-v2.png", 37.65f, 0.7645f),
-        // Re-measured 2026-09-21 (run 35656392421, brightness-measurements.txt: mean=37.40 lit=0.7857):
-        // the parting word is up in the box across the collapse capture, and the frame lands at a
-        // different point of the collapse animation each run -- this profile's two consecutive runs
-        // measured 0.8870 (run 35654155526) and 0.7857, so the reference is the darker of the two and
-        // the standard band covers both.
-        ref("vfx-tree-collapse-premium-v2.png", 37.40f, 0.7857f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155526,
-        // brightness-measurements.txt: mean=37.38 lit=0.7780): the parting word is up in the box across
-        // the whole defeat capture, so the reference is the box-present frame.
-        ref("defeat-premium-v2.png", 37.38f, 0.7780f),
-        ref("trial-draft-premium-v2.png", 41.37f, 0.9139f),
-        ref("settings-premium-v2.png", 42.11f, 0.9138f),
-        ref("level-up-premium-v2.png", 41.09f, 0.9067f),
-        ref("inventory-details-premium-v2.png", 42.37f, 0.9108f),
-        ref("inventory-sell-feedback-premium-v2.png", 42.37f, 0.9108f),
-        // This profile's arrival frame landed before the Warden's title card box came up (run 35654155526:
-        // mean=41.08 lit=0.9066), so the reference carries the card's box-present value from that same
-        // run's vfx-combat-0 (mean=43.69 lit=0.7900) -- the same card over the same arena. The value passes
-        // on a card-up frame and on a card-free one, so the gate holds either way.
-        ref("vfx-boss-entrance-premium-v2.png", 43.69f, 0.7900f),
-        // Re-measured 2026-09-21 after the dialogue box landed: the boss title card types out in the box
-        // and stays up across the whole 6-frame capture (run 35643650151: frame 0 mean=43.39 lit=0.7885).
-        // All six frames share that box-present reference over the same arena.
-        ref("vfx-combat-0-premium-v2.png", 43.39f, 0.7885f),
-        ref("vfx-combat-1-premium-v2.png", 43.39f, 0.7885f),
-        ref("vfx-combat-2-premium-v2.png", 43.39f, 0.7885f),
-        ref("vfx-combat-3-premium-v2.png", 43.39f, 0.7885f),
-        ref("vfx-combat-4-premium-v2.png", 43.39f, 0.7885f),
-        ref("vfx-combat-5-premium-v2.png", 43.39f, 0.7885f),
-        ref("shop-affordability-premium-v2.png", 37.78f, 0.9023f),
-        ref("shop-purchase-feedback-premium-v2.png", 37.78f, 0.9023f),
-        ref("shop-skills-tab-premium-v2.png", 35.10f, 0.8994f),
-        // Re-measured 2026-09-21 after the ceremony became a boxed dialogue (run 35643650151: mean=43.73 lit=0.7998).
-        ref("ceremony-plant-premium-v2.png", 43.73f, 0.7998f),
-        // Same boxed ceremony as the plant frame, which this profile's run measured (run 35643650151:
-        // mean=43.73 lit=0.7998); the water frame was not reached, so it shares that value until measured.
-        ref("ceremony-water-premium-v2.png", 43.73f, 0.7998f),
-        ref("second-tree-standing-premium-v2.png", 48.05f, 0.9044f),
-        // Re-measured 2026-09-22 after the victory line began to speak in the box, the dawn
-        // broke behind the summary, and the Hollow's gaze began to drift away on the win
-        // (device evidence, run 35663454121, brightness-measurements.txt: mean=38.86 lit=0.7919):
-        // the capture lands mid-typing, so the reference is the box-present, dawn-breaking frame.
-        ref("victory-premium-v2.png", 38.86f, 0.7919f),
-        ref("main-menu-premium-v2.png", 40.36f, 0.9071f),
-        ref("opening-line-one-premium-v2.png", 37.23f, 0.9323f),
-        // Re-measured 2026-09-21 after the opening became a boxed dialogue (run 35643650151: mean=36.23 lit=0.8099).
-        ref("opening-line-three-premium-v2.png", 36.23f, 0.8099f),
-        ref("live-hud-premium-v2.png", 46.66f, 0.9018f),
-        ref("pause-premium-v2.png", 40.93f, 0.9074f),
-        ref("reward-cards-premium-v2.png", 41.08f, 0.9066f),
-        // The stage-grade band's two stills were captured by every profile and pinned by none, so they
-        // came back UNREFERENCED on every run; they carry this run's measurements here.
-        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35738150740
-        // (mean=43.72 lit=0.7891 where the table had carried 44.97/0.9049): the field's outcrops are drawn
-        // with their own cover art now -- stone, moss and lichen instead of the emissive crystal landmarks --
-        // so the arena genuinely carries fewer bright pixels and the lit-pixel edge this contract measures
-        // moved with the art. The bands did not move: the landscape pin beside it (grade-hollow) still reads
-        // 0.9053 and the screen's mean is inside a luma of its reference.
-        ref("grade-dawn-wave-20.png", 43.72f, 0.7891f),
-        // Same reason as the dawn pin above and measured in the same pass (run 35745667023:
-        // mean=42.29 lit=0.7924 where the table had carried 44.65/0.9053): the Hollow's arena is the same
-        // arena, so the field's new cover art moves its lit-pixel edge by the same amount. The two grade
-        // stills are a pair -- one landscape, one night -- and pinning one without the other is what left
-        // this one red on the run that measured it.
-        ref("grade-hollow-wave-175.png", 42.29f, 0.7924f)
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt (run 35771990474)
+        // after the composite pass gained its exposure lift (EXPOSURE 1.5, commit 951b848): every screen
+        // genuinely changed, so each reference below is this run's own measurement of the lifted night --
+        // the same arithmetic the reference profile's re-pin records above.
+        ref("tree-siege-premium-v2.png", 55.45f, 0.8568f),
+        // The collapse frame still lands at a different point of the collapse animation each run, so it
+        // keeps the wider animated band.
+        ref("vfx-tree-collapse-premium-v2.png", 55.10f, 0.8913f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        ref("defeat-premium-v2.png", 35.15f, 0.9157f),
+        ref("trial-draft-premium-v2.png", 42.98f, 0.9154f),
+        ref("settings-premium-v2.png", 44.38f, 0.9148f),
+        ref("level-up-premium-v2.png", 42.79f, 0.9065f),
+        ref("inventory-details-premium-v2.png", 42.74f, 0.9119f),
+        ref("inventory-sell-feedback-premium-v2.png", 42.74f, 0.9119f),
+        ref("vfx-boss-entrance-premium-v2.png", 42.78f, 0.9064f),
+        // The Warden's title card still types out in the box across the whole six-frame capture, so all
+        // six frames share this run's box-present frame-0 value, as they have since the box landed.
+        ref("vfx-combat-0-premium-v2.png", 58.64f, 0.8629f),
+        ref("vfx-combat-1-premium-v2.png", 58.64f, 0.8629f),
+        ref("vfx-combat-2-premium-v2.png", 58.64f, 0.8629f),
+        ref("vfx-combat-3-premium-v2.png", 58.64f, 0.8629f),
+        ref("vfx-combat-4-premium-v2.png", 58.64f, 0.8629f),
+        ref("vfx-combat-5-premium-v2.png", 58.64f, 0.8629f),
+        ref("shop-affordability-premium-v2.png", 38.61f, 0.9042f),
+        ref("shop-purchase-feedback-premium-v2.png", 38.61f, 0.9042f),
+        ref("shop-skills-tab-premium-v2.png", 36.08f, 0.9009f),
+        ref("ceremony-plant-premium-v2.png", 57.74f, 0.8706f),
+        ref("ceremony-water-premium-v2.png", 57.43f, 0.8680f),
+        ref("second-tree-standing-premium-v2.png", 60.95f, 0.8779f),
+        ref("victory-premium-v2.png", 42.97f, 0.9144f),
+        ref("main-menu-premium-v2.png", 42.06f, 0.9069f),
+        ref("opening-line-one-premium-v2.png", 47.58f, 0.9041f),
+        ref("opening-line-three-premium-v2.png", 47.88f, 0.9033f),
+        ref("live-hud-premium-v2.png", 56.22f, 0.8553f),
+        ref("pause-premium-v2.png", 43.34f, 0.9089f),
+        ref("reward-cards-premium-v2.png", 42.78f, 0.9064f),
+        ref("grade-dawn-wave-20.png", 61.64f, 0.8853f),
+        ref("grade-hollow-wave-175.png", 60.08f, 0.8792f)
     );
 
     /**

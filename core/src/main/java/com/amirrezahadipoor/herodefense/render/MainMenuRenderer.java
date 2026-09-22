@@ -254,7 +254,7 @@ public final class MainMenuRenderer implements AutoCloseable {
         }
     }
 
-    /** A row's line: leading-aligned like {@link #drawShadowed}, and held inside the row's button. */
+    /** A row's line: leading-aligned, and held inside the row's button. */
     private void drawFitted(SpriteBatch batch, String label, float y, float scale, Color color) {
         text.drawLeadingFitted(
             batch, label, 0f, UiMirror.SCREEN_WIDTH, ROW_TEXT_INSET, ROW_TEXT_MAX_WIDTH, y, scale, color);
@@ -264,17 +264,6 @@ public final class MainMenuRenderer implements AutoCloseable {
         SpriteBatch batch, String label, float centerX, float y, float scale, Color color
     ) {
         text.drawCentered(batch, label, centerX, y, scale, color);
-    }
-
-    /**
-     * A run that starts {@code inset} from the screen's leading edge. Both callers are the two lines of a menu
-     * row, and the row's button spans 120f..600f of a 720f screen, so mirroring about the screen's centre keeps
-     * both lines inside the button they belong to.
-     */
-    private void drawShadowed(
-        SpriteBatch batch, String label, float inset, float y, float scale, Color color
-    ) {
-        text.drawLeading(batch, label, 0f, UiMirror.SCREEN_WIDTH, inset, y, scale, color);
     }
 
     private Texture backdrop() {
