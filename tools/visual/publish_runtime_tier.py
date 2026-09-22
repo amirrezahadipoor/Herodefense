@@ -321,7 +321,11 @@ def publish_at_master_size(
     entry["renderSupersample"], entry["renderSamples"] = _reviewed_tier(
         master_asset["frameClass"], master_asset["key"]
     )
-    entry["visualQuality"] = REVIEWED_VISUAL_QUALITY
+    # The pixels are the render batch's own, so the quality line stays the batch's own: the manifest's convention
+    # for a sheet that ships master pixels is to name the line those pixels came from (`masterTier` does the same
+    # for the eight composed sheets). Overwriting it with the halved tier's label would describe a resample that
+    # did not happen.
+    entry["visualQuality"] = master_asset.get("visualQuality") or REVIEWED_VISUAL_QUALITY
     entry["engineVersion"] = RUNTIME_ENGINE_VERSION
     entry["masterRender"] = {
         "frameSize": int(master_asset["frameSize"]),

@@ -174,6 +174,10 @@ class PublishRuntimeTierTest(unittest.TestCase):
         self.assertEqual(FRAME, entry["frameSize"], "the reviewed tier of this class is the render size")
         self.assertIn("none: the reviewed tier", entry["masterRender"]["lod"])
         self.assertEqual(
+            asset["visualQuality"], entry["visualQuality"],
+            "the pixels are the batch's own, so the quality line stays the batch's own",
+        )
+        self.assertEqual(
             (master / "environment" / "crystal_prop_0.png").read_bytes(),
             (runtime / "environment" / "crystal_prop_0.png").read_bytes(),
             "the pixels a review accepted must be the pixels that ship",
