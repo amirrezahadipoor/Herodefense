@@ -64,7 +64,9 @@ def main() -> None:
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
 
-    audit = audit_batch(baseline, candidate, args.allow_parity_failure)
+    # The same order as the batch audit: the record is written with the measurements in it whatever the verdict,
+    # so a held refresh leaves evidence behind rather than an empty artifact.
+    audit = audit_batch(baseline, candidate, allow_parity_failure=True)
     create_marker_lineup(baseline, candidate, output / "arena_crystal_refresh.png")
     create_marker_silhouettes(candidate, output / "arena_crystal_refresh_shapes.png")
 
@@ -79,6 +81,9 @@ def main() -> None:
     print(
         f"Audited {len(EXPECTED_KEYS)} crystal landmarks and wrote {len(sheets)} review sheets to {output}"
     )
+    if not args.allow_parity_failure:
+        for record in audit["assets"]:
+            enforce_parity(record, allow_parity_failure=False)
 
 
 def audit_batch(baseline: Path, candidate: Path, allow_parity_failure: bool = False) -> dict:
@@ -137,13 +142,7 @@ def audit_batch(baseline: Path, candidate: Path, allow_parity_failure: bool = Fa
         shipped_mean = painted_mean_value(shipped_image)
         candidate_mean = painted_mean_value(image)
         ratio = candidate_mean / shipped_mean if shipped_mean > 0 else 1.0
-        if ratio < 1.0 - MAXIMUM_PAINTED_VALUE_LOSS and not allow_parity_failure:
-            raise ValueError(
-                f"{key} dims from {shipped_mean:.2f} to {candidate_mean:.2f} ({ratio:.3f}x) on its painted "
-                f"pixels: the arena's display-quality pass is not something a later render gets to undo. If the "
-                f"point of this record is to hold the refresh rather than ship it, pass --allow-parity-failure."
-            )
-        records.append({
+        record = {
             "key": key,
             "identity": asset.get("prop"),
             "variant": asset.get("variant"),
@@ -162,7 +161,9 @@ def audit_batch(baseline: Path, candidate: Path, allow_parity_failure: bool = Fa
             "materialCount": asset["materialCount"],
             "modelRevision": asset["modelRevision"],
             "runtimeGlow": asset.get("runtimeGlow"),
-        })
+        }
+        enforce_parity(record, allow_parity_failure)
+        records.append(record)
 
     return {
         "schemaVersion": 1,
@@ -191,6 +192,17 @@ def audit_batch(baseline: Path, candidate: Path, allow_parity_failure: bool = Fa
             "candidateRevision": sorted({record["modelRevision"] for record in records}),
         },
     }
+
+
+def enforce_parity(record: dict, allow_parity_failure: bool) -> None:
+    ratio = record["paintedMeanValueRatio"]
+    if ratio < 1.0 - MAXIMUM_PAINTED_VALUE_LOSS and not allow_parity_failure:
+        raise ValueError(
+            f"{record['key']} dims from {record['shippedPaintedMeanValue']} to "
+            f"{record['candidatePaintedMeanValue']} ({ratio}x) on its painted pixels: the arena's "
+            f"display-quality pass is not a later render's to undo. If the point of this record is to hold the "
+            f"refresh rather than ship it, pass --allow-parity-failure."
+        )
 
 
 def validate_contract(asset: dict, key: str) -> None:

@@ -82,7 +82,11 @@ def main() -> None:
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
 
-    audit = audit_batch(baseline, candidate, args.allow_parity_failure)
+    # Recorded first, judged second. A batch that trips the luminance gate is exactly the batch somebody has to
+    # look at, and a review step that dies before writing anything leaves the run's artifact empty -- which is how
+    # a real failure gets mistaken for a generator that did not run. The audit is therefore always collected with
+    # the measurements in it; the verdict is applied at the end, after the sheets and the JSON exist.
+    audit = audit_batch(baseline, candidate, allow_parity_failure=True)
     create_integrated_composition(baseline, candidate, output / "arena_integrated_composition.png")
     create_backdrop_value_sheet(candidate, audit, output / "arena_backdrop_value.png")
     create_ground_lineup(baseline, candidate, audit, output / "arena_ground_lineup.png")
@@ -103,6 +107,9 @@ def main() -> None:
         f"Audited {audit['summary']['assetCount']} arena assets and wrote "
         f"{len(sheets)} review sheets to {output}"
     )
+    if not args.allow_parity_failure:
+        for record in audit["assets"]:
+            enforce_parity(record["key"], record["luminance"], False)
 
 
 def audit_batch(baseline: Path, candidate: Path, allow_parity_failure: bool = False) -> dict:
