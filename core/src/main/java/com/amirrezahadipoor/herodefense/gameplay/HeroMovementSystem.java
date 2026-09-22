@@ -148,10 +148,23 @@ public final class HeroMovementSystem {
             return;
         }
         float travel = Math.min(distance, Math.min(STEP_SPEED * deltaSeconds, hero.stepBudgetUnits));
-        hero.x = clampX(hero.x + dx / distance * travel);
-        hero.y = clampY(hero.y + dy / distance * travel);
-        hero.stepBudgetUnits = Math.max(0f, hero.stepBudgetUnits - travel);
-        if (hero.stepBudgetUnits <= 0f) {
+        float fromX = hero.x;
+        float fromY = hero.y;
+        ArenaTerrain.resolveHero(
+            ArenaTerrain.fieldFor(state),
+            hero.x + dx / distance * travel,
+            hero.y + dy / distance * travel
+        );
+        hero.x = clampX(ArenaTerrain.resolvedX());
+        hero.y = clampY(ArenaTerrain.resolvedY());
+        float movedX = hero.x - fromX;
+        float movedY = hero.y - fromY;
+        float moved = (float) Math.sqrt(movedX * movedX + movedY * movedY);
+        // The budget pays for ground actually covered: a step into an outcrop is not a step the player bought.
+        hero.stepBudgetUnits = Math.max(0f, hero.stepBudgetUnits - moved);
+        // A step the field refuses ends the order there, rather than leaving the Hero leaning on a stone with a
+        // live order the player cannot cancel except by spending another drag.
+        if (moved < travel * 0.5f || hero.stepBudgetUnits <= 0f) {
             hero.moveOrderActive = false;
         }
     }

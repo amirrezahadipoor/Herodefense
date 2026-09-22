@@ -11,6 +11,10 @@ public final class Projectile extends ArenaEntity {
     public boolean critical;
     /** Extra arrows from Multi Shot deal a reduced share and never chain again. */
     public boolean secondary;
+    /** True once the arrow has buried itself in solid ground: it deals nothing and is drawn where it stopped. */
+    public boolean lodged;
+    /** Seconds a lodged arrow stays drawn before it disappears. */
+    public float lodgedSeconds;
 
     public Projectile() {
         super();

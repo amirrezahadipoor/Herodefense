@@ -4,6 +4,7 @@ import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Hero;
+import com.amirrezahadipoor.herodefense.model.ArenaObstacle;
 import com.amirrezahadipoor.herodefense.model.Projectile;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
 import com.amirrezahadipoor.herodefense.items.AffixEffects;
@@ -24,6 +25,8 @@ import java.util.List;
 public final class HeroAutoAttackSystem {
     public static final float ATTACK_RANGE = 420f;
     public static final float PROJECTILE_SPEED = 900f;
+    /** How long a buried arrow is drawn before it is cleaned up. */
+    static final float LODGED_ARROW_SECONDS = 0.75f;
     public static final float CRITICAL_CHANCE = SkillEffects.BASE_CRITICAL_CHANCE;
     public static final float CRITICAL_DAMAGE_MULTIPLIER = SkillEffects.BASE_CRITICAL_MULTIPLIER;
     /**
@@ -79,6 +82,7 @@ public final class HeroAutoAttackSystem {
         if (target == null) {
             target = findNearestTarget(state, hero.x, hero.y, attackRange(state));
         }
+        target = preferAnOpenLine(state, target);
         hero.currentTargetId = target == null ? -1L : target.id;
         if (target == null) {
             hero.attackCooldownSeconds = Math.max(0f, hero.attackCooldownSeconds);
@@ -98,6 +102,47 @@ public final class HeroAutoAttackSystem {
             shots, impacts.hits, impacts.criticalHits, impacts.x, impacts.y,
             impacts.chainArcs, impacts.stuns, events
         );
+    }
+
+    /**
+     * Keeps the bow off the stones: a foe standing behind an outcrop cannot be hit, so if there is another foe in
+     * range the arrow can reach, the shot goes there instead. The blocked target is still taken when every foe in
+     * range is behind cover, because a volley that lands nowhere is better than a bow that stops shooting.
+     */
+    private static Enemy preferAnOpenLine(GameState state, Enemy target) {
+        if (target == null) {
+            return null;
+        }
+        List<ArenaObstacle> field = ArenaTerrain.fieldFor(state);
+        if (ArenaTerrain.hasLineOfFire(field, state.hero.x, state.hero.y, target.x, target.y)) {
+            return target;
+        }
+        Enemy open = null;
+        float openDistance = Float.MAX_VALUE;
+        for (Enemy enemy : state.aliveEnemies) {
+            float distance = validDistanceSquared(enemy, state.hero.x, state.hero.y);
+            if (distance > attackRange(state) * attackRange(state) || distance >= openDistance) {
+                continue;
+            }
+            if (ArenaTerrain.hasLineOfFire(field, state.hero.x, state.hero.y, enemy.x, enemy.y)) {
+                open = enemy;
+                openDistance = distance;
+            }
+        }
+        if (open != null) {
+            return open;
+        }
+        for (Boss boss : state.aliveBosses) {
+            float distance = validDistanceSquared(boss, state.hero.x, state.hero.y);
+            if (distance > attackRange(state) * attackRange(state) || distance >= openDistance) {
+                continue;
+            }
+            if (ArenaTerrain.hasLineOfFire(field, state.hero.x, state.hero.y, boss.x, boss.y)) {
+                open = boss;
+                openDistance = distance;
+            }
+        }
+        return open != null ? open : target;
     }
 
     /** Bow reach including purchased Eagle Range levels. */
@@ -245,6 +290,13 @@ public final class HeroAutoAttackSystem {
             if (projectile == null || !projectile.active || projectile.sourceId != state.hero.id) {
                 continue;
             }
+            if (projectile.lodged) {
+                projectile.lodgedSeconds -= deltaSeconds;
+                if (projectile.lodgedSeconds <= 0f) {
+                    projectile.active = false;
+                }
+                continue;
+            }
             Enemy target = findTargetById(state, projectile.targetId);
             projectile.remainingLifetimeSeconds -= deltaSeconds;
             if (target == null || projectile.remainingLifetimeSeconds < 0f) {
@@ -254,6 +306,15 @@ public final class HeroAutoAttackSystem {
 
             float distanceSquared = projectile.distanceSquaredTo(target.x, target.y);
             float travel = PROJECTILE_SPEED * deltaSeconds;
+            // Solid ground stops an arrow wherever it stands: the flight path is tested, not just the arrow's
+            // tip, because a frame of flight at this speed is longer than a small outcrop is wide.
+            ArenaObstacle blocker = ArenaTerrain.firstBlocker(
+                ArenaTerrain.fieldFor(state), projectile.x, projectile.y, target.x, target.y,
+                ArenaTerrain.ARROW_RADIUS);
+            if (blocker != null) {
+                lodge(projectile, projectile.x, projectile.y, target.x, target.y, blocker);
+                continue;
+            }
             if (distanceSquared <= travel * travel) {
                 projectile.x = target.x;
                 projectile.y = target.y;
@@ -312,13 +373,50 @@ public final class HeroAutoAttackSystem {
                 projectile.active = false;
             } else {
                 setVelocityToward(projectile, target);
-                projectile.x += projectile.velocityX * deltaSeconds;
-                projectile.y += projectile.velocityY * deltaSeconds;
+                float nextX = projectile.x + projectile.velocityX * deltaSeconds;
+                float nextY = projectile.y + projectile.velocityY * deltaSeconds;
+                ArenaObstacle flightBlocker = ArenaTerrain.firstBlocker(
+                    ArenaTerrain.fieldFor(state), projectile.x, projectile.y, nextX, nextY,
+                    ArenaTerrain.ARROW_RADIUS);
+                if (flightBlocker != null) {
+                    lodge(projectile, projectile.x, projectile.y, nextX, nextY, flightBlocker);
+                } else {
+                    projectile.x = nextX;
+                    projectile.y = nextY;
+                }
             }
         }
         state.projectiles.removeIf(projectile -> projectile == null || !projectile.active);
         FocusSystem.addHits(state, hits, criticalHits, chainArcs);
         return new ImpactCounts(hits, criticalHits, impactX, impactY, chainArcs, stuns);
+    }
+
+    /**
+     * Buries an arrow in the outcrop its flight path crossed: nothing is damaged, and the shaft is left standing
+     * on the stone's surface for a moment so the player can see where the shot was lost.
+     */
+    private static void lodge(
+        Projectile projectile, float fromX, float fromY, float toX, float toY, ArenaObstacle blocker
+    ) {
+        float dx = toX - fromX;
+        float dy = toY - fromY;
+        float length = (float) Math.sqrt(dx * dx + dy * dy);
+        float impactX = toX;
+        float impactY = toY;
+        if (length > 0.001f) {
+            float alongX = blocker.x - fromX;
+            float alongY = blocker.y - fromY;
+            float t = Math.max(0f, Math.min(1f, (alongX * dx + alongY * dy) / (length * length)));
+            float back = Math.min(t * length, blocker.radius + ArenaTerrain.ARROW_RADIUS);
+            impactX = fromX + dx / length * (t * length - back);
+            impactY = fromY + dy / length * (t * length - back);
+        }
+        projectile.x = impactX;
+        projectile.y = impactY;
+        projectile.lodged = true;
+        projectile.lodgedSeconds = LODGED_ARROW_SECONDS;
+        projectile.velocityX = 0f;
+        projectile.velocityY = 0f;
     }
 
     private void emit(CombatEvent event) {

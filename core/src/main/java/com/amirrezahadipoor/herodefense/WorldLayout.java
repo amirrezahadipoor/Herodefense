@@ -28,9 +28,9 @@ public final class WorldLayout {
      * defended or under a button. Enemies spawn off-frame (x -40, x 760, y -40) and walk in, so nothing about
      * the spawn lanes depends on these four numbers.
      *
-     * <p>There is no obstacle collision anywhere in this arena -- enemies walk through the trees and through
-     * each other today -- so the Hero is clamped to a rectangle and to nothing else. Giving the Hero collision
-     * the field does not have would make the defender the only body in the game that can be blocked by a trunk.
+     * <p>The field's outcrops are solid for everyone: {@code ArenaTerrain} stops the Hero, stops an arrow and
+     * turns an enemy, so the defender is not the only body in the game that a rock can hold up. Trunks and other
+     * bodies are still walk-through, which is the remaining gap this rectangle cannot speak for.
      */
     public static final float HERO_WALK_MIN_X = 72f;
     public static final float HERO_WALK_MAX_X = REFERENCE_WIDTH - 72f;

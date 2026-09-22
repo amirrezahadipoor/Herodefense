@@ -45,7 +45,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 
 ---
 
-## 2. Exhaustive Proofreading Ledger (317 Entries across 13 String Tables)
+## 2. Exhaustive Proofreading Ledger (325 Entries across 13 String Tables)
 
 ### 2.1 MenuStrings (18 entries)
 
@@ -70,7 +70,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `FOOTER` | 200 NIGHTS  \|  ONE LAST TREE  \|  DAWN  \|  T%1$s | ۲۰۰ شب  \|  یک درخت آخر  \|  سحر  \|  ردهٔ %1$s | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `COINS` | $ %1$s | %1$s سکه | Approved. Persian currency label. |
 
-### 2.2 RunStrings (31 entries)
+### 2.2 RunStrings (39 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
@@ -105,6 +105,14 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `EVENT_SPORE_DRIFT` | SPORE DRIFT | رقص هاگ | Approved. «رقص» (dance) chosen over a calque for drift. |
 | `EVENT_SPORE_DRIFT_DETAIL` | the air is full of spores | هوا پر از هاگ است | Approved. Plain declarative, no calque. |
 | `MODE_DAWN_WATCH` | The Dawn Watch | نگهبانی سحر | Approved. Ezafe-free guarded-shift name for the short run. |
+| `FIELD_OPEN_HEARTH` | OPEN HEARTH | میدان باز | Approved. The field's name announces the layout, as the event banners announce a wave. |
+| `FIELD_OPEN_HEARTH_DETAIL` | nothing stands between you and them | چیزی میان تو و آن‌ها نیست | Approved. Second-person plain clause; read as an invitation, not a warning. |
+| `FIELD_STANDING_STONES` | STANDING STONES | سنگ‌های ایستاده | Approved. Plural with ZWNJ; names the real megalith sense, not a generic "rocks". |
+| `FIELD_STANDING_STONES_DETAIL` | the stones stop arrows | سنگ‌ها جلوی تیر را می‌گیرند | Approved. The rule in five Persian words; «جلوی … را گرفتن» is the natural block verb. |
+| `FIELD_THORNHEDGE` | THORNHEDGE | پرچین خار | Approved. Ezafe-free compound; «پرچین» is a real hedge, which the layout is. |
+| `FIELD_THORNHEDGE_DETAIL` | the hedges cover the flanks | پرچین‌ها کناره‌ها را می‌پوشانند | Approved. «کناره‌ها» for flanks; «می‌پوشانند» keeps the double sense of cover. |
+| `FIELD_RUINED_RING` | RUINED RING | حلقهٔ شکسته | Approved. Ezafe with the correct «ٔ» mark; «شکسته» matches the English participle. |
+| `FIELD_RUINED_RING_DETAIL` | a ring, broken where the roads run | حلقه‌ای شکسته، آن‌جا که راه‌ها می‌گذرند | Approved. Relative clause preserves the comma pause and the reason for the gap. |
 
 ### 2.3 OnboardingStrings (16 entries)
 

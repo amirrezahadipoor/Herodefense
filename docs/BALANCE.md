@@ -122,13 +122,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 91015 | |
-| Item sales | 24912 | |
-| Stat shop | 58990 | 135 levels |
-| Skill shop | 39580 | 44 levels |
-| Anvil | 15265 | 30 steps |
+| Kill income | 82673 | |
+| Item sales | 23664 | |
+| Stat shop | 57215 | 134 levels |
+| Skill shop | 33640 | 41 levels |
+| Anvil | 15115 | 29 steps |
 
-Across the 9 gate seeds the split is stable: stats 51-55%, skills 30-35%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 51-56%, skills 29-35%, Anvil 12-15% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -154,15 +154,15 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.1611 / 0.3032 / 0.3266 / 0.3139` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x1.882 / x1.077 / x0.961` | the same sweep |
-| Sweep average range | `0.2589 - 0.3069` | the same sweep, inside the 0.15-0.55 band |
-| Deepest single-seed quarter dip | `20.35%` against the `25.00%` plateau floor | the same sweep |
+| Quarter means (fixed sweep) | `0.1363 / 0.2807 / 0.3215 / 0.2767` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x2.059 / x1.145 / x0.861` | the same sweep |
+| Sweep average range | `0.1769 - 0.3180` | the same sweep, inside the 0.15-0.55 band |
+| Deepest single-seed quarter dip | `24.92%` against the `25.00%` plateau floor | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `1.2734 / 0.9885 / 1.0612` | `TrialSimulationTest`'s five seeds, against the 1.30 ceiling |
+| Riskiest trial pairs, median spike | `1.2223 / 0.8830 / 1.0046` | `TrialSimulationTest`'s five seeds, against the 1.30 ceiling |
 
 The three pairs are the matrix's highest median spikes, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `GLASS_ARROWS + FAMISHED_EARTH`, `MISERS_PACT + FAMISHED_EARTH` (the other seventy-five pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.64218` | `RewardCardSimulationTest`'s seed, against the 1.10 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.58017` | `RewardCardSimulationTest`'s seed, against the 1.10 ceiling |
 <!-- balance:end second-half -->
 
 **The deep band (2026-09-22, D2b).** Six affixes joined the deep pool at wave 101+ -- stoneshell, gravebloom, swarmcall, spitebarb, hammerfall and bloodhowl -- and with them the deep run's pressure. They were measured, not assumed: the first cut tripped both instruments (the optimiser's worst neighbour-wave jump hit `1.06` against the `0.65` band, and a rank-and-file wave peaked at `1.1128` against the `1.10` ceiling), and the band was pulled back in `DeepBandTuning` until `WavePressureCurveTest` and `FunInstrumentTest` were green again. The two affixes that spend the elite's own damage carry a ceiling in the hero's bar, because a deep body's damage grows with the wave while the bar grows with the shop. The shallow pool (the first three, below wave 101) is untouched, so every number in the tables above still means what it meant.
@@ -798,27 +798,30 @@ Every other number in this document asks whether the curve lands inside a band. 
 questions a band cannot see, computed from the same `WaveSample` record the simulator already keeps, and
 `FunInstrumentTest` freezes the answers on three fixed seeds, two hundred waves, for both shipped policies.
 
-Five measurements, and what they found on the shipped curve:
+Five measurements, and what they found on the shipped curve -- re-measured 2026-09-22, the day the four arena
+fields landed. The fields are solid ground for bodies on both sides, so a wave's traffic can arrive a little
+later or a little earlier than it did on an empty arena, and this instrument is where that shows up:
 
 | metric | optimiser (measured) | naive (measured) | frozen cap (opt / naive) |
 | --- | --- | --- | --- |
-| worst neighbour-wave difficulty jump | 0.18–0.30 | 0.87–1.09 | 0.35 / 1.25 |
-| longest health-decline streak (waves) | 1–4 | 5–13 | 6 / 16 |
-| breather waves (<2% of max HP cost) | 13–17 | 3–5 | ≥10 / ≥2 |
-| longest breather streak (a wall of nothing) | 4 | ≤4 | 6 / 6 |
-| stalled (timed-out) waves | 0 | ~1.4% | 0 / 3% |
+| worst neighbour-wave difficulty jump | 0.45-0.49 | 0.42-0.51 | 0.65 / 0.65 |
+| longest health-decline streak (waves) | 1-5 | 3-6 | 6 / 6 |
+| breather waves (<2% of max HP cost) | 8-14 | 3-4 | at least 4 / at least 2 |
+| longest breather streak (a wall of nothing) | 3-4 | 3-4 | 6 / 6 |
+| stalled (timed-out) waves | 0 | 0 | 0 / 3% |
+
+A decline is a wave that costs the hero at least one percent of the bar. Below that the hero is flat, and the
+instrument stopped counting arithmetic as a slide the day the fields landed: its first reading of the new
+arena reported an eight-wave slide that turned out to be drops of a third of a percent, which is one hit
+point on a three-hundred-point bar and no slide at all.
 
 The per-policy split is the finding. The optimiser's numbers describe the curve: it ramps without ambushes,
-breathes between pressures, and never stalls. The naive player's numbers describe what the same curve costs
-somebody who never shops, never reforges and takes the first card offered: a single wave can cost almost
-their whole health bar (1.09), pressure can slide for thirteen waves without a window, and roughly three
-waves per run outlast their damage. That is not a bug to gate away -- B1's pity and the brief-vigil floor
-exist so this player survives anyway -- but it is now measured instead of assumed, and the day a change moves
-these numbers, the instrument says which experience moved.
-
-Both policies end the full run at full health (`final=1.000`): the last wave's recovery lands before the
-final sample, so run-end health separates nobody; the skill margin lives in `averageDamageFraction` instead,
-and `skillBuysAMeasurableMargin` pins that the same curve costs the passive player strictly more.
+breathes between pressures, never stalls, and finishes all two hundred waves at full health. The naive
+player's numbers describe what the same curve costs somebody who never shops, never reforges and takes the
+first card offered: it slides up to six waves without a window, finds three or four valleys in the waves it
+survives, and is dead by wave 34 on the worst of the three seeds -- `skillBuysAMeasurableMargin` pins that
+gap in waves rather than in pressure, because after B1 anchored damage to the bar the passive player's
+average pressure measures the curve and not the player.
 
 This is the machine half of C2. The human half is C1: `docs/PLAYTEST_PROTOCOL.md` sessions recalibrate these
 caps against a player who can feel unfairness rather than only count it.

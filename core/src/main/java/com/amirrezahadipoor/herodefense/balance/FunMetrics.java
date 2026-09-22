@@ -24,8 +24,16 @@ public record FunMetrics(
     /** A wave that costs the hero less than this fraction of max health counts as a pacing valley. */
     public static final float BREATHER_FRACTION = 0.02f;
 
-    /** A health-fraction change smaller than this between waves is flat, not a decline. */
-    private static final float DECLINE_EPSILON = 1e-4f;
+    /**
+     * A wave is only a step down the slide when it costs the hero at least this share of the bar.
+     *
+     * <p>It was a ten-thousandth of a bar, which counted the arithmetic of a level-up's heal landing against a
+     * wave's chip damage as a decline: the hero could lose one hit point a wave for a dozen waves and the
+     * instrument would report a slide with no recovery. One percent of the bar is a hit the player feels, and
+     * anything under it is flat in the only sense that matters here, because a slide is a thing a player
+     * experiences and not a thing floats do.
+     */
+    private static final float DECLINE_EPSILON = 0.01f;
 
     public static FunMetrics from(BalanceReport report) {
         List<WaveSample> waves = report.waves();

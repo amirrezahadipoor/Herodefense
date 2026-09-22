@@ -6,6 +6,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.amirrezahadipoor.herodefense.WorldLayout;
+import com.amirrezahadipoor.herodefense.gameplay.ArenaLayout;
+import com.amirrezahadipoor.herodefense.gameplay.ArenaTerrain;
+import com.amirrezahadipoor.herodefense.model.ArenaObstacle;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
 /** Draws the reviewed Blender-rendered forest floor, props, and defended World Tree. */
@@ -95,8 +98,12 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         Texture activeBackdrop = state.waveNumber >= 101 ? backdrop2 : backdrop;
         ScreenEdges.drawCover(batch, activeBackdrop);
         drawHollowGaze(batch, state, runTimeSeconds, presentationDeltaSeconds, motionSuppressed, gameOverActive);
-        drawGround(batch, state.waveNumber);
+        drawGround(batch, state);
         drawCrystals(batch, state.waveNumber);
+        // The field's outcrops come with their own contact shadows, drawn on the ground and under their sprites:
+        // the shadow is what says the crystal is solid rather than painted on.
+        shadowRenderer.drawField(batch, state);
+        drawFieldObstacles(batch, state);
         shadowRenderer.draw(batch, state);
         drawWorldTree(batch, state, runTimeSeconds, presentationDeltaSeconds);
         // D4: the air and the bosses' ground auras, over the finished arena and under the actors.
@@ -164,11 +171,14 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     }
 
     /** R5.4: the ground is drawn *under* the stage's grade, not filtered after the frame is finished. */
-    private void drawGround(SpriteBatch batch, int wave) {
+    private void drawGround(SpriteBatch batch, GameState state) {
+        int wave = state.waveNumber;
         StageGrade grade = StageGrade.forWave(wave);
         float originalColor = batch.getPackedColor();
         boolean second = isSecondArena(wave);
-        int variantOffset = second ? 3 : 0;
+        // The layout picks the mix of ground sheets: the same tiles the arena always grew, in another order, so a
+        // field reads as another place before a single obstacle is looked at.
+        int variantOffset = (second ? 3 : 0) + ArenaLayout.forSeed(state.runSeed).ordinal();
         for (float[] placement : GROUND_PLACEMENTS) {
             float shade = placement[5];
             batch.setColor(
@@ -177,12 +187,40 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
                 grade.channel(shade * 0.97f, 2),
                 0.96f
             );
-            int variant = Math.round(placement[4]) + variantOffset;
+            int variant = Math.floorMod(Math.round(placement[4]) + variantOffset, ground.length);
             batch.draw(
                 ground[variant], placement[0], placement[1], placement[2], placement[3]
             );
         }
         batch.setPackedColor(originalColor);
+    }
+
+    /**
+     * The run's solid outcrops.
+     *
+     * <p>A layout's cover is drawn with the same reviewed crystal art the arena always grew, at the size its
+     * collision circle demands, with the variant rotated by the layout so two fields do not read as one place
+     * twice. What a player has to be able to tell apart is solid from painted, and the shadow under each of these
+     * is the only difference this pass needs.
+     */
+    private void drawFieldObstacles(SpriteBatch batch, GameState state) {
+        if (state == null) {
+            return;
+        }
+        boolean second = isSecondArena(state.waveNumber);
+        int variantOffset = second ? 3 : 0;
+        int layoutOffset = ArenaLayout.forSeed(state.runSeed).ordinal();
+        for (ArenaObstacle obstacle : ArenaTerrain.fieldFor(state)) {
+            float size = obstacle.drawn;
+            int variant = Math.floorMod(obstacle.variant + layoutOffset + variantOffset, crystals.length);
+            batch.draw(
+                crystals[variant],
+                obstacle.x - size * 0.5f,
+                obstacle.y - size * 0.38f,
+                size,
+                size
+            );
+        }
     }
 
     private void drawCrystals(SpriteBatch batch, int wave) {

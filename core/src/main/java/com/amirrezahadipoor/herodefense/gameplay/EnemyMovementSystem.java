@@ -1,10 +1,13 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.model.ArenaObstacle;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
 import com.amirrezahadipoor.herodefense.WorldLayout;
+
+import java.util.List;
 
 /**
  * Moves every living melee enemy directly toward the fixed Hero until attack range. Once the
@@ -39,7 +42,7 @@ public final class EnemyMovementSystem {
 
     private static void moveToward(GameState state, Enemy enemy, boolean siege, float deltaSeconds) {
         if (!siege) {
-            moveTowardHero(enemy, state.hero.x, state.hero.y, deltaSeconds);
+            moveTowardHero(state, enemy, state.hero.x, state.hero.y, deltaSeconds);
             return;
         }
         if (enemy == null || !enemy.alive || !enemy.active || enemy.silentWatcher) {
@@ -79,11 +82,14 @@ public final class EnemyMovementSystem {
             return;
         }
         float travel = Math.min(remaining, Math.max(0f, enemy.movementSpeed) * 1.35f * deltaSeconds);
-        enemy.x += dx / distance * travel;
-        enemy.y += dy / distance * travel;
+        if (ArenaTerrain.resolveEnemy(
+            ArenaTerrain.fieldFor(state), enemy.x, enemy.y, targetX, targetY, travel)) {
+            enemy.x = ArenaTerrain.resolvedX();
+            enemy.y = ArenaTerrain.resolvedY();
+        }
     }
 
-    private static void moveTowardHero(Enemy enemy, float heroX, float heroY, float deltaSeconds) {
+    private static void moveTowardHero(GameState state, Enemy enemy, float heroX, float heroY, float deltaSeconds) {
         if (enemy == null || !enemy.alive || !enemy.active || enemy.silentWatcher) {
             return;
         }
@@ -94,7 +100,14 @@ public final class EnemyMovementSystem {
         float dx = heroX - enemy.x;
         float dy = heroY - enemy.y;
         float distance = (float) Math.sqrt(dx * dx + dy * dy);
-        float remaining = distance - Math.max(0f, enemy.attackRange);
+        List<ArenaObstacle> field = ArenaTerrain.fieldFor(state);
+        // A foe that cannot see the Hero does not get to stand and fight it. It walks on until the outcrop is out
+        // of the line, which is what keeps cover from becoming a standstill: a creature hiding behind a stone can
+        // neither strike nor be struck, so a wave with one left in its shadow would never end.
+        float stop = ArenaTerrain.hasLineOfFire(field, enemy.x, enemy.y, heroX, heroY)
+            ? Math.max(0f, enemy.attackRange)
+            : 0f;
+        float remaining = distance - stop;
         if (distance == 0f || remaining <= 0f) {
             return;
         }
@@ -102,7 +115,9 @@ public final class EnemyMovementSystem {
             remaining,
             Math.max(0f, enemy.movementSpeed) * Math.max(0.2f, enemy.packSpeedMultiplier) * deltaSeconds
         );
-        enemy.x += dx / distance * travel;
-        enemy.y += dy / distance * travel;
+        if (ArenaTerrain.resolveEnemy(field, enemy.x, enemy.y, heroX, heroY, travel)) {
+            enemy.x = ArenaTerrain.resolvedX();
+            enemy.y = ArenaTerrain.resolvedY();
+        }
     }
 }

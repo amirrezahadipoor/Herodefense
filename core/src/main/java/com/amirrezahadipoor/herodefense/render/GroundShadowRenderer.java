@@ -5,6 +5,8 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.amirrezahadipoor.herodefense.WorldLayout;
+import com.amirrezahadipoor.herodefense.gameplay.ArenaTerrain;
+import com.amirrezahadipoor.herodefense.model.ArenaObstacle;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -32,6 +34,8 @@ public final class GroundShadowRenderer implements AutoCloseable {
     static final float ALPHA = 0.30f;
     /** A boss casts a heavier shadow than a regular body. */
     static final float BOSS_ALPHA = 0.42f;
+    /** An outcrop is lit the same way a body is; its shadow says the ground there is solid. */
+    static final float OBSTACLE_ALPHA = 0.34f;
     /** The Hero's own width in world units, matching {@code HeroSpriteRenderer}'s drawn size. */
     static final float HERO_WIDTH = 132f;
     /** How far below the body's feet the shadow sits, so it reads as ground contact rather than a body part. */
@@ -75,6 +79,22 @@ public final class GroundShadowRenderer implements AutoCloseable {
         drawTreeShadow(batch, WorldLayout.WORLD_TREE_X, WorldLayout.WORLD_TREE_Y);
         for (int index = 0; index < state.plantedTreesCount; index++) {
             drawTreeShadow(batch, WorldLayout.groveTreeX(index + 1), WorldLayout.groveTreeY(index + 1));
+        }
+    }
+
+    /**
+     * The contact shadows of the field's solid outcrops, drawn with the ground and under their own sprites.
+     *
+     * <p>The shadow is the tell that a crystal is solid: the ground grows decorative ones at the frame's edge
+     * with no shadow under them, and the field's outcrops stop an arrow. Same rule as every body in the arena --
+     * if it stands on a shadow, it is standing in the way.
+     */
+    public void drawField(SpriteBatch batch, GameState state) {
+        // The shadow is the tell that separates solid ground from the painted crystals at the frame's edge, and
+        // its reach is the tell that separates a standing stone from low cover: the long one stops arrows.
+        for (ArenaObstacle obstacle : ArenaTerrain.fieldFor(state)) {
+            drawShadow(batch, obstacle.x, obstacle.y, obstacle.radius * (obstacle.shelters ? 3.2f : 2.2f),
+                obstacle.shelters ? OBSTACLE_ALPHA : OBSTACLE_ALPHA * 0.72f);
         }
     }
 

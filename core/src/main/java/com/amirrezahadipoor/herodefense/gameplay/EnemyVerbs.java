@@ -125,7 +125,9 @@ public final class EnemyVerbs {
             // The dodge is read before the latch clears: the tell's own state is the dodge's own state, so
             // stepping off the line during the wind-up and stepping off it on the frame of the hit are the same
             // answer to the same question.
-            boolean missed = spitMissed(enemy, state.hero.x, state.hero.y);
+            boolean missed = spitMissed(enemy, state.hero.x, state.hero.y)
+                || !ArenaTerrain.hasLineOfFire(
+                    ArenaTerrain.fieldFor(state), enemy.x, enemy.y, state.hero.x, state.hero.y);
             enemy.verbLatched = false;
             enemy.verbTimerSeconds = 0f;
             float landing = (float) Math.sqrt(enemy.distanceSquaredTo(state.hero.x, state.hero.y));
@@ -134,7 +136,9 @@ public final class EnemyVerbs {
             }
             return;
         }
-        if (distance > SPIT_RANGE || distance <= enemy.attackRange) {
+        if (distance > SPIT_RANGE || distance <= enemy.attackRange
+            || !ArenaTerrain.hasLineOfFire(
+                ArenaTerrain.fieldFor(state), enemy.x, enemy.y, state.hero.x, state.hero.y)) {
             return;
         }
         enemy.verbLatched = true;

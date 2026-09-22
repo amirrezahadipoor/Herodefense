@@ -90,6 +90,14 @@ public final class EnemyMeleeAttackSystem {
             enemy.attackCooldownSeconds = Math.max(0f, enemy.attackCooldownSeconds - deltaSeconds);
             return;
         }
+        // A swing at a Hero standing behind a stone lands on the stone. The line is the same line the bow asks
+        // about, at the same radius, so a creature that can reach the Hero can always be reached back: without
+        // this, a long-ranged foe behind cover is a wave the rooted player cannot answer at all.
+        if (!ArenaTerrain.hasLineOfFire(
+            ArenaTerrain.fieldFor(state), enemy.x, enemy.y, state.hero.x, state.hero.y)) {
+            enemy.attackCooldownSeconds = Math.max(0f, enemy.attackCooldownSeconds - deltaSeconds);
+            return;
+        }
 
         enemy.attackCooldownSeconds -= deltaSeconds;
         int attacks = 0;

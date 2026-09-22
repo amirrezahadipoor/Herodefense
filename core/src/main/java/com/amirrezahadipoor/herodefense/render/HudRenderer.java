@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.render;
 
+import com.amirrezahadipoor.herodefense.gameplay.ArenaLayout;
 import com.amirrezahadipoor.herodefense.gameplay.WaveEvents;
 import com.amirrezahadipoor.herodefense.gameplay.WaveOmens;
 import com.badlogic.gdx.Gdx;
@@ -45,6 +46,12 @@ public final class HudRenderer implements AutoCloseable {
     private static final Color HEALTHY = Color.valueOf("48A96A");
     private static final Color WOUNDED = Color.valueOf("D39A43");
     private static final Color CRITICAL = Color.valueOf("C6534F");
+    /** The field's name, in the arena's own moss green so it reads as ground rather than as a warning. */
+    private static final Color FIELD_COLOUR = new Color(0.62f, 0.86f, 0.58f, 1f);
+    private static final Color FIELD_DETAIL_COLOUR = new Color(0.62f, 0.86f, 0.58f, 0.72f);
+    /** Waves the field is named for, counted from the run's first one. */
+    static final int FIELD_ANNOUNCE_WAVES = 3;
+
     /** Wave events wear the grove's own green; omens keep the critical red. */
     private static final Color EVENT_COLOUR = new Color(0.44f, 0.78f, 0.56f, 1f);
     private static final Color EXP = Color.valueOf("8FD4F2");
@@ -251,6 +258,12 @@ public final class HudRenderer implements AutoCloseable {
             WaveEvents.Kind event = WaveEvents.visibleFor(state.waveNumber);
             if (event != WaveEvents.Kind.NONE) {
                 drawShadowed(batch, event.label(), 84f, 1076f + up, 0.44f, EVENT_COLOUR);
+            } else if (state.waveNumber <= FIELD_ANNOUNCE_WAVES) {
+                // The field says which place this is while it is still new; the line underneath says what the
+                // place does to a fight, because cover the player cannot read is just a broken arrow.
+                ArenaLayout layout = ArenaLayout.forSeed(state.runSeed);
+                drawShadowed(batch, layout.label(), 84f, 1076f + up, 0.44f, FIELD_COLOUR);
+                drawShadowed(batch, layout.detail(), 84f, 1051f + up, 0.36f, FIELD_DETAIL_COLOUR);
             }
         }
 

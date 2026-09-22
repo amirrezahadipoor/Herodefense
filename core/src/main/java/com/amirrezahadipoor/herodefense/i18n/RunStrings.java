@@ -48,6 +48,16 @@ public enum RunStrings implements Translated {
     EVENT_SPORE_DRIFT("SPORE DRIFT", "رقص هاگ"),
     EVENT_SPORE_DRIFT_DETAIL("the air is full of spores", "هوا پر از هاگ است"),
 
+    /** Fields (A6): the place a run is fought on, named in the HUD while it is still new. */
+    FIELD_OPEN_HEARTH("OPEN HEARTH", "میدان باز"),
+    FIELD_OPEN_HEARTH_DETAIL("nothing stands between you and them", "چیزی میان تو و آن‌ها نیست"),
+    FIELD_STANDING_STONES("STANDING STONES", "سنگ‌های ایستاده"),
+    FIELD_STANDING_STONES_DETAIL("the stones stop arrows", "سنگ‌ها جلوی تیر را می‌گیرند"),
+    FIELD_THORNHEDGE("THORNHEDGE", "پرچین خار"),
+    FIELD_THORNHEDGE_DETAIL("the hedges cover the flanks", "پرچین‌ها کناره‌ها را می‌پوشانند"),
+    FIELD_RUINED_RING("RUINED RING", "حلقهٔ شکسته"),
+    FIELD_RUINED_RING_DETAIL("a ring, broken where the roads run", "حلقه‌ای شکسته، آن‌جا که راه‌ها می‌گذرند"),
+
     /** Run lengths (R3.5): the same run, ended at wave two hundred or at wave thirty. */
     MODE_STANDARD("The Long Vigil", "پاسداری بلند"),
     MODE_BRIEF("A Brief Vigil", "پاسداری کوتاه"),
