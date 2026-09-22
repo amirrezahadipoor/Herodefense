@@ -122,13 +122,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 91327 | |
-| Item sales | 23085 | |
+| Kill income | 91015 | |
+| Item sales | 24912 | |
 | Stat shop | 58990 | 135 levels |
 | Skill shop | 39580 | 44 levels |
-| Anvil | 15115 | 29 steps |
+| Anvil | 15265 | 30 steps |
 
-Across the 9 gate seeds the split is stable: stats 52-54%, skills 32-35%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 51-55%, skills 30-35%, Anvil 12-15% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -154,15 +154,15 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.1743 / 0.3599 / 0.3769 / 0.3453` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x2.065 / x1.047 / x0.916` | the same sweep |
-| Sweep average range | `0.2663 - 0.3618` | the same sweep, inside the 0.15-0.55 band |
-| Deepest single-seed quarter dip | `17.38%` against the `25.00%` plateau floor | the same sweep |
+| Quarter means (fixed sweep) | `0.1611 / 0.3032 / 0.3266 / 0.3139` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.882 / x1.077 / x0.961` | the same sweep |
+| Sweep average range | `0.2589 - 0.3069` | the same sweep, inside the 0.15-0.55 band |
+| Deepest single-seed quarter dip | `20.35%` against the `25.00%` plateau floor | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `1.1063 / 0.8880 / 0.7491` | `TrialSimulationTest`'s five seeds, against the 1.30 ceiling |
+| Riskiest trial pairs, median spike | `1.2734 / 0.9885 / 1.0612` | `TrialSimulationTest`'s five seeds, against the 1.30 ceiling |
 
 The three pairs are the matrix's highest median spikes, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `GLASS_ARROWS + FAMISHED_EARTH`, `MISERS_PACT + FAMISHED_EARTH` (the other seventy-five pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.62845` | `RewardCardSimulationTest`'s seed, against the 1.10 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `0.64218` | `RewardCardSimulationTest`'s seed, against the 1.10 ceiling |
 <!-- balance:end second-half -->
 
 **The deep band (2026-09-22, D2b).** Six affixes joined the deep pool at wave 101+ -- stoneshell, gravebloom, swarmcall, spitebarb, hammerfall and bloodhowl -- and with them the deep run's pressure. They were measured, not assumed: the first cut tripped both instruments (the optimiser's worst neighbour-wave jump hit `1.06` against the `0.65` band, and a rank-and-file wave peaked at `1.1128` against the `1.10` ceiling), and the band was pulled back in `DeepBandTuning` until `WavePressureCurveTest` and `FunInstrumentTest` were green again. The two affixes that spend the elite's own damage carry a ceiling in the hero's bar, because a deep body's damage grows with the wave while the bar grows with the shop. The shallow pool (the first three, below wave 101) is untouched, so every number in the tables above still means what it meant.

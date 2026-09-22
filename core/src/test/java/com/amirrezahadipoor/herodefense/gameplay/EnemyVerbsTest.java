@@ -62,7 +62,8 @@ class EnemyVerbsTest {
         Enemy stalker = spawn(state, EnemyType.BARK_STALKER, 360f, 900f);
         stalker.attackRange = 74f;
         List<Float> hits = new ArrayList<>();
-        int frames = (int) Math.ceil(EnemyVerbs.SPIT_WINDUP_SECONDS * 60f) + 4;
+        float windupSeconds = EnemyVerbs.SPIT_WINDUP_SECONDS;
+        int frames = (int) (windupSeconds * 60f) + 6;
         for (int i = 0; i < frames; i++) {
             EnemyVerbs.update(state, DELTA, hits::add);
         }

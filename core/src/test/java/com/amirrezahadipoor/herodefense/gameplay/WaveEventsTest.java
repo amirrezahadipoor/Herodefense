@@ -3,6 +3,9 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.SpawnLane;
+import java.util.EnumSet;
+import java.util.Set;
+
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -15,10 +18,10 @@ class WaveEventsTest {
 
     @Test
     void theOpeningStaysPlainAndEventsNeverLandOnABossOrAnOmen() {
-        assertFalse(WaveEvents.isEventWave(1));
-        assertFalse(WaveEvents.isEventWave(2));
-        assertFalse(WaveEvents.isEventWave(3));
-        for (int wave = 4; wave <= 400; wave++) {
+        for (int wave = 1; wave < WaveEvents.FIRST_EVENT_WAVE; wave++) {
+            assertFalse(WaveEvents.isEventWave(wave), "an event in the opening: " + wave);
+        }
+        for (int wave = WaveEvents.FIRST_EVENT_WAVE; wave <= 400; wave++) {
             if (!WaveEvents.isEventWave(wave)) continue;
             assertNotEquals(0, wave % 5, "an event on a boss wave: " + wave);
             assertNotEquals(0, wave % 6, "an event on an omen wave: " + wave);
@@ -27,8 +30,10 @@ class WaveEventsTest {
 
     @Test
     void everyEventKindIsReachableInAnOrdinaryRun() {
-        java.util.Set<WaveEvents.Kind> seen = new java.util.HashSet<>();
-        for (int wave = 1; wave <= 60; wave++) {
+        Set<WaveEvents.Kind> seen = EnumSet.noneOf(WaveEvents.Kind.class);
+        // Eight kinds on a four-wave beat with boss and omen exclusions: a kind can be a hundred waves away, so the
+        // window is an ordinary run's first half rather than one loop of the rotation.
+        for (int wave = 1; wave <= 120; wave++) {
             seen.add(WaveEvents.eventFor(wave));
         }
         for (WaveEvents.Kind kind : WaveEvents.Kind.values()) {
@@ -85,7 +90,7 @@ class WaveEventsTest {
         GameState second = new GameState();
         second.runSeed = 987654321L;
         EnemyWaveSpawner spawner = new EnemyWaveSpawner(new EnemyFactory());
-        int wave = 8;
+        int wave = 16;
         assertTrue(WaveEvents.isEventWave(wave));
         spawner.spawnRegularEnemies(first, wave, 6);
         spawner.spawnRegularEnemies(second, wave, 6);

@@ -33,8 +33,12 @@ import com.amirrezahadipoor.herodefense.model.GameState;
  */
 public final class EnemyVerbs {
 
-    /** The first wave whose creatures use their verbs; the first five waves stay plain. */
-    public static final int FIRST_VERB_WAVE = 6;
+    /**
+     * The first wave whose creatures use their verbs, declared next to {@code WaveEvents.FIRST_EVENT_WAVE} on
+     * purpose: the opening's fifteen waves are the shipped ones, and both of 2026-09-22's systems arrive at 16 so
+     * a player meets them in the same night, once, instead of learning a new rule every second wave.
+     */
+    public static final int FIRST_VERB_WAVE = 16;
 
     public static final float SPIT_RANGE = 330f;
     public static final float SPIT_WINDUP_SECONDS = 0.75f;

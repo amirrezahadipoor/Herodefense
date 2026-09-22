@@ -307,9 +307,24 @@ started, `[!]` attempted and failed, with the failure written down.
       words are asserted to stay in step by `EliteAffixDeepPoolTest`. Their numbers live together in
       `DeepBandTuning` because a band is tuned as one: two of them are capped in the hero's own bar
       (`SPITEBARB_BAR_CAP`, `HAMMERFALL_BAR_CAP`) so a deep body's wave-scaled damage can never turn one wave
-      into an ambush, and the first cut of the band was pulled back against the pressure gates until
-      `WavePressureCurveTest` and `FunInstrumentTest` were green again (spike 1.06 -> 0.58 on the optimiser's
-      worst neighbour-wave jump, under the 0.65 band).
+      into an ambush. The band's own tuning was refused and re-measured three times: full-bodied swarmcall
+      children put a `2.74`-bar wave on the board in `AscensionGateTest` (the optimiser's worst neighbour jump
+      also went to `1.06` against its `0.65` band), so the children are now paid for out of the caller's own
+      mass, stop arriving once it is below half a bar, and bite for a fifth of it -- measured again, the worst
+      wave in that sweep is `1.29` and it is a wave the band never touches. The other five earned their places
+      unchanged (each was excluded in turn and the spike stayed where it was). Two of the six also pushed the
+      *opening* out of band -- `NonOptimiserBandTest` had a passive player dying at wave 12 -- and the answer was
+      structural rather than a nerf: the night's plan and the roles' verbs both begin at wave 16 now
+      (`WaveEvents.FIRST_EVENT_WAVE`, `EnemyVerbs.FIRST_VERB_WAVE`), so the first fifteen waves are the shipped
+      opening to the byte and a player meets the new systems in the same night, once.
+- [x] **R3.3b (+8) Twenty trophies, and a shelf that speaks Persian.** The shelf had twelve rows whose words lived
+      in the enum in English only, so a Persian player read English names inside a Persian codex. The names and
+      hints now live in `i18n/TrophyStrings` (both languages, catalogued in the proofreading ledger, with a new
+      section and thirteen tables), `Trophy` keeps only what a translator must never touch, `TrophyText` is the
+      one join between them, and `Trophy.java` came off `DrawnStringProvenanceTest`'s list of files that still
+      carry their own words -- the ratchet shrank instead of growing. Eight more trophies read counters the game
+      already keeps (runs finished, the deepest single run, elites, trees, potion-free runs, written codex
+      entries), so no save gained a field and no earned trophy changed meaning.
 - [x] **D3 (−8) Four boss identities across forty encounters.** The encounter table itself is good work — eight
       fight scripts on a shifting permutation, deterministic against the save file — but only four of them have
       a body.

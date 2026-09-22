@@ -23,11 +23,26 @@ public final class DeepBandTuning {
     /** Gravebloom: the same rot ground weeping_rot walks, kept longer and hotter because it was paid for in death. */
     public static final float GRAVEBLOOM_LIFETIME = 4.5f;
     public static final float GRAVEBLOOM_DAMAGE_SHARE = 0.3f;
-    /** Swarmcall: a wave that refills itself, in the same children hollowmolt leaves behind. */
-    public static final float SWARMCALL_PERIOD = 18f;
+    /**
+     * Swarmcall: a wave that refills itself, in the same children hollowmolt leaves behind.
+     *
+     * <p>The call costs the caller its own mass -- the children are made of it -- so the door can only be opened
+     * as many times as the body can pay for, and a player who leaves it alone ends up fighting a smaller elite.
+     * That is what keeps a wave that refills itself from becoming a wave that never ends, and it is the one shape
+     * of this band the pressure gates refused twice before the price was added.
+     */
+    public static final float SWARMCALL_PERIOD = 24f;
     public static final int SWARMCALL_CHILDREN = 2;
     public static final float SWARMCALL_CHILD_HEALTH_SHARE = 0.08f;
-    public static final float SWARMCALL_CHILD_DAMAGE_SHARE = 0.28f;
+    /**
+     * The children are lesser in the only way that matters: a fifth of the caller's bite, and no more. Every point
+     * above that was measured against the pressure gates and refused -- a wave that refills itself with full-bodied
+     * children is a wave that never ends, and the late-game weight it added came in spikes rather than in slope.
+     * What is left is the question the affix is for: spend arrows on the door now, or on the line later.
+     */
+    public static final float SWARMCALL_CHILD_DAMAGE_SHARE = 0.2f;
+    /** Below this share of its own bar a caller has no breath left to spend on a door. */
+    public static final float SWARMCALL_BREATH_FLOOR = 0.5f;
     /** Spitebarb: a tight radius, a slow clock, a heavy return -- the answer to hugging an elite. */
     public static final float SPITEBARB_RADIUS = 72f;
     public static final float SPITEBARB_TICK_SECONDS = 1.5f;

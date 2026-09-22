@@ -177,7 +177,17 @@ public final class EliteAffixSystem {
     private static void updateSwarmcall(GameState state, Enemy enemy, float deltaSeconds, List<Enemy> out) {
         enemy.affixTimerSeconds += deltaSeconds;
         if (enemy.affixTimerSeconds < DeepBandTuning.SWARMCALL_PERIOD) return;
+        float price = enemy.maxHealth * DeepBandTuning.SWARMCALL_CHILD_HEALTH_SHARE
+            * DeepBandTuning.SWARMCALL_CHILDREN;
+        // It will not spend its last breath opening a door. The call is paid for out of its own mass and it stops
+        // once it is below half a bar, so the number of bodies one caller can add is bounded by its own health:
+        // a player who leaves it alone is fighting an elite that is spending itself to stay a wave.
+        if (enemy.health <= enemy.maxHealth * DeepBandTuning.SWARMCALL_BREATH_FLOOR
+            || enemy.health <= price * 1.5f) {
+            return;
+        }
         enemy.affixTimerSeconds -= DeepBandTuning.SWARMCALL_PERIOD;
+        enemy.health -= price;
         spawnChildren(state, enemy, DeepBandTuning.SWARMCALL_CHILDREN,
             DeepBandTuning.SWARMCALL_CHILD_HEALTH_SHARE, DeepBandTuning.SWARMCALL_CHILD_DAMAGE_SHARE, out);
     }

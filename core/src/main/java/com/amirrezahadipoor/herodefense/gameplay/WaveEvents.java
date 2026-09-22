@@ -1,6 +1,9 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
+
+import java.util.Arrays;
+import java.util.Comparator;
 import com.amirrezahadipoor.herodefense.i18n.RunStrings;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.SpawnLane;
@@ -61,8 +64,13 @@ public final class WaveEvents {
         }
     }
 
-    /** The first wave that can carry an event; the opening stays plain. */
-    public static final int FIRST_EVENT_WAVE = 4;
+    /**
+     * The first wave that can carry an event. The first fifteen waves are the shipped opening, unchanged to the
+     * byte -- two bosses, no events, no verbs -- because the pressure gates measure the opening by what a player
+     * who does not optimise survives, and a teaching night is not allowed to become an exam on the new systems.
+     * The night's plan and the roles' verbs both begin here, together, with the HUD naming the first one.
+     */
+    public static final int FIRST_EVENT_WAVE = 16;
     /** One event every four waves, before the boss and omen exclusions thin it out. */
     public static final int EVENT_PERIOD = 4;
     private static final int BOSS_PERIOD = 5;
@@ -119,15 +127,9 @@ public final class WaveEvents {
      * ten seconds instead of the last.
      */
     public static void sortHeaviestFirst(EnemyType[] planned) {
-        for (int i = 1; i < planned.length; i++) {
-            EnemyType value = planned[i];
-            int j = i - 1;
-            while (j >= 0 && planned[j].baseHealth() < value.baseHealth()) {
-                planned[j + 1] = planned[j];
-                j--;
-            }
-            planned[j + 1] = value;
-        }
+        // A stable sort on purpose: two archetypes of the same weight keep the order the wave was built in, so a
+        // vanguard night is the same wave in a different order rather than a new draw.
+        Arrays.sort(planned, Comparator.comparingDouble(EnemyType::baseHealth).reversed());
     }
 
     /** The wave's event as the HUD should draw it, or {@link Kind#NONE}. */
