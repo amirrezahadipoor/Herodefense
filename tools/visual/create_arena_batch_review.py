@@ -28,6 +28,10 @@ from review_strips import grade_row, silhouette_view
 # contact sheets show the shipped pixels beside the new ones.
 STUDIO_TIER_BASELINE_QUALITY = "premium-v2"
 STUDIO_TIER_CANDIDATE_QUALITY = "studio-v4-vibrant"
+#: What this batch is called in its own record. The arena's re-render is the v4 lift pass: the display-quality
+#: tier's value range, restored at the source rather than graded at runtime.
+BATCH_NAME = "arena-premium-v4-lift"
+CANDIDATE_LABEL = "V4 LIFT CANDIDATE"
 
 OBSTACLE_FAMILIES = ("standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder")
 OBSTACLE_VARIANTS = 3
@@ -248,7 +252,7 @@ def audit_batch(baseline: Path, candidate: Path, allow_parity_failure: bool = Fa
     payload_hashes = {relative: sha256(candidate / relative) for relative in payload}
     return {
         "schemaVersion": 1,
-        "batch": "arena-premium-v3",
+        "batch": BATCH_NAME,
         "expectedKeys": list(EXPECTED_KEYS),
         "baselineManifestSha256": sha256(baseline_manifest_path),
         "candidateManifestSha256": sha256(candidate_manifest_path),
@@ -455,7 +459,7 @@ def create_integrated_composition(baseline: Path, candidate: Path, output: Path)
     draw = ImageDraw.Draw(canvas)
     old = compose_arena(baseline, candidate=False)
     new = compose_arena(candidate, candidate=True, actors_root=baseline)
-    panels = (("ACCEPTED BASELINE", old), ("PREMIUM V2 CANDIDATE", new))
+    panels = (("ACCEPTED BASELINE", old), (CANDIDATE_LABEL, new))
     for index, (label, scene) in enumerate(panels):
         x = 70 + index * 790
         y = 135
@@ -508,7 +512,7 @@ def create_backdrop_value_sheet(candidate: Path, audit: dict, output: Path) -> N
 
 def create_ground_lineup(baseline: Path, candidate: Path, audit: dict, output: Path) -> None:
     width, height = 1710, 1170
-    canvas = canvas_base(width, height, "GROUND PATCHES — BASELINE VS PREMIUM V2")
+    canvas = canvas_base(width, height, "GROUND PATCHES — BASELINE VS " + CANDIDATE_LABEL)
     draw = ImageDraw.Draw(canvas)
     for variant in range(3):
         x = 55 + variant * 550

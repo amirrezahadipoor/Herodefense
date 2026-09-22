@@ -9,9 +9,13 @@ import shutil
 from pathlib import Path
 
 REPOSITORY = Path(__file__).resolve().parents[2]
+#: The record the tool promotes against by default: the v3 batch that accepted the pixels the game ships today.
 REVIEW_DOCUMENT = "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md"
 REVIEW_DIRECTORY = REPOSITORY / "docs/art_reviews/arena_premium_v2"
-AUDIT_PATH = REVIEW_DIRECTORY / "arena_audit.json"
+AUDIT_NAME = "arena_audit.json"
+AUDIT_PATH = REVIEW_DIRECTORY / AUDIT_NAME
+#: The batch name the record must state, so a record written for one render cannot accept another.
+REVIEW_BATCH = "arena-premium-v3"
 OBSTACLE_FAMILIES = ("standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder")
 OBSTACLE_VARIANTS = 3
 OBSTACLE_KEYS = tuple(
@@ -45,7 +49,19 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("candidate", type=Path)
     parser.add_argument("destination", type=Path)
+    parser.add_argument(
+        "--review",
+        choices=("v3", "v4"),
+        default="v3",
+        help="which accepted record to promote against; each names its own audit, document and sheet set",
+    )
     args = parser.parse_args()
+    if args.review == "v4":
+        use_review_record(
+            document="docs/art_reviews/ARENA_PREMIUM_V4_REVIEW.md",
+            directory=REPOSITORY / "docs/art_reviews/arena_premium_v4",
+            batch="arena-premium-v4-lift",
+        )
     source = args.candidate.resolve()
     destination = args.destination.resolve()
     if source == destination:
@@ -76,12 +92,20 @@ def main() -> None:
         "auditSha256": sha256_file(AUDIT_PATH),
         "sourceManifestSha256": sha256_file(candidate_manifest_path),
     }
+    promoted = []
     for key in EXPECTED_KEYS:
         candidate_asset = json.loads(json.dumps(candidate_by_key[key]))
         source_png = resolve_inside(source, candidate_asset["sheet"])
         destination_png = resolve_destination(destination, Path(candidate_asset["sheet"]))
+        if is_unchanged(destination_png, source_png):
+            # A batch re-renders the keys it does not own as well, and the arena renders the twelve cover props
+            # alongside its own art. Those pixels are byte-identical to what shipped and their revision has not
+            # moved, so their review record -- the cover batch's, not this one's -- stays exactly where it is.
+            # Rewriting it here would relabel twelve props with a review that never looked at them.
+            continue
         destination_png.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source_png, destination_png)
+        promoted.append(key)
         candidate_asset.update({
             "reviewDocument": REVIEW_DOCUMENT,
             "categoryReview": review,
@@ -94,6 +118,8 @@ def main() -> None:
         metadata_path = destination / "environment" / f"{key}.json"
         metadata_path.parent.mkdir(parents=True, exist_ok=True)
         write_json(metadata_path, candidate_asset)
+    if not promoted:
+        raise ValueError("every key in this candidate is byte-identical to what ships: nothing to promote")
 
     catalog["pipelineVersion"] = max(
         int(catalog.get("pipelineVersion", 0)),
@@ -103,9 +129,16 @@ def main() -> None:
     catalog["assets"] = [by_key[key] for key in sorted(by_key)]
     write_json(catalog_path, catalog)
     print(
-        f"Promoted exactly nineteen reviewed premium-v4 arena assets from audit "
+        f"Promoted {len(promoted)} reviewed arena assets ({', '.join(promoted)}) from audit "
         f"{sha256_file(AUDIT_PATH)[:12]}"
     )
+
+
+def is_unchanged(destination_png: Path, source_png: Path) -> bool:
+    """Whether a candidate sheet is exactly the sheet the catalog already carries."""
+    if not destination_png.is_file():
+        return False
+    return sha256_file(destination_png) == sha256_file(source_png)
 
 
 def validate_candidate_payload(
@@ -244,6 +277,20 @@ def validate_asset_contract(asset: dict, key: str) -> None:
         raise ValueError(f"Candidate static-frame contract mismatch: {key}")
 
 
+def use_review_record(document: str, directory: Path, batch: str) -> None:
+    """Point this run at another accepted record: its document, its directory, its batch name.
+
+    A second accepted batch is not a second promotion path -- the same hash gates apply -- but it is a second set
+    of files, and the files are what the gates read.
+    """
+    global REVIEW_DOCUMENT, REVIEW_DIRECTORY, AUDIT_PATH, AUDIT_NAME, REVIEW_BATCH
+    REVIEW_DOCUMENT = document
+    REVIEW_DIRECTORY = directory
+    AUDIT_NAME = "arena_audit.json"
+    AUDIT_PATH = REVIEW_DIRECTORY / AUDIT_NAME
+    REVIEW_BATCH = batch
+
+
 def validate_review_evidence(
     source: Path,
     destination: Path,
@@ -265,7 +312,7 @@ def validate_review_evidence(
         )
 
     audit = read_json(AUDIT_PATH)
-    if audit.get("schemaVersion") != 1 or audit.get("batch") != "arena-premium-v3":
+    if audit.get("schemaVersion") != 1 or audit.get("batch") != REVIEW_BATCH:
         raise ValueError("Unexpected arena audit contract")
     if audit.get("expectedKeys") != list(EXPECTED_KEYS):
         raise ValueError("Arena audit key order mismatch")
