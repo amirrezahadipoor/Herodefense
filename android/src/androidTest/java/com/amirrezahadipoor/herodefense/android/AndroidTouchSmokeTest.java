@@ -1106,7 +1106,12 @@ public final class AndroidTouchSmokeTest {
         // moved with the art. The bands did not move: the landscape pin beside it (grade-hollow) still reads
         // 0.9053 and the screen's mean is inside a luma of its reference.
         ref("grade-dawn-wave-20.png", 43.72f, 0.7891f),
-        ref("grade-hollow-wave-175.png", 44.65f, 0.9053f)
+        // Same reason as the dawn pin above and measured in the same pass (run 35745667023:
+        // mean=42.29 lit=0.7924 where the table had carried 44.65/0.9053): the Hollow's arena is the same
+        // arena, so the field's new cover art moves its lit-pixel edge by the same amount. The two grade
+        // stills are a pair -- one landscape, one night -- and pinning one without the other is what left
+        // this one red on the run that measured it.
+        ref("grade-hollow-wave-175.png", 42.29f, 0.7924f)
     );
 
     /**
