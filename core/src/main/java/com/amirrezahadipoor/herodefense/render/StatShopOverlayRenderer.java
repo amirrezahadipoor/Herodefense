@@ -104,10 +104,11 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
         // talent; the purchase feedback has the slot the rest of the time. At most two lines, wrapped by the
         // catalog, so the text and the panel agree on how wide a line is.
         HeroStat helpStat = tab == Tab.STATS ? shop.helpStat() : null;
-        if (helpStat != null || feedback != null) {
-            frames.draw(batch, UiFrameRenderer.Kind.PANEL, HELP_PANEL_X, HELP_PANEL_Y, HELP_PANEL_WIDTH,
-                HELP_PANEL_HEIGHT, true, false);
-        }
+        // The panel is always up: when no talent is being asked about and no purchase is being answered, it
+        // carries the tab's own line and where Close goes, which used to be written across the header's
+        // Roots button (see drawText below).
+        frames.draw(batch, UiFrameRenderer.Kind.PANEL, HELP_PANEL_X, HELP_PANEL_Y, HELP_PANEL_WIDTH,
+            HELP_PANEL_HEIGHT, true, false);
         batch.end();
 
         beginShapes(projection);
@@ -139,19 +140,14 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
         icons.draw(batch, "close", 588f, 1138f, 64f, closeState);
         icons.draw(batch, "general_power", 312f, 1148f, 40f, rootBtnState);
         drawText(batch, "ROOTS", 362f, 1166f, 0.72f, GOLD);
+        // The header holds the title, the coin count and, on the title's line against the trailing edge, the
+        // one state word. The tab's description and the Close hint were drawn here too -- the description at
+        // 1200f under the title, 487 units wide, ran across the top of the Roots button, and the two lines at
+        // x 300f sat inside that button over its own icon and label -- so they live in the help panel now.
         drawText(batch, "WORLD TREE ARMORY", 40f, 1240f, 1.36f, GOLD);
-        drawText(batch, tab == Tab.SKILLS
-                ? "Combat skills; costly, permanent, evolving"
-                : "Permanent upgrades bought only with earned coins",
-            40f, 1200f, 0.72f, SUBTLE);
+        text.drawTrailing(batch, "COMBAT PAUSED", 0f, 720f, HEADER_TRAILING_INSET, HEADER_STATE_Y, 0.68f, POSITIVE);
         icons.draw(batch, "coin", 44f, 1152f, 34f);
         drawText(batch, "$ " + Math.max(0, state.coins), 86f, 1178f, 1.00f, IVORY);
-        drawText(batch, "COMBAT PAUSED", 300f, 1180f, 0.68f, POSITIVE);
-        drawText(
-            batch,
-            returnsToPause ? "Close returns to Pause" : "Close returns to battle",
-            300f, 1152f, 0.62f, SUBTLE
-        );
         drawCentered(batch, "STATS", StatShopTouchLayout.TAB_STATS_X + StatShopTouchLayout.TAB_WIDTH * 0.5f,
             StatShopTouchLayout.TAB_Y + 34f, 0.96f, tab == Tab.STATS ? GOLD : SUBTLE);
         drawCentered(batch, "SKILLS", StatShopTouchLayout.TAB_SKILLS_X + StatShopTouchLayout.TAB_WIDTH * 0.5f,
@@ -209,8 +205,23 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
             Color feedbackColor = new Color(base);
             feedbackColor.a = tab == Tab.SKILLS ? skills.feedbackAlpha() : shop.feedbackAlpha();
             drawCentered(batch, feedback, 360f, HELP_PANEL_Y + 62f, 0.78f, feedbackColor);
+        } else {
+            drawCentered(batch, tabDescription(tab), 360f, HELP_PANEL_Y + 64f, 0.66f, SUBTLE);
+            drawCentered(batch, closeHint(returnsToPause), 360f, HELP_PANEL_Y + 34f, 0.62f, SUBTLE);
         }
         batch.end();
+    }
+
+    /** The tab's own line, shown in the help panel while nothing else needs it. */
+    static String tabDescription(Tab tab) {
+        return tab == Tab.SKILLS
+            ? "Combat skills; costly, permanent, evolving"
+            : "Permanent upgrades, earned coins only";
+    }
+
+    /** Where Close goes: back to the fight, or back to the pause it was opened from. */
+    static String closeHint(boolean returnsToPause) {
+        return returnsToPause ? "Close returns to Pause" : "Close returns to battle";
     }
 
     private static Row[] statRows(GameState state, StatShopSystem shop) {
@@ -297,6 +308,10 @@ public final class StatShopOverlayRenderer implements AutoCloseable {
      * the level-up screen teach the same five talents, and a second copy of the text is a second thing to keep
      * in step with the constants.
      */
+    /** The header's trailing margin: the title starts 40f in, and the state word ends 40f in from the other edge. */
+    static final float HEADER_TRAILING_INSET = 40f;
+    /** The state word's top: on the title's line, and clear of the Roots and Close buttons under it (top 1216f/1220f). */
+    static final float HEADER_STATE_Y = 1238f;
     /** Panel and text metrics of the help line, in world units. */
     static final float HELP_PANEL_X = 100f;
     static final float HELP_PANEL_Y = 112f;

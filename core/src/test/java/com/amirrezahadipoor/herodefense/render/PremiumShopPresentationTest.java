@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout;
+import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout.Tab;
+import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.model.HeroStat;
 import com.amirrezahadipoor.herodefense.skills.SkillEvolution;
 import com.amirrezahadipoor.herodefense.skills.SkillId;
@@ -82,6 +84,45 @@ final class PremiumShopPresentationTest {
         assertTrue(StatShopTouchLayout.ROW_WIDTH >= 610f);
         assertTrue(StatShopTouchLayout.ROW_HEIGHT >= 135f);
         assertTrue(StatShopTouchLayout.CLOSE_SIZE >= 100f);
+    }
+
+    /**
+     * The header on the gate emulator's own capture: the tab's description ran across the top of the Roots
+     * button and the two context lines sat inside it, over its icon and label. The header now holds the
+     * title, the coin count and the state word on the title's line against the trailing edge; the description
+     * and the Close hint went into the help panel. This measures that arrangement with the committed face at
+     * the emulator's sizes, so a longer word cannot quietly bring the collision back.
+     */
+    @Test
+    void headerWordsShareTheirLineAndTheHelpPanelLinesFitTheirBox() {
+        float titleEnd = 40f + ReferenceTypeMeasure.width("WORLD TREE ARMORY", GameLanguage.ENGLISH,
+            GameFonts.Role.forLegacyScale(1.36f));
+        float pausedStart = 720f - StatShopOverlayRenderer.HEADER_TRAILING_INSET
+            - ReferenceTypeMeasure.width("COMBAT PAUSED", GameLanguage.ENGLISH, GameFonts.Role.forLegacyScale(0.68f));
+        assertTrue(titleEnd + 24f <= pausedStart,
+            "the title ends at " + titleEnd + " and the state word starts at " + pausedStart);
+        // The word sits over the Roots and Close buttons' columns, so it has to end above both of them.
+        float wordBottom = StatShopOverlayRenderer.HEADER_STATE_Y
+            - ReferenceTypeMeasure.capHeight(GameLanguage.ENGLISH, GameFonts.Role.forLegacyScale(0.68f));
+        assertTrue(wordBottom >= StatShopTouchLayout.ROOT_Y + StatShopTouchLayout.ROOT_HEIGHT + 2f,
+            "the state word reaches down to " + wordBottom + ", the Roots button's top is "
+                + (StatShopTouchLayout.ROOT_Y + StatShopTouchLayout.ROOT_HEIGHT));
+        assertTrue(wordBottom >= StatShopTouchLayout.CLOSE_Y + StatShopTouchLayout.CLOSE_SIZE + 2f,
+            "the state word reaches down to " + wordBottom + ", the Close button's top is "
+                + (StatShopTouchLayout.CLOSE_Y + StatShopTouchLayout.CLOSE_SIZE));
+        float inner = StatShopOverlayRenderer.HELP_PANEL_WIDTH - 2f * 28f;
+        for (Tab tab : Tab.values()) {
+            String description = StatShopOverlayRenderer.tabDescription(tab);
+            float width = ReferenceTypeMeasure.width(description, GameLanguage.ENGLISH,
+                GameFonts.Role.forLegacyScale(0.66f));
+            assertTrue(width <= inner, tab + " description is " + width + " wide in a " + inner + " panel: "
+                + description);
+        }
+        for (boolean returnsToPause : new boolean[] {true, false}) {
+            String hint = StatShopOverlayRenderer.closeHint(returnsToPause);
+            float width = ReferenceTypeMeasure.width(hint, GameLanguage.ENGLISH, GameFonts.Role.forLegacyScale(0.62f));
+            assertTrue(width <= inner, hint + " is " + width + " wide in a " + inner + " panel");
+        }
     }
 
     @Test

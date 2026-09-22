@@ -8,12 +8,6 @@ import com.amirrezahadipoor.herodefense.i18n.GameNumbers;
 import com.amirrezahadipoor.herodefense.i18n.MenuStrings;
 import com.amirrezahadipoor.herodefense.i18n.Translated;
 import com.amirrezahadipoor.herodefense.input.MainMenuTouchLayout;
-import java.awt.Font;
-import java.awt.FontFormatException;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -27,17 +21,14 @@ import org.junit.jupiter.api.Test;
  * lines; this test keeps the strings themselves short enough that, on the reference profile, no row needs
  * the fit to step down a size. Larger system fonts and 2.0-density phones still get the fitted draw.
  *
- * <p>Widths come from java.awt's layout of the same TrueType files FreeType rasterises at run time, shaped
- * for Persian the way the shaper joins its letters; hinting differs by a fraction of a glyph, which the
- * margin in each box covers.
+ * <p>Widths come from {@link ReferenceTypeMeasure}: java.awt's layout of the same TrueType files FreeType
+ * rasterises at run time, shaped for Persian the way the shaper joins its letters.
  */
 final class MainMenuTextFitTest {
-    private static final Path FONTS = Path.of("..").normalize().resolve("android/assets/fonts");
-    /** The gate emulator: 1080 by 2220 at density 2.75, so one sp is 2.75 / 1.5 world units. */
-    private static final DisplayMetrics REFERENCE = new DisplayMetrics(1080, 2220, 2.75f);
+    private static final DisplayMetrics REFERENCE = ReferenceTypeMeasure.REFERENCE;
 
     @Test
-    void theReferenceEmulatorsRowLinesFitInsideTheirButtons() throws Exception {
+    void theReferenceEmulatorsRowLinesFitInsideTheirButtons() {
         // The second lines with the widest numbers a real save can put in them.
         Map<String, Translated> subtitles = Map.of(
             "new game", MenuStrings.NEW_GAME_SUBTITLE,
@@ -68,17 +59,18 @@ final class MainMenuTextFitTest {
     }
 
     @Test
-    void thePitchWrapsInsideTheTitlePanelInBothLanguages() throws Exception {
+    void thePitchWrapsInsideTheTitlePanelInBothLanguages() {
         for (GameLanguage language : GameLanguage.values()) {
-            Font font = face(language, GameFonts.Role.forLegacyScale(MainMenuRenderer.PITCH_SCALE));
+            GameFonts.Role role = GameFonts.Role.forLegacyScale(MainMenuRenderer.PITCH_SCALE);
             List<String> lines = CodexOverlayRenderer.wrapLines(
-                MenuStrings.PITCH.text(language), row -> advance(font, row), MainMenuRenderer.PITCH_MAX_WIDTH);
+                MenuStrings.PITCH.text(language),
+                row -> ReferenceTypeMeasure.width(row, language, role), MainMenuRenderer.PITCH_MAX_WIDTH);
             assertTrue(lines.size() >= 2, language + ": the pitch is two lines by design, it was " + lines);
             assertTrue(lines.size() <= MainMenuRenderer.PITCH_MAX_LINES,
                 language + ": the pitch needs " + lines.size() + " lines, the panel holds "
                     + MainMenuRenderer.PITCH_MAX_LINES + ": " + lines);
             for (String line : lines) {
-                assertTrue(advance(font, line) <= MainMenuRenderer.PITCH_MAX_WIDTH,
+                assertTrue(ReferenceTypeMeasure.width(line, language, role) <= MainMenuRenderer.PITCH_MAX_WIDTH,
                     language + ": a single word of the pitch is wider than the panel: " + line);
             }
         }
@@ -101,26 +93,10 @@ final class MainMenuTextFitTest {
 
     private static void assertFits(
         String what, String text, GameLanguage language, GameFonts.Role role, float maxWidth
-    ) throws IOException, FontFormatException {
-        float width = advance(face(language, role), text);
+    ) {
+        float width = ReferenceTypeMeasure.width(text, language, role);
         assertTrue(width <= maxWidth,
             what + " in " + language + " is " + width + " world units wide at " + role + " on the reference"
                 + " emulator; the box is " + maxWidth + ": \"" + text + "\"");
-    }
-
-    /** The face the role draws in the language, at the world size the reference emulator gives the role. */
-    private static Font face(GameLanguage language, GameFonts.Role role) throws IOException, FontFormatException {
-        String file = language == GameLanguage.PERSIAN
-            ? (role.heavy ? "Vazirmatn-ExtraBold.ttf" : "Vazirmatn-Bold.ttf")
-            : (role.heavy ? "Nunito-ExtraBold.ttf" : "Nunito-Bold.ttf");
-        Font base = Font.createFont(Font.TRUETYPE_FONT, FONTS.resolve(file).toFile());
-        return base.deriveFont(GameFonts.worldSizeFor(role, REFERENCE));
-    }
-
-    /** The advance of the run, shaped: joined Persian letters, kerned Latin ones. */
-    private static float advance(Font font, String text) {
-        if (text == null || text.isEmpty()) return 0f;
-        FontRenderContext context = new FontRenderContext(null, true, true);
-        return new TextLayout(text, font, context).getAdvance();
     }
 }
