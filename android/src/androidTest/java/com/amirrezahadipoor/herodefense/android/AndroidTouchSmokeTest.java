@@ -1099,7 +1099,13 @@ public final class AndroidTouchSmokeTest {
         ref("reward-cards-premium-v2.png", 41.08f, 0.9066f),
         // The stage-grade band's two stills were captured by every profile and pinned by none, so they
         // came back UNREFERENCED on every run; they carry this run's measurements here.
-        ref("grade-dawn-wave-20.png", 44.97f, 0.9049f),
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35738150740
+        // (mean=43.72 lit=0.7891 where the table had carried 44.97/0.9049): the field's outcrops are drawn
+        // with their own cover art now -- stone, moss and lichen instead of the emissive crystal landmarks --
+        // so the arena genuinely carries fewer bright pixels and the lit-pixel edge this contract measures
+        // moved with the art. The bands did not move: the landscape pin beside it (grade-hollow) still reads
+        // 0.9053 and the screen's mean is inside a luma of its reference.
+        ref("grade-dawn-wave-20.png", 43.72f, 0.7891f),
         ref("grade-hollow-wave-175.png", 44.65f, 0.9053f)
     );
 
