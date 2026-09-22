@@ -31,7 +31,8 @@ public final class GameStrings {
         PathStrings.values(),
         TrialStrings.values(),
         StoryStrings.values(),
-        SettingsStrings.values());
+        SettingsStrings.values(),
+        TrophyStrings.values());
 
     private GameStrings() {
     }

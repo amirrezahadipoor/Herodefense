@@ -11,6 +11,7 @@ import com.amirrezahadipoor.herodefense.input.CodexTouchController;
 import com.amirrezahadipoor.herodefense.input.CodexTouchLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.progression.Trophy;
+import com.amirrezahadipoor.herodefense.progression.TrophyText;
 import com.amirrezahadipoor.herodefense.progression.TrophyBook;
 import com.amirrezahadipoor.herodefense.story.BossLore;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
@@ -187,7 +188,7 @@ public final class CodexOverlayRenderer implements AutoCloseable {
                 CodexTouchLayout.LIST_WIDTH, CodexTouchLayout.LIST_ROW_HEIGHT,
                 earned, selected
             );
-            text.draw(batch, (earned ? "[*] " : "[ ] ") + trophy.title(),
+            text.draw(batch, (earned ? "[*] " : "[ ] ") + TrophyText.title(trophy),
                 CodexTouchLayout.LIST_X + 20f, bottom + 54f, 0.8f,
                 earned ? OverlayText.GOLD : OverlayText.MUTED);
             text.draw(batch, progress + HALF_SEPARATOR + trophy.target(),
@@ -207,10 +208,10 @@ public final class CodexOverlayRenderer implements AutoCloseable {
             return;
         }
         boolean earned = state.trophies.isEarned(trophy);
-        text.draw(batch, trophy.title(), DETAILS_X + DETAILS_PADDING, titleY - 46f, BODY_SCALE,
+        text.draw(batch, TrophyText.title(trophy), DETAILS_X + DETAILS_PADDING, titleY - 46f, BODY_SCALE,
             earned ? OverlayText.GOLD : OverlayText.IVORY);
         List<String> lines = wrapLines(
-            trophy.hint(),
+            TrophyText.hint(trophy),
             line -> text.width(line, BODY_SCALE),
             DETAILS_WIDTH - DETAILS_PADDING * 2f
         );

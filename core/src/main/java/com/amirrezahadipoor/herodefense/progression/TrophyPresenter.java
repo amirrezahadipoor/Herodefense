@@ -62,7 +62,7 @@ public final class TrophyPresenter {
         }
         String[] names = new String[earned.size()];
         for (int index = 0; index < earned.size(); index++) {
-            names[index] = earned.get(index).title();
+            names[index] = TrophyText.title(earned.get(index));
         }
         return GameLocale.text(
             StoryStrings.TROPHY_NAMES, String.join(GameLocale.text(StoryStrings.TROPHY_AND), names));

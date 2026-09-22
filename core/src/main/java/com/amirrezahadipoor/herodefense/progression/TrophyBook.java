@@ -46,6 +46,13 @@ public final class TrophyBook {
             case THORN_COLLECTOR -> elitesKilled(state);
             case LOREKEEPER -> writtenEntries(state);
             case WITNESS -> state.firstBossKills == null ? 0 : state.firstBossKills.size();
+            // The shelf's second half: runs finished, how deep one night has been, and what the deep band cost.
+            case TEN_NIGHTS -> state.totalRunsCompleted;
+            case BEST_WAVE_HUNDRED, BEST_WAVE_ONE_FIFTY -> ledger.bestWave;
+            case ELITE_HUNTER, ELITE_LEGION -> elitesKilled(state);
+            case FORESTER -> ledger.treesPlanted;
+            case FIVE_CLEAN_RUNS -> ledger.potionlessFinishes;
+            case LORE_MASTER -> writtenEntries(state);
         };
     }
 

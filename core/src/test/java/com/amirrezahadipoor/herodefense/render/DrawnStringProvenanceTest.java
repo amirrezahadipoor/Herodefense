@@ -131,8 +131,7 @@ final class DrawnStringProvenanceTest {
         "SkillEvolution.java",
         "SkillId.java",
         "StatShopOverlayRenderer.java",
-        "StatTooltips.java",
-        "Trophy.java"
+        "StatTooltips.java"
     );
 
     @Test

@@ -165,11 +165,11 @@ final class TrophyBookTest {
         Set<String> ids = new HashSet<>();
         for (Trophy trophy : Trophy.values()) {
             assertTrue(trophy.target() > 0, trophy.id());
-            assertFalse(trophy.title().isBlank() || trophy.hint().isBlank(), trophy.id());
-            assertTrue(titles.add(trophy.title()), "duplicate title: " + trophy.title());
+            assertFalse(TrophyText.title(trophy).isBlank() || TrophyText.hint(trophy).isBlank(), trophy.id());
+            assertTrue(titles.add(TrophyText.title(trophy)), "duplicate title: " + TrophyText.title(trophy));
             assertTrue(ids.add(trophy.id()), "duplicate id: " + trophy.id());
         }
-        assertEquals(12, Trophy.values().length);
+        assertEquals(20, Trophy.values().length);
         assertEquals(BossType.values().length, Trophy.WITNESS.target(),
             "WITNESS counts the identities the game actually ships");
     }

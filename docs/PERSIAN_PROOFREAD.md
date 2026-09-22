@@ -45,7 +45,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 
 ---
 
-## 2. Exhaustive Proofreading Ledger (277 Entries across 12 String Tables)
+## 2. Exhaustive Proofreading Ledger (317 Entries across 13 String Tables)
 
 ### 2.1 MenuStrings (18 entries)
 
@@ -478,6 +478,51 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `CLOSE` | Close | بستن | Approved. Close button label. |
 
 ---
+
+### 2.13 TrophyStrings (40 entries)
+
+| Key | English | Persian | Verdict |
+| --- | --- | --- | --- |
+| `FIRST_VIGIL_TITLE` | First Vigil | نگهبانی نخست | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `FIRST_VIGIL_HINT` | Finish a run, however it ends. | یک بازی را تمام کن، هرجور که تمام شود. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `STEADY_HAND_TITLE` | Steady Hand | دستِ استوار | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `STEADY_HAND_HINT` | Clear a hundred waves in total. | در مجموع صد موج را رد کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `LONG_HOLD_TITLE` | Long Hold | پایداریِ بلند | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `LONG_HOLD_HINT` | Clear a thousand waves in total. | در مجموع هزار موج را رد کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `ENDLESS_PATIENCE_TITLE` | Endless Patience | صبوریِ بی‌پایان | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `ENDLESS_PATIENCE_HINT` | Clear five thousand waves in total. | در مجموع پنج هزار موج را رد کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `BARE_HANDS_TITLE` | Bare Hands | دستِ خالی | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `BARE_HANDS_HINT` | Finish a run without ever reaching for a potion. | یک بازی را بدون دست‌زدن به هیچ شربتی تمام کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `GARDENER_TITLE` | Gardener | باغبان | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `GARDENER_HINT` | Plant all three grove trees in one run. | در یک بازی هر سه درختِ بیشه را بکار. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `DEEP_ROOTED_TITLE` | Deep-Rooted | ریشه‌دوانده | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `DEEP_ROOTED_HINT` | Bank a thousand heartwood. | هزار چوب‌دل ذخیره کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `HOLLOW_ANSWERED_TITLE` | The Hollow Answered | حُفره پاسخ گرفت | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `HOLLOW_ANSWERED_HINT` | Reach wave 200. | به موج ۲۰۰ برس. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `TWELFTH_DESCENT_TITLE` | Twelfth Descent | فرودِ دوازدهم | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `TWELFTH_DESCENT_HINT` | Ascend twelve times. | دوازده بار صعود کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `THORN_COLLECTOR_TITLE` | Thorn Collector | خارگردآور | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `THORN_COLLECTOR_HINT` | Put down a hundred elites. | صد نخبه را از پا دربیاور. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `LOREKEEPER_TITLE` | Lorekeeper | نگهدارِ روایت‌ها | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `LOREKEEPER_HINT` | Have twenty codex entries written. | بیست مدخلِ دانش‌نامه نوشته شود. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `WITNESS_TITLE` | Witness | شاهد | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `WITNESS_HINT` | Meet all eight boss identities at least once. | هر هشت هویتِ باس را دست‌کم یک‌بار ببین. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `TEN_NIGHTS_TITLE` | Ten Nights | ده شب | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `TEN_NIGHTS_HINT` | Finish ten runs. | ده بازی را تمام کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `BEST_WAVE_HUNDRED_TITLE` | A Hundred Deep | صد موج فراتر | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `BEST_WAVE_HUNDRED_HINT` | Reach wave 100 in a single run. | در یک بازی به موج ۱۰۰ برس. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `BEST_WAVE_ONE_FIFTY_TITLE` | Half Again as Deep | نیم‌بارِ دیگر عمیق‌تر | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `BEST_WAVE_ONE_FIFTY_HINT` | Reach wave 150 in a single run. | در یک بازی به موج ۱۵۰ برس. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `ELITE_HUNTER_TITLE` | Elite Hunter | شکارچیِ نخبه | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `ELITE_HUNTER_HINT` | Put down twenty-five elites. | بیست‌وپنج نخبه را از پا دربیاور. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `ELITE_LEGION_TITLE` | Thorn Legion | لژیونِ خار | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `ELITE_LEGION_HINT` | Put down five hundred elites. | پانصد نخبه را از پا دربیاور. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `FORESTER_TITLE` | Forester | جنگل‌بان | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `FORESTER_HINT` | Plant twelve grove trees in total. | در مجموع دوازده درختِ بیشه بکار. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `FIVE_CLEAN_RUNS_TITLE` | Five Clean Runs | پنج بازیِ پاک | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `FIVE_CLEAN_RUNS_HINT` | Finish five runs without a potion. | پنج بازی را بدون شربت تمام کن. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `LORE_MASTER_TITLE` | Grove Historian | تاریخ‌نگارِ بیشه | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
+| `LORE_MASTER_HINT` | Have forty codex entries written. | چهل مدخلِ دانش‌نامه نوشته شود. | Added 2026-09-22 with the trophy shelf's second half; pending native re-proofread. |
 
 ## 3. Automated Integrity Gate
 
