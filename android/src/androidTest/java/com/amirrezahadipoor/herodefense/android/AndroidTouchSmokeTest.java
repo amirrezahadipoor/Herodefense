@@ -955,7 +955,7 @@ public final class AndroidTouchSmokeTest {
         // The stage-grade band's two stills were captured by every profile and pinned by none, so they
         // came back UNREFERENCED on every run; they carry this run's measurements here.
         ref("grade-dawn-wave-20.png", 42.60f, 0.8169f),
-        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f),
+        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f)
     );
 
     /**
@@ -1030,7 +1030,7 @@ public final class AndroidTouchSmokeTest {
         // The stage-grade band's two stills were captured by every profile and pinned by none, so they
         // came back UNREFERENCED on every run; they carry this run's measurements here.
         ref("grade-dawn-wave-20.png", 43.91f, 0.8223f),
-        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f),
+        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f)
     );
 
     /** The device-evidence matrix's api33 pixel_7 table, measured by run 35462188576 at commit 39383ed. */
@@ -1095,7 +1095,7 @@ public final class AndroidTouchSmokeTest {
         // The stage-grade band's two stills were captured by every profile and pinned by none, so they
         // came back UNREFERENCED on every run; they carry this run's measurements here.
         ref("grade-dawn-wave-20.png", 44.97f, 0.9049f),
-        ref("grade-hollow-wave-175.png", 44.65f, 0.9053f),
+        ref("grade-hollow-wave-175.png", 44.65f, 0.9053f)
     );
 
     /**
@@ -1145,7 +1145,7 @@ public final class AndroidTouchSmokeTest {
         ref("opening-line-one-premium-v2.png", 24.67f, 0.9972f),
         ref("opening-line-three-premium-v2.png", 23.78f, 0.9387f),
         ref("live-hud-premium-v2.png", 26.99f, 0.9942f),
-        ref("pause-premium-v2.png", 26.70f, 0.9896f),
+        ref("pause-premium-v2.png", 26.70f, 0.9896f)
     );
 
     /** The profile this run is on, as {@code api<level>-<short>x<long>} of the captured frame. */
