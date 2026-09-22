@@ -8,6 +8,7 @@ import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Item;
 import java.util.List;
+import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import org.junit.jupiter.api.Test;
 
 final class CodexSystemTest {
@@ -54,16 +55,18 @@ final class CodexSystemTest {
         assertEquals(List.of("codex_18"), codex.unlockForEliteKill(state, "rootward_ward"));
         assertFalse(codex.isUnlocked(state, "codex_32"));
 
-        // The shallow three once sufficed; the deep pool (D2) needs all six counted.
+        // The shallow three once sufficed; the pool needs every row counted now, and it grew twice.
         state.eliteKillCounts.put("weeping_rot", 1);
-        state.eliteKillCounts.put("hollowmolt", 1);
-        state.eliteKillCounts.put("gravemoss", 1);
         assertEquals(List.of("codex_19"), codex.unlockForEliteKill(state, "weeping_rot"));
         assertFalse(codex.isUnlocked(state, "codex_32"));
 
-        state.eliteKillCounts.put("cinderhalo", 1);
-        assertEquals(List.of("codex_32"), codex.unlockForEliteKill(state, "cinderhalo"));
-        assertTrue(codex.isUnlocked(state, "codex_32"));
+        List<String> lastUnlocks = List.of();
+        for (EliteAffix affix : EliteAffix.values()) {
+            state.eliteKillCounts.put(affix.id(), 1);
+            lastUnlocks = codex.unlockForEliteKill(state, affix.id());
+        }
+        assertTrue(codex.isUnlocked(state, "codex_32"), "one kill of every affix must close the set");
+        assertTrue(lastUnlocks.contains("codex_32"), "the last affix must be the one that closes it");
         // Idempotent: claimed once, not announced again.
         assertEquals(List.of(), codex.unlockForEliteKill(state, "cinderhalo"));
     }

@@ -296,6 +296,20 @@ started, `[!]` attempted and failed, with the failure written down.
       the deep pool put back on the board. The identity half stays open by necessity: new enemy bodies are
       sprite-sheet art, and the reviewed Blender pipeline that makes them lives outside this sandbox -- the
       same dependency B2 documented for the sixth skill.
+- [x] **D2b (+6) The deep band: six more affixes for the night that has already learned you.** The pool is
+      twelve now (`EliteAffix`), still gated at `EnemyWaveSpawner.LATE_AFFIX_WAVE`, still bit-identical below
+      it. The band is built as questions rather than as multipliers: **stoneshell** hardens itself on a slow
+      clock (no share, no ally, just armour), **gravebloom** keeps the ground angry after it dies,
+      **swarmcall** opens a door instead of ending a wave, **spitebarb** punishes hugging with a tight slow
+      heavy return, **hammerfall** draws the ring it is about to break and strikes only inside it, and
+      **bloodhowl** hastens the line it stands in. Each one has a glowing outline (`VisualRarity`, mapped in
+      one place), a two-part "Whispering Wounds" thread, and a Grove Codex row -- the pool, the palette and the
+      words are asserted to stay in step by `EliteAffixDeepPoolTest`. Their numbers live together in
+      `DeepBandTuning` because a band is tuned as one: two of them are capped in the hero's own bar
+      (`SPITEBARB_BAR_CAP`, `HAMMERFALL_BAR_CAP`) so a deep body's wave-scaled damage can never turn one wave
+      into an ambush, and the first cut of the band was pulled back against the pressure gates until
+      `WavePressureCurveTest` and `FunInstrumentTest` were green again (spike 1.06 -> 0.58 on the optimiser's
+      worst neighbour-wave jump, under the 0.65 band).
 - [x] **D3 (−8) Four boss identities across forty encounters.** The encounter table itself is good work — eight
       fight scripts on a shifting permutation, deterministic against the save file — but only four of them have
       a body.

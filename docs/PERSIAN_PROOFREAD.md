@@ -45,7 +45,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 
 ---
 
-## 2. Exhaustive Proofreading Ledger (265 Entries across 12 String Tables)
+## 2. Exhaustive Proofreading Ledger (277 Entries across 12 String Tables)
 
 ### 2.1 MenuStrings (18 entries)
 
@@ -296,7 +296,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `HOLLOW_OMENS_RISK` | Every sixth wave carries an omen | هر موج ششم یک نشان دارد | Approved. Frequency schedule. |
 | `HOLLOW_OMENS_REWARD` | +25% coins on omen waves | ۲۵٪ سکه بیشتر در موج‌های نشان‌دار | Approved. Targeted coin multiplier. |
 
-### 2.11 StoryStrings (116 entries)
+### 2.11 StoryStrings (128 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
@@ -401,6 +401,18 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `ELITE_GRAVEMOSS_TWO` | That is not healing. That is something patient taking it back. | این التیام نیست. چیزی صبور داردش برمی‌گرداند. | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `ELITE_CINDERHALO_ONE` | Stand too close and it loves you — the way an ember loves wind. | خیلی نزدیک نرو. دوستت می‌دارد — به‌اندازه‌ای که اخگر دوست دارد باد را. | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `ELITE_CINDERHALO_TWO` | That heat is not attack. It is grief, still warm. | آن گرما حمله نیست. سوگ است که هنوز گرم است. | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
+| `ELITE_STONESHELL_ONE` | It pulled the hill over itself and called that armour. | تپه را روی خودش کشید و اسمش را گذاشت زره. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_STONESHELL_TWO` | Stone is patient. Stone is not on your side. | سنگ صبور است. سنگ طرفِ تو نیست. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_GRAVEBLOOM_ONE` | It died and the ground kept the grudge. | مُرد و زمین کینه را نگه داشت. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_GRAVEBLOOM_TWO` | Do not stand where something was angry. | آن‌جا که چیزی خشمگین بوده، نایست. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_SWARMCALL_ONE` | Kill it and it calls for replacements. It has replacements. | بکشش و جانشین صدا می‌زند. جانشین دارد. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_SWARMCALL_TWO` | The grove keeps sending. The grove always keeps sending. | بیشه می‌فرستد. بیشه همیشه می‌فرستد. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_SPITEBARB_ONE` | It does not want you in reach. It made its reach a promise. | نمی‌خواهد در دسترست باشی. دسترسش را وعده کرد. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_SPITEBARB_TWO` | Close work has a price here. It always did. | کارِ نزدیک اینجا قیمت دارد. همیشه داشته. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_HAMMERFALL_ONE` | It raises its arm and the ground tells you where. | دستش را بالا می‌برد و زمین می‌گوید کجا. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_HAMMERFALL_TWO` | Step. That is the whole lesson. | قدمی بردار. تمام درس همین است. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_BLOODHOWL_ONE` | It howls and the line walks faster. It is proud of them. | زوزه می‌کشد و صف تندتر راه می‌رود. به آن‌ها افتخار می‌کند. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
+| `ELITE_BLOODHOWL_TWO` | Follow the sound and you find the one holding the leash. | صدا را دنبال کن؛ آن‌که بند را در دست دارد پیدا می‌شود. | Added 2026-09-22 with the deep-band affixes; pending native re-proofread. |
 | `WHISPER_ONE` | The roots kept your seat warm while you were gone. | ریشه‌ها در نبودت جای تو را گرم نگه داشتند. | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `WHISPER_TWO` | The Tree dreams, little guard — and it always wakes up. | درخت خواب می‌بیند، نگهبانِ کوچک — و همیشه بیدار می‌شود. | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `WHISPER_THREE` | I counted your absence in falling leaves — you were out a while. | نبودنت را با برگ‌های ریزش‌کرده شمردم. دیر بودی. | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |

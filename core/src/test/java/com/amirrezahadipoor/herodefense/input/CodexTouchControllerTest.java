@@ -50,7 +50,7 @@ final class CodexTouchControllerTest {
         controller.drag(state, 55f);
         assertEquals(1, controller.firstVisibleIndex());
         controller.drag(state, 55f * 100f);
-        assertEquals(29, controller.firstVisibleIndex(), "34 lore entries minus the five visible rows");
+        assertEquals(38, controller.firstVisibleIndex(), "43 lore entries minus the five visible rows");
         controller.drag(state, -55f * 100f);
         assertEquals(0, controller.firstVisibleIndex());
 

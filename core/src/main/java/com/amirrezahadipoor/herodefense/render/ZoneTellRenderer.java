@@ -5,8 +5,11 @@ import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.amirrezahadipoor.herodefense.gameplay.DeepBandTuning;
+import com.amirrezahadipoor.herodefense.gameplay.EliteAffixSystem;
 import com.amirrezahadipoor.herodefense.gameplay.EnemyVerbs;
 import com.amirrezahadipoor.herodefense.model.Boss;
+import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 
@@ -23,6 +26,12 @@ public final class ZoneTellRenderer implements AutoCloseable {
     /** The spit line's thickness and the radius of the mark it lands on. */
     static final float SPIT_LINE_THICKNESS = 7f;
     static final float SPIT_MARK_RADIUS = 22f;
+    /** A ring is drawn as this many short bars around the circle; one texture, no shape renderer. */
+    private static final int RING_SEGMENTS = 26;
+    private static final float RING_THICKNESS = 7f;
+    private static final float RING_OVERLAP = 1.35f;
+    /** How fast a bloodhowl aura breathes, in radians per second. */
+    private static final float HOWL_PULSE_RATE = 2.4f;
 
     private final Texture pixel;
     private final TextureRegion pixelRegion;
@@ -39,6 +48,7 @@ public final class ZoneTellRenderer implements AutoCloseable {
     public void draw(SpriteBatch batch, GameState state, float runTimeSeconds) {
         drawBossZones(batch, state, runTimeSeconds);
         drawVerbTells(batch, state);
+        drawAffixTells(batch, state, runTimeSeconds);
     }
 
     private void drawBossZones(SpriteBatch batch, GameState state, float runTimeSeconds) {
@@ -92,6 +102,54 @@ public final class ZoneTellRenderer implements AutoCloseable {
             );
         }
         batch.setColor(1f, 1f, 1f, 1f);
+    }
+
+    /**
+     * The two affixes that say something about the ground: hammerfall draws the ring it is about to break, from
+     * the same clock the strike resolves against, and bloodhowl draws the reach of the haste it gives its line.
+     * Both read gameplay state directly -- there is no separate "tell" copy that could fall out of step.
+     */
+    private void drawAffixTells(SpriteBatch batch, GameState state, float runTimeSeconds) {
+        if (state == null || state.aliveEnemies == null) {
+            return;
+        }
+        for (Enemy enemy : state.aliveEnemies) {
+            if (enemy == null || !enemy.alive || enemy.eliteAffix == null) {
+                continue;
+            }
+            if (EliteAffix.HAMMERFALL.id().equals(enemy.eliteAffix)) {
+                float progress = EliteAffixSystem.hammerfallWindupProgress(enemy);
+                if (progress < 0f) {
+                    continue;
+                }
+                batch.setColor(1f, 0.46f, 0.22f, 0.20f + 0.55f * progress);
+                ring(batch, enemy.x, enemy.y, DeepBandTuning.HAMMERFALL_RADIUS);
+            } else if (EliteAffix.BLOODHOWL.id().equals(enemy.eliteAffix)) {
+                float pulse = 0.5f + 0.5f * (float) Math.sin(runTimeSeconds * HOWL_PULSE_RATE);
+                batch.setColor(0.95f, 0.24f, 0.32f, 0.10f + 0.08f * pulse);
+                ring(batch, enemy.x, enemy.y, DeepBandTuning.BLOODHOWL_RADIUS);
+            }
+        }
+        batch.setColor(1f, 1f, 1f, 1f);
+    }
+
+    /** One ring of rotated bars: the only circle this pass needs, and it needs no shader or shape renderer. */
+    private void ring(SpriteBatch batch, float centerX, float centerY, float radius) {
+        float step = (float) (Math.PI * 2.0) / RING_SEGMENTS;
+        float length = radius * step * RING_OVERLAP;
+        for (int index = 0; index < RING_SEGMENTS; index++) {
+            float angle = index * step;
+            float x = centerX + (float) Math.cos(angle) * radius;
+            float y = centerY + (float) Math.sin(angle) * radius;
+            batch.draw(
+                pixelRegion,
+                x - length * 0.5f, y - RING_THICKNESS * 0.5f,
+                length * 0.5f, RING_THICKNESS * 0.5f,
+                length, RING_THICKNESS,
+                1f, 1f,
+                (float) Math.toDegrees(angle) + 90f
+            );
+        }
     }
 
     @Override

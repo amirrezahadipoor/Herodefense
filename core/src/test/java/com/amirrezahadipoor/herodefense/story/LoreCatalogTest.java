@@ -9,12 +9,13 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import org.junit.jupiter.api.Test;
 
 final class LoreCatalogTest {
     @Test
     void definesExactlyThirtySequentiallyNumberedUniqueEntries() {
-        assertEquals(34, LoreCatalog.all().size());
+        assertEquals(43, LoreCatalog.all().size());
         Set<String> ids = new HashSet<>();
         int expected = 1;
         for (LoreEntry entry : LoreCatalog.all()) {
@@ -27,9 +28,9 @@ final class LoreCatalogTest {
             assertFalse(entry.triggerParam().isBlank());
             expected++;
         }
-        assertEquals(34, ids.size());
+        assertEquals(43, ids.size());
         assertNotNull(LoreCatalog.byId("codex_01"));
-        assertNotNull(LoreCatalog.byId("codex_34"));
+        assertNotNull(LoreCatalog.byId("codex_43"));
     }
 
     @Test
@@ -40,7 +41,7 @@ final class LoreCatalogTest {
         }
         assertEquals(8, counts.get(LoreTrigger.WAVE_MILESTONE));
         assertEquals(8, counts.get(LoreTrigger.BOSS_FIRST_KILL));
-        assertEquals(3, counts.get(LoreTrigger.ELITE_KILL));
+        assertEquals(EliteAffix.values().length, counts.get(LoreTrigger.ELITE_KILL));
         assertEquals(5, counts.get(LoreTrigger.ASCENSION));
         assertEquals(10, counts.get(LoreTrigger.SECRET));
     }

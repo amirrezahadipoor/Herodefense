@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 
 import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import com.amirrezahadipoor.herodefense.model.Enemy;
+import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.RotTrailSegment;
 
@@ -78,11 +79,8 @@ public final class EliteAffixSystem {
         for (Enemy enemy : state.aliveEnemies) {
             if (enemy == null || enemy.eliteAffix == null) continue;
             if (!enemy.alive) {
-                List<Enemy> children = resolveDeath(state, enemy);
-                if (!children.isEmpty()) {
-                    if (spawned == null) spawned = new ArrayList<>();
-                    spawned.addAll(children);
-                }
+                if (spawned == null) spawned = new ArrayList<>();
+                resolveDeath(state, enemy, spawned);
                 continue;
             }
             // A dying blightburst owes the player a warning before its death blast (roadmap A2).
@@ -100,17 +98,29 @@ public final class EliteAffixSystem {
                 updateGravemoss(enemy, deltaSeconds);
             } else if (EliteAffix.CINDERHALO.id().equals(enemy.eliteAffix)) {
                 updateCinderhalo(state, enemy, deltaSeconds);
+            } else if (EliteAffix.STONESHELL.id().equals(enemy.eliteAffix)) {
+                updateStoneshell(enemy, deltaSeconds);
+            } else if (EliteAffix.SWARMCALL.id().equals(enemy.eliteAffix)) {
+                if (spawned == null) {
+                    spawned = new ArrayList<>();
+                }
+                updateSwarmcall(state, enemy, deltaSeconds, spawned);
+            } else if (EliteAffix.SPITEBARB.id().equals(enemy.eliteAffix)) {
+                updateSpitebarb(state, enemy, deltaSeconds);
+            } else if (EliteAffix.HAMMERFALL.id().equals(enemy.eliteAffix)) {
+                updateHammerfall(state, enemy, deltaSeconds);
             }
         }
         if (spawned != null) {
             state.aliveEnemies.addAll(spawned);
         }
+        updateBloodhowl(state);
         updateTrail(state, deltaSeconds);
     }
 
-    /** Resolves a dead Elite's affix once; returns hollowmolt's children, empty when it leaves none. */
-    private List<Enemy> resolveDeath(GameState state, Enemy enemy) {
-        if (enemy.affixResolved) return List.of();
+    /** Resolves a dead Elite's affix once, appending whatever the death leaves behind to {@code out}. */
+    private void resolveDeath(GameState state, Enemy enemy, List<Enemy> out) {
+        if (enemy.affixResolved) return;
         enemy.affixResolved = true;
         if (EliteAffix.BLIGHTBURST.id().equals(enemy.eliteAffix)
             && state.hero.alive
@@ -120,21 +130,140 @@ public final class EliteAffixSystem {
                 state, enemy.damage * BLIGHT_BLAST_DAMAGE_MULT);
         }
         if (EliteAffix.HOLLOWMOLT.id().equals(enemy.eliteAffix)) {
-            List<Enemy> children = new ArrayList<>(MOLT_CHILD_COUNT);
-            for (int index = 0; index < MOLT_CHILD_COUNT; index++) {
-                float sign = index % 2 == 0 ? -1f : 1f;
-                Enemy child = new Enemy(state.allocateEntityId(), enemy.enemyType,
-                    enemy.x + sign * MOLT_CHILD_OFFSET, enemy.y + sign * MOLT_CHILD_OFFSET * 0.5f);
-                child.maxHealth = enemy.maxHealth * MOLT_CHILD_HEALTH_SHARE;
-                child.health = child.maxHealth;
-                child.damage = enemy.damage * MOLT_CHILD_DAMAGE_SHARE;
-                child.movementSpeed = enemy.movementSpeed;
-                child.attackRange = enemy.attackRange;
-                children.add(child);
-            }
-            return children;
+            spawnChildren(state, enemy, MOLT_CHILD_COUNT, MOLT_CHILD_HEALTH_SHARE, MOLT_CHILD_DAMAGE_SHARE, out);
+        } else if (EliteAffix.GRAVEBLOOM.id().equals(enemy.eliteAffix) && state.rotTrail != null) {
+            state.rotTrail.add(new RotTrailSegment(state.allocateEntityId(), enemy.x, enemy.y,
+                DeepBandTuning.GRAVEBLOOM_LIFETIME, enemy.damage * DeepBandTuning.GRAVEBLOOM_DAMAGE_SHARE, enemy.id));
         }
-        return List.of();
+    }
+
+    /** The children a split or a call leaves behind: two halves of the parent's numbers, never a new identity. */
+    private static void spawnChildren(
+        GameState state,
+        Enemy parent,
+        int count,
+        float healthShare,
+        float damageShare,
+        List<Enemy> out
+    ) {
+        for (int index = 0; index < count; index++) {
+            float sign = index % 2 == 0 ? -1f : 1f;
+            Enemy child = new Enemy(state.allocateEntityId(), parent.enemyType,
+                parent.x + sign * MOLT_CHILD_OFFSET, parent.y + sign * MOLT_CHILD_OFFSET * 0.5f);
+            child.maxHealth = parent.maxHealth * healthShare;
+            child.health = child.maxHealth;
+            child.damage = parent.damage * damageShare;
+            child.movementSpeed = parent.movementSpeed;
+            child.attackRange = parent.attackRange;
+            out.add(child);
+        }
+    }
+
+    /** Stoneshell arms itself on a slow clock and keeps the window to itself: armour, not a share. */
+    private static void updateStoneshell(Enemy enemy, float deltaSeconds) {
+        if (enemy.affixShieldRemainingSeconds > 0f) {
+            enemy.affixShieldRemainingSeconds =
+                Math.max(0f, enemy.affixShieldRemainingSeconds - deltaSeconds);
+            return;
+        }
+        enemy.affixTimerSeconds += deltaSeconds;
+        if (enemy.affixTimerSeconds >= DeepBandTuning.STONESHELL_PERIOD) {
+            enemy.affixTimerSeconds = 0f;
+            enemy.affixShieldRemainingSeconds = DeepBandTuning.STONESHELL_DURATION;
+        }
+    }
+
+    /** Swarmcall opens a door instead of ending a wave: killed, it still leaves two more behind. */
+    private static void updateSwarmcall(GameState state, Enemy enemy, float deltaSeconds, List<Enemy> out) {
+        enemy.affixTimerSeconds += deltaSeconds;
+        if (enemy.affixTimerSeconds < DeepBandTuning.SWARMCALL_PERIOD) return;
+        enemy.affixTimerSeconds -= DeepBandTuning.SWARMCALL_PERIOD;
+        spawnChildren(state, enemy, DeepBandTuning.SWARMCALL_CHILDREN,
+            DeepBandTuning.SWARMCALL_CHILD_HEALTH_SHARE, DeepBandTuning.SWARMCALL_CHILD_DAMAGE_SHARE, out);
+    }
+
+    /**
+     * Spitebarb returns a share of its own damage to anything standing inside a tight radius: the slow, heavy
+     * counterpart of cinderhalo's wide burn, and the reason an elite is not a body to hug.
+     */
+    private void updateSpitebarb(GameState state, Enemy enemy, float deltaSeconds) {
+        enemy.affixTimerSeconds += deltaSeconds;
+        if (enemy.affixTimerSeconds < DeepBandTuning.SPITEBARB_TICK_SECONDS) return;
+        enemy.affixTimerSeconds -= DeepBandTuning.SPITEBARB_TICK_SECONDS;
+        if (state.hero != null && state.hero.alive
+            && enemy.distanceSquaredTo(state.hero.x, state.hero.y)
+                <= DeepBandTuning.SPITEBARB_RADIUS * DeepBandTuning.SPITEBARB_RADIUS) {
+            heroDamageSystem.applyIncomingHit(state, capped(enemy.damage * DeepBandTuning.SPITEBARB_DAMAGE_SHARE,
+                state.hero.maxHealth * DeepBandTuning.SPITEBARB_BAR_CAP));
+        }
+    }
+
+    /**
+     * Hammerfall's two halves share one clock: a non-negative timer is the wait between strikes, a negative one
+     * is the wind-up. {@link #hammerfallWindupProgress} is the only place the sign is read, and the renderer reads
+     * it too, so the ring the player steps out of is drawn from the same number the strike resolves against.
+     */
+    private void updateHammerfall(GameState state, Enemy enemy, float deltaSeconds) {
+        if (enemy.affixTimerSeconds > 0f) {
+            enemy.affixTimerSeconds = Math.max(0f, enemy.affixTimerSeconds - deltaSeconds);
+            return;
+        }
+        enemy.affixTimerSeconds -= deltaSeconds;
+        if (enemy.affixTimerSeconds > -DeepBandTuning.HAMMERFALL_WINDUP_SECONDS) {
+            return;
+        }
+        enemy.affixTimerSeconds = DeepBandTuning.HAMMERFALL_PERIOD;
+        if (state.hero != null && state.hero.alive
+            && enemy.distanceSquaredTo(state.hero.x, state.hero.y)
+                <= DeepBandTuning.HAMMERFALL_RADIUS * DeepBandTuning.HAMMERFALL_RADIUS) {
+            heroDamageSystem.applyIncomingHit(state, capped(enemy.damage * DeepBandTuning.HAMMERFALL_DAMAGE_SHARE,
+                state.hero.maxHealth * DeepBandTuning.HAMMERFALL_BAR_CAP));
+        }
+    }
+
+    /** The smaller of an affix's own share and the ceiling the bar puts on it. */
+    private static float capped(float share, float ceiling) {
+        return ceiling > 0f ? Math.min(share, ceiling) : share;
+    }
+
+    /** How far into its wind-up a hammering elite is: 0 at the raise, 1 at the strike, -1 when not winding. */
+    public static float hammerfallWindupProgress(Enemy enemy) {
+        if (enemy == null || enemy.affixTimerSeconds >= 0f) {
+            return -1f;
+        }
+        return Math.min(1f, -enemy.affixTimerSeconds / DeepBandTuning.HAMMERFALL_WINDUP_SECONDS);
+    }
+
+    /**
+     * Bloodhowl is a smell, not an event. Every frame each regular body's haste is recomputed from the howlers it
+     * can hear, and nothing is remembered: a bonus written once and forgotten would outlive the elite that
+     * granted it, and a wave that drifts faster for no visible reason is worse than no haste at all. A wolf keeps
+     * the better of its own pack and the howl -- the movement system already reads the one number they share.
+     * Elites and bosses are never hurried by another elite's aura; their speed is part of what they are.
+     */
+    private static void updateBloodhowl(GameState state) {
+        List<Enemy> howlers = null;
+        for (Enemy enemy : state.aliveEnemies) {
+            if (enemy == null || !enemy.alive || enemy.silentWatcher || enemy.stunned()) continue;
+            if (!EliteAffix.BLOODHOWL.id().equals(enemy.eliteAffix)) continue;
+            if (howlers == null) howlers = new ArrayList<>();
+            howlers.add(enemy);
+        }
+        if (howlers == null) return;
+        float radiusSquared = DeepBandTuning.BLOODHOWL_RADIUS * DeepBandTuning.BLOODHOWL_RADIUS;
+        for (Enemy enemy : state.aliveEnemies) {
+            if (enemy == null || !enemy.alive || enemy.silentWatcher || enemy.eliteAffix != null) continue;
+            float haste = 1f;
+            for (Enemy howler : howlers) {
+                if (enemy.distanceSquaredTo(howler.x, howler.y) <= radiusSquared) {
+                    haste = 1f + DeepBandTuning.BLOODHOWL_HASTE;
+                    break;
+                }
+            }
+            boolean wolf = EnemyType.GLOOM_WOLF.name().equals(enemy.enemyType);
+            enemy.packSpeedMultiplier = wolf
+                ? Math.max(enemy.packSpeedMultiplier, haste) : haste;
+        }
     }
 
     /** Gravemoss regrows a sliver of max health per second; stun is the window that stops it. */

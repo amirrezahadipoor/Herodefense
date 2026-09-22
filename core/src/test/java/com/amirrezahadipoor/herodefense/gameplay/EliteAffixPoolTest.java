@@ -1,7 +1,9 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.HashSet;
@@ -12,7 +14,7 @@ import org.junit.jupiter.api.Test;
  * Roadmap D2's pool gate, pinned from both sides: the shallow run may only ever draw the three affixes the
  * frozen balance baseline was measured on -- the pool size below LATE_AFFIX_WAVE is the same 3 it has always
  * been, so every early and mid roll is bit-identical (the B2a lesson) -- and the deep run must actually see
- * the doubled pool, or the new three are decoration.
+ * every row of the full twelve, or the deep band is decoration.
  */
 final class EliteAffixPoolTest {
     private static final Set<String> BASE_THREE = Set.of("blightburst", "rootward_ward", "weeping_rot");
@@ -44,15 +46,14 @@ final class EliteAffixPoolTest {
     }
 
     @Test
-    void theDeepRunOpensTheDoubledPool() {
+    void theDeepRunOpensTheWholePool() {
         Set<String> seen = new HashSet<>();
         for (long seed = 1L; seed <= 3L; seed++) {
             seen.addAll(affixesSeen(seed, EnemyWaveSpawner.LATE_AFFIX_WAVE, 200));
         }
-        assertTrue(seen.contains("hollowmolt"), "the deep run never met hollowmolt: " + seen);
-        assertTrue(seen.contains("gravemoss"), "the deep run never met gravemoss: " + seen);
-        assertTrue(seen.contains("cinderhalo"), "the deep run never met cinderhalo: " + seen);
-        assertTrue(BASE_THREE.containsAll(seen) || seen.size() > 3,
-            "the deep pool should carry all six: " + seen);
+        for (EliteAffix affix : EliteAffix.values()) {
+            assertTrue(seen.contains(affix.id()), "the deep run never met " + affix.id() + ": " + seen);
+        }
+        assertEquals(EliteAffix.values().length, seen.size());
     }
 }

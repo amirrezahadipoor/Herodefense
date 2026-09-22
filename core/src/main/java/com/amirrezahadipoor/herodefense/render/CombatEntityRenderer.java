@@ -293,15 +293,9 @@ public final class CombatEntityRenderer implements AutoCloseable {
         return 1f;
     }
 
-    /** Outline color for an Elite affix; regulars and unknowns never glow. */
+    /** Outline color for an Elite affix; the palette owns the mapping. */
     static VisualRarity eliteGlow(String affixId) {
-        if ("blightburst".equals(affixId)) return VisualRarity.ELITE_BLIGHTBURST;
-        if ("rootward_ward".equals(affixId)) return VisualRarity.ELITE_ROOTWARD;
-        if ("weeping_rot".equals(affixId)) return VisualRarity.ELITE_WEEPING;
-        if ("hollowmolt".equals(affixId)) return VisualRarity.ELITE_HOLLOWMOLT;
-        if ("gravemoss".equals(affixId)) return VisualRarity.ELITE_GRAVEMOSS;
-        if ("cinderhalo".equals(affixId)) return VisualRarity.ELITE_CINDERHALO;
-        return VisualRarity.COMMON;
+        return VisualRarity.forEliteAffix(affixId);
     }
 
     /** Warning pulse: brightens and quickens as the telegraph runs out. */
