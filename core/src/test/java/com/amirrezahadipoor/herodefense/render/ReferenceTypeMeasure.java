@@ -34,6 +34,12 @@ final class ReferenceTypeMeasure {
         return new TextLayout(text, face(language, role), context).getAdvance();
     }
 
+    /** The face's line height in world units at the role's reference size: what callers that stack rows step by. */
+    static float lineHeight(GameLanguage language, GameFonts.Role role) {
+        FontRenderContext context = new FontRenderContext(null, true, true);
+        return face(language, role).getLineMetrics("Hg", context).getHeight();
+    }
+
     /** Height in world units of a capital H at the role's reference size: how far a caps line reaches below its top. */
     static float capHeight(GameLanguage language, GameFonts.Role role) {
         FontRenderContext context = new FontRenderContext(null, true, true);
