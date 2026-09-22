@@ -55,6 +55,11 @@ GROUND_IDENTITIES = ("root-path", "waystone-crossing", "moss-clearing")
 CRYSTAL_IDENTITIES = ("azure-waystone-fan", "violet-moon-geode", "amber-root-lantern")
 EXPECTED_PIVOT = {"units": "normalized-bottom-left", "x": 0.5, "y": 0.5}
 DECODED_BUDGET = 16 * 1024 * 1024  # 720x1280 backdrop + eighteen 384px props at premium-v3 density
+#: The arena's display-quality pass lifted the value range on purpose (see ARENA_PREMIUM_V2_REVIEW.md). A later
+#: render is not allowed to quietly put it back down, so every key this batch renders is measured against the
+#: pixels it would replace: a candidate that loses more than a tenth of its painted mean value is refused here,
+#: with the numbers, rather than on a phone.
+MAXIMUM_PAINTED_VALUE_LOSS = 0.10
 VIEWPORT = (720, 1280)
 
 BACKDROP_SIZE = (720, 1280)
@@ -63,6 +68,11 @@ PROP_SIZE = 384
 
 def main() -> None:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--allow-parity-failure",
+        action="store_true",
+        help="record the luminance numbers as a held decision instead of refusing to write the record",
+    )
     parser.add_argument("baseline", type=Path)
     parser.add_argument("candidate", type=Path)
     parser.add_argument("output", type=Path)
@@ -72,7 +82,7 @@ def main() -> None:
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
 
-    audit = audit_batch(baseline, candidate)
+    audit = audit_batch(baseline, candidate, args.allow_parity_failure)
     create_integrated_composition(baseline, candidate, output / "arena_integrated_composition.png")
     create_backdrop_value_sheet(candidate, audit, output / "arena_backdrop_value.png")
     create_ground_lineup(baseline, candidate, audit, output / "arena_ground_lineup.png")
@@ -95,7 +105,7 @@ def main() -> None:
     )
 
 
-def audit_batch(baseline: Path, candidate: Path) -> dict:
+def audit_batch(baseline: Path, candidate: Path, allow_parity_failure: bool = False) -> dict:
     baseline_manifest_path = baseline / "asset_manifest.json"
     candidate_manifest_path = candidate / "asset_manifest.json"
     baseline_manifest = read_json(baseline_manifest_path)
@@ -184,6 +194,8 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
                     f"Backdrop does not preserve the clear lane: center {center_mean:.2f}, "
                     f"edge {edge_mean:.2f}"
                 )
+            record["luminance"] = luminance_against_baseline(baseline, baseline_entries, key, image)
+            enforce_parity(key, record["luminance"], allow_parity_failure)
             record.update({
                 "fullBleedMinimumEdgeAlpha": edge_minimum,
                 "opaquePixelFraction": round(opaque_fraction, 6),
@@ -211,6 +223,8 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
                 raise ValueError(f"{key} approaches a boundary: {margins}")
             minimum_margin = min(minimum_margin, *margins.values())
             record["alphaMargins"] = margins
+            record["luminance"] = luminance_against_baseline(baseline, baseline_entries, key, image)
+            enforce_parity(key, record["luminance"], allow_parity_failure)
             baseline_entry = baseline_entries.get(key)
             if baseline_entry is None:
                 raise ValueError(f"Baseline is missing {key}")
@@ -248,6 +262,46 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             "minimumMaterialCount": min(record["materialCount"] for record in records),
         },
     }
+
+
+def painted_mean_value(image) -> float:
+    """The mean luminance of the pixels a player sees; the transparent margin is not part of the prop."""
+    rgb = image.convert("RGB")
+    mask = image.getchannel("A").point(lambda value: 255 if value > 16 else 0)
+    red, green, blue = ImageStat.Stat(rgb, mask).mean
+    return 0.299 * red + 0.587 * green + 0.114 * blue
+
+
+def luminance_against_baseline(baseline: Path, baseline_entries: dict, key: str, image) -> dict:
+    """This render's painted mean value beside the one it would replace, or a note saying there is none."""
+    baseline_entry = baseline_entries.get(key)
+    if baseline_entry is None:
+        return {"status": "no baseline"}
+    baseline_path = baseline / baseline_entry["sheet"]
+    if not baseline_path.is_file():
+        return {"status": "no baseline"}
+    shipped = Image.open(baseline_path).convert("RGBA")
+    shipped_mean = painted_mean_value(shipped)
+    candidate_mean = painted_mean_value(image)
+    return {
+        "status": "measured",
+        "shippedPaintedMeanValue": round(shipped_mean, 3),
+        "candidatePaintedMeanValue": round(candidate_mean, 3),
+        "paintedMeanValueRatio": round(candidate_mean / shipped_mean, 4) if shipped_mean > 0 else 1.0,
+    }
+
+
+def enforce_parity(key: str, luminance: dict, allow_parity_failure: bool) -> None:
+    if luminance.get("status") != "measured":
+        return
+    ratio = luminance["paintedMeanValueRatio"]
+    if ratio < 1.0 - MAXIMUM_PAINTED_VALUE_LOSS and not allow_parity_failure:
+        raise ValueError(
+            f"{key} dims from {luminance['shippedPaintedMeanValue']} to "
+            f"{luminance['candidatePaintedMeanValue']} ({ratio}x) on its painted pixels: the arena's "
+            f"display-quality pass is not a later render's to undo. Re-base the master render's exposure, or "
+            f"pass --allow-parity-failure to record this batch as held rather than shippable."
+        )
 
 
 def reject_stalled_upgrade(key: str, candidate: dict, baseline: dict, identical: bool) -> None:

@@ -1,0 +1,127 @@
+{
+  "assets": [
+    {
+      "alphaMargins": {
+        "bottom": 92,
+        "left": 120,
+        "right": 114,
+        "top": 71
+      },
+      "candidatePaintedMeanValue": 70.502,
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "identity": "azure-waystone-fan",
+      "key": "crystal_prop_0",
+      "materialCount": 8,
+      "meshParts": 36,
+      "metadataSha256": "3306ea71356ce253c77e96ff17c67afa103503ff9630cb1b1361a7878554bba4",
+      "modelRevision": "arena-crystal-premium-v4-vibrant",
+      "paintedMeanValueRatio": 0.8576,
+      "runtimeGlow": true,
+      "sheetSha256": "3526d18150c7a652a7702e3875beaeeb8b4090a31503b3bec09c5323d29aa8b6",
+      "shippedModelRevision": "arena-crystal-premium-v2",
+      "shippedPaintedMeanValue": 82.211,
+      "shippedSheetSha256": "458dd7f0712446cf82024e969d4fe8761922374297bdc40b285bc41d4b1356a7",
+      "triangles": 868,
+      "variant": 0
+    },
+    {
+      "alphaMargins": {
+        "bottom": 92,
+        "left": 113,
+        "right": 114,
+        "top": 65
+      },
+      "candidatePaintedMeanValue": 64.723,
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "identity": "violet-moon-geode",
+      "key": "crystal_prop_1",
+      "materialCount": 8,
+      "meshParts": 36,
+      "metadataSha256": "495f7546f7c9a4db4fe7ddd317ce8d75c3281dec13bf0fa2b104f914cbaa5378",
+      "modelRevision": "arena-crystal-premium-v4-vibrant",
+      "paintedMeanValueRatio": 0.8299,
+      "runtimeGlow": true,
+      "sheetSha256": "6808fc7ccc4c21e6afb2ca75b5adcc71bf653ab5567d1da16a806927e0c1d6ec",
+      "shippedModelRevision": "arena-crystal-premium-v2",
+      "shippedPaintedMeanValue": 77.99,
+      "shippedSheetSha256": "ab62b5a38ec6df9109dff11d15c8da2b5e498cc3ceb506a4a7d6c0208b8fc208",
+      "triangles": 1080,
+      "variant": 1
+    },
+    {
+      "alphaMargins": {
+        "bottom": 92,
+        "left": 114,
+        "right": 114,
+        "top": 81
+      },
+      "candidatePaintedMeanValue": 58.452,
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "identity": "amber-root-lantern",
+      "key": "crystal_prop_2",
+      "materialCount": 9,
+      "meshParts": 36,
+      "metadataSha256": "21c578b5d72014658dbb056c6cdf80790799c703ae0c7e90c4d6f6af8455c909",
+      "modelRevision": "arena-crystal-premium-v4-vibrant",
+      "paintedMeanValueRatio": 0.8473,
+      "runtimeGlow": true,
+      "sheetSha256": "b5f4a55a6dc0456bf5dea1b934986653aac8ff43405dc2d72f14ef0d2da27292",
+      "shippedModelRevision": "arena-crystal-premium-v2",
+      "shippedPaintedMeanValue": 68.99,
+      "shippedSheetSha256": "4c170c5984d464ec7b42990a921f80c399b862ae43dba85c2f21d1887f59314f",
+      "triangles": 896,
+      "variant": 2
+    }
+  ],
+  "baselineManifestSha256": "72482a932a299cc5277970e694aa730c5b9dc41a7bc2cddc89e38c7c3bfca866",
+  "batch": "arena-crystal-refresh-v4",
+  "candidateManifestSha256": "3cee7de19a196e1a321d8981c7d8fdbdedc28b416f2c07e4a574267284ceadb9",
+  "candidatePayload": {
+    "environment/crystal_prop_0.png": "3526d18150c7a652a7702e3875beaeeb8b4090a31503b3bec09c5323d29aa8b6",
+    "environment/crystal_prop_1.png": "6808fc7ccc4c21e6afb2ca75b5adcc71bf653ab5567d1da16a806927e0c1d6ec",
+    "environment/crystal_prop_2.png": "b5f4a55a6dc0456bf5dea1b934986653aac8ff43405dc2d72f14ef0d2da27292"
+  },
+  "expectedKeys": [
+    "crystal_prop_0",
+    "crystal_prop_1",
+    "crystal_prop_2"
+  ],
+  "reviewSheetCount": 2,
+  "reviewSheets": {
+    "arena_crystal_refresh.png": {
+      "bytes": 129357,
+      "sha256": "70c0278e880a41dc9aa195ca9c38d98a805bdcc5b5698adcda9324bef887e8a4"
+    },
+    "arena_crystal_refresh_shapes.png": {
+      "bytes": 42285,
+      "sha256": "1eb2728c6ae17bd9626c74f9d1f5eaff5888b792fe297a8f32a2b139dbb6e1bc"
+    }
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "assetCount": 3,
+    "candidateRevision": [
+      "arena-crystal-premium-v4-vibrant"
+    ],
+    "decodedBytes": 1769472,
+    "minimumPaintedMeanValueRatio": 0.8299,
+    "minimumTransparentAssetMargin": 65,
+    "parityDecision": "held",
+    "requiredPaintedMeanValueRatio": 0.9,
+    "shippedRevision": [
+      "arena-crystal-premium-v2"
+    ]
+  }
+}
