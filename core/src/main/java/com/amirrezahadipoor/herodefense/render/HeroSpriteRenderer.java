@@ -76,11 +76,7 @@ public final class HeroSpriteRenderer implements AutoCloseable {
         if (bracing) {
             batch.setColor(0.62f, 0.80f, 0.95f, 1f);
         }
-        float bob = 0f;
-        if (hero.animationState == HeroAnimationState.WALK) {
-            // E2: sine bob at walk FPS, 2.5 units amplitude, feet stay at hero.y (bob is visual only)
-            bob = (float) Math.sin(hero.animationStateSeconds * HeroAnimationController.WALK_FRAMES_PER_SECOND * 1.1f) * WALK_BOB_AMPLITUDE;
-        }
+        float bob = walkBob(hero);
         batch.draw(
             frame,
             frameX(hero),
@@ -178,6 +174,18 @@ public final class HeroSpriteRenderer implements AutoCloseable {
 
     static float frameX(Hero hero) {
         return hero.x - FRAME_SIZE * 0.5f;
+    }
+
+    /**
+     * E2: the walking Hero's sine bob at walk FPS, 2.5 units of amplitude; feet stay at hero.y (the bob is
+     * visual only). Shared with the equipment layer so the bow and boots ride the same bob as the body.
+     */
+    static float walkBob(Hero hero) {
+        if (hero.animationState != HeroAnimationState.WALK) {
+            return 0f;
+        }
+        return (float) Math.sin(hero.animationStateSeconds * HeroAnimationController.WALK_FRAMES_PER_SECOND * 1.1f)
+            * WALK_BOB_AMPLITUDE;
     }
 
     static float frameY(Hero hero) {

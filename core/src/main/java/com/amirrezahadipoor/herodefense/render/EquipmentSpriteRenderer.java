@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.utils.Array;
 import com.amirrezahadipoor.herodefense.model.EquipmentSlot;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.model.HeroAnimationState;
 import com.amirrezahadipoor.herodefense.model.Item;
 
 import java.util.HashMap;
@@ -47,19 +48,15 @@ public final class EquipmentSpriteRenderer implements AutoCloseable {
                 atlas = SheetPayloads.atlas(Gdx.files.internal(atlasPath));
                 loadedAtlases.put(item.id, atlas);
             }
-            String regionName = EquipmentVisualContract.regionName(item, state.hero.animationState);
-            Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions(regionName);
-            if (frames.size == 0) {
-                throw new IllegalStateException("Missing equipment clip: " + regionName);
-            }
-            TextureAtlas.AtlasRegion frame = frames.get(
-                Math.min(frames.size - 1, Math.max(0, frameIndex))
-            );
+            Array<TextureAtlas.AtlasRegion> frames = clipFor(atlas, item, state.hero.animationState);
+            // A clip's own frame index is always inside the clip; the walk fallback loops the shorter idle
+            // clip under the eight-frame walk count, the way the Hero's own walk fallback loops it.
+            TextureAtlas.AtlasRegion frame = frames.get(Math.floorMod(Math.max(0, frameIndex), frames.size));
             rarityGlowRenderer.draw(
                 batch,
                 frame,
                 HeroSpriteRenderer.frameX(state.hero),
-                HeroSpriteRenderer.frameY(state.hero),
+                HeroSpriteRenderer.frameY(state.hero) + HeroSpriteRenderer.walkBob(state.hero),
                 HeroSpriteRenderer.FRAME_SIZE,
                 HeroSpriteRenderer.FRAME_SIZE,
                 VisualRarity.fromTier(item.tier),
@@ -68,6 +65,22 @@ public final class EquipmentSpriteRenderer implements AutoCloseable {
             );
         }
         disposeUnequipped(activeIds);
+    }
+
+    /**
+     * The first clip the sheet has for the state, in the contract's order: the state's own clip, then --
+     * for a walking Hero only -- the idle clip the sheets were all rendered with. Only a sheet that has
+     * neither is broken, and that is the one case that still throws.
+     */
+    static Array<TextureAtlas.AtlasRegion> clipFor(TextureAtlas atlas, Item item, HeroAnimationState state) {
+        for (String regionName : EquipmentVisualContract.regionCandidates(item, state)) {
+            Array<TextureAtlas.AtlasRegion> frames = atlas.findRegions(regionName);
+            if (frames.size > 0) {
+                return frames;
+            }
+        }
+        throw new IllegalStateException(
+            "Missing equipment clip: " + EquipmentVisualContract.regionName(item, state));
     }
 
     private void disposeUnequipped(Set<String> activeIds) {
