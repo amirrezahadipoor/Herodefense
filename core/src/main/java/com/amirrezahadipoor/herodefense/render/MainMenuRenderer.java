@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Matrix4;
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.MenuStrings;
 import com.amirrezahadipoor.herodefense.input.MainMenuTouchLayout;
+import java.util.List;
 
 /** Premium touch-first menu using the reviewed arena, Heartwood frames, and clear type hierarchy. */
 public final class MainMenuRenderer implements AutoCloseable {
@@ -17,6 +18,24 @@ public final class MainMenuRenderer implements AutoCloseable {
     static final float TITLE_PANEL_Y = 912f;
     static final float TITLE_PANEL_WIDTH = 632f;
     static final float TITLE_PANEL_HEIGHT = 252f;
+    /** Where a row's two lines start, in from the screen's leading edge (the icon sits at 146f..228f). */
+    static final float ROW_TEXT_INSET = 258f;
+    /**
+     * The room a row's line has: from the text's start to the button's trailing edge (120f + 480f), less a
+     * margin, so a line is never drawn under the frame. The English second lines used to run past it
+     * ("Thirty nights | same watch, half the heartw..."), which is what the fitted draw and the shorter
+     * strings are for.
+     */
+    static final float ROW_TEXT_MAX_WIDTH =
+        MainMenuTouchLayout.BUTTON_X + MainMenuTouchLayout.BUTTON_WIDTH - ROW_TEXT_INSET - 12f;
+    /** The pitch's first line top and the room it has inside the title panel, one panel margin each side. */
+    static final float PITCH_Y = 990f;
+    static final float PITCH_MAX_WIDTH = TITLE_PANEL_WIDTH - 2f * 24f;
+    /** The pitch may take up to three lines before it would reach the first row's frame at 908f. */
+    static final int PITCH_MAX_LINES = 3;
+    static final float PITCH_SCALE = 0.92f;
+    /** Line pitch as a share of the font's line height: two lines by design, three only on a very large font. */
+    static final float PITCH_LINE_PITCH = 0.88f;
     static final float COIN_PANEL_X = 500f;
     static final float COIN_PANEL_Y = 1192f;
     static final float COIN_PANEL_WIDTH = 176f;
@@ -145,15 +164,12 @@ public final class MainMenuRenderer implements AutoCloseable {
             UiMirror.centre(COIN_PANEL_X, COIN_PANEL_WIDTH, 611f), 1232f, 1.05f, GOLD);
         drawShadowedCentered(batch, GameLocale.text(MenuStrings.TAGLINE), 360f, 1120f, 0.86f, GOLD);
         drawShadowedCentered(batch, GameLocale.text(MenuStrings.TITLE), 360f, 1058f, 2.28f, GOLD);
-        drawShadowedCentered(
-            batch, GameLocale.text(MenuStrings.PITCH),
-            360f, 988f, 0.92f, IVORY
-        );
+        drawPitch(batch);
 
         drawMenuAction(
             batch, icons, "new_game", GameLocale.text(MenuStrings.NEW_GAME),
             GameLocale.text(MenuStrings.NEW_GAME_SUBTITLE),
-            780f, newGameState, true
+            MainMenuTouchLayout.rowBottom(0), newGameState, true
         );
         // The three numbers are formatted rather than concatenated so the row reads "ردهٔ ۳ | اوج ۴۱ | ۱۲ چوب دل"
         // in Persian digits and does not mix two numbering systems inside one sentence.
@@ -217,8 +233,30 @@ public final class MainMenuRenderer implements AutoCloseable {
         Color primary = enabled ? IVORY : MUTED;
         Color secondary = enabled ? SUBTLE : MUTED;
         icons.draw(batch, icon, UiMirror.leadingOnScreen(146f, 82f), y + 27f + offset, 82f, state);
-        drawShadowed(batch, title, 258f, y + 92f + offset, 1.34f, primary);
-        drawShadowed(batch, subtitle, 258f, y + 49f + offset, 0.78f, secondary);
+        drawFitted(batch, title, y + 92f + offset, 1.34f, primary);
+        drawFitted(batch, subtitle, y + 49f + offset, 0.78f, secondary);
+    }
+
+    /**
+     * The pitch under the title, wrapped to the panel: one centred line if it fits, up to three if it does
+     * not. It was drawn as a single centred line, and at 879 world units on a 720-unit screen the English read
+     * "...k comes every night. Hold the last tree through 200 of them -- or jus..." with both ends cut off.
+     */
+    private void drawPitch(SpriteBatch batch) {
+        List<String> lines = CodexOverlayRenderer.wrapLines(
+            GameLocale.text(MenuStrings.PITCH), row -> text.width(row, PITCH_SCALE), PITCH_MAX_WIDTH);
+        float stride = text.lineHeight(GameFonts.Role.forLegacyScale(PITCH_SCALE)) * PITCH_LINE_PITCH;
+        float y = PITCH_Y;
+        for (int index = 0; index < lines.size() && index < PITCH_MAX_LINES; index++) {
+            drawShadowedCentered(batch, lines.get(index), 360f, y, PITCH_SCALE, IVORY);
+            y -= stride;
+        }
+    }
+
+    /** A row's line: leading-aligned like {@link #drawShadowed}, and held inside the row's button. */
+    private void drawFitted(SpriteBatch batch, String label, float y, float scale, Color color) {
+        text.drawLeadingFitted(
+            batch, label, 0f, UiMirror.SCREEN_WIDTH, ROW_TEXT_INSET, ROW_TEXT_MAX_WIDTH, y, scale, color);
     }
 
     private void drawShadowedCentered(

@@ -57,14 +57,14 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `NEW_GAME` | NEW GAME | بازی جدید | Approved. Standard primary action verb. |
 | `NEW_GAME_SUBTITLE` | Begin your first night | اولین شب را شروع کن | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `BRIEF_VIGIL` | BRIEF VIGIL | پاسداری کوتاه | Approved. Poetic translation of "vigil". |
-| `BRIEF_VIGIL_SUBTITLE` | Thirty nights \| same watch, half the heartwood | سی شب \| همان پاس، نیمی چوب‌جان | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
+| `BRIEF_VIGIL_SUBTITLE` | Thirty nights \| half heartwood | سی شب \| نیمی از چوب دل | Shortened 2026-09-22 to fit the row (the long form was cut off on screen); «چوب دل» now matches the other rows. Pending native re-proofread. |
 | `CONTINUE` | CONTINUE | ادامه | Approved. Standard menu item. |
 | `CONTINUE_SUBTITLE` | Return to the active wave | بازگشت به موج جاری | Approved. Clear state resumption. |
 | `PROGRESS_SUMMARY` | Tier %1$s \| Peak %2$s \| %3$s HW | ردهٔ %1$s \| اوج %2$s \| %3$s چوب دل | Approved. Correct ezafe on «ردهٔ». |
 | `ROOT_NETWORK` | ROOT NETWORK | شبکه ریشه | Approved. Clear RPG progression node tree. |
-| `ROOT_NETWORK_SUBTITLE` | %1$s Heartwood \| Permanent growth | %1$s چوب دل \| رشد دائمی | Approved. Unambiguous currency + outcome. |
+| `ROOT_NETWORK_SUBTITLE` | Lasting growth \| %1$s HW | رشد دائمی \| %1$s چوب دل | Reordered and abbreviated 2026-09-22 to fit the row; "HW" is the abbreviation `PROGRESS_SUMMARY` already uses. Persian keeps the full «چوب دل». |
 | `GROVE_CODEX` | GROVE CODEX | دانشنامهٔ بیشه | Approved. Harmonized from raw loanword «کدکس». |
-| `GROVE_CODEX_SUBTITLE` | Thirty entries the Tree remembers | سی یادداشتی که درخت به‌خاطر دارد | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
+| `GROVE_CODEX_SUBTITLE` | What the Tree remembers | آنچه درخت به‌خاطر دارد | Shortened 2026-09-22 to fit the row and to stop naming a count the codex has outgrown. Pending native re-proofread. |
 | `SETTINGS` | SETTINGS | تنظیمات | Approved. Standard UI convention. |
 | `SETTINGS_SUBTITLE` | Comfort, music, and effects | راحتی، موسیقی و جلوه‌ها | Approved. Natural tripartite phrasing. |
 | `FOOTER` | 200 NIGHTS  \|  ONE LAST TREE  \|  DAWN  \|  T%1$s | ۲۰۰ شب  \|  یک درخت آخر  \|  سحر  \|  ردهٔ %1$s | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |

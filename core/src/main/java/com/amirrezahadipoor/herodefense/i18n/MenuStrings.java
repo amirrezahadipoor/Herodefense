@@ -29,8 +29,7 @@ public enum MenuStrings implements Translated {
 
     /** Row 2, present only when the thirty-wave vigil is unlocked. */
     BRIEF_VIGIL("BRIEF VIGIL", "پاسداری کوتاه"),
-    BRIEF_VIGIL_SUBTITLE("Thirty nights | same watch, half the heartwood",
-        "سی شب | همان پاس، نیمی چوب‌جان"),
+    BRIEF_VIGIL_SUBTITLE("Thirty nights | half heartwood", "سی شب | نیمی از چوب دل"),
 
     /** Row 3, present only while a run is live. */
     CONTINUE("CONTINUE", "ادامه"),
@@ -41,11 +40,11 @@ public enum MenuStrings implements Translated {
 
     /** Row 4. */
     ROOT_NETWORK("ROOT NETWORK", "شبکه ریشه"),
-    ROOT_NETWORK_SUBTITLE("%1$s Heartwood | Permanent growth", "%1$s چوب دل | رشد دائمی"),
+    ROOT_NETWORK_SUBTITLE("Lasting growth | %1$s HW", "رشد دائمی | %1$s چوب دل"),
 
     /** Row 5. */
     GROVE_CODEX("GROVE CODEX", "دانشنامهٔ بیشه"),
-    GROVE_CODEX_SUBTITLE("Thirty entries the Tree remembers", "سی یادداشتی که درخت به‌خاطر دارد"),
+    GROVE_CODEX_SUBTITLE("What the Tree remembers", "آنچه درخت به‌خاطر دارد"),
 
     /** Row 6. */
     SETTINGS("SETTINGS", "تنظیمات"),

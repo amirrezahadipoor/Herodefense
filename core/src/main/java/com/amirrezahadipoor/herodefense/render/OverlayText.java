@@ -101,6 +101,49 @@ final class OverlayText implements AutoCloseable {
             UiMirror.leading(containerX, containerWidth, inset, width(text, scale)), y, scale, color, alpha);
     }
 
+    /**
+     * {@link #drawLeading} for a run that has to end inside {@code maxWidth} of its leading edge. The run is
+     * measured at its own role; if it is wider, each smaller role down to CAPTION is tried, and if the smallest
+     * role is still too wide the glyphs are squeezed to the width for this one draw and the font's own scale is
+     * put back. The menu rows are the callers: a row's button ends where every other row's does, and a longer
+     * translation, a bigger number or a larger system font must shrink rather than run under the frame's edge --
+     * which is how the menu's second lines read "...half the heartw" before this existed.
+     */
+    void drawLeadingFitted(
+        SpriteBatch batch,
+        String text,
+        float containerX,
+        float containerWidth,
+        float inset,
+        float maxWidth,
+        float y,
+        float scale,
+        Color color
+    ) {
+        if (text == null || text.isEmpty()) return;
+        GameFonts.Role role = GameFonts.Role.forLegacyScale(scale);
+        float width = width(text, role);
+        GameFonts.Role[] roles = GameFonts.Role.values();
+        while (width > maxWidth && role.ordinal() < roles.length - 1) {
+            role = roles[role.ordinal() + 1];
+            width = width(text, role);
+        }
+        if (width <= maxWidth) {
+            draw(batch, text, UiMirror.leading(containerX, containerWidth, inset, width), y, role, color, 1f);
+            return;
+        }
+        BitmapFont font = GameFonts.shared().font(role, GameLocale.current());
+        float baseScaleX = font.getData().scaleX;
+        float baseScaleY = font.getData().scaleY;
+        float fit = maxWidth / width;
+        font.getData().setScale(baseScaleX * fit, baseScaleY * fit);
+        try {
+            draw(batch, text, UiMirror.leading(containerX, containerWidth, inset, maxWidth), y, role, color, 1f);
+        } finally {
+            font.getData().setScale(baseScaleX, baseScaleY);
+        }
+    }
+
     /** {@link #drawTrailing} with the alpha a reveal or a disabled state asks for. */
     void drawTrailing(
         SpriteBatch batch,
