@@ -98,7 +98,10 @@ public final class EnemyMovementSystem {
         if (distance == 0f || remaining <= 0f) {
             return;
         }
-        float travel = Math.min(remaining, Math.max(0f, enemy.movementSpeed) * deltaSeconds);
+        float travel = Math.min(
+            remaining,
+            Math.max(0f, enemy.movementSpeed) * Math.max(0.2f, enemy.packSpeedMultiplier) * deltaSeconds
+        );
         enemy.x += dx / distance * travel;
         enemy.y += dy / distance * travel;
     }

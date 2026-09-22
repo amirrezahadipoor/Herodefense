@@ -45,6 +45,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
     private final WorldTreeAnimationController treeAnimation =
         new WorldTreeAnimationController();
     private final ArenaAtmosphereRenderer atmosphere = new ArenaAtmosphereRenderer();
+    private final GroundShadowRenderer shadowRenderer = new GroundShadowRenderer();
     private final DawnReveal dawnReveal = new DawnReveal();
     private final DawnGlowRenderer dawnGlow = new DawnGlowRenderer();
     private final HollowGaze hollowGaze = new HollowGaze();
@@ -96,6 +97,7 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         drawHollowGaze(batch, state, runTimeSeconds, presentationDeltaSeconds, motionSuppressed, gameOverActive);
         drawGround(batch, state.waveNumber);
         drawCrystals(batch, state.waveNumber);
+        shadowRenderer.draw(batch, state);
         drawWorldTree(batch, state, runTimeSeconds, presentationDeltaSeconds);
         // D4: the air and the bosses' ground auras, over the finished arena and under the actors.
         // A suppressed-motion frame gets a frozen clock, which holds both effects on a calm still.
@@ -248,5 +250,6 @@ public final class ArenaEnvironmentRenderer implements AutoCloseable {
         healthyTreeAtlas.dispose();
         damagedTreeAtlas.dispose();
         atmosphere.close();
+        shadowRenderer.close();
     }
 }

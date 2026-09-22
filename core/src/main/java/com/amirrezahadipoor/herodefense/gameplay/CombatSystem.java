@@ -145,6 +145,9 @@ public final class CombatSystem {
         if (bossSpecialAttackSystem.consumeTelegraphsStarted() > 0) {
             audioManager.play(AudioCue.TELEGRAPH_WARNING);
         }
+        BossEvolution.update(state);
+        EnemyVerbs.update(
+            state, simulationDelta, damage -> enemyMeleeAttackSystem.applyVerbDamage(state, damage));
         boolean gameOver = enemyMeleeAttackSystem.update(state, simulationDelta);
         if (state.hero.health < heroHealthBeforeAttack - 0.001f) {
             screenShakeSystem.triggerHeroHit();

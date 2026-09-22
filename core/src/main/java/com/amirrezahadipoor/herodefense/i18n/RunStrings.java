@@ -30,9 +30,28 @@ public enum RunStrings implements Translated {
     OMEN_WARBAND("WARBAND", "برگزیدگان"),
     OMEN_WARBAND_DETAIL("fewer, and heavier", "کمترند، ولی هرکدام سنگین‌تر است"),
 
+    /** Wave events: how a wave arrives, and what the night looks like while it does. */
+    EVENT_PINCER("PINCER", "انبر"),
+    EVENT_PINCER_DETAIL("they close from both sides", "از دو سو تنگ می‌کنند"),
+    EVENT_TIDAL("TIDAL", "سیل"),
+    EVENT_TIDAL_DETAIL("one wall, from the south", "یک دیوار، از جنوب"),
+    EVENT_VANGUARD("VANGUARD", "پیش‌قراول"),
+    EVENT_VANGUARD_DETAIL("the heaviest walk in first", "سنگین‌ترین‌ها اول می‌رسند"),
+    EVENT_SCATTER("SCATTER", "پراکنده"),
+    EVENT_SCATTER_DETAIL("they fan out wide", "پهن پخش می‌شوند"),
+    EVENT_EMBER_FALL("EMBER FALL", "باران اخگر"),
+    EVENT_EMBER_FALL_DETAIL("ash drifts over the grove", "خاکستر روی بیشه می‌رقصد"),
+    EVENT_MOONFOG("MOONFOG", "مه ماه"),
+    EVENT_MOONFOG_DETAIL("the night thickens", "شب غلیظ می‌شود"),
+    EVENT_ROOT_RAIN("ROOT RAIN", "باران ریشه"),
+    EVENT_ROOT_RAIN_DETAIL("the grove weeps", "بیشه اشک می‌ریزد"),
+    EVENT_SPORE_DRIFT("SPORE DRIFT", "رقص هاگ"),
+    EVENT_SPORE_DRIFT_DETAIL("the air is full of spores", "هوا پر از هاگ است"),
+
     /** Run lengths (R3.5): the same run, ended at wave two hundred or at wave thirty. */
     MODE_STANDARD("The Long Vigil", "پاسداری بلند"),
-    MODE_BRIEF("A Brief Vigil", "پاسداری کوتاه");
+    MODE_BRIEF("A Brief Vigil", "پاسداری کوتاه"),
+    MODE_DAWN_WATCH("The Dawn Watch", "نگهبانی سحر");
 
     private final String english;
     private final String persian;

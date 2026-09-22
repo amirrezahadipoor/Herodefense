@@ -41,6 +41,16 @@ public final class CombatEntityRenderer implements AutoCloseable {
     static final float REGULAR_FEET_RATIO = 23f / 192f;
     static final float BOSS_FEET_RATIO = 30f / 256f;
     private static final float ATTACK_CLIP_SECONDS = 8f / FRAME_RATE;
+    /**
+     * Drawn size of a boss, in world units. 240 made a boss 1.4x a regular body, which is why four
+     * authored identities with their own rigs read as slightly larger monsters; 300 puts a boss near
+     * twice a regular body and lets the arena's own scale do the drama instead of a new mesh.
+     */
+    static final float BOSS_DRAW_SIZE = 300f;
+
+    static float bossDrawSize() {
+        return BOSS_DRAW_SIZE;
+    }
     /** Where a drop lands: the centre of the inventory button, which mirrors with the HUD (roadmap G4). */
     public static float dropTargetX() {
         return HudTouchLayout.inventoryX() + HudTouchLayout.UTILITY_BUTTON_WIDTH * 0.5f;
@@ -62,6 +72,8 @@ public final class CombatEntityRenderer implements AutoCloseable {
     // not been drawn in the longest time", which is the whole question once the set has a capacity.
     private final Map<String, EntityClips> clipsByKey = new LinkedHashMap<>(16, 0.75f, true);
     private final DropTextureCache dropTextures = new DropTextureCache();
+    private final NightWeatherRenderer weatherRenderer = new NightWeatherRenderer();
+    private final ZoneTellRenderer tellRenderer = new ZoneTellRenderer();
     private final RarityGlowRenderer dropGlowRenderer = new RarityGlowRenderer();
 
     private final FocusMarkRenderer focusMarkRenderer = new FocusMarkRenderer();
@@ -103,12 +115,13 @@ public final class CombatEntityRenderer implements AutoCloseable {
 
     public void drawEffects(SpriteBatch batch, GameState state, float runTimeSeconds) {
         drawRotTrail(batch, state);
-        drawTelegraphWarnings(batch, state, runTimeSeconds);
+        tellRenderer.draw(batch, state, runTimeSeconds);
         blastWarnRenderer.draw(batch, state, runTimeSeconds);
         drawFocusRing(batch, state);
         focusMarkRenderer.drawMarks(batch, state, runTimeSeconds, this::focusMarkBox);
         drawProjectiles(batch, state);
         drawDrops(batch, state, runTimeSeconds);
+        weatherRenderer.draw(batch, state, runTimeSeconds, false);
         batch.setColor(1f, 1f, 1f, 1f);
     }
 
@@ -123,7 +136,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         if (clips == null) clips = load(key);
         Array<TextureAtlas.AtlasRegion> frames = selectedFrames(clips, enemy);
         int frameIndex = frameIndex(enemy, frames.size, runTimeSeconds);
-        float size = boss ? 240f : EnemyDrawScale.of(enemy.type());
+        float size = boss ? BOSS_DRAW_SIZE : EnemyDrawScale.of(enemy.type());
         if (!boss && enemy.eliteAffix != null) size *= ELITE_DRAW_SCALE;
         float feetRatio = boss ? BOSS_FEET_RATIO : REGULAR_FEET_RATIO;
         float x = enemy.x - size * 0.5f;
@@ -257,19 +270,6 @@ public final class CombatEntityRenderer implements AutoCloseable {
      * Ground warning under the Hero for every telegraphed boss special, in the
      * boss's identity color; stacked rings keep simultaneous specials readable.
      */
-    private void drawTelegraphWarnings(SpriteBatch batch, GameState state, float runTimeSeconds) {
-        if (state == null || state.hero == null || !state.hero.alive || state.aliveBosses == null) {
-            return;
-        }
-        int stack = 0;
-        for (Boss boss : state.aliveBosses) {
-            if (boss == null || !boss.alive) continue;
-            TelegraphZoneRenderer.draw(batch, pixel, boss, stack, runTimeSeconds);
-            stack++;
-        }
-        batch.setColor(1f, 1f, 1f, 1f);
-    }
-
     /** Fading rot patches read as dark ground; fresher rot burns more opaque. */
     private void drawRotTrail(SpriteBatch batch, GameState state) {
         if (state == null || state.rotTrail == null || state.rotTrail.isEmpty()) return;
@@ -314,7 +314,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
     /** Frame box of an enemy, shared with the focus mark renderer so both agree on the sprite bounds. */
     private float[] focusMarkBox(Enemy enemy) {
         boolean boss = enemy instanceof Boss;
-        float size = boss ? 240f : EnemyDrawScale.of(enemy.type());
+        float size = boss ? BOSS_DRAW_SIZE : EnemyDrawScale.of(enemy.type());
         if (!boss && enemy.eliteAffix != null) size *= ELITE_DRAW_SCALE;
         float feet = boss ? BOSS_FEET_RATIO : REGULAR_FEET_RATIO;
         return new float[] {enemy.x - size * 0.5f, enemy.y - size * feet, size};
@@ -601,6 +601,8 @@ public final class CombatEntityRenderer implements AutoCloseable {
         for (EntityClips clips : clipsByKey.values()) clips.atlas.dispose();
         clipsByKey.clear();
         dropTextures.close();
+        weatherRenderer.close();
+        tellRenderer.close();
         dropGlowRenderer.close();
         pixel.dispose();
         arrowNormal.dispose();

@@ -39,8 +39,8 @@ public final class BossSpecialAttackSystem {
                         boss.specialAnimationSeconds = 0f;
                         boss.specialPending = false;
                         execute(state, boss, script);
-                        boss.specialCooldownSeconds +=
-                            script.armedCooldownSeconds(cooldown(boss.bossDefinition()));
+                        boss.specialCooldownSeconds += BossEvolution.specialInterval(
+                            boss, script.armedCooldownSeconds(cooldown(boss.bossDefinition())));
                         boss.specialUseCount++;
                     }
                 }

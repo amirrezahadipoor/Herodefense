@@ -15,6 +15,14 @@ public final class EnemyMeleeAttackSystem {
         this.heroDamageSystem = heroDamageSystem;
     }
 
+    /** A role verb's damage lands through the same dodge/ward/brace pipeline a swing uses. */
+    public void applyVerbDamage(GameState state, float damage) {
+        if (state == null || state.hero == null || !state.hero.alive || damage <= 0f) {
+            return;
+        }
+        heroDamageSystem.applyIncomingHit(state, damage);
+    }
+
     /**
      * Returns true once the Hero has died and the World Tree has been destroyed. The Hero's
      * death does not end the run instantly: the survivors turn on the tree for

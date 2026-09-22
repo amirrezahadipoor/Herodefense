@@ -21,6 +21,8 @@ public final class Boss extends Enemy {
     public boolean halfBeatSpoken;
     /** The enrage-crossing evolution burst has fired for this fight (roadmap C2). */
     public boolean evolutionPresented;
+    /** The crossing's gameplay half has been applied once for this fight (see {@code BossEvolution}). */
+    public boolean evolutionApplied;
     /**
      * The ground the pending special will cover, planted when the telegraph starts and read when it ends
      * (audit item 2). A special is a zone now, not a guaranteed hit: where the hero stands at detonation decides

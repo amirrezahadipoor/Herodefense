@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.render;
 
+import com.amirrezahadipoor.herodefense.gameplay.WaveEvents;
 import com.amirrezahadipoor.herodefense.gameplay.WaveOmens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -44,6 +45,8 @@ public final class HudRenderer implements AutoCloseable {
     private static final Color HEALTHY = Color.valueOf("48A96A");
     private static final Color WOUNDED = Color.valueOf("D39A43");
     private static final Color CRITICAL = Color.valueOf("C6534F");
+    /** Wave events wear the grove's own green; omens keep the critical red. */
+    private static final Color EVENT_COLOUR = new Color(0.44f, 0.78f, 0.56f, 1f);
     private static final Color EXP = Color.valueOf("8FD4F2");
     private static final Color EXP_FLASH = Color.valueOf("F3E4BC");
 
@@ -242,6 +245,13 @@ public final class HudRenderer implements AutoCloseable {
         WaveModifier omen = WaveOmens.of(state, state.waveNumber);
         if (omen.isOmen()) {
             drawShadowed(batch, omen.label(), 84f, 1076f + up, 0.44f, CRITICAL);
+        } else {
+            // Wave events: the line under the number names the night, because an event the player cannot read
+            // is not an event -- it is a surprise, and a surprise in this game is what the omens already are.
+            WaveEvents.Kind event = WaveEvents.visibleFor(state.waveNumber);
+            if (event != WaveEvents.Kind.NONE) {
+                drawShadowed(batch, event.label(), 84f, 1076f + up, 0.44f, EVENT_COLOUR);
+            }
         }
 
         icons.draw(batch, "coin", UiMirror.leadingOnScreen(231f, 48f), 1087f + up, 48f);

@@ -151,9 +151,22 @@ public final class EnemyWaveSpawner {
         int spawnCount = omenAdjustedCount(state, waveNumber, count);
         int firstIndex = state.aliveEnemies.size();
         EnemyType[] types = EnemyType.values();
+        WaveEvents.Kind event = WaveEvents.eventFor(waveNumber);
+        // The night's plan for this wave: the same bodies in the same numbers, decided before anything walks in,
+        // because a vanguard wave reorders the arrivals and a scatter wave widens them.
+        EnemyType[] planned = new EnemyType[spawnCount];
+        int rosterForPlanned = rosterFor(waveNumber);
+        int strideForPlanned = rosterForPlanned > FIELD_ROSTER ? DEEP_ROSTER_STRIDE : 1;
         for (int index = 0; index < spawnCount; index++) {
-            SpawnLane lane = SpawnLane.fromIndex(index);
-            float jitter = signedUnit(state.runSeed, waveNumber, index);
+            planned[index] = types[Math.floorMod(
+                waveNumber - 1 + index * strideForPlanned, rosterForPlanned)];
+        }
+        if (WaveEvents.heaviestFirst(event)) {
+            WaveEvents.sortHeaviestFirst(planned);
+        }
+        for (int index = 0; index < spawnCount; index++) {
+            SpawnLane lane = WaveEvents.laneFor(event, index);
+            float jitter = signedUnit(state.runSeed, waveNumber, index) * WaveEvents.jitterScale(event);
             float x;
             float y;
             switch (lane) {
@@ -172,11 +185,7 @@ public final class EnemyWaveSpawner {
                 }
                 default -> throw new IllegalStateException("Unhandled spawn lane: " + lane);
             }
-            int roster = rosterFor(waveNumber);
-            // Deep waves interleave the roster instead of listing it: a coprime stride still visits every type
-            // exactly once per roster-length block, but it stops a heavy archetype from arriving as a run.
-            int stride = roster > FIELD_ROSTER ? DEEP_ROSTER_STRIDE : 1;
-            EnemyType type = types[Math.floorMod(waveNumber - 1 + index * stride, roster)];
+            EnemyType type = planned[index];
             Enemy enemy = factory.createForWave(
                 state, type, x, y, lane.id(), waveNumber
             );

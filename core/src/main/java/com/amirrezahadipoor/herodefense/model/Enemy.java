@@ -54,6 +54,18 @@ public class Enemy extends ArenaEntity {
     public boolean splitSpawned;
     public float lungeSeconds;
     public float lungeBaseSpeed;
+    /**
+     * The eight roles' verbs (see {@code EnemyVerbs}): this role's own clock. A spitter counts its wind-up up
+     * from zero and fires when it reaches the tell; a sporekeeper and a ward-bearer count their cooldown down.
+     */
+    public float verbTimerSeconds;
+    /** The role's verb is mid-action and the frame it resolves on is owed (the spitter's tell is showing). */
+    public boolean verbLatched;
+    /** Where the hero stood when a latched verb began; a step off this point is what a spit misses. */
+    public float verbMarkX;
+    public float verbMarkY;
+    /** The Gloom Wolf's pack bonus, recomputed every frame by {@code EnemyVerbs.pack}. */
+    public float packSpeedMultiplier = 1f;
     /** The elite kill has been claimed for counts, codex, and its lore fragment. */
     public boolean eliteKillClaimed;
     /**

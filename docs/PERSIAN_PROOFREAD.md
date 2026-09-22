@@ -70,7 +70,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `FOOTER` | 200 NIGHTS  \|  ONE LAST TREE  \|  DAWN  \|  T%1$s | ۲۰۰ شب  \|  یک درخت آخر  \|  سحر  \|  ردهٔ %1$s | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `COINS` | $ %1$s | %1$s سکه | Approved. Persian currency label. |
 
-### 2.2 RunStrings (14 entries)
+### 2.2 RunStrings (31 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
@@ -88,6 +88,23 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `OMEN_WARBAND_DETAIL` | fewer, and heavier | کمترند، ولی هرکدام سنگین‌تر است | Approved. Natural contrastive syntax. |
 | `MODE_STANDARD` | The Long Vigil | پاسداری بلند | Approved. Grand campaign name. |
 | `MODE_BRIEF` | A Brief Vigil | پاسداری کوتاه | Approved. Short vigil mode name. |
+| `EVENT_PINCER` | PINCER | انبر | Approved. Encircling military metaphor, one word. |
+| `EVENT_PINCER_DETAIL` | they close from both sides | از دو سو تنگ می‌کنند | Approved. ZWNJ verb form; spatial and immediate. |
+| `EVENT_TIDAL` | TIDAL | سیل | Approved. Natural-disaster noun, single word. |
+| `EVENT_TIDAL_DETAIL` | one wall, from the south | یک دیوار، از جنوب | Approved. Terse, visual, direction-explicit. |
+| `EVENT_VANGUARD` | VANGUARD | پیش‌قراول | Approved. ZWNJ compound; the standard Persian military term. |
+| `EVENT_VANGUARD_DETAIL` | the heaviest walk in first | سنگین‌ترین‌ها اول می‌رسند | Approved. Superlative plural plus present verb. |
+| `EVENT_SCATTER` | SCATTER | پراکنده | Approved. Adjective used as a name, as in the English. |
+| `EVENT_SCATTER_DETAIL` | they fan out wide | پهن پخش می‌شوند | Approved. Idiomatic dispersal phrase. |
+| `EVENT_EMBER_FALL` | EMBER FALL | باران اخگر | Approved. Poetic compound; «اخگر» is the literary ember. |
+| `EVENT_EMBER_FALL_DETAIL` | ash drifts over the grove | خاکستر روی بیشه می‌رقصد | Approved. Personifies the drift as the grove's motion. |
+| `EVENT_MOONFOG` | MOONFOG | مه ماه | Approved. Concise ezafe-free stack, evokes the night sky. |
+| `EVENT_MOONFOG_DETAIL` | the night thickens | شب غلیظ می‌شود | Approved. Literal, atmospheric, natural verb. |
+| `EVENT_ROOT_RAIN` | ROOT RAIN | باران ریشه | Approved. Parallel to the English compound. |
+| `EVENT_ROOT_RAIN_DETAIL` | the grove weeps | بیشه اشک می‌ریزد | Approved. The grove given a human verb, as in English. |
+| `EVENT_SPORE_DRIFT` | SPORE DRIFT | رقص هاگ | Approved. «رقص» (dance) chosen over a calque for drift. |
+| `EVENT_SPORE_DRIFT_DETAIL` | the air is full of spores | هوا پر از هاگ است | Approved. Plain declarative, no calque. |
+| `MODE_DAWN_WATCH` | The Dawn Watch | نگهبانی سحر | Approved. Ezafe-free guarded-shift name for the short run. |
 
 ### 2.3 OnboardingStrings (16 entries)
 
