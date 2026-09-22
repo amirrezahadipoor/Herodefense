@@ -888,7 +888,13 @@ public final class AndroidTouchSmokeTest {
      * measurements can be pinned in the next commit.
      */
     private static final Map<String, float[]> SCREEN_REFERENCE = Map.ofEntries(
-        ref("tree-siege-premium-v2.png", 44.35f, 0.9141f),
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35709214986:
+        // tree-siege measured mean=37.66 lit=0.8032 where the table had carried 44.35/0.9141
+        // since before the night gained its ground shadows and weather (R3.1/R3.2), which darken the
+        // world band and, with it, the lit-pixel edge this contract measures. The bands did not move --
+        // only the reference did, because the screen genuinely looks different now, and the difference
+        // is the art the run was asked to draw.
+        ref("tree-siege-premium-v2.png", 37.66f, 0.8032f),
         ref("vfx-tree-collapse-premium-v2.png", 37.14f, 0.9840f, ANIMATED_MEAN_LUMA_TOLERANCE),
         // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155777,
         // brightness-measurements.txt: mean=37.50 lit=0.8178): the Hollow's parting word is up in the box
@@ -945,7 +951,11 @@ public final class AndroidTouchSmokeTest {
         ref("opening-line-three-premium-v2.png", 36.14f, 0.8508f),
         ref("live-hud-premium-v2.png", 46.81f, 0.9340f),
         ref("pause-premium-v2.png", 43.18f, 0.9541f),
-        ref("reward-cards-premium-v2.png", 43.73f, 0.9712f)
+        ref("reward-cards-premium-v2.png", 43.73f, 0.9712f),
+        // The stage-grade band's two stills were captured by every profile and pinned by none, so they
+        // came back UNREFERENCED on every run; they carry this run's measurements here.
+        ref("grade-dawn-wave-20.png", 42.60f, 0.8169f),
+        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f),
     );
 
     /**
@@ -956,7 +966,13 @@ public final class AndroidTouchSmokeTest {
      * run 35647129943, whose journey completed, and are pinned below.
      */
     private static final Map<String, float[]> API30_PIXEL_3A = Map.ofEntries(
-        ref("tree-siege-premium-v2.png", 46.16f, 0.9083f),
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35709214825:
+        // tree-siege measured mean=37.61 lit=0.8032 where the table had carried 46.16/0.9083
+        // since before the night gained its ground shadows and weather (R3.1/R3.2), which darken the
+        // world band and, with it, the lit-pixel edge this contract measures. The bands did not move --
+        // only the reference did, because the screen genuinely looks different now, and the difference
+        // is the art the run was asked to draw.
+        ref("tree-siege-premium-v2.png", 37.61f, 0.8032f),
         // Re-measured 2026-09-22 after the Hollow's gaze began to blink shut on the defeat
         // (device evidence, run 35663454121, brightness-measurements.txt: mean=36.85 lit=0.8163):
         // the collapse frame lands at a different point of the animation each run, as it always
@@ -1010,12 +1026,22 @@ public final class AndroidTouchSmokeTest {
         ref("live-hud-premium-v2.png", 45.95f, 0.9862f),
         // Pinned 2026-09-21 from run 35647129943 (mean=43.56 lit=0.9542).
         ref("pause-premium-v2.png", 43.56f, 0.9542f),
-        ref("reward-cards-premium-v2.png", 43.57f, 0.9689f)
+        ref("reward-cards-premium-v2.png", 43.57f, 0.9689f),
+        // The stage-grade band's two stills were captured by every profile and pinned by none, so they
+        // came back UNREFERENCED on every run; they carry this run's measurements here.
+        ref("grade-dawn-wave-20.png", 43.91f, 0.8223f),
+        ref("grade-hollow-wave-175.png", 42.06f, 0.8185f),
     );
 
     /** The device-evidence matrix's api33 pixel_7 table, measured by run 35462188576 at commit 39383ed. */
     private static final Map<String, float[]> API33_PIXEL_7 = Map.ofEntries(
-        ref("tree-siege-premium-v2.png", 43.29f, 0.8641f),
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35709214825:
+        // tree-siege measured mean=37.65 lit=0.7645 where the table had carried 43.29/0.8641
+        // since before the night gained its ground shadows and weather (R3.1/R3.2), which darken the
+        // world band and, with it, the lit-pixel edge this contract measures. The bands did not move --
+        // only the reference did, because the screen genuinely looks different now, and the difference
+        // is the art the run was asked to draw.
+        ref("tree-siege-premium-v2.png", 37.65f, 0.7645f),
         // Re-measured 2026-09-21 (run 35656392421, brightness-measurements.txt: mean=37.40 lit=0.7857):
         // the parting word is up in the box across the collapse capture, and the frame lands at a
         // different point of the collapse animation each run -- this profile's two consecutive runs
@@ -1065,7 +1091,11 @@ public final class AndroidTouchSmokeTest {
         ref("opening-line-three-premium-v2.png", 36.23f, 0.8099f),
         ref("live-hud-premium-v2.png", 46.66f, 0.9018f),
         ref("pause-premium-v2.png", 40.93f, 0.9074f),
-        ref("reward-cards-premium-v2.png", 41.08f, 0.9066f)
+        ref("reward-cards-premium-v2.png", 41.08f, 0.9066f),
+        // The stage-grade band's two stills were captured by every profile and pinned by none, so they
+        // came back UNREFERENCED on every run; they carry this run's measurements here.
+        ref("grade-dawn-wave-20.png", 44.97f, 0.9049f),
+        ref("grade-hollow-wave-175.png", 44.65f, 0.9053f),
     );
 
     /**
@@ -1076,7 +1106,13 @@ public final class AndroidTouchSmokeTest {
      * on this profile -- held to its floor, measured into the artifact -- until a green run pins them.
      */
     private static final Map<String, float[]> API34_PIXEL_TABLET = Map.ofEntries(
-        ref("tree-siege-premium-v2.png", 27.42f, 0.9679f),
+        // Re-pinned on 2026-09-22 from this profile's own brightness-measurements.txt in run 35709214825:
+        // tree-siege measured mean=24.49 lit=0.9177 where the table had carried 27.42/0.9679
+        // since before the night gained its ground shadows and weather (R3.1/R3.2), which darken the
+        // world band and, with it, the lit-pixel edge this contract measures. The bands did not move --
+        // only the reference did, because the screen genuinely looks different now, and the difference
+        // is the art the run was asked to draw.
+        ref("tree-siege-premium-v2.png", 24.49f, 0.9177f),
         ref("settings-premium-v2.png", 27.21f, 0.9924f),
         ref("level-up-premium-v2.png", 25.94f, 0.9874f),
         ref("inventory-details-premium-v2.png", 26.93f, 0.9879f),
@@ -1084,12 +1120,32 @@ public final class AndroidTouchSmokeTest {
         // shockwave's mid-expansion (420 ms after the boss is alive), and on this profile's
         // software renderer that wait landed mid-flash (mean 100.84, run 35465589953) where the
         // pinning run had landed after it (26.70, run 35462188576) -- a 74-luma swing no band
-        // covers. It stays floor-only on this profile, like the screens not yet measured here.
+        // covers. It stays floor-only on this profile, as do the seven vfx frames below it.
         ref("shop-affordability-premium-v2.png", 25.17f, 0.9864f),
         ref("ceremony-plant-premium-v2.png", 29.17f, 0.9865f),
         ref("victory-premium-v2.png", 27.48f, 0.9834f),
         ref("main-menu-premium-v2.png", 26.41f, 0.9876f),
-        ref("reward-cards-premium-v2.png", 26.70f, 0.9878f)
+        ref("reward-cards-premium-v2.png", 26.70f, 0.9878f),
+        // The screens this profile had left unpinned are measured and pinned here (run 35709214825,
+        // this table's own brightness-measurements.txt), which is what the arrival note asked for: an
+        // unpinned screen is held to the absolute floor and nothing else. The seven vfx frames stay
+        // floor-only for the reason that note gives -- they are timed to mid-effect, and this
+        // renderer lands each capture at a different point of it.
+        // The stage-grade band's two stills were captured by every profile and pinned by none, so they
+        // came back UNREFERENCED on every run; they carry this run's measurements here.
+        ref("grade-dawn-wave-20.png", 26.70f, 0.9296f),
+        ref("grade-hollow-wave-175.png", 27.94f, 0.9825f),
+        ref("defeat-premium-v2.png", 25.20f, 0.9676f),
+        ref("trial-draft-premium-v2.png", 26.70f, 0.9864f),
+        ref("inventory-sell-feedback-premium-v2.png", 26.93f, 0.9879f),
+        ref("shop-purchase-feedback-premium-v2.png", 24.42f, 0.9835f),
+        ref("shop-skills-tab-premium-v2.png", 24.19f, 0.9854f),
+        ref("ceremony-water-premium-v2.png", 26.79f, 0.9353f),
+        ref("second-tree-standing-premium-v2.png", 28.90f, 0.9816f),
+        ref("opening-line-one-premium-v2.png", 24.67f, 0.9972f),
+        ref("opening-line-three-premium-v2.png", 23.78f, 0.9387f),
+        ref("live-hud-premium-v2.png", 26.99f, 0.9942f),
+        ref("pause-premium-v2.png", 26.70f, 0.9896f),
     );
 
     /** The profile this run is on, as {@code api<level>-<short>x<long>} of the captured frame. */
