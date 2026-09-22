@@ -22,7 +22,13 @@ class FactSheetTest(unittest.TestCase):
         for section in ("git", "tree", "tests", "integrity", "manifest", "ledger", "performance",
                         "content", "docs", "assets"):
             self.assertIn(section, facts, f"the audit cites {section}")
-        self.assertEqual(168, facts["ledger"]["entries"])
+        # The ledger pins one hash per shipped PNG, so it grows with the art rather than with the code: the count
+        # is read off the ledger the sheet reports rather than pinned to a number that a render batch moves.
+        ledger = json.loads(
+            (REPOSITORY / "docs" / "asset_hashes.json").read_text(encoding="utf-8")
+        )["sheets"]
+        self.assertEqual(len(ledger), facts["ledger"]["entries"])
+        self.assertGreater(facts["ledger"]["entries"], 100)
         self.assertEqual(39, facts["ledger"]["materialMaps"])
         self.assertGreater(facts["tree"]["coreMainLines"], 20_000)
         self.assertIn("decodedBytes", facts["manifest"])
