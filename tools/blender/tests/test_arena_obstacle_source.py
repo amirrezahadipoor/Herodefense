@@ -100,6 +100,18 @@ class ArenaObstacleSourceTest(unittest.TestCase):
         self.assertIn('build_obstacle_prop(name, value)', self.generator)
         self.assertIn('"assetKind": "obstacle"', self.generator)
 
+    def test_the_cover_batch_is_reachable_and_renders_only_the_cover(self) -> None:
+        # A batch name that reaches the generator but not a render function generates nothing at all, and the
+        # workflow reports that as zero assets rather than as an error. Both halves are pinned.
+        self.assertIn('if args.batch == "arena-cover":', self.generator)
+        self.assertIn("generated.extend(render_arena_cover(output, only))", self.generator)
+        self.assertIn('choices=', self.generator)
+        self.assertIn('"arena-cover"', self.generator)
+        cover_body = self._generator_source("render_arena_cover")
+        self.assertIn('key = f"obstacle_{family}_{variant}"', cover_body)
+        self.assertIn("build_obstacle_prop(name, value)", cover_body)
+        self.assertNotIn("build_arena_backdrop", cover_body)
+
     def _literal(self, name: str):
         for node in self.tree.body:
             if isinstance(node, ast.Assign) and any(
@@ -107,6 +119,10 @@ class ArenaObstacleSourceTest(unittest.TestCase):
             ):
                 return ast.literal_eval(node.value)
         raise AssertionError(f"{name} is not a module-level literal")
+
+    def _generator_source(self, name: str) -> str:
+        tree = ast.parse(self.generator)
+        return ast.get_source_segment(self.generator, self._function(tree, name)) or ""
 
     def _function(self, tree: ast.Module, name: str):
         for node in tree.body:

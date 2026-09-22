@@ -1069,6 +1069,8 @@ def main() -> None:
         generated.extend(render_equipment(args.catalog.resolve(), output, args.keep_frames, only))
     if args.batch == "arena":
         generated.extend(render_arena_environment(output, only))
+    if args.batch == "arena-cover":
+        generated.extend(render_arena_cover(output, only))
     if args.batch in {"environment", "all"}:
         generated.extend(render_environment(output, only))
     if args.batch in {"ui", "all"}:
