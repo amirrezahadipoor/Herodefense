@@ -1,0 +1,376 @@
+{
+  "assets": [
+    {
+      "alphaMargins": {
+        "bottom": 88,
+        "left": 117,
+        "right": 117,
+        "top": 40
+      },
+      "cover": "shelter",
+      "coverFamily": "standing_stone",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_standing_stone_0",
+      "materialCount": 5,
+      "meshParts": 16,
+      "metadataSha256": "3753db2c084c96c2ecc4f81a1a1da444a9678dd1b6da15fc2ad08766cd4ac719",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 256,
+      "paintedWidth": 150,
+      "runtimeGlow": false,
+      "sheetSha256": "8aefbd42d517a785f1c336b9244bf94816c3924c7923b9040236300961449edb",
+      "triangles": 728,
+      "variant": 0
+    },
+    {
+      "alphaMargins": {
+        "bottom": 91,
+        "left": 117,
+        "right": 117,
+        "top": 40
+      },
+      "cover": "shelter",
+      "coverFamily": "standing_stone",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_standing_stone_1",
+      "materialCount": 5,
+      "meshParts": 17,
+      "metadataSha256": "8c041859ad137ee6daeee691958b264de250e3601729060e4e4490264ac738d7",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 253,
+      "paintedWidth": 150,
+      "runtimeGlow": false,
+      "sheetSha256": "30157e3d2ef72d1fc43296ed6a924ed67b1d2c9ccc849c0920888a68a1226be1",
+      "triangles": 744,
+      "variant": 1
+    },
+    {
+      "alphaMargins": {
+        "bottom": 96,
+        "left": 117,
+        "right": 117,
+        "top": 40
+      },
+      "cover": "shelter",
+      "coverFamily": "standing_stone",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_standing_stone_2",
+      "materialCount": 6,
+      "meshParts": 17,
+      "metadataSha256": "02285651ca9bd89fc7b0975b843253e04ccae55202d73114db7d5ed8eb64c089",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 248,
+      "paintedWidth": 150,
+      "runtimeGlow": false,
+      "sheetSha256": "5d04dd627bda6cd572550f3c48adfae0db1472f1f8e2763e6ad768e039c815a2",
+      "triangles": 748,
+      "variant": 2
+    },
+    {
+      "alphaMargins": {
+        "bottom": 89,
+        "left": 120,
+        "right": 110,
+        "top": 102
+      },
+      "cover": "shelter",
+      "coverFamily": "ruin_slab",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_ruin_slab_0",
+      "materialCount": 5,
+      "meshParts": 15,
+      "metadataSha256": "3019b0076f3607889eaf7ac6e1d3f14ee3d79cc72a7d886af7c72c0a0c4056fa",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 193,
+      "paintedWidth": 154,
+      "runtimeGlow": false,
+      "sheetSha256": "42f7763721c57999337da0845748919c7cb1be4b4d26988db41ba96b8a6ac1a1",
+      "triangles": 524,
+      "variant": 0
+    },
+    {
+      "alphaMargins": {
+        "bottom": 89,
+        "left": 120,
+        "right": 110,
+        "top": 100
+      },
+      "cover": "shelter",
+      "coverFamily": "ruin_slab",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_ruin_slab_1",
+      "materialCount": 6,
+      "meshParts": 15,
+      "metadataSha256": "dd6b6897f4b34f5bef3dfa0c8b6b529652ce2da7053a7874a91b2b5aa252c836",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 195,
+      "paintedWidth": 154,
+      "runtimeGlow": false,
+      "sheetSha256": "1beb6037cc2e06e57bfb60a0f6edc3cc7d58ed0b88b80e3bb1dd996ca35b73fb",
+      "triangles": 432,
+      "variant": 1
+    },
+    {
+      "alphaMargins": {
+        "bottom": 89,
+        "left": 120,
+        "right": 110,
+        "top": 98
+      },
+      "cover": "shelter",
+      "coverFamily": "ruin_slab",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_ruin_slab_2",
+      "materialCount": 6,
+      "meshParts": 15,
+      "metadataSha256": "264069276b442309a0532dd4cf261bc441fc003c9e4b6b5886162fb45a878680",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 197,
+      "paintedWidth": 154,
+      "runtimeGlow": false,
+      "sheetSha256": "a3a5abb3c9503075d5bb6b84ea6c3b016b05c314186209331c701bd349820877",
+      "triangles": 432,
+      "variant": 2
+    },
+    {
+      "alphaMargins": {
+        "bottom": 95,
+        "left": 125,
+        "right": 118,
+        "top": 188
+      },
+      "cover": "low",
+      "coverFamily": "thorn_hedge",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_thorn_hedge_0",
+      "materialCount": 4,
+      "meshParts": 36,
+      "metadataSha256": "4cbf17d541428ba578be59f44d3b3e91413b7ccd8a3c2cd23e1b3590a010cc92",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 101,
+      "paintedWidth": 141,
+      "runtimeGlow": false,
+      "sheetSha256": "46af37466bc43c7150d44650cfb7c9bc0aed1ef5ceeedb79349ca0be368fc27d",
+      "triangles": 568,
+      "variant": 0
+    },
+    {
+      "alphaMargins": {
+        "bottom": 95,
+        "left": 125,
+        "right": 118,
+        "top": 184
+      },
+      "cover": "low",
+      "coverFamily": "thorn_hedge",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_thorn_hedge_1",
+      "materialCount": 4,
+      "meshParts": 36,
+      "metadataSha256": "3ae13e4ed35ce5534f24d0371a9fdb1eb38e75f621540ce1a2d4b26836702414",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 105,
+      "paintedWidth": 141,
+      "runtimeGlow": false,
+      "sheetSha256": "55d8c306313fbb0dc095fcbf5a378f7306eec8080ba33b6876025ec659ffa476",
+      "triangles": 568,
+      "variant": 1
+    },
+    {
+      "alphaMargins": {
+        "bottom": 95,
+        "left": 125,
+        "right": 118,
+        "top": 184
+      },
+      "cover": "low",
+      "coverFamily": "thorn_hedge",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_thorn_hedge_2",
+      "materialCount": 5,
+      "meshParts": 40,
+      "metadataSha256": "28598a5ec93226f6663ca8c1f9d867d07bbfc89b96f6572e935b91827bef678e",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 105,
+      "paintedWidth": 141,
+      "runtimeGlow": false,
+      "sheetSha256": "408bd4a898467cbf3f18356105615d8fda8b542277afd6a4be9c2eee769a25cc",
+      "triangles": 648,
+      "variant": 2
+    },
+    {
+      "alphaMargins": {
+        "bottom": 79,
+        "left": 120,
+        "right": 115,
+        "top": 198
+      },
+      "cover": "low",
+      "coverFamily": "mossy_boulder",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_mossy_boulder_0",
+      "materialCount": 4,
+      "meshParts": 12,
+      "metadataSha256": "ce9d7bf11b7749aeba0918d5f2cc784eb2c62cfccbbac68bc533a293d6c915ea",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 107,
+      "paintedWidth": 149,
+      "runtimeGlow": false,
+      "sheetSha256": "61c28afef08c3ee7ef845fb4d90aa1b3892642b9a2f3ed6ecef484ad200b964f",
+      "triangles": 288,
+      "variant": 0
+    },
+    {
+      "alphaMargins": {
+        "bottom": 79,
+        "left": 117,
+        "right": 112,
+        "top": 198
+      },
+      "cover": "low",
+      "coverFamily": "mossy_boulder",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_mossy_boulder_1",
+      "materialCount": 4,
+      "meshParts": 11,
+      "metadataSha256": "89506a3e59d6dae8af664b5bd8a1de9af50e2ba26226eba8cf773d8c29a39387",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 107,
+      "paintedWidth": 155,
+      "runtimeGlow": false,
+      "sheetSha256": "00ec6eb8819bed417e8efeedc5bb6247b9b48498b0a749de0fc7b02298032b9c",
+      "triangles": 280,
+      "variant": 1
+    },
+    {
+      "alphaMargins": {
+        "bottom": 79,
+        "left": 114,
+        "right": 109,
+        "top": 197
+      },
+      "cover": "low",
+      "coverFamily": "mossy_boulder",
+      "decodedBytes": 589824,
+      "dimensions": {
+        "height": 384,
+        "width": 384
+      },
+      "key": "obstacle_mossy_boulder_2",
+      "materialCount": 5,
+      "meshParts": 12,
+      "metadataSha256": "9531e652b325a1c432113945b697798997d3334898ec862f4e232419215f3220",
+      "modelRevision": "arena-obstacle-premium-v1",
+      "paintedHeight": 108,
+      "paintedWidth": 161,
+      "runtimeGlow": false,
+      "sheetSha256": "63388c669cfe1516be220a2591a32f5208e28dbae16a249011e4db4112b6195e",
+      "triangles": 376,
+      "variant": 2
+    }
+  ],
+  "baselineManifestSha256": "b6c041c2e5e776f7a0cc11b7f693dbaee6ff2571bbad6d9ab044a84bb821996f",
+  "batch": "arena-cover-v1",
+  "candidateManifestSha256": "fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab",
+  "candidatePayload": {
+    "environment/obstacle_mossy_boulder_0.png": "61c28afef08c3ee7ef845fb4d90aa1b3892642b9a2f3ed6ecef484ad200b964f",
+    "environment/obstacle_mossy_boulder_1.png": "00ec6eb8819bed417e8efeedc5bb6247b9b48498b0a749de0fc7b02298032b9c",
+    "environment/obstacle_mossy_boulder_2.png": "63388c669cfe1516be220a2591a32f5208e28dbae16a249011e4db4112b6195e",
+    "environment/obstacle_ruin_slab_0.png": "42f7763721c57999337da0845748919c7cb1be4b4d26988db41ba96b8a6ac1a1",
+    "environment/obstacle_ruin_slab_1.png": "1beb6037cc2e06e57bfb60a0f6edc3cc7d58ed0b88b80e3bb1dd996ca35b73fb",
+    "environment/obstacle_ruin_slab_2.png": "a3a5abb3c9503075d5bb6b84ea6c3b016b05c314186209331c701bd349820877",
+    "environment/obstacle_standing_stone_0.png": "8aefbd42d517a785f1c336b9244bf94816c3924c7923b9040236300961449edb",
+    "environment/obstacle_standing_stone_1.png": "30157e3d2ef72d1fc43296ed6a924ed67b1d2c9ccc849c0920888a68a1226be1",
+    "environment/obstacle_standing_stone_2.png": "5d04dd627bda6cd572550f3c48adfae0db1472f1f8e2763e6ad768e039c815a2",
+    "environment/obstacle_thorn_hedge_0.png": "46af37466bc43c7150d44650cfb7c9bc0aed1ef5ceeedb79349ca0be368fc27d",
+    "environment/obstacle_thorn_hedge_1.png": "55d8c306313fbb0dc095fcbf5a378f7306eec8080ba33b6876025ec659ffa476",
+    "environment/obstacle_thorn_hedge_2.png": "408bd4a898467cbf3f18356105615d8fda8b542277afd6a4be9c2eee769a25cc"
+  },
+  "coverSeparation": {
+    "ratio": 1.787,
+    "requiredRatio": 1.6,
+    "shortestShelterPaintedHeight": 193,
+    "tallestLowPaintedHeight": 108
+  },
+  "expectedKeys": [
+    "obstacle_standing_stone_0",
+    "obstacle_standing_stone_1",
+    "obstacle_standing_stone_2",
+    "obstacle_ruin_slab_0",
+    "obstacle_ruin_slab_1",
+    "obstacle_ruin_slab_2",
+    "obstacle_thorn_hedge_0",
+    "obstacle_thorn_hedge_1",
+    "obstacle_thorn_hedge_2",
+    "obstacle_mossy_boulder_0",
+    "obstacle_mossy_boulder_1",
+    "obstacle_mossy_boulder_2"
+  ],
+  "reviewSheetCount": 2,
+  "reviewSheets": {
+    "arena_cover_families.png": {
+      "bytes": 114689,
+      "sha256": "950d96de2dbad88ec6826f3acc6499e54aee0d31cfc35023d58c48163673b734"
+    },
+    "arena_cover_kinds.png": {
+      "bytes": 48408,
+      "sha256": "d4380fdd7cc258453c7a24a03c6f3201981d218f394508ccb6bc27fd3c20e3ba"
+    }
+  },
+  "schemaVersion": 1,
+  "summary": {
+    "assetCount": 12,
+    "coverPropCount": 12,
+    "decodedBudgetBytes": 7077888,
+    "decodedBytes": 7077888,
+    "familyCount": 4,
+    "lowPropCount": 6,
+    "minimumTransparentAssetMargin": 40,
+    "shelterPropCount": 6,
+    "staticFrameCount": 12
+  }
+}

@@ -40,8 +40,22 @@ across the field.
 
 ## Decision
 
-**Decision:** PENDING — the render and its audit arrive next; this section is replaced with the accepted audit sha
-and the candidate manifest sha the promotion is bound to.
+**Decision:** ACCEPTED — the twelve props are the field's cover, and the two kinds are separated by silhouette
+rather than by hue.
+
+| What | Value |
+| --- | --- |
+| Batch | `arena-cover-v1`, rendered by `generate-visual-assets.yml` run `35737207100` |
+| Assets | 12 (4 families × 3 variants; 6 shelter, 6 low) |
+| Revision label | `arena-obstacle-premium-v1` |
+| Sheets | 384 px square, minimum transparent margin 40 px, `runtimeGlow: false` on every entry |
+| Shortest standing cover vs tallest low cover | 193 px against 108 px = **1.787×** (floor 1.6×) |
+| Decoded bytes | 7,077,888 of a 7,077,888-byte budget (the batch is exactly its own twelve sheets) |
+| Audit sha256 | `d6ad4d3cf5840587e3abbfcaf9265034896777b1f84b3693f72816d13b9f3bff` |
+| Candidate manifest sha256 | `fc4daa038d78dc50a69884e424232d942a1a1f5c9706ef8219bb07a5d99ea1ab` |
+
+The audit and both sheets live in `docs/art_reviews/arena_cover/`, and `promote_arena_cover_batch.py` refuses to
+copy a pixel whose sha256 is not in that audit.
 
 <!-- BEGIN GENERATED: texture revision labels -->
 ## Texture revision labels
