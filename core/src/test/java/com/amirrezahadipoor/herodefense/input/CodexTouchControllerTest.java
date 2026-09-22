@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.story.LoreCatalog;
 import org.junit.jupiter.api.Test;
 
 final class CodexTouchControllerTest {
@@ -50,7 +51,9 @@ final class CodexTouchControllerTest {
         controller.drag(state, 55f);
         assertEquals(1, controller.firstVisibleIndex());
         controller.drag(state, 55f * 100f);
-        assertEquals(38, controller.firstVisibleIndex(), "43 lore entries minus the five visible rows");
+        assertEquals(
+            LoreCatalog.all().size() - CodexTouchLayout.VISIBLE_ROWS, controller.firstVisibleIndex(),
+            "the list stops at its last page, whatever the catalog has grown to");
         controller.drag(state, -55f * 100f);
         assertEquals(0, controller.firstVisibleIndex());
 

@@ -11,19 +11,19 @@ final class ProjectileRotationTest {
 
     @Test
     void rotationMatchesAtan2InDegrees() {
-        assertEquals(0f, CombatEntityRenderer.projectileRotation(1f, 0f), EPS);
-        assertEquals(90f, CombatEntityRenderer.projectileRotation(0f, 1f), EPS);
-        assertEquals(180f, CombatEntityRenderer.projectileRotation(-1f, 0f), EPS);
-        assertEquals(-90f, CombatEntityRenderer.projectileRotation(0f, -1f), EPS);
-        assertEquals(45f, CombatEntityRenderer.projectileRotation(1f, 1f), EPS);
-        assertEquals(135f, CombatEntityRenderer.projectileRotation(-1f, 1f), EPS);
-        assertEquals(-135f, CombatEntityRenderer.projectileRotation(-1f, -1f), EPS);
-        assertEquals(-45f, CombatEntityRenderer.projectileRotation(1f, -1f), EPS);
+        assertEquals(0f, ProjectileRenderer.projectileRotation(1f, 0f), EPS);
+        assertEquals(90f, ProjectileRenderer.projectileRotation(0f, 1f), EPS);
+        assertEquals(180f, ProjectileRenderer.projectileRotation(-1f, 0f), EPS);
+        assertEquals(-90f, ProjectileRenderer.projectileRotation(0f, -1f), EPS);
+        assertEquals(45f, ProjectileRenderer.projectileRotation(1f, 1f), EPS);
+        assertEquals(135f, ProjectileRenderer.projectileRotation(-1f, 1f), EPS);
+        assertEquals(-135f, ProjectileRenderer.projectileRotation(-1f, -1f), EPS);
+        assertEquals(-45f, ProjectileRenderer.projectileRotation(1f, -1f), EPS);
     }
 
     @Test
     void zeroVelocityDefaultsToZero() {
-        assertEquals(0f, CombatEntityRenderer.projectileRotation(0f, 0f), EPS);
+        assertEquals(0f, ProjectileRenderer.projectileRotation(0f, 0f), EPS);
     }
 
     @Test
@@ -32,16 +32,16 @@ final class ProjectileRotationTest {
         float vx = 3f;
         float vy = 4f;
         float expected = 53.1301f;
-        assertEquals(expected, CombatEntityRenderer.projectileRotation(vx, vy), 0.05f);
-        assertEquals(expected, CombatEntityRenderer.projectileRotation(vx * 0.5f, vy * 0.5f), 0.05f);
+        assertEquals(expected, ProjectileRenderer.projectileRotation(vx, vy), 0.05f);
+        assertEquals(expected, ProjectileRenderer.projectileRotation(vx * 0.5f, vy * 0.5f), 0.05f);
     }
 
     @Test
     void trailAlphaAndHeatStillBounded() {
         // Regression: trail helpers untouched by arrow refactor
-        assertEquals(0.55f, CombatEntityRenderer.projectileTrailAlpha(0), 1e-6f);
-        assertEquals(0f, CombatEntityRenderer.projectileTrailAlpha(4), 1e-6f);
-        assertEquals(0f, CombatEntityRenderer.trailHeat(0), 1e-6f);
-        assertEquals(1f, CombatEntityRenderer.trailHeat(10), 1e-6f);
+        assertEquals(0.55f, ProjectileRenderer.projectileTrailAlpha(0), 1e-6f);
+        assertEquals(0f, ProjectileRenderer.projectileTrailAlpha(4), 1e-6f);
+        assertEquals(0f, ProjectileRenderer.trailHeat(0), 1e-6f);
+        assertEquals(1f, ProjectileRenderer.trailHeat(10), 1e-6f);
     }
 }

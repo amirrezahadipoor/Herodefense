@@ -58,15 +58,10 @@ public final class CombatEntityRenderer implements AutoCloseable {
     public static final float DROP_TARGET_Y = HudTouchLayout.DESIGN_UTILITY_BUTTON_Y
         + HudTouchLayout.UTILITY_BUTTON_HEIGHT * 0.5f;
     private static final float DROP_HOMING_ARC_HEIGHT = 86f;
-    static final int PROJECTILE_TRAIL_STEPS = 3;
     static final int MAX_PROGRESSION_STEP = 10;
     static final float TELEGRAPH_SQUASH = 0.42f;
     static final float ELITE_DRAW_SCALE = 1.25f;
     static final int FOCUS_RING_SEGMENTS = 36;
-    /** How long the fade of a lodged arrow runs, matching the seconds `HeroAutoAttackSystem` leaves it alive. */
-    static final float LODGED_ARROW_FADE_SECONDS = 0.75f;
-    /** The share of the sprite that is inside the rock: a buried head reads as a hit, a floating one as a bug. */
-    static final float LODGED_ARROW_BURIED_SHARE = 0.34f;
     static final float FOCUS_RING_RADIUS = 108f;
     static final float FOCUS_RING_CENTER_Y_OFFSET = 73f;
     private static final Set<String> BOSS_ASSET_KEYS = bossAssetKeys();
@@ -82,9 +77,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
 
     private final FocusMarkRenderer focusMarkRenderer = new FocusMarkRenderer();
     private final Texture pixel;
-    private final Texture arrowNormal;
-    private final Texture arrowCrit;
-    private final Texture arrowSecondary;
+    private final ProjectileRenderer projectileRenderer;
     private final BlastWarnRenderer blastWarnRenderer;
 
     public CombatEntityRenderer() {
@@ -94,17 +87,8 @@ public final class CombatEntityRenderer implements AutoCloseable {
         pixel = new Texture(pixmap);
         pixmap.dispose();
         blastWarnRenderer = new BlastWarnRenderer(pixel);
-        arrowNormal = ArrowTextures.arrow(26, 6, 0.545f, 0.353f, 0.169f, 0.78f, 0.78f, 0.82f, 0.85f, 0.78f, 0.57f);
-        arrowCrit = ArrowTextures.arrow(30, 8, 0.545f, 0.353f, 0.169f, 1f, 0.84f, 0.31f, 0.35f, 0.92f, 0.96f);
-        arrowSecondary = ArrowTextures.arrow(20, 5, 0.30f, 0.36f, 0.23f, 0.72f, 0.75f, 0.78f, 0.48f, 0.80f, 0.52f);
+        projectileRenderer = new ProjectileRenderer(pixel);
     }
-
-    /** Arrow rotation in degrees for a velocity vector; 0 is +X. */
-    static float projectileRotation(float vx, float vy) {
-        return com.badlogic.gdx.math.MathUtils.atan2(vy, vx) * com.badlogic.gdx.math.MathUtils.radiansToDegrees;
-    }
-
-    // True arrow sprite: shaft/head/fletching, head >=25% length, silhouette distinct per variant.
 
     public void drawActors(SpriteBatch batch, GameState state, float runTimeSeconds) {
         for (Enemy enemy : state.aliveEnemies) {
@@ -123,7 +107,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         blastWarnRenderer.draw(batch, state, runTimeSeconds);
         drawFocusRing(batch, state);
         focusMarkRenderer.drawMarks(batch, state, runTimeSeconds, this::focusMarkBox);
-        drawProjectiles(batch, state);
+        projectileRenderer.draw(batch, state, progressionStep(state));
         drawDrops(batch, state, runTimeSeconds);
         weatherRenderer.draw(batch, state, runTimeSeconds, false);
         batch.setColor(1f, 1f, 1f, 1f);
@@ -181,144 +165,6 @@ public final class CombatEntityRenderer implements AutoCloseable {
         batch.setColor(1f, 1f, 1f, 1f);
     }
 
-    /**
-     * An arrow that has buried itself in solid ground.
-     *
-     * <p>This is the one frame the obstacle round owes the player: every arrow the stones eat would otherwise
-     * leave nothing behind, and an arena where shots vanish into rock without a mark is an arena that reads as a
-     * bug. So a lodged arrow is drawn where it stopped, at the angle it arrived at, with its head inside the rock:
-     * the shaft is shortened by a third, the fletching streak behind it is gone (nothing is moving), and it sinks
-     * out of sight over the three quarters of a second it has left rather than blinking away.
-     */
-    private void drawLodgedArrow(SpriteBatch batch, Projectile projectile) {
-        float fade = Math.max(0f, Math.min(1f, projectile.lodgedSeconds / LODGED_ARROW_FADE_SECONDS));
-        float angle = projectile.lodgedAngleDegrees;
-        Texture arrowTex;
-        float arrowW;
-        float arrowH;
-        if (projectile.critical) {
-            arrowTex = arrowCrit;
-            arrowW = 30f;
-            arrowH = 8f;
-        } else if (projectile.secondary) {
-            arrowTex = arrowSecondary;
-            arrowW = 20f;
-            arrowH = 5f;
-        } else {
-            arrowTex = arrowNormal;
-            arrowW = 26f;
-            arrowH = 6f;
-        }
-        float buried = arrowW * LODGED_ARROW_BURIED_SHARE;
-        float shaft = arrowW - buried;
-        // The arrow is anchored at the buried head, so the shaft grows back along the angle it arrived at.
-        float dx = com.badlogic.gdx.math.MathUtils.cosDeg(angle);
-        float dy = com.badlogic.gdx.math.MathUtils.sinDeg(angle);
-        float nearX = projectile.x + dx * buried * 0.5f;
-        float nearY = projectile.y + dy * buried * 0.5f;
-        batch.setColor(1f, 1f, 1f, 0.92f * fade);
-        batch.draw(
-            arrowTex,
-            nearX - shaft * 0.5f,
-            nearY - arrowH * 0.5f,
-            shaft * 0.5f,
-            arrowH * 0.5f,
-            shaft,
-            arrowH,
-            1f,
-            1f,
-            angle,
-            0, 0,
-            (int) shaft, (int) arrowH,
-            false, false
-        );
-    }
-
-    private void drawProjectiles(SpriteBatch batch, GameState state) {
-        int power = progressionStep(state);
-        float heat = trailHeat(power);
-        float goldRed = 0.93f + (1f - 0.93f) * heat;
-        float goldGreen = 0.71f + (0.95f - 0.71f) * heat;
-        float goldBlue = 0.25f + (0.75f - 0.25f) * heat;
-        for (Projectile projectile : state.projectiles) {
-            if (projectile == null || !projectile.active) continue;
-            if (projectile.lodged) {
-                drawLodgedArrow(batch, projectile);
-                continue;
-            }
-            float angle = projectileRotation(projectile.velocityX, projectile.velocityY);
-            float speed = (float) Math.sqrt(
-                projectile.velocityX * projectile.velocityX
-                    + projectile.velocityY * projectile.velocityY
-            );
-            float nx = speed <= 0f ? 1f : projectile.velocityX / speed;
-            float ny = speed <= 0f ? 0f : projectile.velocityY / speed;
-            // Fletching streak + head glint trail, rotated onto velocity
-            for (int step = 1; step <= PROJECTILE_TRAIL_STEPS; step++) {
-                float back = step * 9f;
-                float alpha = projectileTrailAlpha(step, power);
-                if (projectile.critical) {
-                    batch.setColor(0.35f, 0.92f, 0.96f, alpha * 0.72f);
-                } else if (projectile.secondary) {
-                    batch.setColor(0.62f, 0.86f, 0.58f, alpha * 0.65f);
-                } else {
-                    batch.setColor(goldRed * 0.92f, goldGreen * 0.92f, goldBlue, alpha * 0.78f);
-                }
-                float streakW = 9f - step * 1.6f;
-                float streakH = 3.0f;
-                float sx = projectile.x - nx * back;
-                float sy = projectile.y - ny * back;
-                batch.draw(
-                    pixel,
-                    sx - streakW * 0.5f, sy - streakH * 0.5f,
-                    streakW * 0.5f, streakH * 0.5f,
-                    streakW, streakH,
-                    1f, 1f,
-                    angle,
-                    0, 0, 1, 1, false, false
-                );
-            }
-            // Real arrow sprite rotated onto velocity vector
-            Texture arrowTex;
-            float arrowW;
-            float arrowH;
-            if (projectile.critical) {
-                arrowTex = arrowCrit;
-                arrowW = 30f;
-                arrowH = 8f;
-            } else if (projectile.secondary) {
-                arrowTex = arrowSecondary;
-                arrowW = 20f;
-                arrowH = 5f;
-            } else {
-                arrowTex = arrowNormal;
-                arrowW = 26f;
-                arrowH = 6f;
-            }
-            batch.setColor(1f, 1f, 1f, 1f);
-            batch.draw(
-                arrowTex,
-                projectile.x - arrowW * 0.5f,
-                projectile.y - arrowH * 0.5f,
-                arrowW * 0.5f,
-                arrowH * 0.5f,
-                arrowW,
-                arrowH,
-                1f,
-                1f,
-                angle,
-                0, 0,
-                (int) arrowW, (int) arrowH,
-                false, false
-            );
-            // Head glint at tip
-            batch.setColor(1f, 1f, 1f, 0.92f);
-            float glint = projectile.critical ? 5f : projectile.secondary ? 3f : 4f;
-            batch.draw(pixel, projectile.x + nx * (arrowW * 0.5f + 1f) - glint * 0.5f,
-                projectile.y + ny * (arrowW * 0.5f + 1f) - glint * 0.5f, glint, glint);
-        }
-        batch.setColor(1f, 1f, 1f, 1f);
-    }
 
     /** Lit ring segments for a 0..1 Focus ratio; degenerate ratios light none. */
     static int focusRingLitSegments(float ratio) {
@@ -401,22 +247,6 @@ public final class CombatEntityRenderer implements AutoCloseable {
             }
         }
         batch.setColor(1f, 1f, 1f, 1f);
-    }
-
-    static float projectileTrailAlpha(int step) {
-        return projectileTrailAlpha(step, 0);
-    }
-
-    static float projectileTrailAlpha(int step, int powerStep) {
-        float boost =
-            Math.max(0, Math.min(MAX_PROGRESSION_STEP, powerStep)) * 0.03f;
-        return Math.min(0.85f, Math.max(0f, 0.55f - step * 0.15f) + boost);
-    }
-
-    /** 0..1 heat of a normal arrow's trail gold as raw progression climbs. */
-    static float trailHeat(int powerStep) {
-        return Math.max(0, Math.min(MAX_PROGRESSION_STEP, powerStep))
-            / (float) MAX_PROGRESSION_STEP;
     }
 
     /**
@@ -660,9 +490,7 @@ public final class CombatEntityRenderer implements AutoCloseable {
         tellRenderer.close();
         dropGlowRenderer.close();
         pixel.dispose();
-        arrowNormal.dispose();
-        arrowCrit.dispose();
-        arrowSecondary.dispose();
+        projectileRenderer.close();
     }
 
     /** How many sheets one frame may release, so a frame never stalls reloading half the catalog. */

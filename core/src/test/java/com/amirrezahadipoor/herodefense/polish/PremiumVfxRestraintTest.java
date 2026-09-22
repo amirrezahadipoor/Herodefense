@@ -176,10 +176,10 @@ final class PremiumVfxRestraintTest {
         assertEquals(1, occurrences(game, "triggerBossEntrance()"), "triggerBossEntrance()");
         assertEquals(1, occurrences(game, "triggerTreeFall()"), "triggerTreeFall()");
         assertTrue(game.contains("boss.entrancePresented"));
-        String combat = Files.readString(Path.of(
-            "src/main/java/com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java"
+        String projectiles = Files.readString(Path.of(
+            "src/main/java/com/amirrezahadipoor/herodefense/render/ProjectileRenderer.java"
         ));
-        assertTrue(combat.contains("PROJECTILE_TRAIL_STEPS"));
+        assertTrue(projectiles.contains("PROJECTILE_TRAIL_STEPS"));
     }
 
     private static int occurrences(String text, String needle) {

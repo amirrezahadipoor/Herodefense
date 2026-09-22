@@ -11,15 +11,15 @@ import org.junit.jupiter.api.Test;
 final class ProjectileTrailTest {
     @Test
     void trailFadesMonotonicallyAndStaysShort() {
-        assertTrue(CombatEntityRenderer.PROJECTILE_TRAIL_STEPS <= 3);
+        assertTrue(ProjectileRenderer.PROJECTILE_TRAIL_STEPS <= 3);
         float previous = 1f;
-        for (int step = 1; step <= CombatEntityRenderer.PROJECTILE_TRAIL_STEPS; step++) {
-            float alpha = CombatEntityRenderer.projectileTrailAlpha(step);
+        for (int step = 1; step <= ProjectileRenderer.PROJECTILE_TRAIL_STEPS; step++) {
+            float alpha = ProjectileRenderer.projectileTrailAlpha(step);
             assertTrue(alpha < previous);
             assertTrue(alpha >= 0f && alpha < 0.6f);
             previous = alpha;
         }
-        assertEquals(0f, CombatEntityRenderer.projectileTrailAlpha(4));
+        assertEquals(0f, ProjectileRenderer.projectileTrailAlpha(4));
     }
 
     @Test
@@ -46,18 +46,18 @@ final class ProjectileTrailTest {
 
     @Test
     void trailHeatAndAlphaEscalateWithPowerButStayBounded() {
-        assertEquals(0f, CombatEntityRenderer.trailHeat(0), 1e-6f);
-        assertEquals(0.5f, CombatEntityRenderer.trailHeat(5), 1e-6f);
-        assertEquals(1f, CombatEntityRenderer.trailHeat(10), 1e-6f);
-        assertEquals(1f, CombatEntityRenderer.trailHeat(40), 1e-6f);
-        assertEquals(0f, CombatEntityRenderer.trailHeat(-3), 1e-6f);
+        assertEquals(0f, ProjectileRenderer.trailHeat(0), 1e-6f);
+        assertEquals(0.5f, ProjectileRenderer.trailHeat(5), 1e-6f);
+        assertEquals(1f, ProjectileRenderer.trailHeat(10), 1e-6f);
+        assertEquals(1f, ProjectileRenderer.trailHeat(40), 1e-6f);
+        assertEquals(0f, ProjectileRenderer.trailHeat(-3), 1e-6f);
 
-        assertEquals(0.4f, CombatEntityRenderer.projectileTrailAlpha(1, 0), 1e-6f);
-        assertEquals(0.7f, CombatEntityRenderer.projectileTrailAlpha(1, 10), 1e-6f);
-        assertEquals(0.4f, CombatEntityRenderer.projectileTrailAlpha(3, 10), 1e-6f);
+        assertEquals(0.4f, ProjectileRenderer.projectileTrailAlpha(1, 0), 1e-6f);
+        assertEquals(0.7f, ProjectileRenderer.projectileTrailAlpha(1, 10), 1e-6f);
+        assertEquals(0.4f, ProjectileRenderer.projectileTrailAlpha(3, 10), 1e-6f);
         float previous = 1f;
-        for (int step = 1; step <= CombatEntityRenderer.PROJECTILE_TRAIL_STEPS; step++) {
-            float alpha = CombatEntityRenderer.projectileTrailAlpha(step, 10);
+        for (int step = 1; step <= ProjectileRenderer.PROJECTILE_TRAIL_STEPS; step++) {
+            float alpha = ProjectileRenderer.projectileTrailAlpha(step, 10);
             assertTrue(alpha < previous);
             previous = alpha;
         }

@@ -80,13 +80,12 @@ class ArchitectureRatchetTest {
         // ratchet working as intended -- `ArrowTextures` (the arrow pixmap builder, 41 lines) and
         // `DropTextureCache` (the drop texture map and its two helpers, 23 lines). The frozen size is lowered
         // to the new measurement so the next change has to pay for itself too.
-        "com/amirrezahadipoor/herodefense/render/CombatEntityRenderer.java",
-        // D2 raised the count by three lines: eliteGlow maps three new deep-pool affix ids to their own
-        // glows, one if-line each beside the three that shipped. A map or a table for six constants would be
-        // a new file to hold six lines; the chain stays. G4 raised it by two more: DROP_TARGET_X became
-        // dropTargetX(), because a static final captured the English inventory position before any locale
-        // existed and drops would have flown at a button that is not there in Persian.
-        new ArchitectureRatchet.Frozen(658, 13),
+        // The projectile pass left this file in the obstacle round. The lodged-arrow branch is what paid for
+        // the extraction: an arrow that stops in a rock has no velocity left to be drawn from, so the pass
+        // needed a second drawing path, and the honest place for both is a class that owns nothing but arrows.
+        // `ProjectileRenderer` took the three arrow sprites, the trail, the glint and the rotation helpers with
+        // it, and the renderer came in under the limit -- so the ratchet asks for the freeze to go, and it goes.
+        // D2's and G4's two additions are recorded in the history above rather than in a frozen number here.
         // R3.5 added a mode-aware entry point (`runBrief`) and kept the old signature as a one-line delegate,
         // so the standard sweeps are unchanged by construction. R3.4 needed no growth here at all: the omens'
         // counterfactual is simply a run without the omen trial, which the existing trial axes already measure.
