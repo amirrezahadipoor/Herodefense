@@ -441,8 +441,11 @@ public final class AndroidTouchSmokeTest {
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
             float[] correction = touchCorrection(game, MENU_X, continueY);
             await("doomed wave", () -> game.screenState() == GameScreenState.PLAYING);
-            // Phase 18: the Hero's death starts a short tree siege before the sanctuary falls.
-            await("hero falls to the first melee hit", 60_000L, () ->
+            // Phase 18: the Hero's death starts a short tree siege before the sanctuary falls. The
+            // slowest emulators (the foldable's, in particular) can need more than a minute of wall
+            // time before the first melee contact lands, so this is the one journey await that waits
+            // twice as long.
+            await("hero falls to the first melee hit", 120_000L, () ->
                 !game.gameState().hero.alive
             );
             assertTrue(game.screenState() == GameScreenState.PLAYING
@@ -580,7 +583,7 @@ public final class AndroidTouchSmokeTest {
                 assertNotNull(screenshot);
                 brightness = measureBrightness(screenshot, name);
                 band = measureGroundBand(screenshot, surface);
-                if (!transientFrame(name, brightness[0]) && !flashFrame(band)) {
+                if (!transientFrame(name, brightness) && !flashFrame(band)) {
                     break;
                 }
                 System.out.println("grade frame " + name + " is transient (mean " + brightness[0]
@@ -1148,11 +1151,13 @@ public final class AndroidTouchSmokeTest {
 
     /**
      * Whether a measured frame can still be a transient rather than the screen the capture names:
-     * washed out, still black, or further from this profile's pinned reference for that screen than
-     * the band ever allows. Used only to decide whether to take another frame -- the contract itself
-     * is {@link #assertBrightnessContract} and it is unchanged.
+     * washed out, still black, further from this profile's pinned reference for that screen than the
+     * band ever allows, or mid-fade with its lit share still below the recorded band. Used only to
+     * decide whether to take another frame -- the contract itself is {@link #assertBrightnessContract}
+     * and it is unchanged.
      */
-    private static boolean transientFrame(String name, float mean) {
+    private static boolean transientFrame(String name, float[] brightness) {
+        float mean = brightness[0];
         if (mean >= 240f || mean <= 8f) {
             return true;
         }
@@ -1161,7 +1166,13 @@ public final class AndroidTouchSmokeTest {
             return false;
         }
         float tolerance = reference.length > 2 ? reference[2] : MEAN_LUMA_TOLERANCE;
-        return Math.abs(mean - reference[0]) > tolerance;
+        if (Math.abs(mean - reference[0]) > tolerance) {
+            return true;
+        }
+        // The opening lines dim in: a mid-fade frame can sit inside the mean's tolerance while its lit
+        // share is still below the recorded band. That is a transition too, so retry it instead of
+        // measuring it -- the gate's own lit floor is what "settled" means.
+        return reference.length > 1 && brightness[3] < reference[1] - 0.10f;
     }
 
     /**
@@ -1276,8 +1287,11 @@ public final class AndroidTouchSmokeTest {
         // profile has pinned for this screen. That last rule is the tablet's: twice its software
         // renderer put the capture on a bright event flash -- mean 100.83645 both times, the same
         // overlay pixel for pixel (runs 35465589953 and 35466173314) -- where the pinning run landed
-        // after the flash. A screen that really changed still fails: the retries only wait out
-        // transitions, and the assertion below is exactly what it was.
+        // after the flash. A screen that dims in (the opening lines) is retried the same way once its
+        // lit share is below the recorded band: the frame is inside the mean's tolerance but still
+        // fading, so it is a transition rather than the screen (run 35670734546, api 33 opening-line
+        // one). A screen that really changed still fails: the retries only wait out transitions, and
+        // the assertion below is exactly what it was.
         for (int attempt = 0; attempt < 8; attempt++) {
             if (screenshot != null) screenshot.recycle();
             screenshot = InstrumentationRegistry.getInstrumentation()
@@ -1285,7 +1299,7 @@ public final class AndroidTouchSmokeTest {
                 .takeScreenshot();
             assertNotNull(screenshot);
             brightness = measureBrightness(screenshot, name);
-            if (!transientFrame(name, brightness[0])) {
+            if (!transientFrame(name, brightness)) {
                 break;
             }
             SystemClock.sleep(300L);
