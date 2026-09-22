@@ -240,23 +240,43 @@ def runtime_entry(
     return entry
 
 
-def ships_at_master_size(reviewed_asset: dict, master_asset: dict) -> bool:
-    """True when the reviewed tier of this key IS the size the master was rendered at.
+def ships_at_master_size(master_asset: dict, reviewed_asset: dict | None = None) -> bool:
+    """True when this key is already the size it ships at, so the LOD is a copy rather than a halving.
 
-    The environment class ships what Blender rendered: the arena's props are 384 px in the reviewed catalog and
-    384 px out of the render, so there is no LOD to perform and a halving would produce a sheet the reviewed grid
-    does not describe. The atlas classes (characters, bosses, the tree) are the ones whose masters are twice the
-    reviewed tier, and they take the halving path below.
+    The environment class ships the pixels Blender rendered: a prop is one frame on a sheet the size of that
+    frame (the arena's backdrop, its ground tiles, its landmarks and its cover), and the reviewed catalog carries
+    them at the rendered size. The atlas classes (characters, bosses, the tree) are the ones whose masters are
+    twice the reviewed tier and whose sheets are many frames on a page, and they take the halving path.
+
+    The rule reads the master alone, because a batch that renders a key the reviewed catalog does not carry yet
+    -- the arena's cover families were exactly that -- has no reviewed entry to compare against, and a new key
+    must not be forced through a page composition it was never authored for.
     """
-    if int(reviewed_asset.get("frameSize", 0)) != int(master_asset["frameSize"]):
+    sheets = master_asset.get("sheets") or [{}]
+    sheet = sheets[0]
+    frames = sum(len(frames) for frames in (master_asset.get("clips") or {}).values())
+    if frames != 1:
         return False
-    reviewed_sheets = reviewed_asset.get("sheets") or [{}]
-    master_sheets = master_asset.get("sheets") or [{}]
-    if (reviewed_sheets[0].get("width"), reviewed_sheets[0].get("height")) != (
-        master_sheets[0].get("width"), master_sheets[0].get("height")
-    ):
+    # An atlas entry describes its grid with frameSize and clips alone; only a static render states its frame
+    # width and height, and only a static render is a candidate for this path.
+    if "frameWidth" not in master_asset or "frameHeight" not in master_asset:
         return False
-    return reviewed_grid(reviewed_asset) == master_grid(master_asset)
+    if int(master_asset["sheetWidth"]) != int(master_asset["frameWidth"]):
+        return False
+    if int(master_asset["sheetHeight"]) != int(master_asset["frameHeight"]):
+        return False
+    if int(sheet.get("width", 0)) != int(master_asset["frameWidth"]):
+        return False
+    if int(sheet.get("height", 0)) != int(master_asset["frameHeight"]):
+        return False
+    if reviewed_asset is None:
+        return True
+    # A reviewed entry that disagrees about the size means this class halves, whatever the sheet looks like.
+    return (
+        int(reviewed_asset.get("frameSize", 0)) == int(master_asset["frameSize"])
+        and (reviewed_asset.get("sheets") or [{}])[0].get("width") == int(master_asset["sheetWidth"])
+        and (reviewed_asset.get("sheets") or [{}])[0].get("height") == int(master_asset["sheetHeight"])
+    )
 
 
 def reviewed_grid(asset: dict) -> str:
@@ -337,7 +357,7 @@ def publish(master_dir: Path, runtime_dir: Path, reviewed_manifest_path: Path) -
     for master_asset in master_manifest["assets"]:
         key = master_asset["key"]
         reviewed_asset = reviewed_by_key.get(key)
-        if reviewed_asset is not None and ships_at_master_size(reviewed_asset, master_asset):
+        if ships_at_master_size(master_asset, reviewed_asset):
             # This class ships the pixels Blender rendered: the copy is the LOD, and the entry says so.
             (runtime_dir / (master_asset["sheets"][0]["file"])).parent.mkdir(parents=True, exist_ok=True)
             entries.append(publish_at_master_size(

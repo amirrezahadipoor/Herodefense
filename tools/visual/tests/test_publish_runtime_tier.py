@@ -149,6 +149,8 @@ class PublishRuntimeTierTest(unittest.TestCase):
         asset = master_asset([(0, 0)], key="crystal_prop_0")
         asset["frameClass"] = "environment"
         asset["frameSize"] = FRAME
+        asset["frameWidth"] = FRAME
+        asset["frameHeight"] = FRAME
         asset["sheetWidth"] = FRAME
         asset["sheetHeight"] = FRAME
         asset["sheets"] = [{"file": "environment/crystal_prop_0.png", "width": FRAME, "height": FRAME,
