@@ -30,6 +30,7 @@ VISUAL = ROOT / "tools" / "visual"
 #: Every batch the render workflow accepts, and the review generator that owns its evidence.
 BATCH_REVIEWS = {
     "arena": "create_arena_batch_review.py",
+    "arena-cover": "create_arena_cover_review.py",
     "bosses": "create_boss_batch_review.py",
     "ceremony": "create_character_animation_review.py",
     "enemies": "create_enemy_batch_review.py",

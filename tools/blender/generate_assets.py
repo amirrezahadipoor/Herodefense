@@ -125,7 +125,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--batch",
-        choices=("pilot", "premium-pilot", "enemies", "bosses", "characters", "world-tree", "equipment", "arena", "environment", "ui", "ui-supplement", "skill-icons", "ceremony", "vfx", "projectile", "equipment-overlay", "all"),
+        choices=("pilot", "premium-pilot", "enemies", "bosses", "characters", "world-tree", "equipment", "arena", "arena-cover", "environment", "ui", "ui-supplement", "skill-icons", "ceremony", "vfx", "projectile", "equipment-overlay", "all"),
         default="pilot",
     )
     parser.add_argument("--output", type=Path)
@@ -700,6 +700,28 @@ def render_arena_environment(output: Path, only: set[str]) -> list[dict]:
             ))
     # The arena's cover: four families, three variants each. Rendered in the arena batch because they are
     # furniture of the same place and reviewed together with it.
+    for family, cover, height in OBSTACLE_FAMILIES:
+        for variant in range(OBSTACLE_VARIANTS):
+            key = f"obstacle_{family}_{variant}"
+            if not only or key in only:
+                entries.append(render_static_model(
+                    key, "environment", "environment",
+                    lambda name=family, value=variant: build_obstacle_prop(name, value), output,
+                    {"assetKind": "obstacle", "family": family, "cover": cover, "heightUnits": height,
+                     "variant": variant},
+                ))
+    return entries
+
+
+def render_arena_cover(output: Path, only: set[str]) -> list[dict]:
+    """Render the arena's cover families on their own.
+
+    The cover shipped into a game whose arena art is at an older studio tier, and re-rendering the backdrop, the
+    ground and the landmarks to move the cover would have been a second, unrequested art change -- and an uneven
+    one, because the second arena's duplicates are not part of the arena batch. So the cover has its own batch,
+    its own review evidence and its own promotion, and the two arenas keep the pixels they were reviewed with.
+    """
+    entries = []
     for family, cover, height in OBSTACLE_FAMILIES:
         for variant in range(OBSTACLE_VARIANTS):
             key = f"obstacle_{family}_{variant}"

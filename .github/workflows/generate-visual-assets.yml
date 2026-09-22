@@ -17,6 +17,7 @@ on:
           - world-tree
           - equipment
           - arena
+          - arena-cover
           - environment
           - ui
           - ui-supplement
