@@ -291,7 +291,7 @@ def validate_metadata(entry: dict, key: str) -> None:
             "sheetHeight": PROP_SIZE,
             "modelRevision": "arena-obstacle-premium-v1",
             "assetKind": "obstacle",
-            "family": obstacle_family(key),
+            "coverFamily": obstacle_family(key),
             "cover": cover,
             "variant": variant,
             "visualQuality": "studio-v4-vibrant",

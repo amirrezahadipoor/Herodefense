@@ -1064,7 +1064,9 @@ def build_obstacle_prop(family: str, variant: int = 0) -> BuiltModel:
         landmarks = ("rounded core", "shoulder facet", "lichen plates", "scattered pebbles")
     return BuiltModel(None, objects, {
         "variant": variant,
-        "family": family,
+        # Named `coverFamily`, not `family`: in this manifest `family` is the output directory the asset lives in
+        # (`environment`), and the promotion tools key the metadata sidecar off it.
+        "coverFamily": family,
         "cover": cover,
         "assetKind": "obstacle",
         "heightUnits": height,

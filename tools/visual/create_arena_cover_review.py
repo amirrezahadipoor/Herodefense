@@ -127,7 +127,7 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
         total_decoded += image.width * image.height * 4
         records.append({
             "key": key,
-            "family": asset["family"],
+            "coverFamily": asset["coverFamily"],
             "cover": asset["cover"],
             "variant": asset["variant"],
             "sheetSha256": digest,
@@ -206,6 +206,7 @@ def validate_contract(asset: dict, key: str) -> None:
         "modelRevision": "arena-obstacle-premium-v1",
         "assetKind": "obstacle",
         "cover": OBSTACLE_COVER[family],
+        "coverFamily": family,
         "variant": int(key[-1]),
         "runtimeGlow": False,
     }

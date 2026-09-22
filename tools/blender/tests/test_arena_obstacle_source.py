@@ -86,9 +86,13 @@ class ArenaObstacleSourceTest(unittest.TestCase):
         function = self._function(self.tree, "build_obstacle_prop")
         source = ast.get_source_segment(self.environment, function) or ""
         self.assertIn('"runtimeGlow": False', source)
-        for field in ('"assetKind": "obstacle"', '"cover": cover', '"family": family', '"heightUnits": height'):
+        for field in ('"assetKind": "obstacle"', '"cover": cover', '"coverFamily": family',
+                      '"heightUnits": height'):
             self.assertIn(field, source)
         self.assertIn("modelRevision", source)
+        # `family` in the manifest is the output directory the asset lives in; the cover's own family rides
+        # beside it, because the promotion tools key the metadata sidecar off `family`.
+        self.assertIn('"family"', 'family')
         self.assertIn("arena-obstacle-premium-v1", source)
         self.assertIn('raise ValueError(f"Unknown obstacle family', source)
         self.assertIn('raise ValueError(f"Unknown obstacle variant', source)
