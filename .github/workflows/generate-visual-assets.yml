@@ -89,6 +89,17 @@ jobs:
           # looked exactly like "this batch owes nothing", so a broken resume read as a finished one and the run
           # re-rendered everything Blender had already produced. Announced instead.
           if owed=$(print_owed --keys); then
+            # Belt to the tool's braces: whatever `--keys` says is passed to Blender as `--only`, so a line
+            # that is not a key name has to be refused here rather than rendering nothing while the step
+            # reports a successful resume.
+            for token in $owed; do
+              case "$token" in
+                *[!a-z0-9_]*|"")
+                  echo "::error::the resume reported '$token', which is not an asset key; refusing to pass it to Blender"
+                  exit 1
+                  ;;
+              esac
+            done
             print_owed
           else
             owed=""

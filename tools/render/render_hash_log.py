@@ -227,6 +227,12 @@ def main(argv: list[str] | None = None) -> int:
         # No manifest means nothing has ever finished here: the batch renders from the start, and an empty
         # list says exactly that rather than failing a step whose whole job is to be quiet when there is
         # nothing to resume.
+        if args.keys:
+            # `--keys` is consumed as an argument list by the workflow that calls this: a sentence printed in
+            # this mode is not a note, it is eight "keys" named "no", "previous", "manifest", ... The arena
+            # batch rendered nothing and reported a successful resume this way, so the note stays in the
+            # human-readable mode and the machine-readable one stays empty.
+            return 0
         print("no previous manifest: this render starts from nothing")
         return 0
     manifest = json.loads(args.manifest.read_text(encoding="utf-8"))

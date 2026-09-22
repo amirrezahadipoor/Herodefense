@@ -9,6 +9,8 @@ from __future__ import annotations
 import json
 import sys
 import tempfile
+import contextlib
+import io
 import unittest
 from pathlib import Path
 
@@ -115,6 +117,26 @@ class RenderHashLogTest(unittest.TestCase):
         keys = log_tool._keys_from_reasons(outstanding["missing"]) + log_tool._keys_from_reasons(
             outstanding["changed"])
         self.assertEqual(["wolf"], keys, "an altered or emptied sheet means the key is owed again")
+
+    def testKeysModeStaysEmptyWhenNoManifestHasEverBeenRendered(self) -> None:
+        # The workflow consumes `--keys` as Blender's `--only` argument list. With no previous manifest there is
+        # nothing to resume, and the note that says so belongs to the human-readable mode: printing it in keys
+        # mode passed the words "no previous manifest: this render starts from nothing" to Blender, which
+        # rendered nothing and left the step looking like a successful resume.
+        missing = self.root / "never-rendered/asset_manifest.json"
+        printed: list[str] = []
+        with contextlib.redirect_stdout(io.StringIO()) as captured:
+            self.assertEqual(0, log_tool.main([
+                "resume", str(missing), str(self.root / "render_hash_log.json"),
+                "--root", str(self.root), "--keys",
+            ]))
+        printed.append(captured.getvalue())
+        self.assertEqual("", printed[0], "keys mode printed something that is not a key list")
+        with contextlib.redirect_stdout(io.StringIO()) as captured:
+            self.assertEqual(0, log_tool.main([
+                "resume", str(missing), str(self.root / "render_hash_log.json"), "--root", str(self.root),
+            ]))
+        self.assertIn("no previous manifest", captured.getvalue())
 
     def testResumeIsEmptyWhenTheLogMatchesTheTree(self) -> None:
         log = log_tool.build_log(self.root)
