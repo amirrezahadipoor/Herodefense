@@ -116,12 +116,12 @@ public final class AndroidTouchSmokeTest {
                 game.screenState() == GameScreenState.PLAYING && !game.inventoryOpen()
             );
 
-            tapWorld(
-                surface,
-                600f + correction[0],
-                statusRowY(surface) + correction[1]
-            ); // Pause HUD target, calibrated from the preceding real touch.
-            await("paused", () -> game.screenState() == GameScreenState.PAUSED);
+            // Pause HUD target, calibrated from the preceding real touch. A tap into PLAYING right
+            // after the return transition can land before the screen is interactive again on a slow
+            // emulator, so it retries on the same cadence as the direct shop.
+            awaitTap(surface, game,
+                600f + correction[0], statusRowY(surface) + correction[1],
+                "paused", () -> game.screenState() == GameScreenState.PAUSED);
             SystemClock.sleep(600L);
             captureScreen("pause-premium-v2.png");
 
@@ -132,8 +132,11 @@ public final class AndroidTouchSmokeTest {
             tapWorld(surface, 360f + correction[0], 400f + correction[1]); // Resume
             await("resume after shop", () -> game.screenState() == GameScreenState.PLAYING);
 
-            tapWorld(surface, 600f + correction[0], statusRowY(surface) + correction[1]); // Pause again
-            await("paused again", () -> game.screenState() == GameScreenState.PAUSED);
+            // Pause again: the resume's transition can still be settling on a slow emulator, so the
+            // tap retries on the same cadence as the first pause.
+            awaitTap(surface, game,
+                600f + correction[0], statusRowY(surface) + correction[1],
+                "paused again", () -> game.screenState() == GameScreenState.PAUSED);
             tapWorld(surface, 360f + correction[0], 780f + correction[1]); // Inventory
             await("inventory opens over pause", () ->
                 game.screenState() == GameScreenState.INVENTORY && game.inventoryOpen()
