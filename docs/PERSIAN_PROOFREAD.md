@@ -45,7 +45,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 
 ---
 
-## 2. Exhaustive Proofreading Ledger (325 Entries across 13 String Tables)
+## 2. Exhaustive Proofreading Ledger (333 Entries across 13 String Tables)
 
 ### 2.1 MenuStrings (18 entries)
 
@@ -70,7 +70,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `FOOTER` | 200 NIGHTS  \|  ONE LAST TREE  \|  DAWN  \|  T%1$s | ۲۰۰ شب  \|  یک درخت آخر  \|  سحر  \|  ردهٔ %1$s | Rewritten 2026-09-22 for a young reader; pending native re-proofread. |
 | `COINS` | $ %1$s | %1$s سکه | Approved. Persian currency label. |
 
-### 2.2 RunStrings (39 entries)
+### 2.2 RunStrings (47 entries)
 
 | Key | English Source | Persian Reviewed | Reviewer Status & Linguistic Notes |
 |:---|:---|:---|:---|
@@ -88,6 +88,14 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `OMEN_WARBAND_DETAIL` | fewer, and heavier | کمترند، ولی هرکدام سنگین‌تر است | Approved. Natural contrastive syntax. |
 | `MODE_STANDARD` | The Long Vigil | پاسداری بلند | Approved. Grand campaign name. |
 | `MODE_BRIEF` | A Brief Vigil | پاسداری کوتاه | Approved. Short vigil mode name. |
+| `EVENT_WEDGE` | WEDGE | گوه | Approved. The tool, not a transliteration of the military term; one word, concrete. |
+| `EVENT_WEDGE_DETAIL` | one spear, down the middle road | یک نیزه، از میان راه | Approved. Same spear image as the label's wedge, direction explicit. |
+| `EVENT_ENCIRCLE` | ENCIRCLE | محاصره | Approved. Standard Persian noun for being closed in on; no loanword. |
+| `EVENT_ENCIRCLE_DETAIL` | every road, at once | همهٔ راه‌ها، هم‌زمان | Approved. «هم‌زمان» with ZWNJ; the comma keeps the two beats the HUD draws readable. |
+| `EVENT_TRICKLE` | TRICKLE | چکه‌چکه | Approved. Reduplicated adverb, the sound and the slowness of a drip; reads as one word at HUD scale. |
+| `EVENT_TRICKLE_DETAIL` | the lightest walk in first | سبک‌ترین‌ها اول می‌رسند | Approved. Deliberate mirror of the vanguard line («سنگین‌ترین‌ها اول می‌رسند») so the pair teaches itself. |
+| `EVENT_ASH_FALL` | ASH FALL | خاکستر | Approved. Plain noun; the night is named by what falls, as ember fall is. |
+| `EVENT_ASH_FALL_DETAIL` | cold ash settles on the grove | خاکستر سرد می‌نشیند | Approved. «می‌نشیند» (settles) rather than «می‌بارد», because ash drifts down slowly. |
 | `EVENT_PINCER` | PINCER | انبر | Approved. Encircling military metaphor, one word. |
 | `EVENT_PINCER_DETAIL` | they close from both sides | از دو سو تنگ می‌کنند | Approved. ZWNJ verb form; spatial and immediate. |
 | `EVENT_TIDAL` | TIDAL | سیل | Approved. Natural-disaster noun, single word. |

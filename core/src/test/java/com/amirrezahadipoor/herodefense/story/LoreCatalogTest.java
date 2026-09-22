@@ -9,13 +9,14 @@ import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import com.amirrezahadipoor.herodefense.gameplay.ArenaLayout;
 import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import org.junit.jupiter.api.Test;
 
 final class LoreCatalogTest {
     @Test
-    void definesExactlyThirtySequentiallyNumberedUniqueEntries() {
-        assertEquals(43, LoreCatalog.all().size());
+    void definesEveryEntrySequentiallyNumberedAndUnique() {
+        assertEquals(47, LoreCatalog.all().size());
         Set<String> ids = new HashSet<>();
         int expected = 1;
         for (LoreEntry entry : LoreCatalog.all()) {
@@ -28,9 +29,9 @@ final class LoreCatalogTest {
             assertFalse(entry.triggerParam().isBlank());
             expected++;
         }
-        assertEquals(43, ids.size());
+        assertEquals(47, ids.size());
         assertNotNull(LoreCatalog.byId("codex_01"));
-        assertNotNull(LoreCatalog.byId("codex_43"));
+        assertNotNull(LoreCatalog.byId("codex_47"));
     }
 
     @Test
@@ -44,6 +45,7 @@ final class LoreCatalogTest {
         assertEquals(EliteAffix.values().length, counts.get(LoreTrigger.ELITE_KILL));
         assertEquals(5, counts.get(LoreTrigger.ASCENSION));
         assertEquals(10, counts.get(LoreTrigger.SECRET));
+        assertEquals(ArenaLayout.values().length, counts.get(LoreTrigger.FIELD_FIRST_NIGHT));
     }
 
     @Test
@@ -58,6 +60,10 @@ final class LoreCatalogTest {
         assertEquals("rootward_ward", LoreCatalog.byId("codex_18").triggerParam());
         assertEquals("weeping_rot", LoreCatalog.byId("codex_19").triggerParam());
         assertEquals("10", LoreCatalog.byId("codex_24").triggerParam());
+        assertEquals("OPEN_HEARTH", LoreCatalog.byId("codex_44").triggerParam());
+        assertEquals("STANDING_STONES", LoreCatalog.byId("codex_45").triggerParam());
+        assertEquals("THORNHEDGE", LoreCatalog.byId("codex_46").triggerParam());
+        assertEquals("RUINED_RING", LoreCatalog.byId("codex_47").triggerParam());
     }
 
     @Test

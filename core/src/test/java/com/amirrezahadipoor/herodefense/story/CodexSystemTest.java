@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.items.EquipmentCatalog;
+import com.amirrezahadipoor.herodefense.gameplay.ArenaLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Item;
 import java.util.List;
@@ -13,6 +14,19 @@ import org.junit.jupiter.api.Test;
 
 final class CodexSystemTest {
     private final CodexSystem codex = new CodexSystem();
+
+    @Test
+    void theFieldsEntryUnlocksOnceOnTheGroundItDescribes() {
+        CodexSystem codex = new CodexSystem();
+        GameState state = new GameState();
+        state.codexUnlocked = new java.util.HashMap<>();
+        assertEquals(java.util.List.of("codex_44"), codex.unlockForField(state, ArenaLayout.OPEN_HEARTH));
+        assertTrue(codex.unlockForField(state, ArenaLayout.OPEN_HEARTH).isEmpty(), "the ground does not unlock twice");
+        assertEquals(java.util.List.of("codex_46"), codex.unlockForField(state, ArenaLayout.THORNHEDGE));
+        assertTrue(codex.unlockForField(state, null).isEmpty());
+        assertTrue(codex.unlockForField(null, ArenaLayout.RUINED_RING).isEmpty());
+        assertEquals(2, codex.unlockedCount(state));
+    }
 
     @Test
     void freshRunUnlocksOnlyTheWaveOneEntry() {

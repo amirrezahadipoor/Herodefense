@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.story;
 
+import com.amirrezahadipoor.herodefense.gameplay.ArenaLayout;
 import com.amirrezahadipoor.herodefense.items.EquipmentSetBonus;
 import com.amirrezahadipoor.herodefense.items.MythicEffects;
 import com.amirrezahadipoor.herodefense.model.EliteAffix;
@@ -44,6 +45,27 @@ public final class CodexSystem {
         for (LoreEntry entry : LoreCatalog.all()) {
             if (entry.trigger() != LoreTrigger.WAVE_MILESTONE) continue;
             if (state.waveNumber >= parseInt(entry.triggerParam(), Integer.MAX_VALUE)
+                && unlock(state, entry.id())) {
+                unlocked.add(entry.id());
+            }
+        }
+        return unlocked;
+    }
+
+    /**
+     * Field entries 44-47: the night's ground, the first time it is fought on.
+     *
+     * <p>A run is fought on one of the arena's four fields, so this is one entry per run and four across four runs
+     * -- the codex is where a player finds out that the place they are standing in has a name, and that the other
+     * three places exist. It is unlocked on the run's first wave rather than the fortieth, because the ground is
+     * the one part of the night that is true before a single body walks in.
+     */
+    public List<String> unlockForField(GameState state, ArenaLayout layout) {
+        List<String> unlocked = new ArrayList<>();
+        if (state == null || layout == null) return unlocked;
+        for (LoreEntry entry : LoreCatalog.all()) {
+            if (entry.trigger() == LoreTrigger.FIELD_FIRST_NIGHT
+                && layout.name().equals(entry.triggerParam())
                 && unlock(state, entry.id())) {
                 unlocked.add(entry.id());
             }

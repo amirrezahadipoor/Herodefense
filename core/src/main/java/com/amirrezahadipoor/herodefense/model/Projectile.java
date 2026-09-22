@@ -15,6 +15,14 @@ public final class Projectile extends ArenaEntity {
     public boolean lodged;
     /** Seconds a lodged arrow stays drawn before it disappears. */
     public float lodgedSeconds;
+    /**
+     * The flight angle, in degrees, of an arrow that lodged.
+     *
+     * <p>The velocity is zeroed the moment an arrow lodges -- it has to stop, that is what lodging means -- so an
+     * arrow drawn from its velocity afterwards would keep flying into the rock at whatever angle the renderer
+     * guessed. The angle it arrived at is the one detail of the shot the stone keeps.
+     */
+    public float lodgedAngleDegrees;
 
     public Projectile() {
         super();

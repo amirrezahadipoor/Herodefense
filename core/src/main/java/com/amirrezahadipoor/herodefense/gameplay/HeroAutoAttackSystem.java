@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -415,6 +416,7 @@ public final class HeroAutoAttackSystem {
         projectile.y = impactY;
         projectile.lodged = true;
         projectile.lodgedSeconds = LODGED_ARROW_SECONDS;
+        projectile.lodgedAngleDegrees = MathUtils.atan2(dy, dx) * MathUtils.radiansToDegrees;
         projectile.velocityX = 0f;
         projectile.velocityY = 0f;
     }

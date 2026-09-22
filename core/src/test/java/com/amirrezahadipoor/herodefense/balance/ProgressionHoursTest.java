@@ -57,7 +57,7 @@ final class ProgressionHoursTest {
 
     @Test
     void codexHas34EntriesWithSlowestGateAt10Ascensions() {
-        assertEquals(43, LoreCatalog.all().size());
+        assertEquals(47, LoreCatalog.all().size());
         Map<LoreTrigger, Integer> counts = new EnumMap<>(LoreTrigger.class);
         int slowestAscension = 0;
         for (LoreEntry entry : LoreCatalog.all()) {

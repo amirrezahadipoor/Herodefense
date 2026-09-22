@@ -163,6 +163,8 @@ public final class EnemyWaveSpawner {
         }
         if (WaveEvents.heaviestFirst(event)) {
             WaveEvents.sortHeaviestFirst(planned);
+        } else if (WaveEvents.lightestFirst(event)) {
+            WaveEvents.sortLightestFirst(planned);
         }
         for (int index = 0; index < spawnCount; index++) {
             SpawnLane lane = WaveEvents.laneFor(event, index);

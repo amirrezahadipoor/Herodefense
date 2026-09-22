@@ -63,6 +63,10 @@ public final class CombatEntityRenderer implements AutoCloseable {
     static final float TELEGRAPH_SQUASH = 0.42f;
     static final float ELITE_DRAW_SCALE = 1.25f;
     static final int FOCUS_RING_SEGMENTS = 36;
+    /** How long the fade of a lodged arrow runs, matching the seconds `HeroAutoAttackSystem` leaves it alive. */
+    static final float LODGED_ARROW_FADE_SECONDS = 0.75f;
+    /** The share of the sprite that is inside the rock: a buried head reads as a hit, a floating one as a bug. */
+    static final float LODGED_ARROW_BURIED_SHARE = 0.34f;
     static final float FOCUS_RING_RADIUS = 108f;
     static final float FOCUS_RING_CENTER_Y_OFFSET = 73f;
     private static final Set<String> BOSS_ASSET_KEYS = bossAssetKeys();
@@ -177,6 +181,59 @@ public final class CombatEntityRenderer implements AutoCloseable {
         batch.setColor(1f, 1f, 1f, 1f);
     }
 
+    /**
+     * An arrow that has buried itself in solid ground.
+     *
+     * <p>This is the one frame the obstacle round owes the player: every arrow the stones eat would otherwise
+     * leave nothing behind, and an arena where shots vanish into rock without a mark is an arena that reads as a
+     * bug. So a lodged arrow is drawn where it stopped, at the angle it arrived at, with its head inside the rock:
+     * the shaft is shortened by a third, the fletching streak behind it is gone (nothing is moving), and it sinks
+     * out of sight over the three quarters of a second it has left rather than blinking away.
+     */
+    private void drawLodgedArrow(SpriteBatch batch, Projectile projectile) {
+        float fade = Math.max(0f, Math.min(1f, projectile.lodgedSeconds / LODGED_ARROW_FADE_SECONDS));
+        float angle = projectile.lodgedAngleDegrees;
+        Texture arrowTex;
+        float arrowW;
+        float arrowH;
+        if (projectile.critical) {
+            arrowTex = arrowCrit;
+            arrowW = 30f;
+            arrowH = 8f;
+        } else if (projectile.secondary) {
+            arrowTex = arrowSecondary;
+            arrowW = 20f;
+            arrowH = 5f;
+        } else {
+            arrowTex = arrowNormal;
+            arrowW = 26f;
+            arrowH = 6f;
+        }
+        float buried = arrowW * LODGED_ARROW_BURIED_SHARE;
+        float shaft = arrowW - buried;
+        // The arrow is anchored at the buried head, so the shaft grows back along the angle it arrived at.
+        float dx = com.badlogic.gdx.math.MathUtils.cosDeg(angle);
+        float dy = com.badlogic.gdx.math.MathUtils.sinDeg(angle);
+        float nearX = projectile.x + dx * buried * 0.5f;
+        float nearY = projectile.y + dy * buried * 0.5f;
+        batch.setColor(1f, 1f, 1f, 0.92f * fade);
+        batch.draw(
+            arrowTex,
+            nearX - shaft * 0.5f,
+            nearY - arrowH * 0.5f,
+            shaft * 0.5f,
+            arrowH * 0.5f,
+            shaft,
+            arrowH,
+            1f,
+            1f,
+            angle,
+            0, 0,
+            (int) shaft, (int) arrowH,
+            false, false
+        );
+    }
+
     private void drawProjectiles(SpriteBatch batch, GameState state) {
         int power = progressionStep(state);
         float heat = trailHeat(power);
@@ -185,6 +242,10 @@ public final class CombatEntityRenderer implements AutoCloseable {
         float goldBlue = 0.25f + (0.75f - 0.25f) * heat;
         for (Projectile projectile : state.projectiles) {
             if (projectile == null || !projectile.active) continue;
+            if (projectile.lodged) {
+                drawLodgedArrow(batch, projectile);
+                continue;
+            }
             float angle = projectileRotation(projectile.velocityX, projectile.velocityY);
             float speed = (float) Math.sqrt(
                 projectile.velocityX * projectile.velocityX

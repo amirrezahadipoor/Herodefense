@@ -3,7 +3,13 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.SpawnLane;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumMap;
 import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
@@ -31,9 +37,9 @@ class WaveEventsTest {
     @Test
     void everyEventKindIsReachableInAnOrdinaryRun() {
         Set<WaveEvents.Kind> seen = EnumSet.noneOf(WaveEvents.Kind.class);
-        // Eight kinds on a four-wave beat with boss and omen exclusions: a kind can be a hundred waves away, so the
-        // window is an ordinary run's first half rather than one loop of the rotation.
-        for (int wave = 1; wave <= 120; wave++) {
+        // Twelve kinds take turns one night per event wave, so the window is a run's first half (four hundred
+        // waves, three full cycles of the rotation) rather than one loop of it.
+        for (int wave = 1; wave <= 400; wave++) {
             seen.add(WaveEvents.eventFor(wave));
         }
         for (WaveEvents.Kind kind : WaveEvents.Kind.values()) {
@@ -42,6 +48,101 @@ class WaveEventsTest {
             }
             assertTrue(seen.contains(kind), "unreachable event kind: " + kind);
         }
+    }
+
+    @Test
+    void everyKindTakesExactlyOneNightPerCycleAndTheOpeningKeepsItsTwo() {
+        // The four nights inside the opening -- the run's first quarter, which is what the pressure gates measure
+        // by what a player who does not optimise survives -- are the four the shipped curve was measured with, in
+        // the order it was measured in. The new nights begin after them.
+        WaveEvents.Kind[] measured = {
+            WaveEvents.Kind.TIDAL, WaveEvents.Kind.ROOT_RAIN, WaveEvents.Kind.SPORE_DRIFT, WaveEvents.Kind.VANGUARD
+        };
+        int night = 0;
+        for (int wave = WaveEvents.FIRST_EVENT_WAVE; wave <= 50; wave++) {
+            if (!WaveEvents.isEventWave(wave)) {
+                continue;
+            }
+            assertEquals(measured[night], WaveEvents.eventFor(wave),
+                "the night the opening was measured with at wave " + wave + " moved");
+            night++;
+        }
+        assertEquals(measured.length, night, "four event waves must land in the first fifty waves");
+        Set<WaveEvents.Kind> after = EnumSet.noneOf(WaveEvents.Kind.class);
+        for (int wave = 51; wave <= 120; wave++) {
+            after.add(WaveEvents.eventFor(wave));
+        }
+        after.remove(WaveEvents.Kind.NONE);
+        assertTrue(after.size() >= 6, "the nights after the opening must be new ones, saw " + after);
+
+        Map<WaveEvents.Kind, Integer> nights = new EnumMap<>(WaveEvents.Kind.class);
+        for (int wave = 1; wave <= 400; wave++) {
+            if (!WaveEvents.isEventWave(wave)) {
+                continue;
+            }
+            nights.merge(WaveEvents.eventFor(wave), 1, Integer::sum);
+        }
+        assertEquals(12, nights.size(), "a cycle of twelve kinds must see all twelve: " + nights);
+        for (Map.Entry<WaveEvents.Kind, Integer> taken : nights.entrySet()) {
+            assertTrue(taken.getValue() >= 3,
+                taken.getKey() + " took only " + taken.getValue() + " nights in 400 waves");
+        }
+        int most = Collections.max(nights.values());
+        int least = Collections.min(nights.values());
+        assertTrue(most - least <= 1, "the rotation must be even: " + nights);
+    }
+
+    @Test
+    void everyEventWaveHasANightAndEveryNightIsAnEventWave() {
+        // The night the HUD names is the night the plan drew: a wave that is an event wave always has a kind, and
+        // a wave that is not is never given one. A kind silently attached to a boss or an omen wave would announce
+        // a night nobody is playing.
+        for (int wave = 1; wave <= 400; wave++) {
+            boolean event = WaveEvents.isEventWave(wave);
+            WaveEvents.Kind kind = WaveEvents.eventFor(wave);
+            if (event) {
+                assertNotEquals(WaveEvents.Kind.NONE, kind, "an event wave with no night: " + wave);
+            } else {
+                assertEquals(WaveEvents.Kind.NONE, kind, "a night on a wave that is not an event wave: " + wave);
+            }
+        }
+    }
+
+    @Test
+    void aMovingNightChangesOneArrivalPropertyAndWeatherChangesNone() {
+        for (WaveEvents.Kind kind : WaveEvents.Kind.values()) {
+            if (kind == WaveEvents.Kind.NONE) {
+                continue;
+            }
+            boolean moved = WaveEvents.jitterScale(kind) != 1f
+                || WaveEvents.heaviestFirst(kind)
+                || WaveEvents.lightestFirst(kind);
+            if (kind == WaveEvents.Kind.PINCER || kind == WaveEvents.Kind.ENCIRCLE) {
+                moved = true;
+            }
+            if (kind.isWeather()) {
+                assertFalse(moved, "a weather night moved the bodies: " + kind);
+            }
+        }
+        assertEquals(WaveEvents.ENCIRCLE_JITTER_SCALE, WaveEvents.jitterScale(WaveEvents.Kind.ENCIRCLE), 0f);
+        assertTrue(WaveEvents.lightestFirst(WaveEvents.Kind.TRICKLE));
+        assertFalse(WaveEvents.heaviestFirst(WaveEvents.Kind.TRICKLE));
+    }
+
+    @Test
+    void trickleIsTheMirrorOfAVanguardAndNeitherChangesWhatTheWaveIsMadeOf() {
+        EnemyType[] trickle = {EnemyType.FUNGAL_BRUTE, EnemyType.ROOTLING, EnemyType.GLOOM_WOLF};
+        EnemyType[] vanguard = trickle.clone();
+        WaveEvents.sortLightestFirst(trickle);
+        WaveEvents.sortHeaviestFirst(vanguard);
+        assertEquals(EnemyType.FUNGAL_BRUTE, vanguard[0]);
+        assertEquals(vanguard[0], trickle[trickle.length - 1], "the mirror of a vanguard walks in last");
+        assertEquals(vanguard[vanguard.length - 1], trickle[0]);
+        List<EnemyType> one = new ArrayList<>(List.of(trickle));
+        List<EnemyType> other = new ArrayList<>(List.of(vanguard));
+        one.sort(Comparator.comparing(EnemyType::name));
+        other.sort(Comparator.comparing(EnemyType::name));
+        assertEquals(other, one, "a trickle is the same wave in a different order, never a new draw");
     }
 
     @Test

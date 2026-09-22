@@ -190,7 +190,23 @@ public final class LoreCatalog {
             entry(43, "Grief, Still Warm", "سوگ، هنوز گرم",
                 "Standing close to that one is like standing close to a fire someone refuses to put out. It is not trying to hurt you. It is just still burning.",
                 "نزدیک ایستادن به او مثل نزدیک ایستادن به آتشی است که کسی حاضر نیست خاموشش کند. قصد آزارت را ندارد. فقط هنوز دارد می‌سوزد.",
-                LoreTrigger.ELITE_KILL, "cinderhalo")
+                LoreTrigger.ELITE_KILL, "cinderhalo"),
+            entry(44, "An Open Hearth", "اجاقی باز",
+                "Some nights I give you nothing to hide behind. Two stones, one on each side, and the rest is you and the distance you keep. Breathe. The open ground is not a punishment. It is the plainest version of the question.",
+                "بعضی شب‌ها هیچ پناهی نمی‌دهم. دو سنگ، یکی هر سو، و باقی‌اش تو هستی و فاصله‌ای که نگه می‌داری. نفس بکش. زمینِ باز تنبیه نیست. ساده‌ترین شکلِ پرسش است.",
+                LoreTrigger.FIELD_FIRST_NIGHT, "OPEN_HEARTH"),
+            entry(45, "The Ones Who Stand", "آن‌ها که می‌ایستند",
+                "Four stones stood here before either of us, and they have not moved. Walk behind one and your arrows stop at it too -- the stone does not know which side of the night you are on.",
+                "چهار سنگ پیش از من و تو اینجا ایستاده‌اند و تکان نخورده‌اند. پشت یکی برو و تیرهایت هم به آن می‌خورند — سنگ نمی‌داند تو از کدام سوى شب ایستاده‌ای.",
+                LoreTrigger.FIELD_FIRST_NIGHT, "STANDING_STONES"),
+            entry(46, "Low and Thorned", "کوتاه و خاردار",
+                "Small stones walked in a line, low enough to shoot over and high enough to trip a charge. Something planted them in a shape. I have never found out what, and I have had a long time to look.",
+                "سنگ‌های کوچک در یک ردیف راه افتاده‌اند، به‌قدری کوتاه که بتوان از رویشان تیر انداخت و به‌قدری بلند که یک یورش را بلغزاند. چیزی آن‌ها را به شکلی کاشته. هیچ‌وقت نفهمیدم چه، و برای نگاه‌کردن وقتِ زیادی داشته‌ام.",
+                LoreTrigger.FIELD_FIRST_NIGHT, "THORNHEDGE"),
+            entry(47, "A Ring, Broken", "حلقه‌ای شکسته",
+                "Someone built a circle here and left four gaps in it, one for each road. Whoever they were, they were expecting the same three directions we get. They did not leave a note. Only the ring.",
+                "کسی اینجا حلقه‌ای ساخته و چهار شکاف در آن گذاشته، یکی برای هر راه. هر که بوده، همان سه جهتی را انتظار داشته که ما داریم. یادداشتی نگذاشته. فقط حلقه مانده.",
+                LoreTrigger.FIELD_FIRST_NIGHT, "RUINED_RING")
     ));
 
     public static List<LoreEntry> all() {

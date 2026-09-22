@@ -145,7 +145,7 @@ the two fragments can unlock in either order.
 - Fragment I: "Stand too close and it loves you — the way an ember loves wind."
 - Fragment II: "That heat is not attack. It is grief, still warm."
 
-## 5. The Grove Codex — 34 Entries — D3 expands from 30 to 34 with 4 new boss identities
+## 5. The Grove Codex — 47 Entries — 34 story rows plus 12 elite fragments and the four fields
 
 Narrated in the Tree's voice throughout. Grouped by unlock trigger; the grouping is for
 implementation clarity only — display them unsorted-by-category once unlocked, ordinary list order.
@@ -198,6 +198,18 @@ implementation clarity only — display them unsorted-by-category once unlocked,
 32. **"Every Elite, Once"** *(kill at least one Elite of every affix type)* — *"You have heard every fragment I can whisper through them now. There is more to tell. There is always more. It is just not theirs to carry."*
 33. **"Fastest Fall"** *(clear a single wave in record time, e.g. under a defined threshold)* — *"That was over before the Hollow finished sending it. I do not think it noticed yet."*
 34. **"Two Hundred, Once More"** *(reach Wave 200 for the second time, any Ascension tier)* — *"The first time was survival. I suspect you already know what the second time was. Say it to yourself, if not to me."*
+
+
+### The four fields (codex 44-47, unlocked by fighting on the ground itself)
+
+The arena round gave a run four possible fields; these four rows are how the player finds out that the
+place they are standing in is one of four, and that the other three exist. A run unlocks exactly one of
+them, on its first wave, so the set is collected across runs rather than inside one.
+
+*44. **"An Open Hearth."** *(Open Hearth field)* *"Some nights I give you nothing to hide behind. Two stones, one on each side, and the rest is you and the distance you keep. Breathe. The open ground is not a punishment. It is the plainest version of the question."*
+*45. **"The Ones Who Stand."** *(Standing Stones field)* *"Four stones stood here before either of us, and they have not moved. Walk behind one and your arrows stop at it too -- the stone does not know which side of the night you are on."*
+*46. **"Low and Thorned."** *(Thornhedge field)* *"Small stones walked in a line, low enough to shoot over and high enough to trip a charge. Something planted them in a shape. I have never found out what, and I have had a long time to look."*
+*47. **"A Ring, Broken."** *(Ruined Ring field)* *"Someone built a circle here and left four gaps in it, one for each road. Whoever they were, they were expecting the same three directions we get. They did not leave a note. Only the ring."*
 
 ## 6. Branching Epilogues (shown at run end, before the Ascension transition on a win)
 

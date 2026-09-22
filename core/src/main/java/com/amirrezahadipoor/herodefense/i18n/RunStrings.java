@@ -31,6 +31,14 @@ public enum RunStrings implements Translated {
     OMEN_WARBAND_DETAIL("fewer, and heavier", "کمترند، ولی هرکدام سنگین‌تر است"),
 
     /** Wave events: how a wave arrives, and what the night looks like while it does. */
+    EVENT_WEDGE("WEDGE", "گوه"),
+    EVENT_WEDGE_DETAIL("one spear, down the middle road", "یک نیزه، از میان راه"),
+    EVENT_ENCIRCLE("ENCIRCLE", "محاصره"),
+    EVENT_ENCIRCLE_DETAIL("every road, at once", "همهٔ راه‌ها، هم‌زمان"),
+    EVENT_TRICKLE("TRICKLE", "چکه‌چکه"),
+    EVENT_TRICKLE_DETAIL("the lightest walk in first", "سبک‌ترین‌ها اول می‌رسند"),
+    EVENT_ASH_FALL("ASH FALL", "خاکستر"),
+    EVENT_ASH_FALL_DETAIL("cold ash settles on the grove", "خاکستر سرد می‌نشیند"),
     EVENT_PINCER("PINCER", "انبر"),
     EVENT_PINCER_DETAIL("they close from both sides", "از دو سو تنگ می‌کنند"),
     EVENT_TIDAL("TIDAL", "سیل"),

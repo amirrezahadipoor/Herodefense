@@ -54,6 +54,7 @@ public final class ArenaTerrain {
     /** One shared result pair, so a moving body costs no allocation. Private: nothing may alias it. */
     private static final float[] RESOLVED = new float[2];
 
+    private static final float[] CROWD_PUSH = new float[2];
     private static List<ArenaObstacle> cachedField = Collections.emptyList();
     private static long cachedSeed = Long.MIN_VALUE;
     private static ArenaLayout cachedLayout;
@@ -129,8 +130,8 @@ public final class ArenaTerrain {
         for (int attempt = 0; attempt < 8; attempt++) {
             ArenaObstacle candidate = new ArenaObstacle(x, y, radius, radius * 3.1f,
                 radius * (shelters ? 2.2f : 1.15f), variant, shelters);
-            float[] push = crowdPush(candidate, field);
-            if (push == null) {
+            float[] push = CROWD_PUSH;
+            if (!crowdPush(candidate, field, push)) {
                 field.add(candidate);
                 return;
             }
@@ -150,52 +151,67 @@ public final class ArenaTerrain {
         return Math.max(FIELD_MIN_Y, Math.min(FIELD_MAX_Y, y));
     }
 
-    /** How far a crowded outcrop has to move to be legal, or null when it already is. */
-    private static float[] crowdPush(ArenaObstacle candidate, List<ArenaObstacle> field) {
+    /**
+     * Writes into {@code out} how far a crowded outcrop has to move to be legal.
+     *
+     * <p>False when it is already legal, and the only answer the caller reads is the boolean: the vector travels in
+     * a caller-owned pair so a seed's placement pass allocates nothing and no caller can mistake "no push needed"
+     * for "push of nothing".
+     */
+    private static boolean crowdPush(ArenaObstacle candidate, List<ArenaObstacle> field, float[] out) {
         for (ArenaObstacle other : field) {
             float limit = candidate.radius + other.radius + POCKET_GAP;
             float dx = candidate.x - other.x;
             float dy = candidate.y - other.y;
             float distance = (float) Math.sqrt(dx * dx + dy * dy);
             if (distance < limit) {
-                return away(candidate, other.x, other.y, limit - distance + 1f, distance);
+                away(candidate, other.x, other.y, limit - distance + 1f, distance, out);
+                return true;
             }
         }
         float[] keepOuts = {WorldLayout.HERO_CENTER_X, WorldLayout.HERO_CENTER_Y, HERO_CLEARANCE};
         if (candidate.covers(keepOuts[0], keepOuts[1], keepOuts[2])) {
-            return away(candidate, keepOuts[0], keepOuts[1],
-                candidate.radius + keepOuts[2] - distanceTo(candidate, keepOuts[0], keepOuts[1]) + 1f,
-                distanceTo(candidate, keepOuts[0], keepOuts[1]));
+            float distance = distanceTo(candidate, keepOuts[0], keepOuts[1]);
+            away(candidate, keepOuts[0], keepOuts[1],
+                candidate.radius + keepOuts[2] - distance + 1f, distance, out);
+            return true;
         }
         float[][] mouths = {{-40f, WorldLayout.HERO_CENTER_Y}, {WorldLayout.REFERENCE_WIDTH + 40f,
             WorldLayout.HERO_CENTER_Y}, {WorldLayout.HERO_CENTER_X, -40f}};
         for (float[] mouth : mouths) {
             if (candidate.covers(mouth[0], mouth[1], SPAWN_CLEARANCE)) {
                 float distance = distanceTo(candidate, mouth[0], mouth[1]);
-                return away(candidate, mouth[0], mouth[1],
-                    candidate.radius + SPAWN_CLEARANCE - distance + 1f, distance);
+                away(candidate, mouth[0], mouth[1],
+                    candidate.radius + SPAWN_CLEARANCE - distance + 1f, distance, out);
+                return true;
             }
         }
         if (candidate.covers(WorldLayout.WORLD_TREE_X, WorldLayout.WORLD_TREE_Y, TREE_CLEARANCE)) {
             float distance = distanceTo(candidate, WorldLayout.WORLD_TREE_X, WorldLayout.WORLD_TREE_Y);
-            return away(candidate, WorldLayout.WORLD_TREE_X, WorldLayout.WORLD_TREE_Y,
-                candidate.radius + TREE_CLEARANCE - distance + 1f, distance);
+            away(candidate, WorldLayout.WORLD_TREE_X, WorldLayout.WORLD_TREE_Y,
+                candidate.radius + TREE_CLEARANCE - distance + 1f, distance, out);
+            return true;
         }
-        return null;
+        return false;
     }
 
     private static float distanceTo(ArenaObstacle obstacle, float x, float y) {
         return (float) Math.hypot(obstacle.x - x, obstacle.y - y);
     }
 
-    /** A push of {@code distance} along the line out of the point that is being crowded. */
-    private static float[] away(ArenaObstacle candidate, float fromX, float fromY, float distance, float current) {
+    /** A push of {@code distance} along the line out of the point that is being crowded, written into {@code out}. */
+    private static void away(
+        ArenaObstacle candidate, float fromX, float fromY, float distance, float current, float[] out
+    ) {
         float dx = candidate.x - fromX;
         float dy = candidate.y - fromY;
         if (current < 0.001f) {
-            return new float[] {0f, distance};
+            out[0] = 0f;
+            out[1] = distance;
+            return;
         }
-        return new float[] {dx / current * distance, dy / current * distance};
+        out[0] = dx / current * distance;
+        out[1] = dy / current * distance;
     }
 
     /** True when a body of {@code bodyRadius} centred here would be inside solid ground. */

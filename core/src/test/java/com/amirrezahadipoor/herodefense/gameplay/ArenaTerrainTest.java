@@ -7,6 +7,7 @@ import com.amirrezahadipoor.herodefense.model.GameState;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -229,6 +230,14 @@ class ArenaTerrainTest {
             "an arrow fired four hundred units short of every outcrop must reach its target");
     }
 
+    /** The grid cell a coordinate falls on, and the check that the Hero's ground really is on a grid line. */
+    private static int gridCell(float value, float origin) {
+        int index = Math.round((value - origin) / GRID);
+        assertEquals(0f, origin + index * GRID - value, 0.001f,
+            "the Hero's ground must fall on a grid line, or the flood starts from the wrong cell");
+        return index;
+    }
+
     /** Floods the walkable band from the Heroes ground: true when every standable square is reachable. */
     private static boolean fieldIsWalkable(List<ArenaObstacle> field) {
         int columns = (int) ((WorldLayout.HERO_WALK_MAX_X - WorldLayout.HERO_WALK_MIN_X) / GRID) + 1;
@@ -246,13 +255,13 @@ class ArenaTerrainTest {
                 }
             }
         }
-        int startColumn = Math.round((WorldLayout.HERO_CENTER_X - WorldLayout.HERO_WALK_MIN_X) / GRID);
-        int startRow = Math.round((WorldLayout.HERO_CENTER_Y - WorldLayout.HERO_WALK_MIN_Y) / GRID);
+        int startColumn = gridCell(WorldLayout.HERO_CENTER_X, WorldLayout.HERO_WALK_MIN_X);
+        int startRow = gridCell(WorldLayout.HERO_CENTER_Y, WorldLayout.HERO_WALK_MIN_Y);
         if (!free[startColumn][startRow]) {
             return false;
         }
         boolean[][] seen = new boolean[columns][rows];
-        ArrayDeque<int[]> queue = new ArrayDeque<>();
+        Deque<int[]> queue = new ArrayDeque<>();
         queue.add(new int[] {startColumn, startRow});
         seen[startColumn][startRow] = true;
         int reached = 0;

@@ -13,8 +13,10 @@ import com.amirrezahadipoor.herodefense.model.GameState;
  *
  * <p>Three things, one pass, because they are the same kind of drawing (tinted quads over the finished world)
  * and because they answer the same complaint: an arena that looked identical at wave 1 and wave 190. Weather
- * makes a night look like itself -- ash, fog, rain, spores -- and it is drawn from the plan's own weather kinds,
- * so a night that is announced as ember fall is a night you can see.
+ * makes a night look like itself -- ash, fog, rain, spores, cold ash -- and it is drawn from the plan's own
+ * weather kinds, so a night that is announced as ember fall is a night you can see. Each weather kind is its
+ * own colour, speed and shape rather than a tint of one another: fog drifts in wide bands, rain falls in thin
+ * fast threads, embers and spores tumble, and cold ash settles in the slowest and quietest pass of them all.
  *
  * <p>Weather is presentation only, and that is a contract rather than a habit: {@code WaveEventsTest} asserts a
  * weather night leaves every multiplier at identity, so nothing drawn here can make a wave harder than the wave
@@ -31,11 +33,13 @@ public final class NightWeatherRenderer implements AutoCloseable {
 
     /** How many motes a weather night carries. Enough to read as air, few enough to cost nothing. */
     static final int MOTE_COUNT = 26;
-    /** Ash, fog, rain and spores each get their own colour and speed. */
+    /** Ash, fog, rain, spores and fallen ash each get their own colour, speed and shape. */
     private static final Color EMBER = new Color(0.85f, 0.42f, 0.20f, 1f);
     private static final Color FOG = new Color(0.72f, 0.78f, 0.80f, 1f);
     private static final Color RAIN = new Color(0.45f, 0.62f, 0.55f, 1f);
     private static final Color SPORE = new Color(0.52f, 0.80f, 0.55f, 1f);
+    /** Cold ash is the quietest night in the game: grey, slow, and wider than it is tall. */
+    private static final Color ASH = new Color(0.62f, 0.60f, 0.57f, 1f);
     /** The vignette's darkest edge and its depth as a share of the frame's width. */
     static final float VIGNETTE_ALPHA = 0.30f;
     static final float VIGNETTE_DEPTH = 0.13f;
@@ -76,22 +80,26 @@ public final class NightWeatherRenderer implements AutoCloseable {
             case EMBER_FALL -> EMBER;
             case MOONFOG -> FOG;
             case ROOT_RAIN -> RAIN;
+            case ASH_FALL -> ASH;
             default -> SPORE;
         };
         float speed = switch (event) {
             case EMBER_FALL -> 34f;
             case ROOT_RAIN -> 210f;
             case MOONFOG -> 12f;
+            case ASH_FALL -> 17f;
             default -> 26f;
         };
         float width = switch (event) {
             case ROOT_RAIN -> 3f;
             case MOONFOG -> 90f;
+            case ASH_FALL -> 9f;
             default -> 7f;
         };
         float height = switch (event) {
             case ROOT_RAIN -> 46f;
             case MOONFOG -> 22f;
+            case ASH_FALL -> 5f;
             default -> 7f;
         };
         float clock = motionSuppressed ? 0f : timeSeconds;
@@ -102,8 +110,9 @@ public final class NightWeatherRenderer implements AutoCloseable {
             float travelled = (seedY * span + clock * speed) % span;
             float y = WorldLayout.REFERENCE_HEIGHT + 120f - travelled;
             float x = seedX * (WorldLayout.REFERENCE_WIDTH + 120f) - 60f;
-            if (event == WaveEvents.Kind.MOONFOG) {
-                float sway = (float) Math.sin((clock * 0.4f) + index) * 40f;
+            if (event == WaveEvents.Kind.MOONFOG || event == WaveEvents.Kind.ASH_FALL) {
+                float drift = event == WaveEvents.Kind.MOONFOG ? 40f : 16f;
+                float sway = (float) Math.sin((clock * 0.4f) + index) * drift;
                 x = (x + sway + WorldLayout.REFERENCE_WIDTH + 120f)
                     % (WorldLayout.REFERENCE_WIDTH + 120f) - 60f;
             }

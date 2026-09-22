@@ -105,6 +105,22 @@ tests, because a broken test is as expensive as a broken system.
   (`RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE`) — every branch of `TreeLetters.text` returns a written letter, so
   the emptiness check alone is enough.
 
+**The arena field's round (four fields, four ways to stand)**
+
+Both analysers looked at the obstacle round and every finding was fixed rather than excluded, including the two
+that were only reachable through a return value:
+
+* `ArenaTerrain.crowdPush` answered "this outcrop is already legal" with `null` (PMD
+  `ReturnEmptyCollectionRatherThanNull`, SpotBugs `PZLA_PREFER_ZERO_LENGTH_ARRAYS`) — the vector now travels in a
+  caller-owned pair and the method answers with a `boolean`, so a caller cannot read "no push" as "a push of
+  nothing", and the placement pass allocates nothing.
+* `ArenaTerrainTest` kept its flood queue in an `ArrayDeque` local (`LooseCoupling`) and worked out the flood's
+  start cell with `Math.round` over two constant expressions (`UM_UNNECESSARY_MATH`): the queue is declared as a
+  `Deque`, and the cell comes from a helper that takes its two coordinates as parameters and asserts the Hero's
+  ground really does fall on a grid line.
+* `ArenaTerrain.fieldFor` returning the cached field is the one finding this round that is **excluded** — see the
+  `MS_EXPOSE_REP` row below for why a per-frame copy would be the worse answer.
+
 ## Excluded, with the reason
 
 Each entry is also a comment in the config file, next to the exclusion it explains.
@@ -132,6 +148,7 @@ Each entry is also a comment in the config file, next to the exclusion it explai
 | `FE_FLOATING_POINT_EQUALITY` (SpotBugs) | 2 | Exact tie-breakers between two computed floats (rot-trail damage, focus-fire distance). An epsilon would silently change which candidate wins — a gameplay change, not a cleanup. |
 | `URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD` (SpotBugs) | 5 | Fields the test suite and the save format read (`Boss.uniqueAttack`, `Enemy.spawnLane`, `Hero.currentTargetId`, `GameState.schemaVersion`, `GameState.bareHandedEligible`); SpotBugs only sees the main source set. |
 | `LI_LAZY_INIT_STATIC`, `SING_SINGLETON_GETTER_NOT_SYNCHRONIZED`, `ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD` (SpotBugs) | 2 + 1 + 1 | All `GameFonts.shared`. The game runs entirely on the LibGDX render thread; the shared font set is created there, replaced when a new `Application` starts and released from `close()`. A lock would protect nothing. |
+| `MS_EXPOSE_REP` (SpotBugs) | 5 | Two live hand-backs that are deliberate: `GameFonts.shared` (render-thread lifecycle, above) and `ArenaTerrain.fieldFor`, which returns the arena field for the current (layout, run seed). That list is built once and wrapped unmodifiable, `ArenaObstacle` holds nothing that can be written back, and the readers are the movement systems, the bow and the renderers asking for it many times per frame — a copy per call would be an allocation in the draw loop for an object nobody may mutate. |
 
 ## What this buys
 
