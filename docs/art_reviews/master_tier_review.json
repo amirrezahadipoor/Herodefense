@@ -1,10 +1,10 @@
 {
  "budget": {
   "catalogBudgetBytes": 630000000,
-  "catalogDecodedBytes": 605351936,
-  "catalogHeadroomBytes": 24648064,
-  "combatBudgetBytes": 209715200,
-  "liveCombatResidencyBytes": 207765504,
+  "catalogDecodedBytes": 612429824,
+  "catalogHeadroomBytes": 17570176,
+  "combatBudgetBytes": 226492416,
+  "liveCombatResidencyBytes": 214843392,
   "residencyCommand": ":core:residencyReport"
  },
  "evidence": "docs/art_reviews/MASTER_TIER_PROVENANCE.md",
