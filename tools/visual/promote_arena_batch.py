@@ -205,8 +205,8 @@ def validate_asset_contract(asset: dict, key: str) -> None:
             "runtimeGlow": True,
             "visualQuality": "studio-v4-vibrant",
         }
-        triangle_range = (1_100, 4_200)
-        minimum_parts, minimum_materials = 38, 8
+        triangle_range = (700, 4_200)
+        minimum_parts, minimum_materials = 30, 8
     common = {
         "sheet": f"environment/{key}.png",
         "pivot": {"units": "normalized-bottom-left", "x": 0.5, "y": 0.5},

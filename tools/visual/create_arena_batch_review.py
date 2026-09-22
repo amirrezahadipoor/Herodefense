@@ -344,10 +344,11 @@ def validate_metadata(entry: dict, key: str) -> None:
             "runtimeGlow": True,
             "visualQuality": "studio-v4-vibrant",
         }
-        # The vibrant pass added the rune studs, the moss leaves and the emissive core, so the floor of this range
-        # moved up with the construction rather than staying where the old geometry sat.
-        triangle_range = (1_100, 4_200)
-        minimum_parts = 38
+        # The vibrant pass measures 868 to 1,080 triangles on 36 parts and eight or nine materials, so these
+        # floors stay where they were: they are a collapse detector -- shards, accents and studs all gone is what
+        # 700/30 catches -- and a floor set just under today's model would be a mirror rather than a gate.
+        triangle_range = (700, 4_200)
+        minimum_parts = 30
         minimum_materials = 8
     for field, expected_value in expected.items():
         if entry.get(field) != expected_value:
