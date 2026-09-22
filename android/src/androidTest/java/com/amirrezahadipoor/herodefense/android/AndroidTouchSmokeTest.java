@@ -942,7 +942,10 @@ public final class AndroidTouchSmokeTest {
         // collapse itself (58.44/0.9469 on run 35771990848; 57.44/0.9011 on run 35779690208). The pin
         // is the midpoint under the animated band, which reaches both states and run-to-run noise.
         ref("vfx-tree-collapse-premium-v2.png", 48.31f, 0.90f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        ref("defeat-premium-v2.png", 38.18f, 0.9784f),
+                // The defeat frame is two genuine scenes, like the collapse after it: the Hollow's parting
+        // box up (38.18/0.9784, two runs) or already closed (58.45/0.9469, run 35782024129) -- the pin
+        // is the midpoint under the animated band, which reaches both.
+        ref("defeat-premium-v2.png", 48.32f, 0.9469f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("trial-draft-premium-v2.png", 45.17f, 0.9736f),
         ref("settings-premium-v2.png", 47.26f, 0.9578f),
         ref("level-up-premium-v2.png", 45.94f, 0.9737f),
@@ -999,7 +1002,10 @@ public final class AndroidTouchSmokeTest {
         // profile's defeat) or gone (57.59/0.9014, run 35779690298) -- both measured on 2026-09-22, so
         // the pin is their midpoint under the animated band, which reaches both.
         ref("vfx-tree-collapse-premium-v2.png", 47.89f, 0.90f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        ref("defeat-premium-v2.png", 38.18f, 0.9784f),
+                // The defeat frame is two genuine scenes: the parting box up (38.18/0.9784, measured on this
+        // profile three runs in a row) or already closed (the arena at ~57.6/0.90, as run 35782024129's
+        // reference-profile run measured) -- the pin is the midpoint under the animated band.
+        ref("defeat-premium-v2.png", 47.89f, 0.9014f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("trial-draft-premium-v2.png", 45.22f, 0.9731f),
         ref("settings-premium-v2.png", 47.26f, 0.9578f),
         ref("level-up-premium-v2.png", 45.94f, 0.9737f),
@@ -1048,7 +1054,10 @@ public final class AndroidTouchSmokeTest {
         // 35.15/0.9157) or gone (55.10/0.8913, run 35771990474) -- the pin is their midpoint under the
         // animated band, which reaches both.
         ref("vfx-tree-collapse-premium-v2.png", 45.13f, 0.89f, ANIMATED_MEAN_LUMA_TOLERANCE),
-        ref("defeat-premium-v2.png", 35.15f, 0.9157f),
+                // The defeat frame is two genuine scenes: the parting box up (35.15/0.9157, run 35771990474)
+        // or already closed (55.10/0.8913, run 35782024107) -- the pin is the midpoint under the
+        // animated band, which reaches both.
+        ref("defeat-premium-v2.png", 45.13f, 0.8913f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("trial-draft-premium-v2.png", 42.98f, 0.9154f),
         ref("settings-premium-v2.png", 44.38f, 0.9148f),
         ref("level-up-premium-v2.png", 42.79f, 0.9065f),
