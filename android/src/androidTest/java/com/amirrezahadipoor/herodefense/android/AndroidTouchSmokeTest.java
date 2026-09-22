@@ -895,7 +895,12 @@ public final class AndroidTouchSmokeTest {
         // only the reference did, because the screen genuinely looks different now, and the difference
         // is the art the run was asked to draw.
         ref("tree-siege-premium-v2.png", 37.66f, 0.8032f),
-        ref("vfx-tree-collapse-premium-v2.png", 37.14f, 0.9840f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // Re-pinned on 2026-09-22 from this run's own brightness-measurements.txt (run 35712218124):
+        // the collapse frame is the same night arena a beat after the tree falls, so the shadow and weather
+        // pass darkens it exactly as it darkens tree-siege above, and the 0.9840 it carried was measured
+        // before that pass existed. The sibling profiles were re-pinned when they were last measured; this
+        // one was the last of the four still holding the brighter value.
+        ref("vfx-tree-collapse-premium-v2.png", 37.61f, 0.8032f, ANIMATED_MEAN_LUMA_TOLERANCE),
         // Re-measured 2026-09-21 after the death line began to speak in the box (run 35654155777,
         // brightness-measurements.txt: mean=37.50 lit=0.8178): the Hollow's parting word is up in the box
         // across the whole defeat capture and the reveal is held until it is done, so the reference is the
