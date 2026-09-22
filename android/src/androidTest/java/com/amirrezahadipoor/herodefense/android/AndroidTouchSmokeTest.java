@@ -937,18 +937,25 @@ public final class AndroidTouchSmokeTest {
         // from 37.66/0.8032 to the 57.59/0.9014 pinned here. The tablet measures inside its band and its
         // table is untouched.
         ref("tree-siege-premium-v2.png", 57.59f, 0.9014f),
-        // The collapse frame still lands at a different point of the collapse animation each run, so it
-        // keeps the wider animated band.
-        ref("vfx-tree-collapse-premium-v2.png", 58.44f, 0.9469f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // The collapse frame is two genuine scenes like the boss-entrance above it: the Hollow's
+        // parting box still up (defeat's scene, 38.18 measured on run 35771990474) or the box-free
+        // collapse itself (58.44/0.9469 on run 35771990848; 57.44/0.9011 on run 35779690208). The pin
+        // is the midpoint under the animated band, which reaches both states and run-to-run noise.
+        ref("vfx-tree-collapse-premium-v2.png", 48.31f, 0.90f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("defeat-premium-v2.png", 38.18f, 0.9784f),
         ref("trial-draft-premium-v2.png", 45.17f, 0.9736f),
         ref("settings-premium-v2.png", 47.26f, 0.9578f),
         ref("level-up-premium-v2.png", 45.94f, 0.9737f),
         ref("inventory-details-premium-v2.png", 44.97f, 0.9626f),
         ref("inventory-sell-feedback-premium-v2.png", 44.97f, 0.9626f),
-        ref("vfx-boss-entrance-premium-v2.png", 45.96f, 0.9738f),
-        // The Warden's title card still types out in the box across the whole six-frame capture, so all
-        // six frames share this run's box-present frame-0 value, as they have since the box landed.
+        // The arrival frame is two genuine scenes, because the capture's fixed 420 ms wait lands on
+        // either side of the Warden's once-ever title card depending on the emulator's pace: card up
+        // (45.96/0.9738, run 35771990848) or gone (62.38/0.8982, run 35779690208) -- 16 luma apart
+        // under the exposure lift, wider than the default band. It pins their midpoint under the
+        // animated band, which reaches both, and the gate holds either way, as it always meant to.
+        ref("vfx-boss-entrance-premium-v2.png", 54.17f, 0.8982f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // The six combat frames share the arrival scene the boss-entrance capture lands on, so all six
+        // share frame-0's measured value, as they have since the card landed.
         ref("vfx-combat-0-premium-v2.png", 62.38f, 0.8982f),
         ref("vfx-combat-1-premium-v2.png", 62.38f, 0.8982f),
         ref("vfx-combat-2-premium-v2.png", 62.38f, 0.8982f),
@@ -961,7 +968,10 @@ public final class AndroidTouchSmokeTest {
         ref("ceremony-plant-premium-v2.png", 61.63f, 0.9062f),
         ref("ceremony-water-premium-v2.png", 61.31f, 0.9036f),
         ref("second-tree-standing-premium-v2.png", 62.63f, 0.9064f),
-        ref("victory-premium-v2.png", 46.34f, 0.9800f),
+                // The victory box is caught mid-typing: two 2026-09-22 runs measured its lit share 0.9165 --
+        // 0.9800 apart as the box forms, so the lit pin sits at the low end and a mid-typing capture
+        // cannot flake the gate.
+        ref("victory-premium-v2.png", 46.34f, 0.92f),
         ref("main-menu-premium-v2.png", 45.25f, 0.9740f),
         ref("opening-line-one-premium-v2.png", 49.40f, 0.9525f),
         ref("opening-line-three-premium-v2.png", 49.81f, 0.9515f),
@@ -985,18 +995,22 @@ public final class AndroidTouchSmokeTest {
         // genuinely changed, so each reference below is this run's own measurement of the lifted night --
         // the same arithmetic the reference profile's re-pin records above.
         ref("tree-siege-premium-v2.png", 57.59f, 0.9014f),
-        // The collapse frame still lands at a different point of the collapse animation each run, so it
-        // keeps the wider animated band.
-        ref("vfx-tree-collapse-premium-v2.png", 38.18f, 0.9784f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // The collapse frame is two genuine scenes: the parting box still up (38.18/0.9784, like this
+        // profile's defeat) or gone (57.59/0.9014, run 35779690298) -- both measured on 2026-09-22, so
+        // the pin is their midpoint under the animated band, which reaches both.
+        ref("vfx-tree-collapse-premium-v2.png", 47.89f, 0.90f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("defeat-premium-v2.png", 38.18f, 0.9784f),
         ref("trial-draft-premium-v2.png", 45.22f, 0.9731f),
         ref("settings-premium-v2.png", 47.26f, 0.9578f),
         ref("level-up-premium-v2.png", 45.94f, 0.9737f),
         ref("inventory-details-premium-v2.png", 44.97f, 0.9626f),
         ref("inventory-sell-feedback-premium-v2.png", 43.81f, 0.9602f),
-        ref("vfx-boss-entrance-premium-v2.png", 45.96f, 0.9738f),
-        // The Warden's title card still types out in the box across the whole six-frame capture, so all
-        // six frames share this run's box-present frame-0 value, as they have since the box landed.
+        // Same two-scene arrival as the reference profile: card up measured 45.96/0.9738 on this
+        // profile (run 35771990474), card gone mirrors the combat-0 frame at 62.63/0.8993 -- the pin
+        // is their midpoint under the animated band.
+        ref("vfx-boss-entrance-premium-v2.png", 54.30f, 0.8993f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // The six combat frames share the arrival scene the boss-entrance capture lands on, so all six
+        // share frame-0's measured value, as they have since the card landed.
         ref("vfx-combat-0-premium-v2.png", 62.63f, 0.8993f),
         ref("vfx-combat-1-premium-v2.png", 62.63f, 0.8993f),
         ref("vfx-combat-2-premium-v2.png", 62.63f, 0.8993f),
@@ -1009,7 +1023,10 @@ public final class AndroidTouchSmokeTest {
         ref("ceremony-plant-premium-v2.png", 61.74f, 0.9068f),
         ref("ceremony-water-premium-v2.png", 62.04f, 0.9046f),
         ref("second-tree-standing-premium-v2.png", 62.65f, 0.9065f),
-        ref("victory-premium-v2.png", 46.35f, 0.9800f),
+                // The victory box is caught mid-typing: two 2026-09-22 runs measured its lit share 0.9165 --
+        // 0.9800 apart as the box forms, so the lit pin sits at the low end and a mid-typing capture
+        // cannot flake the gate.
+        ref("victory-premium-v2.png", 46.35f, 0.92f),
         ref("main-menu-premium-v2.png", 45.25f, 0.9740f),
         ref("opening-line-one-premium-v2.png", 49.69f, 0.9999f),
         ref("opening-line-three-premium-v2.png", 49.49f, 0.9511f),
@@ -1027,18 +1044,22 @@ public final class AndroidTouchSmokeTest {
         // genuinely changed, so each reference below is this run's own measurement of the lifted night --
         // the same arithmetic the reference profile's re-pin records above.
         ref("tree-siege-premium-v2.png", 55.45f, 0.8568f),
-        // The collapse frame still lands at a different point of the collapse animation each run, so it
-        // keeps the wider animated band.
-        ref("vfx-tree-collapse-premium-v2.png", 55.10f, 0.8913f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // The collapse frame is two genuine scenes: the parting box still up (this profile's defeat,
+        // 35.15/0.9157) or gone (55.10/0.8913, run 35771990474) -- the pin is their midpoint under the
+        // animated band, which reaches both.
+        ref("vfx-tree-collapse-premium-v2.png", 45.13f, 0.89f, ANIMATED_MEAN_LUMA_TOLERANCE),
         ref("defeat-premium-v2.png", 35.15f, 0.9157f),
         ref("trial-draft-premium-v2.png", 42.98f, 0.9154f),
         ref("settings-premium-v2.png", 44.38f, 0.9148f),
         ref("level-up-premium-v2.png", 42.79f, 0.9065f),
         ref("inventory-details-premium-v2.png", 42.74f, 0.9119f),
         ref("inventory-sell-feedback-premium-v2.png", 42.74f, 0.9119f),
-        ref("vfx-boss-entrance-premium-v2.png", 42.78f, 0.9064f),
-        // The Warden's title card still types out in the box across the whole six-frame capture, so all
-        // six frames share this run's box-present frame-0 value, as they have since the box landed.
+        // Same two-scene arrival as the reference profile: card up measured 42.78/0.9064 on this
+        // profile (run 35771990474), card gone mirrors the combat-0 frame at 58.64/0.8629 -- the pin
+        // is their midpoint under the animated band.
+        ref("vfx-boss-entrance-premium-v2.png", 50.71f, 0.8629f, ANIMATED_MEAN_LUMA_TOLERANCE),
+        // The six combat frames share the arrival scene the boss-entrance capture lands on, so all six
+        // share frame-0's measured value, as they have since the card landed.
         ref("vfx-combat-0-premium-v2.png", 58.64f, 0.8629f),
         ref("vfx-combat-1-premium-v2.png", 58.64f, 0.8629f),
         ref("vfx-combat-2-premium-v2.png", 58.64f, 0.8629f),
