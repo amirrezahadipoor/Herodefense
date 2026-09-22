@@ -67,6 +67,8 @@ def write_master(root: Path, asset: dict) -> None:
     Image.new("RGBA", (asset["sheetWidth"], asset["sheetHeight"]), (10, 20, 30, 255)).save(
         root / asset["sheets"][0]["file"]
     )
+    if "atlas" not in asset:
+        return
     (root / asset["atlas"]).write_text(
         f"{asset['key']}.png\nsize: {asset['sheetWidth']},{asset['sheetHeight']}\nformat: RGBA8888\n"
         f"filter: Nearest,Nearest\nrepeat: none\n{asset['key']}_idle\n  rotate: false\n"
@@ -139,6 +141,41 @@ class PublishRuntimeTierTest(unittest.TestCase):
             self.assertEqual(4, manifest["masterRender"]["pipelineVersion"])
             self.assertEqual([4, 48], manifest["masterRender"]["renderTierTop"])
             self.assertEqual("73.0-studio-v5-hd-pbr-4x48-pbr", manifest["masterRender"]["engineVersion"])
+
+    def test_a_class_that_ships_at_its_master_size_is_copied_and_says_so(self) -> None:
+        # The arena's props: the reviewed tier of the environment class is the size Blender rendered, so the LOD
+        # is a copy -- and halving it would produce a sheet the reviewed grid does not describe. The entry has to
+        # say which of the two happened, or a reviewer cannot tell a published master from a published half.
+        asset = master_asset([(0, 0)], key="crystal_prop_0")
+        asset["frameClass"] = "environment"
+        asset["frameSize"] = FRAME
+        asset["sheetWidth"] = FRAME
+        asset["sheetHeight"] = FRAME
+        asset["sheets"] = [{"file": "environment/crystal_prop_0.png", "width": FRAME, "height": FRAME,
+                            "decodedBytes": FRAME * FRAME * 4}]
+        asset["clips"] = {"idle": [{"x": 0, "y": 0, "width": FRAME, "height": FRAME, "index": 0, "page": 0}]}
+        asset.pop("atlas")
+        master = Path(tempfile.mkdtemp())
+        (master / "environment").mkdir(parents=True, exist_ok=True)
+        write_master(master, asset)
+        reviewed = Path(tempfile.mkdtemp())
+        (reviewed / "asset_manifest.json").write_text(
+            json.dumps({"assets": [{"key": "crystal_prop_0", "frameSize": FRAME,
+                                    "sheets": [{"width": FRAME, "height": FRAME}],
+                                    "clips": asset["clips"]}]}),
+            encoding="utf-8",
+        )
+        runtime = Path(tempfile.mkdtemp())
+        result = tier.publish(master, runtime, reviewed / "asset_manifest.json")
+        self.assertEqual("master-at-reviewed-size", result["assets"][0]["geometry"])
+        entry = json.loads((runtime / "asset_manifest.json").read_text(encoding="utf-8"))["assets"][0]
+        self.assertEqual(FRAME, entry["frameSize"], "the reviewed tier of this class is the render size")
+        self.assertIn("none: the reviewed tier", entry["masterRender"]["lod"])
+        self.assertEqual(
+            (master / "environment" / "crystal_prop_0.png").read_bytes(),
+            (runtime / "environment" / "crystal_prop_0.png").read_bytes(),
+            "the pixels a review accepted must be the pixels that ship",
+        )
 
     def test_resampling_fringe_is_cleared_without_touching_the_silhouette(self) -> None:
         # A resampling kernel spreads a few percent of alpha past the geometry. That halo is invisible, but it

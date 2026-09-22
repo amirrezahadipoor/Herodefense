@@ -28,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import shutil
 import re
 import sys
 from pathlib import Path
@@ -239,6 +240,89 @@ def runtime_entry(
     return entry
 
 
+def ships_at_master_size(reviewed_asset: dict, master_asset: dict) -> bool:
+    """True when the reviewed tier of this key IS the size the master was rendered at.
+
+    The environment class ships what Blender rendered: the arena's props are 384 px in the reviewed catalog and
+    384 px out of the render, so there is no LOD to perform and a halving would produce a sheet the reviewed grid
+    does not describe. The atlas classes (characters, bosses, the tree) are the ones whose masters are twice the
+    reviewed tier, and they take the halving path below.
+    """
+    if int(reviewed_asset.get("frameSize", 0)) != int(master_asset["frameSize"]):
+        return False
+    reviewed_sheets = reviewed_asset.get("sheets") or [{}]
+    master_sheets = master_asset.get("sheets") or [{}]
+    if (reviewed_sheets[0].get("width"), reviewed_sheets[0].get("height")) != (
+        master_sheets[0].get("width"), master_sheets[0].get("height")
+    ):
+        return False
+    return reviewed_grid(reviewed_asset) == master_grid(master_asset)
+
+
+def reviewed_grid(asset: dict) -> str:
+    return json.dumps(_ordered_clips(asset), sort_keys=True)
+
+
+def master_grid(asset: dict) -> str:
+    return json.dumps(_ordered_clips(asset), sort_keys=True)
+
+
+def _ordered_clips(asset: dict) -> dict:
+    return {
+        clip: sorted(frames, key=lambda frame: int(frame["index"]))
+        for clip, frames in (asset.get("clips") or {}).items()
+    }
+
+
+def publish_at_master_size(
+    master_dir: Path, runtime_dir: Path, master_asset: dict, master_engine_version: str | None
+) -> dict:
+    """Copy a master that is already the reviewed tier, and say so in the entry.
+
+    No resampling happens, so no resampling fringe exists and the pixels are copied byte for byte: the review
+    behind these files judged exactly these pixels, and anything this step did to them would make that judgement
+    about a different image.
+    """
+    sheet = master_asset["sheets"][0]
+    target = runtime_dir / sheet["file"]
+    target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(master_dir / sheet["file"], target)
+    if master_asset.get("atlas"):
+        atlas = master_asset["atlas"]
+        (runtime_dir / atlas).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(master_dir / atlas, runtime_dir / atlas)
+    if master_asset.get("sourcePath"):
+        metadata_source = master_dir / "sprites" / f"{master_asset['key']}.json"
+        if metadata_source.is_file():
+            (runtime_dir / "sprites").mkdir(parents=True, exist_ok=True)
+            shutil.copy2(metadata_source, runtime_dir / "sprites" / f"{master_asset['key']}.json")
+
+    entry = dict(master_asset)
+    entry["renderSupersample"], entry["renderSamples"] = _reviewed_tier(
+        master_asset["frameClass"], master_asset["key"]
+    )
+    entry["visualQuality"] = REVIEWED_VISUAL_QUALITY
+    entry["engineVersion"] = RUNTIME_ENGINE_VERSION
+    entry["masterRender"] = {
+        "frameSize": int(master_asset["frameSize"]),
+        "sheetWidth": int(master_asset["sheetWidth"]),
+        "sheetHeight": int(master_asset["sheetHeight"]),
+        "renderSupersample": int(master_asset["renderSupersample"]),
+        "renderSamples": int(master_asset["renderSamples"]),
+        "engineVersion": master_asset.get("engineVersion") or master_engine_version,
+        "lod": "none: the reviewed tier of this frame class is the size it was rendered at",
+    }
+    metadata = master_dir / "environment" / f"{master_asset['key']}.json"
+    if metadata.is_file():
+        payload = json.loads(metadata.read_text(encoding="utf-8"))
+        for field in ("renderSupersample", "renderSamples", "visualQuality", "engineVersion", "masterRender"):
+            payload[field] = entry[field]
+        target_metadata = runtime_dir / "environment" / f"{master_asset['key']}.json"
+        target_metadata.parent.mkdir(parents=True, exist_ok=True)
+        target_metadata.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return entry
+
+
 def publish(master_dir: Path, runtime_dir: Path, reviewed_manifest_path: Path) -> dict:
     master_manifest = json.loads((master_dir / "asset_manifest.json").read_text(encoding="utf-8"))
     reviewed_manifest = json.loads(reviewed_manifest_path.read_text(encoding="utf-8"))
@@ -253,6 +337,18 @@ def publish(master_dir: Path, runtime_dir: Path, reviewed_manifest_path: Path) -
     for master_asset in master_manifest["assets"]:
         key = master_asset["key"]
         reviewed_asset = reviewed_by_key.get(key)
+        if reviewed_asset is not None and ships_at_master_size(reviewed_asset, master_asset):
+            # This class ships the pixels Blender rendered: the copy is the LOD, and the entry says so.
+            (runtime_dir / (master_asset["sheets"][0]["file"])).parent.mkdir(parents=True, exist_ok=True)
+            entries.append(publish_at_master_size(
+                master_dir, runtime_dir, master_asset, master_manifest.get("engineVersion")
+            ))
+            report.append({
+                "key": key, "geometry": "master-at-reviewed-size", "frameSize": int(master_asset["frameSize"]),
+                "frames": sum(len(frames) for frames in master_asset["clips"].values()),
+                "fringePixelsCleared": 0,
+            })
+            continue
         if reviewed_asset is not None:
             clips = reviewed_layout(reviewed_asset, master_asset)
             geometry = "reviewed-grid"
