@@ -40,6 +40,14 @@ public final class PostProcessRenderer implements AutoCloseable {
     static final float BLOOM_INTENSITY = 0.22f;
     /** Corner darkening at full radial falloff. */
     static final float VIGNETTE_STRENGTH = 0.16f;
+    /**
+     * The night lift: how much brighter black-adjacent colour comes back from the composite. The arena
+     * art is painted as a night and the backdrop alone measures a mean of about 37 of 255, which read as
+     * simply too dark on a phone, so the composite multiplies each channel by this at black, easing to
+     * exactly one at white -- see {@link #lift(float, float)}. The bright pass reads the scene before the
+     * lift, so what blooms is unchanged; the HUD is drawn after the composite, so it is unchanged too.
+     */
+    static final float EXPOSURE = 1.5f;
     /** How long a critical hit's red edge pulse lasts, and the cap on stacked pulses. */
     static final float CRIT_PULSE_SECONDS = 0.35f;
 
@@ -138,6 +146,7 @@ public final class PostProcessRenderer implements AutoCloseable {
         compositeShader.setUniformi("u_bloom", 1);
         compositeShader.setUniformf("u_bloomIntensity", BLOOM_INTENSITY);
         compositeShader.setUniformf("u_vignette", VIGNETTE_STRENGTH);
+        compositeShader.setUniformf("u_exposure", EXPOSURE);
         compositeShader.setUniformf("u_pulse", critPulse());
         critPulseSeconds = Math.max(0f, critPulseSeconds - Gdx.graphics.getDeltaTime());
         bloomA.getColorBufferTexture().bind(1);
@@ -165,6 +174,16 @@ public final class PostProcessRenderer implements AutoCloseable {
      */
     public void pulseCrit() {
         critPulseSeconds = CRIT_PULSE_SECONDS;
+    }
+
+    /**
+     * The composite's lift, as the pure arithmetic the shader runs per channel: {@code value * (exposure -
+     * (exposure - 1) * value)}. Its slope at black is the exposure, it is exactly the identity at white, and
+     * for any exposure up to two it never falls or crosses one on the way -- so a dark ground gains, light that
+     * was already bright keeps its place, and nothing clips. Here so a test can hold it without a GPU.
+     */
+    static float lift(float value, float exposure) {
+        return value * (exposure - (exposure - 1f) * value);
     }
 
     /** Pulse strength 0..1 for the composite shader, decayed by the frame's own delta. */

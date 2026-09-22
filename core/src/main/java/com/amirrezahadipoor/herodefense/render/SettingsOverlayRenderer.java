@@ -85,16 +85,17 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     ) {
         batch.setProjectionMatrix(projection);
         batch.begin();
-        batch.setColor(0.70f, 0.80f, 0.76f, 1f);
-        ScreenEdges.drawCover(batch, backdrop());
+        // The backdrop at its own brightness under a lighter scrim, the way the menu draws it now: it was
+        // 0.70/0.80/0.76 under a 0.58 scrim, the darkest screen the game had.
         batch.setColor(1f, 1f, 1f, 1f);
+        ScreenEdges.drawCover(batch, backdrop());
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapes.setProjectionMatrix(projection);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
-        shapes.setColor(0.060f, 0.130f, 0.112f, 0.58f);
+        shapes.setColor(0.060f, 0.130f, 0.112f, 0.44f);
         shapes.rect(0f, ScreenEdges.bottom(), 720f, ScreenEdges.height());
         shapes.setColor(0.07f, 0.19f, 0.16f, 0.62f);
         shapes.rect(0f, 1096f, 720f, ScreenEdges.top() - 1096f);

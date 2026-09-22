@@ -30,13 +30,18 @@ import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
 import com.amirrezahadipoor.herodefense.save.GameStateCodec;
 
 import org.junit.After;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BooleanSupplier;
@@ -69,6 +74,40 @@ public final class AndroidTouchSmokeTest {
         }
         throw new AssertionError("the main menu has no tappable row for " + action);
     }
+
+    /**
+     * The brightness verdict comes last. Every frame a journey captures is measured and written the moment it
+     * is taken, and the contract's failures are collected rather than thrown; when the journey is over, the
+     * rule fails it with every violation at once (and the journey's own failure, if it had one, attached).
+     * The judgement is the same -- the same floors, the same bands, the same messages, and a journey with one
+     * bad frame still fails -- only the order changed, and the order is the point: when the contract threw at
+     * the first drifted frame it also ended the journey there, so a change that moved every screen (a lift of
+     * the whole night, a re-laid-out overlay) left one measured frame per journey and twenty-odd unmeasured
+     * ones. Re-pinning the tables then took a run per screen. Now one failing run measures everything, and
+     * the next commit can pin every screen from that run's own brightness-measurements.txt.
+     */
+    @Rule
+    public final TestRule brightnessVerdictLast = (base, description) -> new Statement() {
+        @Override
+        public void evaluate() throws Throwable {
+            BRIGHTNESS_VIOLATIONS.clear();
+            Throwable journeyFailure = null;
+            try {
+                base.evaluate();
+            } catch (Throwable failure) {
+                journeyFailure = failure;
+            }
+            if (BRIGHTNESS_VIOLATIONS.isEmpty()) {
+                if (journeyFailure != null) throw journeyFailure;
+                return;
+            }
+            AssertionError verdict = new AssertionError(description.getMethodName()
+                + ": " + BRIGHTNESS_VIOLATIONS.size() + " brightness contract violation(s):\n  "
+                + String.join("\n  ", BRIGHTNESS_VIOLATIONS));
+            if (journeyFailure != null) verdict.addSuppressed(journeyFailure);
+            throw verdict;
+        }
+    };
 
     @Test
     public void touchNavigatesMenuWavePauseInventoryDragAndResume() {
@@ -853,6 +892,8 @@ public final class AndroidTouchSmokeTest {
 
     private static final Map<String, float[]> BRIGHTNESS = new LinkedHashMap<>();
     private static final java.util.Set<String> UNREFERENCED = new java.util.LinkedHashSet<>();
+    /** The running journey's brightness violations; {@link #brightnessVerdictLast} fails it with them. */
+    private static final List<String> BRIGHTNESS_VIOLATIONS = new ArrayList<>();
 
 
     /** How far a screenshot may drift from its recorded mean before the run fails. */
@@ -1258,7 +1299,7 @@ public final class AndroidTouchSmokeTest {
         float mean = brightness[0];
         float lit = brightness[3];
         float floor = PROFILE_FLOORS.getOrDefault(runProfile, FIRST_CONTACT_FLOOR);
-        assertTrue(name + " mean luma " + mean + " below the " + runProfile + " floor of " + floor,
+        violationUnless(name + " mean luma " + mean + " below the " + runProfile + " floor of " + floor,
             mean >= floor);
         Map<String, float[]> references = PROFILE_TABLES.getOrDefault(runProfile, Map.of());
         float[] reference = references.get(name);
@@ -1270,12 +1311,22 @@ public final class AndroidTouchSmokeTest {
             return;
         }
         float tolerance = reference.length > 2 ? reference[2] : MEAN_LUMA_TOLERANCE;
-        assertTrue(name + " mean luma " + mean + " drifted from the recorded reference " + reference[0]
-                + " by more than " + tolerance,
+        violationUnless(name + " mean luma " + mean + " drifted from the recorded reference " + reference[0]
+                + " by more than " + tolerance + " (measured mean=" + mean + " lit=" + lit + ")",
             Math.abs(mean - reference[0]) <= tolerance);
-        assertTrue(name + " lit fraction " + lit + " dropped from the recorded reference " + reference[1],
+        violationUnless(name + " lit fraction " + lit + " dropped from the recorded reference " + reference[1],
             lit >= reference[1] - LIT_FRACTION_TOLERANCE);
-        assertTrue(name + " is mostly dark, lit fraction " + lit, lit >= 0.75f);
+        violationUnless(name + " is mostly dark, lit fraction " + lit, lit >= 0.75f);
+    }
+
+    /**
+     * One clause of the contract: a failed one is printed at once and kept for the journey's verdict (see
+     * {@link #brightnessVerdictLast}) instead of thrown, so the frames after it are still measured.
+     */
+    private static void violationUnless(String message, boolean held) {
+        if (held) return;
+        System.out.println("BRIGHTNESS VIOLATION " + message);
+        BRIGHTNESS_VIOLATIONS.add(message);
     }
 
     /**
@@ -1364,7 +1415,8 @@ public final class AndroidTouchSmokeTest {
         // lit share is below the recorded band: the frame is inside the mean's tolerance but still
         // fading, so it is a transition rather than the screen (run 35670734546, api 33 opening-line
         // one). A screen that really changed still fails: the retries only wait out transitions, and
-        // the assertion below is exactly what it was.
+        // the contract below is exactly what it was -- its verdict is simply delivered when the journey
+        // ends (see brightnessVerdictLast), so the frames after a drifted one are measured too.
         for (int attempt = 0; attempt < 8; attempt++) {
             if (screenshot != null) screenshot.recycle();
             screenshot = InstrumentationRegistry.getInstrumentation()

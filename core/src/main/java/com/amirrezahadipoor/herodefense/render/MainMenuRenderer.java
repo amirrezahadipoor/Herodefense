@@ -92,16 +92,17 @@ public final class MainMenuRenderer implements AutoCloseable {
     ) {
         batch.setProjectionMatrix(projection);
         batch.begin();
-        batch.setColor(0.82f, 0.90f, 0.86f, 1f);
-        ScreenEdges.drawCover(batch, backdrop());
+        // The backdrop at its own brightness under a lighter scrim: it was drawn at 0.82/0.90/0.86 under a
+        // 0.40 scrim, and the menu measured darker than the night it fronts for.
         batch.setColor(Color.WHITE);
+        ScreenEdges.drawCover(batch, backdrop());
         batch.end();
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapes.setProjectionMatrix(projection);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
-        shapes.setColor(0.060f, 0.130f, 0.112f, 0.40f);
+        shapes.setColor(0.060f, 0.130f, 0.112f, 0.26f);
         shapes.rect(0f, ScreenEdges.bottom(), 720f, ScreenEdges.height());
         shapes.setColor(0.040f, 0.095f, 0.085f, 0.34f);
         shapes.rect(0f, ScreenEdges.bottom(), 54f, ScreenEdges.height());

@@ -64,8 +64,37 @@ final class PostProcessShaderTest {
         assertTrue(undeclared.isEmpty(), "uniforms set against no fragment declaration: " + undeclared);
 
         assertEquals(
-            Set.of("u_threshold", "u_texelStep", "u_bloom", "u_bloomIntensity", "u_vignette", "u_pulse"),
+            Set.of("u_threshold", "u_texelStep", "u_bloom", "u_bloomIntensity", "u_vignette", "u_pulse",
+                "u_exposure"),
             declared);
+    }
+
+    /**
+     * The night lift is a lift, not a wash: black stays black, white stays white, nothing between them
+     * falls or clips, and a dark ground pixel comes back brighter by about the exposure. The shader runs
+     * the same expression per channel, and the source is held to it so the two cannot drift apart.
+     */
+    @Test
+    void theNightLiftBrightensTheDarkAndLeavesBlackAndWhiteAlone() throws IOException {
+        float exposure = PostProcessRenderer.EXPOSURE;
+        assertTrue(exposure > 1f && exposure <= 2f, "a lift the arithmetic stays monotonic under: " + exposure);
+        assertEquals(0f, PostProcessRenderer.lift(0f, exposure), "black is still black");
+        assertEquals(1f, PostProcessRenderer.lift(1f, exposure), 1e-6f, "white is still white");
+        float dark = 37f / 255f;
+        float lifted = PostProcessRenderer.lift(dark, exposure);
+        assertTrue(lifted > dark * 1.25f, "the night ground gains a quarter or more: " + lifted / dark);
+        float previous = 0f;
+        for (int step = 1; step <= 100; step++) {
+            float value = PostProcessRenderer.lift(step / 100f, exposure);
+            assertTrue(value > previous, "monotonic at " + step);
+            assertTrue(value <= 1f, "never clips at " + step);
+            previous = value;
+        }
+        String fragment = Files.readString(SHADERS.resolve("post-composite.frag"));
+        assertTrue(fragment.contains("lit * (u_exposure - (u_exposure - 1.0) * lit)"),
+            "the shader runs the same lift the test holds");
+        String bright = Files.readString(SHADERS.resolve("post-bright.frag"));
+        assertTrue(!bright.contains("u_exposure"), "the bright pass reads the scene before the lift");
     }
 
     @Test
