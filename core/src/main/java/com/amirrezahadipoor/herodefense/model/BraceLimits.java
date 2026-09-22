@@ -19,6 +19,29 @@ public final class BraceLimits {
     /** The share of a hit that gets through the shield. */
     public static final float DAMAGE_TAKEN_MULTIPLIER = 0.4f;
 
+    /**
+     * How long after the raise the shield is still <em>set</em>.
+     *
+     * <p>This is the number the whole verb turns on. A brace raised early is a damage reduction; a brace raised
+     * as the blow arrives is a negation. The window is short enough that it cannot be held -- four and a half
+     * tenths of a second, about the length of a boss's telegraph flash -- and long enough to be hittable by a
+     * player who is watching the enemy rather than the meter.
+     */
+    public static final float SET_WINDOW_SECONDS = 0.45f;
+    /**
+     * How much of the cooldown a set takes back.
+     *
+     * <p>Without the refund a set is still a twelve-second decision, and the mechanic would be a bonus for luck
+     * rather than a rhythm: read the blow, answer the blow, be ready for the next one. With it, two sets in a
+     * row are possible and three need the wave to keep coming -- which is the difference between a flourish and
+     * a way to play.
+     */
+    public static final float SET_COOLDOWN_REFUND_SECONDS = 6f;
+    /** Focus a set is worth, in landed hits' worth of charge: three normal arrows. */
+    public static final int SET_FOCUS_HITS = 3;
+    /** How long the set's ring stays visible after it lands. */
+    public static final float SET_FLASH_SECONDS = 0.5f;
+
     private BraceLimits() {
     }
 }

@@ -176,6 +176,7 @@ public final class CombatSystem {
         codexSystem.unlockForWaveReached(state);
         codexSystem.unlockForField(state, ArenaLayout.forSeed(state.runSeed));
         codexSystem.unlockSecretsForProgress(state);
+        codexSystem.unlockSecretsForSet(state);
         if (killRewards.coins() > 0) {
             audioManager.play(AudioCue.COIN_PICKUP);
             floatingCoinTextSystem.emit(

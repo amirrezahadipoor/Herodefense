@@ -173,6 +173,26 @@ public final class CodexSystem {
         return unlocked;
     }
 
+    /**
+     * Secret 48 The Set: the first blow a raised shield answered instead of absorbed.
+     *
+     * <p>It is a secret because it is the one mechanic the game never spells out in full: the onboarding line
+     * says a timed shield catches the blow, and the entry is what tells a player who found it why the wood
+     * sounded different. Reading the trigger off the run's own count rather than off a one-shot flag means it
+     * cannot be missed by a save that landed between the blow and the codex write.
+     */
+    public List<String> unlockSecretsForSet(GameState state) {
+        List<String> unlocked = new ArrayList<>();
+        if (state == null || state.hero == null) return unlocked;
+        if (state.hero.setsHeldThisRun <= 0) return unlocked;
+        for (LoreEntry entry : LoreCatalog.all()) {
+            if (entry.trigger() == LoreTrigger.SET_HELD && unlock(state, entry.id())) {
+                unlocked.add(entry.id());
+            }
+        }
+        return unlocked;
+    }
+
     /** Secret 31 The Long Pause: a 300+ second pause was resumed. */
     public List<String> unlockSecretsForPause(GameState state) {
         List<String> unlocked = new ArrayList<>();

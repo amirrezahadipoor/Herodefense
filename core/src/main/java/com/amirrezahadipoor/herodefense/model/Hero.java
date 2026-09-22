@@ -46,6 +46,12 @@ public final class Hero extends ArenaEntity {
     public float braceRemainingSeconds;
     /** Seconds until the shield may be raised again; ticks whether or not the brace is up. */
     public float braceCooldownSeconds;
+    /** Seconds since the shield went up: inside {@code BraceLimits.SET_WINDOW_SECONDS} a blow is set, not taken. */
+    public float braceElapsedSeconds;
+    /** How many blows this run has set. The count the HUD and the tests read. */
+    public int setsHeldThisRun;
+    /** Seconds of set-ring left to draw; presentation only, and it never touches the clocks above. */
+    public float setFlashSeconds;
 
     public Hero() {
         super();
@@ -176,8 +182,16 @@ public final class Hero extends ArenaEntity {
         braceCooldownSeconds = Float.isFinite(braceCooldownSeconds)
             ? Math.max(0f, Math.min(BraceLimits.COOLDOWN_SECONDS, braceCooldownSeconds))
             : 0f;
+        braceElapsedSeconds = Float.isFinite(braceElapsedSeconds)
+            ? Math.max(0f, Math.min(BraceLimits.BRACE_SECONDS, braceElapsedSeconds))
+            : 0f;
+        setsHeldThisRun = Math.max(0, setsHeldThisRun);
+        setFlashSeconds = Float.isFinite(setFlashSeconds)
+            ? Math.max(0f, Math.min(BraceLimits.SET_FLASH_SECONDS, setFlashSeconds))
+            : 0f;
         if (!alive) {
             braceRemainingSeconds = 0f;
+            setFlashSeconds = 0f;
         }
     }
 }

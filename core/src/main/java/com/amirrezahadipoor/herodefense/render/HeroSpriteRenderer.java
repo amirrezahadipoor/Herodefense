@@ -37,6 +37,11 @@ public final class HeroSpriteRenderer implements AutoCloseable {
     static final float METER_GAP_BELOW_FEET = 10f;
     /** E2: walk bob amplitude in world units. */
     static final float WALK_BOB_AMPLITUDE = 2.5f;
+    /** The set's burst: how far the four bars travel out from the chest, in world units. */
+    static final float SET_BURST_FROM = 46f;
+    static final float SET_BURST_TO = 132f;
+    static final float SET_BURST_BAR_LENGTH = 26f;
+    static final float SET_BURST_BAR_THICKNESS = 5f;
 
     private final TextureAtlas atlas;
     private final TextureAtlas ceremonyAtlas;
@@ -88,6 +93,34 @@ public final class HeroSpriteRenderer implements AutoCloseable {
         }
         drawStepMeter(batch, hero);
         drawBraceMeter(batch, hero);
+        drawSetBurst(batch, hero);
+    }
+
+    /**
+     * The burst a timed shield makes: four bars leaving the chest in a cross, fading as they go.
+     *
+     * <p>It is drawn from the same one-pixel texture the two meters use, so a set costs no new art and no new
+     * sheet in the residency budget. It is drawn only while {@code BraceLimits.SET_FLASH_SECONDS} is running -- a
+     * window a device journey never enters, because no journey braces -- which leaves every pinned brightness
+     * reference measuring exactly what it measured before.
+     */
+    private void drawSetBurst(SpriteBatch batch, Hero hero) {
+        if (hero == null || hero.setFlashSeconds <= 0f) {
+            return;
+        }
+        float progress = 1f - Math.max(0f, Math.min(1f, hero.setFlashSeconds / BraceLimits.SET_FLASH_SECONDS));
+        float distance = SET_BURST_FROM + (SET_BURST_TO - SET_BURST_FROM) * progress;
+        float thickness = SET_BURST_BAR_THICKNESS * (1f - progress * 0.6f);
+        float alpha = 1f - progress;
+        float centerX = hero.x;
+        float centerY = hero.y + 68f;
+        Texture texture = pixelTexture();
+        batch.setColor(0.72f, 0.88f, 0.97f, 0.88f * alpha);
+        batch.draw(texture, centerX - SET_BURST_BAR_LENGTH * 0.5f, centerY + distance, SET_BURST_BAR_LENGTH, thickness);
+        batch.draw(texture, centerX - SET_BURST_BAR_LENGTH * 0.5f, centerY - distance, SET_BURST_BAR_LENGTH, thickness);
+        batch.draw(texture, centerX + distance, centerY - SET_BURST_BAR_LENGTH * 0.5f, thickness, SET_BURST_BAR_LENGTH);
+        batch.draw(texture, centerX - distance, centerY - SET_BURST_BAR_LENGTH * 0.5f, thickness, SET_BURST_BAR_LENGTH);
+        batch.setColor(1f, 1f, 1f, 1f);
     }
 
     private void drawStepMeter(SpriteBatch batch, Hero hero) {

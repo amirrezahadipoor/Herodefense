@@ -441,11 +441,12 @@ public final class AndroidTouchSmokeTest {
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
             float[] correction = touchCorrection(game, MENU_X, continueY);
             await("doomed wave", () -> game.screenState() == GameScreenState.PLAYING);
-            // Phase 18: the Hero's death starts a short tree siege before the sanctuary falls. The
-            // slowest emulators (the foldable's, in particular) can need more than a minute of wall
-            // time before the first melee contact lands, so this is the one journey await that waits
-            // twice as long.
-            await("hero falls to the first melee hit", 120_000L, () ->
+            // Phase 18: the Hero's death starts a short tree siege before the sanctuary falls. This is
+            // wall time rather than game logic, and the foldable profile once needed more than two
+            // minutes for the first melee contact to land (run 35746897213 timed out at 120 s and
+            // passed with the same build), so the one await that depends on an emulator's own clock
+            // gets three times the usual budget.
+            await("hero falls to the first melee hit", 180_000L, () ->
                 !game.gameState().hero.alive
             );
             assertTrue(game.screenState() == GameScreenState.PLAYING

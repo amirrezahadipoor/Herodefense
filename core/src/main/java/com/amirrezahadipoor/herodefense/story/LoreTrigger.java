@@ -8,5 +8,7 @@ public enum LoreTrigger {
     BOSS_FIRST_KILL,
     ELITE_KILL,
     ASCENSION,
-    SECRET
+    SECRET,
+    /** The first blow a raised shield answered rather than absorbed: the set. */
+    SET_HELD
 }

@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 final class LoreCatalogTest {
     @Test
     void definesEveryEntrySequentiallyNumberedAndUnique() {
-        assertEquals(47, LoreCatalog.all().size());
+        assertEquals(48, LoreCatalog.all().size());
         Set<String> ids = new HashSet<>();
         int expected = 1;
         for (LoreEntry entry : LoreCatalog.all()) {
@@ -29,7 +29,7 @@ final class LoreCatalogTest {
             assertFalse(entry.triggerParam().isBlank());
             expected++;
         }
-        assertEquals(47, ids.size());
+        assertEquals(48, ids.size());
         assertNotNull(LoreCatalog.byId("codex_01"));
         assertNotNull(LoreCatalog.byId("codex_47"));
     }
@@ -46,6 +46,7 @@ final class LoreCatalogTest {
         assertEquals(5, counts.get(LoreTrigger.ASCENSION));
         assertEquals(10, counts.get(LoreTrigger.SECRET));
         assertEquals(ArenaLayout.values().length, counts.get(LoreTrigger.FIELD_FIRST_NIGHT));
+        assertEquals(1, counts.get(LoreTrigger.SET_HELD), "one entry for the timed shield, and it is a secret of its own");
     }
 
     @Test

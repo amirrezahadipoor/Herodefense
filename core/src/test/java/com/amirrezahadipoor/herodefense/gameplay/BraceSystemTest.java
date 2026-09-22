@@ -57,8 +57,11 @@ final class BraceSystemTest {
         new HeroDamageSystem().applyIncomingHit(open, 10f);
         assertEquals(before - 10f, open.hero.health, 0.001f, "unbraced, ten damage is ten damage");
 
+        // A brace raised long before the blow is the reduction this test is about; a brace raised into the blow
+        // is the set, and BraceSetTest owns that contract.
         GameState braced = fresh();
         assertTrue(BraceSystem.tryBrace(braced));
+        age(braced, BraceLimits.SET_WINDOW_SECONDS + 0.05f);
         float bracedBefore = braced.hero.health;
         new HeroDamageSystem().applyIncomingHit(braced, 10f);
         assertEquals(bracedBefore - 10f * BraceLimits.DAMAGE_TAKEN_MULTIPLIER, braced.hero.health, 0.001f,
@@ -140,6 +143,8 @@ final class BraceSystemTest {
         state.hero.braceRemainingSeconds = 99f;
         state.hero.braceCooldownSeconds = -4f;
         state.hero.validateAndRepair();
+        assertEquals(0f, state.hero.braceElapsedSeconds,
+            "and it cannot claim the shield was raised before it was raised");
         assertEquals(BraceLimits.BRACE_SECONDS, state.hero.braceRemainingSeconds,
             "a save cannot grant a longer shield than the game's own");
         assertEquals(0f, state.hero.braceCooldownSeconds);

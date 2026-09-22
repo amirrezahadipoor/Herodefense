@@ -22,6 +22,9 @@ public final class HeroDamageSystem {
         if (state == null || state.hero == null || !state.hero.alive || damage <= 0f) {
             return IncomingHitResult.IGNORED;
         }
+        if (BraceSystem.holdTheSet(state)) {
+            return IncomingHitResult.HELD;
+        }
         return applyIncomingHitWithRoll(state, damage, state.nextCombatRandomFloat());
     }
 
@@ -49,6 +52,11 @@ public final class HeroDamageSystem {
     public IncomingHitResult applyIncomingHitWithRoll(GameState state, float damage, float dodgeRoll) {
         if (state == null || state.hero == null || !state.hero.alive || damage <= 0f) {
             return IncomingHitResult.IGNORED;
+        }
+        // A blow that was timed is answered before the roll: the dodge die is a stat, and it is not spent on a
+        // hit the player already took care of.
+        if (BraceSystem.holdTheSet(state)) {
+            return IncomingHitResult.HELD;
         }
         IncomingHitResult result = state.hero.receiveIncomingHit(
             damage * TrialEffects.damageTakenMultiplier(state.activeTrials)

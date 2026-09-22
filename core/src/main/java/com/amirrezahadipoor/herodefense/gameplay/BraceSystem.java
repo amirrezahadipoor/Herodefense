@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
 import com.amirrezahadipoor.herodefense.model.BraceLimits;
+import com.amirrezahadipoor.herodefense.model.IncomingHitResult;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.Hero;
 
@@ -19,6 +20,15 @@ import com.amirrezahadipoor.herodefense.model.Hero;
  * nothing to release. It needs no new button, no new art and no new sound -- the sfx roster is exactly what
  * roadmap F2 measures, and borrowing a cue for the shield would deepen the reuse that finding counts -- so the
  * feedback is the sprite's tint, the bar under the feet and the haptic tap the router already owns.
+ *
+ * <p><b>The set.</b> A brace raised into a blow is not the same verb as a brace raised early, and the difference
+ * is the whole reason a player watches the enemy rather than the cooldown. Inside
+ * {@code BraceLimits.SET_WINDOW_SECONDS} of the raise, one discrete blow is <em>held</em>: nothing is taken, the
+ * dodge die is not spent, half the cooldown comes back and the Focus meter gains three arrows' worth. The rot is
+ * not settable (it is ground damage, and a half-second of immunity to it every twelve seconds would be a
+ * different mechanic wearing this one's name), one raise answers exactly one blow, and a set is counted where the
+ * player can see it. No simulated policy ever raises the shield, which is why the published bands were measured
+ * without it and stay measured without it -- see {@code docs/BALANCE.md}.
  *
  * <p>What the brace deliberately does not do is dodge. {@code BossSpecialAttackSystem} applies its hits through
  * the damage pipeline with no position test, and the brace answers that from the other side: the special still
@@ -40,6 +50,47 @@ public final class BraceSystem {
     /** Whether the shield is up right now. */
     public static boolean isBracing(GameState state) {
         return state != null && state.hero != null && state.hero.braceRemainingSeconds > 0f;
+    }
+
+    /**
+     * Whether the shield is up <em>and still set</em>: the window in which the next blow is answered rather than
+     * taken. This is the number a player is reading, so it is a method rather than a comment.
+     */
+    public static boolean isSet(GameState state) {
+        return isBracing(state) && state.hero.braceElapsedSeconds <= BraceLimits.SET_WINDOW_SECONDS;
+    }
+
+    /**
+     * Answers one discrete blow with a shield that was raised into it.
+     *
+     * <p>Called from {@code HeroDamageSystem} before anything is subtracted, and only for blows that come from a
+     * body: the rot is ground damage nobody dodges and nothing sets, so a hero standing in it is not suddenly
+     * untouchable for half a second every twelve seconds.
+     *
+     * <p>The reward is deliberately not damage. A set gives back half the cooldown -- so an accurate player can
+     * set again inside the same wave -- and three arrows' worth of Focus, which is the meter the whole build
+     * already revolves around. That makes the accurate play <em>more of the same game</em> rather than a side
+     * mechanic with its own economy.
+     *
+     * @return true when the blow was held, which the caller reports as {@link IncomingHitResult#HELD}
+     */
+    public static boolean holdTheSet(GameState state) {
+        if (!isSet(state)) {
+            return false;
+        }
+        Hero hero = state.hero;
+        hero.setsHeldThisRun++;
+        hero.setFlashSeconds = BraceLimits.SET_FLASH_SECONDS;
+        // The shield stays up for the rest of its three seconds and the cooldown keeps running down; the set
+        // takes back its own share of that cooldown, and no more.
+        hero.braceCooldownSeconds = Math.max(
+            0f, hero.braceCooldownSeconds - BraceLimits.SET_COOLDOWN_REFUND_SECONDS
+        );
+        FocusSystem.addHits(state, BraceLimits.SET_FOCUS_HITS, 0, 0);
+        // A set is a whole window of its own: the next blow in the same brace is a reduction again, not a second
+        // negation, so one raise can never answer a pack of bodies.
+        hero.braceElapsedSeconds = BraceLimits.BRACE_SECONDS;
+        return true;
     }
 
     /** Whether raising the shield would take: alive, and the cooldown spent. */
@@ -65,6 +116,7 @@ public final class BraceSystem {
         }
         state.hero.braceRemainingSeconds = BraceLimits.BRACE_SECONDS;
         state.hero.braceCooldownSeconds = BraceLimits.COOLDOWN_SECONDS;
+        state.hero.braceElapsedSeconds = 0f;
         // A live step order under a planted shield would walk the Hero out of its own stance on the next tick.
         state.hero.moveOrderActive = false;
         return true;
@@ -88,12 +140,17 @@ public final class BraceSystem {
         Hero hero = state.hero;
         if (hero.braceRemainingSeconds > 0f) {
             hero.braceRemainingSeconds = Math.max(0f, hero.braceRemainingSeconds - deltaSeconds);
+            hero.braceElapsedSeconds += deltaSeconds;
+        }
+        if (hero.setFlashSeconds > 0f) {
+            hero.setFlashSeconds = Math.max(0f, hero.setFlashSeconds - deltaSeconds);
         }
         if (hero.braceCooldownSeconds > 0f) {
             hero.braceCooldownSeconds = Math.max(0f, hero.braceCooldownSeconds - deltaSeconds);
         }
         if (!hero.alive) {
             hero.braceRemainingSeconds = 0f;
+            hero.setFlashSeconds = 0f;
         }
     }
 }

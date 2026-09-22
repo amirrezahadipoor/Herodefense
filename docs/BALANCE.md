@@ -714,6 +714,33 @@ rather than a button that is always right to press:
 | feet while up | **planted** | `HeroMovementSystem.orderStepTo` refuses; a live step order is voided |
 | gesture | **a tap on the Hero's own body** | `BraceSystem.tapHitsHero`, the one arena tap that meant nothing |
 
+### The set: a raised shield versus a shield raised into the blow
+
+The brace is worth what it is worth to an accurate player as well as to a cautious one, and the difference is
+timing rather than a second button:
+
+| quantity | value | where it comes from |
+| --- | --- | --- |
+| the set window | **0.45 s** | `BraceLimits.SET_WINDOW_SECONDS`, measured from the raise |
+| a blow that lands inside it | **held whole** | `BraceSystem.holdTheSet`, called from `HeroDamageSystem` before the roll |
+| blows one raise can hold | **exactly one** | the window closes after the set, so a pack is a reduction, not a free pass |
+| the set's reward | **6 s of cooldown back and 3 arrows of Focus** | `SET_COOLDOWN_REFUND_SECONDS`, `SET_FOCUS_HITS` |
+| the rot | **not settable** | `applyEnvironmentalHit` never calls the set: ground damage is stood on |
+| the dodge die | **not spent** | a held blow is a decision, not a stat roll, so the persisted stream is untouched |
+
+The window is deliberately shorter than a human reaction to anything but a telegraph -- about the length of a
+boss's windup flash -- so it cannot be held and has to be read. The reward is deliberately in currencies the run
+already uses: half the cooldown means two sets fit inside one wave and three need the wave to keep coming, and
+three arrows of Focus means the accurate play feeds the meter the whole build revolves around rather than opening
+a second economy beside it. A player who never times anything still has the brace's old contract -- three seconds
+of sixty percent off -- and the onboarding line, the codex entry and the burst around the Hero are the three
+places the game says so.
+
+The same argument as the brace holds for the bands: no simulated policy raises the shield, so the set is
+unreachable from `BalanceSimulator` and every published number stays a floor. `BraceSetTest` pins that
+unreachability (the simulator scan) along with the window's edge, the one-blow rule, the rot's exemption and the
+untouched dodge stream.
+
 The arithmetic of the trade: at most a quarter of a run can be braced (3 of every 12 seconds), and bracing costs
 the bow's whole uptime while it lasts, so a player who braces on schedule gives up a quarter of their damage to
 take sixty percent off whatever lands inside the windows. Against a boss special -- which

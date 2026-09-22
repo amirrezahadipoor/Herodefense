@@ -58,8 +58,8 @@ public enum OnboardingStrings implements Translated {
      * same breath as the gesture, because a player who learned to step in lesson two will otherwise spend the
      * first boss telegraph discovering the exception the hard way.
      */
-    BRACE_LINE("A boss's great blow finds you anywhere: tap the Hero to brace and shield it",
-        "ضربهٔ بزرگ غول هر جای میدان شما را پیدا می‌کند: روی قهرمان بزنید تا سپر بگیرد"),
+    BRACE_LINE("A blow finds you anywhere: tap the Hero as it falls and the raised shield holds all of it",
+        "ضربه هر جای میدان شما را پیدا می‌کند: همان لحظه که فرود می‌آید روی قهرمان بزنید تا سپر تمامش را بگیرد"),
     BRACE_HINT("the Hero's own body", "تنِ خودِ قهرمان"),
 
     /** Step 4: collect. {@code DropPickupSystem} homes drops in after a short delay; nobody walks to them. */

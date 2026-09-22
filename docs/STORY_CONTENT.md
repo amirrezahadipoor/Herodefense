@@ -145,7 +145,7 @@ the two fragments can unlock in either order.
 - Fragment I: "Stand too close and it loves you — the way an ember loves wind."
 - Fragment II: "That heat is not attack. It is grief, still warm."
 
-## 5. The Grove Codex — 47 Entries — 34 story rows plus 12 elite fragments and the four fields
+## 5. The Grove Codex — 48 Entries — 34 story rows, 12 elite fragments, the four fields and the set
 
 Narrated in the Tree's voice throughout. Grouped by unlock trigger; the grouping is for
 implementation clarity only — display them unsorted-by-category once unlocked, ordinary list order.
@@ -210,6 +210,13 @@ them, on its first wave, so the set is collected across runs rather than inside 
 *45. **"The Ones Who Stand."** *(Standing Stones field)* *"Four stones stood here before either of us, and they have not moved. Walk behind one and your arrows stop at it too -- the stone does not know which side of the night you are on."*
 *46. **"Low and Thorned."** *(Thornhedge field)* *"Small stones walked in a line, low enough to shoot over and high enough to trip a charge. Something planted them in a shape. I have never found out what, and I have had a long time to look."*
 *47. **"A Ring, Broken."** *(Ruined Ring field)* *"Someone built a circle here and left four gaps in it, one for each road. Whoever they were, they were expecting the same three directions we get. They did not leave a note. Only the ring."*
+
+### The set (codex 48, unlocked by timing a brace into a blow)
+
+The one mechanic the game does not spell out: `BraceSystem` holds a blow whole while the shield is still *set*
+(`BraceLimits.SET_WINDOW_SECONDS`), and the entry is what a player who found it reads afterwards.
+
+*48. **"Held, Not Blocked."** *(hold any blow with a raised shield)* *"There is a difference between a shield raised early and a shield raised into the blow. The first one takes a share of it. The second one takes all of it, and the wood knows you were watching. Raise it late and you will learn the difference the hard way."*
 
 ## 6. Branching Epilogues (shown at run end, before the Ascension transition on a win)
 

@@ -134,7 +134,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `MOVE_HINT` | the ground beside the Hero | زمین کنار قهرمان | Approved. Clear spatial instruction. |
 | `ULTIMATE_LINE` | When the focus meter fills, tap ULTIMATE to spend it | وقتی نوار تمرکز پر شد، ضربهٔ نهایی را بزنید | Approved. Actionable ability guide. |
 | `ULTIMATE_HINT` | the ULTIMATE button | دکمهٔ ضربهٔ نهایی | Approved. Target button name. |
-| `BRACE_LINE` | A boss's great blow finds you anywhere: tap the Hero to brace and shield it | ضربهٔ بزرگ غول هر جای میدان شما را پیدا می‌کند: روی قهرمان بزنید تا سپر بگیرد | Approved. Explains undodgeable special attack. |
+| `BRACE_LINE` | A blow finds you anywhere: tap the Hero as it falls and the raised shield holds all of it | ضربه هر جای میدان شما را پیدا می‌کند: همان لحظه که فرود می‌آید روی قهرمان بزنید تا سپر تمامش را بگیرد | Approved. Teaches both the undodgeable special and the timed set: «همان لحظه که فرود می‌آید» says when to tap, «تمامش را» says what a timed shield is worth. |
 | `BRACE_HINT` | the Hero's own body | تنِ خودِ قهرمان | Approved. Direct touch target. |
 | `LOOT_LINE` | Coins and drops reach the Hero on their own after a moment | سکه‌ها و غنیمت‌ها بعد از یک لحظه خودشان به قهرمان می‌رسند | Approved. Clarifies auto-pickup system. |
 | `LOOT_HINT` | a drop on the ground | یک غنیمت روی زمین | Approved. Drop clarity. |

@@ -206,7 +206,15 @@ public final class LoreCatalog {
             entry(47, "A Ring, Broken", "حلقه‌ای شکسته",
                 "Someone built a circle here and left four gaps in it, one for each road. Whoever they were, they were expecting the same three directions we get. They did not leave a note. Only the ring.",
                 "کسی اینجا حلقه‌ای ساخته و چهار شکاف در آن گذاشته، یکی برای هر راه. هر که بوده، همان سه جهتی را انتظار داشته که ما داریم. یادداشتی نگذاشته. فقط حلقه مانده.",
-                LoreTrigger.FIELD_FIRST_NIGHT, "RUINED_RING")
+                LoreTrigger.FIELD_FIRST_NIGHT, "RUINED_RING"),
+            entry(48, "Held, Not Blocked", "نگه‌داشت، نه فقط سپر",
+                "There is a difference between a shield raised early and a shield raised into the blow. The first "
+                    + "one takes a share of it. The second one takes all of it, and the wood knows you were "
+                    + "watching. Raise it late and you will learn the difference the hard way.",
+                "تفاوت است میان سپری که زود بالا می‌رود و سپری که به‌سوی ضربه بالا می‌رود. اولی سهمی از ضربه را "
+                    + "می‌گیرد. دومی تمامش را می‌گیرد، و چوب می‌فهمد که تو داشتی نگاه می‌کردی. دیر بالا ببر، و "
+                    + "تفاوت را به سختی یاد می‌گیری.",
+                LoreTrigger.SET_HELD, "set")
     ));
 
     public static List<LoreEntry> all() {
