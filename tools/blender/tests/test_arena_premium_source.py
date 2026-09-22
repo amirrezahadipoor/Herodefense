@@ -28,8 +28,10 @@ class ArenaPremiumSourceTest(unittest.TestCase):
         self.assertIn('args.batch == "arena"', self.generator)
         self.assertIn("render_arena_environment(output, only)", self.generator)
         self.assertIn('"arena_backdrop", "environment", "arena"', self.generator)
-        for family in ("ground_tile_", "crystal_prop_"):
+        for family in ("ground_tile_", "crystal_prop_", "obstacle_"):
             self.assertIn(family, self.generator)
+        for cover_family in ("standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder"):
+            self.assertIn(cover_family, self.environment)
         self.assertIn('"assetKind": "arenaBackdrop"', self.generator)
 
     def test_portrait_backdrop_has_an_explicit_non_square_contract(self) -> None:

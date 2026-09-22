@@ -28,7 +28,10 @@ class ArenaReviewSourceTest(unittest.TestCase):
         self.assertIn('actual_keys != sorted(EXPECTED_KEYS)', self.review)
         self.assertIn('actual_payload != expected_payload', self.promote)
         self.assertIn('"staticFrameCount": len(records)', self.review)
-        self.assertIn('"decodedBytes": 7_225_344', self.promote)
+        self.assertIn('"decodedBytes": 14_303_232', self.promote)
+        for family in ("standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder"):
+            self.assertIn(family, self.review)
+            self.assertIn(family, self.promote)
 
     def test_review_covers_composition_value_alpha_scale_and_identity(self) -> None:
         for function in (
@@ -36,6 +39,7 @@ class ArenaReviewSourceTest(unittest.TestCase):
             "create_backdrop_value_sheet",
             "create_ground_lineup",
             "create_crystal_lineup",
+            "create_obstacle_lineup",
             "create_runtime_readability",
             "create_depth_hierarchy",
         ):
@@ -47,6 +51,7 @@ class ArenaReviewSourceTest(unittest.TestCase):
             "minimumTransparentAssetMargin",
             "baselineSheetSha256",
             "runtimeGlow",
+            "obstacleCoverSeparation",
         ):
             self.assertIn(gate, self.review)
 

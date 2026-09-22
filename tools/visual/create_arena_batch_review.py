@@ -25,6 +25,19 @@ STUDIO_TIER_BASELINE_QUALITY = "premium-v2"
 STUDIO_TIER_CANDIDATE_QUALITY = "studio-v3"
 # Contact sheet uses readability_sheet(old, new) with old=premium-v2, new=studio-v3
 
+OBSTACLE_FAMILIES = ("standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder")
+OBSTACLE_VARIANTS = 3
+OBSTACLE_COVER = {
+    "standing_stone": "shelter",
+    "ruin_slab": "shelter",
+    "thorn_hedge": "low",
+    "mossy_boulder": "low",
+}
+OBSTACLE_KEYS = tuple(
+    f"obstacle_{family}_{variant}"
+    for family in OBSTACLE_FAMILIES
+    for variant in range(OBSTACLE_VARIANTS)
+)
 EXPECTED_KEYS = (
     "arena_backdrop",
     "ground_tile_0",
@@ -33,11 +46,11 @@ EXPECTED_KEYS = (
     "crystal_prop_0",
     "crystal_prop_1",
     "crystal_prop_2",
-)
+) + OBSTACLE_KEYS
 GROUND_IDENTITIES = ("root-path", "waystone-crossing", "moss-clearing")
 CRYSTAL_IDENTITIES = ("azure-waystone-fan", "violet-moon-geode", "amber-root-lantern")
 EXPECTED_PIVOT = {"units": "normalized-bottom-left", "x": 0.5, "y": 0.5}
-DECODED_BUDGET = 8 * 1024 * 1024  # 720x1280 backdrop + six 384px props at premium-v3 density
+DECODED_BUDGET = 16 * 1024 * 1024  # 720x1280 backdrop + eighteen 384px props at premium-v3 density
 VIEWPORT = (720, 1280)
 
 BACKDROP_SIZE = (720, 1280)
@@ -60,6 +73,7 @@ def main() -> None:
     create_backdrop_value_sheet(candidate, audit, output / "arena_backdrop_value.png")
     create_ground_lineup(baseline, candidate, audit, output / "arena_ground_lineup.png")
     create_crystal_lineup(baseline, candidate, audit, output / "arena_crystal_lineup.png")
+    create_obstacle_lineup(candidate, audit, output / "arena_obstacle_lineup.png")
     create_runtime_readability(candidate, output / "arena_runtime_readability.png")
     create_depth_hierarchy(candidate, output / "arena_depth_hierarchy.png")
 
@@ -264,6 +278,28 @@ def validate_metadata(entry: dict, key: str) -> None:
         triangle_range = (300, 600)
         minimum_parts = 20
         minimum_materials = 6
+    elif key.startswith("obstacle_"):
+        cover = OBSTACLE_COVER[obstacle_family(key)]
+        variant = int(key[-1])
+        expected = {
+            "family": "environment",
+            "frameClass": "environment",
+            "frameSize": PROP_SIZE,
+            "frameWidth": PROP_SIZE,
+            "frameHeight": PROP_SIZE,
+            "sheetWidth": PROP_SIZE,
+            "sheetHeight": PROP_SIZE,
+            "modelRevision": "arena-obstacle-premium-v1",
+            "assetKind": "obstacle",
+            "family": obstacle_family(key),
+            "cover": cover,
+            "variant": variant,
+            "visualQuality": "studio-v4-vibrant",
+            "runtimeGlow": False,
+        }
+        triangle_range = (200, 1_200)
+        minimum_parts = 8
+        minimum_materials = 3
     else:
         variant = int(key[-1])
         expected = {
@@ -439,6 +475,57 @@ def create_crystal_lineup(baseline: Path, candidate: Path, audit: dict, output: 
     grade = grade_row(asset_image(candidate, "crystal_prop_0"))
     canvas.paste(grade.convert("RGB"), ((width - grade.width) // 2, 760))
     text(draw, (width // 2, 742), "STAGE GRADE — CRYSTAL 0", 17, bold=True, anchor="ma")
+    canvas.save(output, optimize=True)
+
+
+def painted_height(root: Path, key: str) -> int:
+    """The pixels a prop actually paints, which is what a player compares across the field."""
+    bounds = asset_image(root, key).getchannel("A").getbbox()
+    if bounds is None:
+        raise ValueError(f"{key} paints nothing")
+    return bounds[3] - bounds[1]
+
+
+def obstacle_family(key: str) -> str:
+    return key[len("obstacle_"):-2]
+
+
+def create_obstacle_lineup(candidate: Path, audit: dict, output: Path) -> None:
+    """The arena's cover, family by family: what stops a body, and what stops an arrow too."""
+    width, height = 1710, 1_180
+    canvas = canvas_base(width, height, "ARENA COVER — FOUR FAMILIES, TWO KINDS OF STOP")
+    draw = ImageDraw.Draw(canvas)
+    for index, family in enumerate(OBSTACLE_FAMILIES):
+        x = 40 + index * 418
+        cover = OBSTACLE_COVER[family]
+        text(draw, (x + 190, 84), family.replace("_", " ").upper(), 19, bold=True, anchor="ma")
+        text(draw, (x + 190, 108), f"{cover.upper()} COVER", 15, anchor="ma", color="#AFC5BE")
+        tallest = None
+        for variant in range(OBSTACLE_VARIANTS):
+            sprite = asset_image(candidate, f"obstacle_{family}_{variant}")
+            card = presentation_card(sprite, "checker", 128, 176)
+            canvas.paste(card.convert("RGB"), (x + variant * 132, 132))
+            text(draw, (x + variant * 132 + 64, 316), f"v{variant}", 14, anchor="ma")
+            if tallest is None:
+                tallest = sprite
+        silhouette = silhouette_image(tallest, (392, 300))
+        canvas.paste(silhouette.convert("RGB"), (x, 348))
+        text(draw, (x + 196, 664), "SILHOUETTE AT FIELD SCALE", 14, anchor="ma", color="#AFC5BE")
+    # The rule the two kinds exist for: the standing cover has to read as clearly taller than the low cover,
+    # measured on the pixels rather than on the scene units the model was authored in.
+    shelter = min(painted_height(candidate, key) for key in OBSTACLE_KEYS if OBSTACLE_COVER[obstacle_family(key)] == "shelter")
+    low = max(painted_height(candidate, key) for key in OBSTACLE_KEYS if OBSTACLE_COVER[obstacle_family(key)] == "low")
+    if shelter < low * 1.6:
+        raise ValueError(
+            f"the standing cover paints {shelter}px against {low}px for the low cover: the two kinds read alike"
+        )
+    text(draw, (width // 2, 706), f"STANDING HEIGHT {shelter}px vs LOW {low}px — the two kinds must not read alike",
+         17, bold=True, anchor="ma")
+    audit["obstacleCoverSeparation"] = {"shelterPaintedHeight": shelter, "lowPaintedHeight": low}
+    for index, family in enumerate(OBSTACLE_FAMILIES):
+        grade = grade_row(asset_image(candidate, f"obstacle_{family}_0"))
+        canvas.paste(grade.convert("RGB"), (40 + index * 418, 748))
+    text(draw, (width // 2, 1_040), "STAGE GRADE — VARIANT 0 OF EACH FAMILY", 16, bold=True, anchor="ma")
     canvas.save(output, optimize=True)
 
 

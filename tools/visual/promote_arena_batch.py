@@ -12,6 +12,13 @@ REPOSITORY = Path(__file__).resolve().parents[2]
 REVIEW_DOCUMENT = "docs/art_reviews/ARENA_PREMIUM_V2_REVIEW.md"
 REVIEW_DIRECTORY = REPOSITORY / "docs/art_reviews/arena_premium_v2"
 AUDIT_PATH = REVIEW_DIRECTORY / "arena_audit.json"
+OBSTACLE_FAMILIES = ("standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder")
+OBSTACLE_VARIANTS = 3
+OBSTACLE_KEYS = tuple(
+    f"obstacle_{family}_{variant}"
+    for family in OBSTACLE_FAMILIES
+    for variant in range(OBSTACLE_VARIANTS)
+)
 EXPECTED_KEYS = (
     "arena_backdrop",
     "ground_tile_0",
@@ -20,12 +27,13 @@ EXPECTED_KEYS = (
     "crystal_prop_0",
     "crystal_prop_1",
     "crystal_prop_2",
-)
+) + OBSTACLE_KEYS
 EXPECTED_SHEETS = {
     "arena_integrated_composition.png",
     "arena_backdrop_value.png",
     "arena_ground_lineup.png",
     "arena_crystal_lineup.png",
+    "arena_obstacle_lineup.png",
     "arena_runtime_readability.png",
     "arena_depth_hierarchy.png",
 }
@@ -95,7 +103,7 @@ def main() -> None:
     catalog["assets"] = [by_key[key] for key in sorted(by_key)]
     write_json(catalog_path, catalog)
     print(
-        f"Promoted exactly seven reviewed premium-v3 arena assets from audit "
+        f"Promoted exactly nineteen reviewed premium-v4 arena assets from audit "
         f"{sha256_file(AUDIT_PATH)[:12]}"
     )
 
@@ -278,7 +286,7 @@ def validate_review_evidence(
         if required not in review_text:
             raise ValueError(f"Arena review document is not hash-bound to {required}")
     recorded_sheets = audit.get("reviewSheets", {})
-    if set(recorded_sheets) != EXPECTED_SHEETS or audit.get("reviewSheetCount") != 6:
+    if set(recorded_sheets) != EXPECTED_SHEETS or audit.get("reviewSheetCount") != 7:
         raise ValueError("Arena review-sheet evidence mismatch")
     for name, record in recorded_sheets.items():
         path = REVIEW_DIRECTORY / name
@@ -332,11 +340,13 @@ def validate_review_evidence(
     summary = audit.get("summary", {})
     exact_summary = {
         "assetCount": 7,
-        "staticFrameCount": 7,
+        "staticFrameCount": 19,
         "portraitBackdropCount": 1,
         "groundTileCount": 3,
         "crystalPropCount": 3,
-        "decodedBytes": 7_225_344,
+        "obstacleFamilyCount": len(OBSTACLE_FAMILIES),
+        "obstaclePropCount": len(OBSTACLE_KEYS),
+        "decodedBytes": 14_303_232,
         "decodedBudgetBytes": 8_388_608,
     }
     for field, expected in exact_summary.items():

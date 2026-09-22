@@ -44,6 +44,30 @@ Production-path decision (locked by this spike):
 
 ---
 
+## 28.0b The arena's cover (2026-09-22)
+
+The four fields the arena round added place two kinds of outcrop -- one that stops bodies and arrows, one that
+stops only bodies -- and both used to be drawn with the crystal landmarks. A landmark says "this is the edge of the
+arena"; cover has to say the opposite, and it has to say which of the two kinds it is from across the field,
+because that difference is a rule the player is playing against.
+
+So the arena batch now renders the cover itself: four families, three variants each, from the same stone sheet as
+the rest of the arena.
+
+| family | kind | construction | why it reads as its own thing |
+| --- | --- | --- | --- |
+| `standing_stone` | shelter | tapered monolith, chiselled bands, capstone, flanking rock, moss footing | the only family that is one tall column |
+| `ruin_slab` | shelter | leaning slab, broken course, rubble bed, ring memory | leans, so its shadow is longer on one side |
+| `thorn_hedge` | low | arched branches, thorn rake, moss clumps, low mound | wider than it is tall, and pointed |
+| `mossy_boulder` | low | rounded core, shoulder facet, lichen plates, scattered pebbles | a single mass, no points at all |
+
+Two contracts are enforced rather than described: `tools/blender/tests/test_arena_obstacle_source.py` holds the
+standing families to at least twice the authored height of the low ones and refuses two families that build the
+same mix of primitives (a family is a construction, not a recolour), and the review sheet
+`arena_obstacle_lineup.png` re-measures that separation on the painted pixels, because that is what a player
+compares across the field. Cover never carries `runtimeGlow`: emissive light is the vocabulary this game reserves
+for the crystals, and a rock that lit up would be claiming to be a landmark.
+
 ## 1) How to run the pipeline
 
 ### 1.1 Prerequisites

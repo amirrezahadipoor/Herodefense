@@ -853,6 +853,233 @@ def build_crystal_prop(variant: int = 0) -> BuiltModel:
     })
 
 
+# The arena's cover, as four props rather than one rock recoloured.
+#
+# The layouts place two kinds of outcrop -- a standing one that stops bodies and arrows, and a low one that stops
+# only bodies -- and until now both were drawn with the crystal landmarks. A crystal is a landmark: it says "here
+# is the edge of the arena". Cover has to say the opposite, and it has to say which of the two kinds it is from
+# across the field, because that difference is a rule the player is playing against. So the props are authored as
+# four families with a hard height separation: the standing families are more than twice the height of the low
+# ones, and the low ones stay wider than they are tall so a row of them reads as a hedge rather than a fence.
+OBSTACLE_FAMILIES = (
+    ("standing_stone", "shelter", 2.92),
+    ("ruin_slab", "shelter", 2.34),
+    ("thorn_hedge", "low", 0.94),
+    ("mossy_boulder", "low", 0.70),
+)
+OBSTACLE_VARIANTS = 3
+
+
+def _obstacle_palette(variant: int) -> dict:
+    """Stone, moss and lichen values per variant, drawn from the arena's material sheet."""
+    return {
+        "deep": MATERIALS.get("obstacle_stone_deep", "#232F31"),
+        "base": MATERIALS.get("obstacle_stone_base", "#4B595C"),
+        "lit": MATERIALS.get("obstacle_stone_lit", "#7C8A88"),
+        "edge": MATERIALS.get("obstacle_stone_edge", "#9AA6A2"),
+        "moss": MATERIALS.get("prop_moss", "#426C48"),
+        "root": MATERIALS.get("prop_root", "#65452F"),
+        "bloom": MATERIALS.get(f"obstacle_bloom_{variant}", ("#7FA24F", "#8C6FA6", "#C08A3E")[variant]),
+    }
+
+
+def _standing_stone(variant: int, height: float, palette: dict) -> list:
+    """A monolith: the tall cover a player walks behind and shoots from behind."""
+    objects = [
+        add_ico("obstacle_footing", (0.0, 0.10, 0.17), (0.92, 0.66, 0.17), palette["deep"], 2),
+        add_cube("obstacle_pillar", (0.0, 0.0, height * 0.52), (height * 0.30, height * 0.17, height * 0.92),
+                 palette["base"], bevel=0.06, rotation=(0.0, math.radians(variant * 2.5 - 3.0), 0.0)),
+        add_cube("obstacle_pillar_lit", (height * 0.10, -0.10, height * 0.62),
+                 (height * 0.10, height * 0.10, height * 0.62), palette["lit"], bevel=0.04),
+        add_cube("obstacle_capstone", (0.0, 0.02, height * 1.02), (height * 0.24, height * 0.15, height * 0.10),
+                 palette["edge"], bevel=0.06),
+    ]
+    for index, sign in enumerate((-1.0, 1.0)):
+        objects.append(add_ico(
+            f"obstacle_flank_{index}", (0.62 * sign, 0.06, 0.24 + index * 0.03),
+            (0.28, 0.22, 0.30 - index * 0.04), palette["base"], 1,
+        ))
+    for index in range(3):
+        band = 0.34 + index * 0.28
+        objects.append(add_torus(
+            f"obstacle_band_{index}", (0.0, 0.0, height * band), height * (0.30 - index * 0.02),
+            height * 0.022, palette["edge"], (0.0, 0.0, 0.0), 14, 4,
+        ))
+    for index in range(7):
+        angle = index * 1.72 + variant * 0.4
+        objects.append(add_leaf(
+            f"obstacle_moss_{index}",
+            (math.cos(angle) * 0.42, math.sin(angle) * 0.30, 0.12 + (index % 4) * 0.10),
+            (0.20, 0.07, 0.30), palette["moss"], (0.0, 0.0, -angle),
+        ))
+    if variant == 1:
+        objects.append(add_cylinder_between(
+            "obstacle_crack", (0.0, -height * 0.16, height * 0.30), (0.10, -height * 0.16, height * 0.78),
+            height * 0.020, palette["deep"], 5,
+        ))
+    elif variant == 2:
+        objects.append(add_ico("obstacle_bloom", (0.30, -0.16, height * 0.86), (0.16, 0.10, 0.14),
+                               palette["bloom"], 1))
+    return objects
+
+
+def _ruin_slab(variant: int, height: float, palette: dict) -> list:
+    """A broken wall: standing cover that leans, so its shadow is longer on one side."""
+    tilt = math.radians(6.0 + variant * 3.0)
+    objects = [
+        add_ico("obstacle_rubble_bed", (0.0, 0.12, 0.14), (1.05, 0.72, 0.15), palette["deep"], 2),
+        add_cube("obstacle_slab", (-0.10 * variant, 0.0, height * 0.50),
+                 (height * 0.46, height * 0.14, height * 0.88), palette["base"], bevel=0.07,
+                 rotation=(0.0, tilt, math.radians(2.0 - variant))),
+        add_cube("obstacle_slab_broken", (height * 0.30, -0.04, height * 0.78),
+                 (height * 0.16, height * 0.11, height * 0.22), palette["lit"], bevel=0.05,
+                 rotation=(0.0, tilt * 1.6, 0.0)),
+        add_cube("obstacle_slab_course", (-0.05, 0.06, height * 0.22),
+                 (height * 0.50, height * 0.13, height * 0.14), palette["edge"], bevel=0.05),
+    ]
+    for index in range(4):
+        angle = index * 1.55 + 0.6
+        size = 0.24 - index * 0.035
+        objects.append(add_ico(
+            f"obstacle_broken_block_{index}",
+            (math.cos(angle) * (0.72 + index * 0.05), math.sin(angle) * 0.46, size * 0.6),
+            (size, size * 0.8, size * 0.7), palette["base"], 1,
+        ))
+    for index in range(6):
+        angle = index * 1.94 + variant * 0.7
+        objects.append(add_leaf(
+            f"obstacle_slab_moss_{index}",
+            (math.cos(angle) * 0.52, math.sin(angle) * 0.34, height * (0.18 + (index % 3) * 0.14)),
+            (0.22, 0.08, 0.30), palette["moss"], (0.0, 0.0, -angle),
+        ))
+    if variant == 0:
+        objects.append(add_torus("obstacle_ring_memory", (0.0, 0.0, height * 0.44), height * 0.24,
+                                 height * 0.026, palette["edge"], (math.pi / 2, 0.0, 0.0), 14, 4))
+    else:
+        objects.append(add_cylinder_between(
+            "obstacle_root_tie", (-0.40, 0.12, 0.10), (0.36, -0.10, height * 0.30),
+            0.035, palette["root"], 6,
+        ))
+    return objects
+
+
+def _thorn_hedge(variant: int, height: float, palette: dict) -> list:
+    """A bramble row: low cover that stops a body and lets an arrow over."""
+    objects = [
+        add_ico("obstacle_hedge_mound", (0.0, 0.10, 0.12), (0.98, 0.52, 0.14), palette["deep"], 2),
+    ]
+    for index in range(5):
+        span = -0.78 + index * 0.39
+        arch = height * (0.55 + (index % 3) * 0.16)
+        objects.append(add_cylinder_between(
+            f"obstacle_hedge_branch_{index}",
+            (span, 0.14, 0.06), (span + 0.10, -0.02, arch),
+            0.045, palette["root"], 6,
+        ))
+        objects.append(add_cylinder_between(
+            f"obstacle_hedge_arm_{index}",
+            (span, 0.10, arch * 0.72), (span + (0.20 if index % 2 else -0.20), 0.08, arch * 0.96),
+            0.030, palette["root"], 5,
+        ))
+    for index in range(16):
+        x = -0.86 + (index % 8) * 0.245
+        row = index // 8
+        objects.append(add_cone(
+            f"obstacle_thorn_{index}", (x, 0.04 - row * 0.10, height * (0.42 + row * 0.30)),
+            0.030, 0.0, height * 0.44, palette["edge"], 5, (math.radians(70.0 - row * 24.0), 0.0, 0.0),
+        ))
+    for index in range(9):
+        angle = index * 2.05 + variant * 0.5
+        objects.append(add_leaf(
+            f"obstacle_hedge_leaf_{index}",
+            (math.cos(angle) * 0.66, math.sin(angle) * 0.26, height * (0.42 + (index % 4) * 0.14)),
+            (0.15, 0.05, 0.22), palette["moss"], (0.0, 0.0, -angle),
+        ))
+    if variant == 2:
+        for index in range(4):
+            objects.append(add_ico(
+                f"obstacle_hedge_berry_{index}", (-0.45 + index * 0.30, -0.06, height * 0.72),
+                (0.055, 0.055, 0.055), palette["bloom"], 1,
+            ))
+    return objects
+
+
+def _mossy_boulder(variant: int, height: float, palette: dict) -> list:
+    """A boulder: low cover, so it is legs that stop here and arrows that pass."""
+    width = 1.05 + variant * 0.05
+    objects = [
+        add_ico("obstacle_boulder_core", (0.0, 0.06, height * 0.52), (width, height * 0.78, height * 0.72),
+                palette["base"], 2),
+        add_ico("obstacle_boulder_shoulder", (-0.42, -0.06, height * 0.40),
+                (width * 0.52, height * 0.44, height * 0.48), palette["lit"], 1),
+        add_ico("obstacle_boulder_lip", (0.46, 0.12, height * 0.28),
+                (width * 0.40, height * 0.30, height * 0.34), palette["deep"], 1),
+    ]
+    for index in range(5):
+        angle = index * 1.63 + variant * 0.35
+        objects.append(add_leaf(
+            f"obstacle_lichen_{index}",
+            (math.cos(angle) * width * 0.62, math.sin(angle) * height * 0.36, height * (0.52 + (index % 3) * 0.12)),
+            (0.18, 0.06, 0.24), palette["moss"], (0.0, 0.0, -angle),
+        ))
+    for index in range(3):
+        objects.append(add_ico(
+            f"obstacle_pebble_{index}", (0.92 - index * 0.22, -0.46 + index * 0.14, 0.09),
+            (0.16, 0.13, 0.10), palette["base"], 1,
+        ))
+    if variant == 0:
+        objects.append(add_cone("obstacle_boulder_grass", (0.30, -0.30, height * 0.90),
+                                0.09, 0.0, 0.42, palette["moss"], 5, (math.radians(16.0), 0.0, 0.0)))
+    elif variant == 2:
+        objects.append(add_torus("obstacle_boulder_vein", (0.0, 0.02, height * 0.44), width * 0.46,
+                                 height * 0.05, palette["edge"], (math.radians(12.0), 0.0, 0.0), 12, 4))
+    return objects
+
+
+def build_obstacle_prop(family: str, variant: int = 0) -> BuiltModel:
+    """Build one piece of the arena's cover.
+
+    <p>Four families, three variants each, all from the same stone sheet as the arena: a monolith and a broken wall
+    for the standing cover that stops bodies and arrows, and a thorn row and a boulder for the low cover that stops
+    only bodies. The families are separated by height and by silhouette before they are separated by colour, because
+    the two kinds are a rule the player is reading from across the field."""
+    families = {name: (cover, height) for name, cover, height in OBSTACLE_FAMILIES}
+    if family not in families:
+        raise ValueError(f"Unknown obstacle family: {family}")
+    if variant not in range(OBSTACLE_VARIANTS):
+        raise ValueError(f"Unknown obstacle variant: {variant}")
+    cover, height = families[family]
+    palette = _obstacle_palette(variant)
+    if family == "standing_stone":
+        objects = _standing_stone(variant, height, palette)
+        landmarks = ("tapered monolith", "chiselled bands", "capstone", "moss at the footing")
+    elif family == "ruin_slab":
+        objects = _ruin_slab(variant, height, palette)
+        landmarks = ("leaning slab", "broken course", "rubble bed", "ring memory")
+    elif family == "thorn_hedge":
+        objects = _thorn_hedge(variant, height, palette)
+        landmarks = ("arched branches", "thorn rake", "moss clumps", "low mound")
+    else:
+        objects = _mossy_boulder(variant, height, palette)
+        landmarks = ("rounded core", "shoulder facet", "lichen plates", "scattered pebbles")
+    return BuiltModel(None, objects, {
+        "variant": variant,
+        "family": family,
+        "cover": cover,
+        "assetKind": "obstacle",
+        "heightUnits": height,
+        "modelRevision": "arena-obstacle-premium-v1",
+        "silhouetteLandmarks": list(landmarks),
+        "surfaceLanguage": (
+            "weathered arena stone, moss and lichen grounding, chiselled edges kept readable at prop scale"
+        ),
+        # Cover never glows. The crystals are the arena's emissive landmarks; a rock that lit up would say
+        # "landmark" in the one vocabulary the game reserves for it.
+        "runtimeGlow": False,
+        "visualQuality": "studio-v4-vibrant",
+    })
+
+
 UI_FRAME_KINDS = ("button", "panel", "slot")
 UI_FRAME_STATES = ("normal", "pressed", "selected", "disabled")
 UI_FRAME_KEYS = tuple(

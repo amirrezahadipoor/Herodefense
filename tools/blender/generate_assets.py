@@ -53,6 +53,9 @@ from hd_pipeline.config import (  # noqa: E402
 )
 from hd_pipeline.environment import (  # noqa: E402
     build_arena_backdrop,
+    build_obstacle_prop,
+    OBSTACLE_FAMILIES,
+    OBSTACLE_VARIANTS,
     build_crystal_prop,
     build_ground_tile,
     UI_FRAME_KEYS,
@@ -695,6 +698,18 @@ def render_arena_environment(output: Path, only: set[str]) -> list[dict]:
                 lambda value=variant: build_crystal_prop(value), output,
                 {"assetKind": "crystal", "variant": variant},
             ))
+    # The arena's cover: four families, three variants each. Rendered in the arena batch because they are
+    # furniture of the same place and reviewed together with it.
+    for family, cover, height in OBSTACLE_FAMILIES:
+        for variant in range(OBSTACLE_VARIANTS):
+            key = f"obstacle_{family}_{variant}"
+            if not only or key in only:
+                entries.append(render_static_model(
+                    key, "environment", "environment",
+                    lambda name=family, value=variant: build_obstacle_prop(name, value), output,
+                    {"assetKind": "obstacle", "family": family, "cover": cover, "heightUnits": height,
+                     "variant": variant},
+                ))
     return entries
 
 
