@@ -45,8 +45,8 @@
         <Bug pattern="MS_EXPOSE_REP"/>
     </Match>
     <!-- 1 report, ArenaTerrain.fieldFor. The arena field is built once per (layout, run seed) and is immutable
-         (ArenaObstacle holds no reference out; build wraps the list unmodifiable), and every reader -- the
-         movement systems, the bow, the renderers -- is the same simulation asking for the same list many times a
+         (ArenaObstacle holds no reference out; build wraps the list unmodifiable), and every reader — the
+         movement systems, the bow, the renderers — is the same simulation asking for the same list many times a
          frame. Handing back a fresh copy per call would buy nothing and cost an allocation in the draw loop. -->
     <Match>
         <Class name="com.amirrezahadipoor.herodefense.gameplay.ArenaTerrain"/>
