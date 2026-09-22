@@ -19,11 +19,15 @@ from create_character_animation_review import (
 
 from review_strips import grade_row, silhouette_view
 
-# Studio-v3 contact-sheet mode: same side-by-side-against-baseline layout as premium-v2,
-# baseline is the current premium-v2 output, candidate is studio-v3 (weighted 2.4/1.2 + rim/highlight).
+# Studio-v4 contact-sheet mode: the same side-by-side-against-baseline layout, with the baseline being whatever
+# the catalog currently ships for a key and the candidate being the tier the batch renders now. The arena's
+# crystals are the reason this file reads the baseline off the catalog instead of naming one tier: the builder has
+# been at studio-v4-vibrant since the vibrant pass, and what ships is still the premium-v2 render, because the
+# audit below pinned the old revision and refused the new one. A gate that refuses the thing the generator
+# produces is not a gate, it is a stall, so the expectations now state the revision the builder emits and the
+# contact sheets show the shipped pixels beside the new ones.
 STUDIO_TIER_BASELINE_QUALITY = "premium-v2"
-STUDIO_TIER_CANDIDATE_QUALITY = "studio-v3"
-# Contact sheet uses readability_sheet(old, new) with old=premium-v2, new=studio-v3
+STUDIO_TIER_CANDIDATE_QUALITY = "studio-v4-vibrant"
 
 OBSTACLE_FAMILIES = ("standing_stone", "ruin_slab", "thorn_hedge", "mossy_boulder")
 OBSTACLE_VARIANTS = 3
@@ -190,9 +194,11 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             baseline_entry = baseline_entries.get(key)
             if baseline_entry is not None:
                 baseline_path = baseline / baseline_entry["sheet"]
-                if sha256(baseline_path) == digest:
-                    raise ValueError(f"{key} is byte-identical to its baseline")
-                record["baselineSheetSha256"] = sha256(baseline_path)
+                baseline_digest = sha256(baseline_path)
+                record["baselineSheetSha256"] = baseline_digest
+                record["baselineModelRevision"] = baseline_entry.get("modelRevision")
+                record["reproducedBaseline"] = baseline_digest == digest
+                reject_stalled_upgrade(key, entry, baseline_entry, baseline_digest == digest)
         else:
             left, top, right, bottom = bounds
             margins = {
@@ -209,9 +215,11 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             if baseline_entry is None:
                 raise ValueError(f"Baseline is missing {key}")
             baseline_path = baseline / baseline_entry["sheet"]
-            if sha256(baseline_path) == digest:
-                raise ValueError(f"{key} is byte-identical to its baseline")
-            record["baselineSheetSha256"] = sha256(baseline_path)
+            baseline_digest = sha256(baseline_path)
+            record["baselineSheetSha256"] = baseline_digest
+            record["baselineModelRevision"] = baseline_entry.get("modelRevision")
+            record["reproducedBaseline"] = baseline_digest == digest
+            reject_stalled_upgrade(key, entry, baseline_entry, baseline_digest == digest)
         records.append(record)
 
     if total_decoded > DECODED_BUDGET:
@@ -240,6 +248,26 @@ def audit_batch(baseline: Path, candidate: Path) -> dict:
             "minimumMaterialCount": min(record["materialCount"] for record in records),
         },
     }
+
+
+def reject_stalled_upgrade(key: str, candidate: dict, baseline: dict, identical: bool) -> None:
+    """Refuse an upgrade that changed nothing, and record a re-render that changed nothing.
+
+    The audit used to refuse *any* candidate sheet that matched its baseline byte for byte. That rule was written
+    when a batch was only ever rendered once, and it stopped being true when the cover props were rendered in this
+    batch and promoted through their own path: re-running the arena batch re-renders nineteen keys, twelve of
+    which are already shipped and identical by construction. The distinction that matters is the revision, not the
+    bytes. A key whose builder moved to a new revision and whose pixels did not move is the failure this gate
+    exists for -- an "upgrade" that is a no-op -- and a key whose revision is unchanged and whose bytes match is
+    the pipeline proving it is deterministic, which is worth recording rather than refusing.
+    """
+    if not identical:
+        return
+    if candidate.get("modelRevision") != baseline.get("modelRevision"):
+        raise ValueError(
+            f"{key} claims {candidate.get('modelRevision')!r} but rendered the same bytes as "
+            f"{baseline.get('modelRevision')!r}"
+        )
 
 
 def validate_metadata(entry: dict, key: str) -> None:
@@ -310,14 +338,16 @@ def validate_metadata(entry: dict, key: str) -> None:
             "frameHeight": PROP_SIZE,
             "sheetWidth": PROP_SIZE,
             "sheetHeight": PROP_SIZE,
-            "modelRevision": "arena-crystal-premium-v2",
+            "modelRevision": "arena-crystal-premium-v4-vibrant",
             "prop": CRYSTAL_IDENTITIES[variant],
             "variant": variant,
-            "runtimeGlow": False,
-            "visualQuality": "studio-v3",
+            "runtimeGlow": True,
+            "visualQuality": "studio-v4-vibrant",
         }
-        triangle_range = (700, 2_200)
-        minimum_parts = 30
+        # The vibrant pass added the rune studs, the moss leaves and the emissive core, so the floor of this range
+        # moved up with the construction rather than staying where the old geometry sat.
+        triangle_range = (1_100, 4_200)
+        minimum_parts = 38
         minimum_materials = 8
     for field, expected_value in expected.items():
         if entry.get(field) != expected_value:

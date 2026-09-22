@@ -100,7 +100,11 @@ class ArenaPremiumSourceTest(unittest.TestCase):
             self.assertIn(landmark, source)
         # Phase 48/66: crystal now has runtime glow emissive jewel
         self.assertIn('"runtimeGlow": True', source)
-        self.assertTrue('"arena-crystal-premium-v2"' in source or '"arena-crystal-premium-v4-vibrant"' in source)
+        # The vibrant revision, and only it: this assertion used to accept either revision, which let the shipped
+        # catalog stay on the old render while the builder moved on. The audit and the promotion pin the same
+        # string, so accepting one revision here and rendering another there is exactly the drift this test exists
+        # to catch.
+        self.assertIn('"arena-crystal-premium-v4-vibrant"', source)
         # Emission allowed for crystal inner glow
 
     def test_static_manifest_records_reviewable_complexity_and_render_contract(self) -> None:
