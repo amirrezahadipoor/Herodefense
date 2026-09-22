@@ -178,8 +178,7 @@ judged, and polished by a native Persian speaker with expertise in video game lo
 | `COINS_EARNED` | Kill coins earned | سکه‌های کسب‌شده | Approved. Direct earnings label. |
 | `HERO_LEVEL` | Hero level | سطح قهرمان | Approved. Hero tier readout. |
 | `MYTHIC_EARNED` | Mythic earned | اسطوره‌های کسب‌شده | Approved. Disambiguated from Legendary. |
-| `WAVE_COUNT` | %1$s / %2$s | %1$s / %2$s | Approved. Formatted fraction. |
-| `BOSSES_COUNT` | %1$s / 20 | %1$s / ۲۰ | Approved. Localized Persian twenty. |
+| `COUNT_OF_TOTAL` | %1$s / %2$s | %1$s / %2$s | Approved. Formatted fraction, used by the wave row and the boss row alike (was `WAVE_COUNT`; the boss row's `BOSSES_COUNT` carried a literal twenty and printed "39 / 20", so it was merged into this entry with the run's own boss count as the total). |
 | `DEFEND_AGAIN` | DEFEND AGAIN | دفاع دوباره | Approved. Encouraging replay verb. |
 | `RESTART_AT_WAVE_ONE` | RESTART AT WAVE 1 | شروع دوباره از موج ۱ | Approved. Clear reset option. |
 | `DEFEND_AGAIN_SUBTITLE` | Begin fresh run same tier | یک دور تازه در همان رده | Approved. Replay explanation. |

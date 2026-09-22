@@ -5,12 +5,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.amirrezahadipoor.herodefense.gameplay.BossWaveSpawner;
 import com.amirrezahadipoor.herodefense.gameplay.HeroStatCalculator;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
 import com.amirrezahadipoor.herodefense.input.LevelUpTouchLayout;
 import com.amirrezahadipoor.herodefense.input.PauseTouchLayout;
 import com.amirrezahadipoor.herodefense.input.RewardCardTouchLayout;
 import com.amirrezahadipoor.herodefense.input.SettingsTouchLayout;
+import com.amirrezahadipoor.herodefense.model.GameMode;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.HeroStat;
 import com.amirrezahadipoor.herodefense.rewards.RewardCardId;
@@ -94,8 +96,14 @@ final class PremiumFlowSurfacesPresentationTest {
     @Test
     void rewardCardsExplainBossContextBudgetAndPermanence() {
         RewardPowerBudget budget = new RewardPowerBudget();
-        assertEquals("BOSS 1 OF 20 DEFEATED", RewardCardOverlayRenderer.bossLabel(1));
-        assertEquals("BOSS 20 OF 20 DEFEATED", RewardCardOverlayRenderer.bossLabel(99));
+        // The denominator is the run's own boss count -- a boss every five waves, forty in 200 -- and the
+        // label was "OF 20" while the summary next to it counted to 39.
+        int standardRun = BossWaveSpawner.bossesInRun(GameState.FINAL_WAVE);
+        assertEquals(RewardPowerBudget.MAX_BOSS, standardRun, "the budget's last boss is the run's last boss");
+        assertEquals("BOSS 1 OF 40 DEFEATED", RewardCardOverlayRenderer.bossLabel(1, standardRun));
+        assertEquals("BOSS 40 OF 40 DEFEATED", RewardCardOverlayRenderer.bossLabel(99, standardRun));
+        assertEquals("BOSS 6 OF 6 DEFEATED",
+            RewardCardOverlayRenderer.bossLabel(6, BossWaveSpawner.bossesInRun(GameMode.BRIEF.waves())));
         assertEquals("Reward power 100%  |  scales with every boss you defeat",
             RewardCardOverlayRenderer.budgetLabel(budget, 1));
         assertEquals("Reward power 195%  |  scales with every boss you defeat",

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.gameplay.BossWaveSpawner;
 import com.amirrezahadipoor.herodefense.input.RewardCardTouchLayout;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
@@ -61,7 +62,8 @@ public final class RewardCardOverlayRenderer implements AutoCloseable {
             HEADER_PANEL_WIDTH, FOOTER_PANEL_HEIGHT, true, false);
 
         int bossNumber = state.pendingRewardBossNumber;
-        text.drawCentered(batch, bossLabel(bossNumber), 360f, 1168f, 0.78f, OverlayText.GOLD);
+        text.drawCentered(batch, bossLabel(bossNumber, BossWaveSpawner.bossesInRun(state.runLengthWaves())),
+            360f, 1168f, 0.78f, OverlayText.GOLD);
         text.drawCentered(batch, "CHOOSE ONE REWARD", 360f, 1122f, 1.62f, OverlayText.GOLD);
         text.drawCentered(batch, budgetLabel(powerBudget, bossNumber), 360f, 1066f, 0.74f,
             OverlayText.SUBTLE);
@@ -98,9 +100,11 @@ public final class RewardCardOverlayRenderer implements AutoCloseable {
         return RewardCardTouchLayout.FIRST_CARD_Y - index * RewardCardTouchLayout.CARD_STRIDE;
     }
 
-    static String bossLabel(int bossNumber) {
-        int clamped = Math.max(1, Math.min(20, bossNumber));
-        return "BOSS " + clamped + " OF 20 DEFEATED";
+    /** "BOSS n OF m DEFEATED", m being the run's own boss count: forty in the standard run, six in the vigil. */
+    static String bossLabel(int bossNumber, int bossesInRun) {
+        int total = Math.max(1, bossesInRun);
+        int clamped = Math.max(1, Math.min(total, bossNumber));
+        return "BOSS " + clamped + " OF " + total + " DEFEATED";
     }
 
     static String budgetLabel(RewardPowerBudget budget, int bossNumber) {

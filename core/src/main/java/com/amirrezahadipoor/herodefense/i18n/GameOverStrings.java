@@ -21,17 +21,13 @@ public enum GameOverStrings implements Translated {
     MYTHIC_EARNED("Mythic earned", "اسطوره‌های کسب‌شده"),
 
     /**
-     * The wave row's value: this run's last wave over the length the run was set to. It is one entry with two
-     * arguments rather than a number, a separator and a number, because where the slash sits and which side of
-     * it each number goes on is a property of the language, not of the renderer.
+     * A row's value as a count over its total: this run's last wave over the length the run was set to, and the
+     * bosses defeated over the bosses the run holds. It is one entry with two arguments rather than a number, a
+     * separator and a number, because where the slash sits and which side of it each number goes on is a
+     * property of the language, not of the renderer. The boss row used to carry its own entry with a literal
+     * twenty written into it, which is how a run of forty bosses came to read "39 / 20".
      */
-    WAVE_COUNT("%1$s / %2$s", "%1$s / %2$s"),
-
-    /**
-     * The boss row's value. The total is written into both languages rather than passed in: the screen has always
-     * drawn a literal 20 here, and a table that holds the sentence is the place that number belongs now.
-     */
-    BOSSES_COUNT("%1$s / 20", "%1$s / ۲۰"),
+    COUNT_OF_TOTAL("%1$s / %2$s", "%1$s / %2$s"),
 
     DEFEND_AGAIN("DEFEND AGAIN", "دفاع دوباره"),
     RESTART_AT_WAVE_ONE("RESTART AT WAVE 1", "شروع دوباره از موج ۱"),

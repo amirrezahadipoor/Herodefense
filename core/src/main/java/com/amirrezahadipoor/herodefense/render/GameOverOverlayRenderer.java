@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Matrix4;
+import com.amirrezahadipoor.herodefense.gameplay.BossWaveSpawner;
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.GameOverStrings;
 import com.amirrezahadipoor.herodefense.input.GameOverTouchLayout;
@@ -115,7 +116,7 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
             OverlayText.GOLD, reveal);
         drawRow(batch, icons, 0, "wave", GameLocale.text(GameOverStrings.WAVE_REACHED),
             GameLocale.text(
-                GameOverStrings.WAVE_COUNT,
+                GameOverStrings.COUNT_OF_TOTAL,
                 GameLocale.number(state.waveNumber), GameLocale.number(state.runLengthWaves())
             ), reveal);
         drawRow(batch, icons, 1, "health", GameLocale.text(GameOverStrings.HERO_LEVEL),
@@ -123,7 +124,8 @@ public final class GameOverOverlayRenderer implements AutoCloseable {
         drawRow(batch, icons, 2, "strength", GameLocale.text(GameOverStrings.ENEMIES_DEFEATED),
             GameLocale.number(state.totalKills), reveal);
         drawRow(batch, icons, 3, "general_power", GameLocale.text(GameOverStrings.BOSSES_DEFEATED),
-            GameLocale.text(GameOverStrings.BOSSES_COUNT, GameLocale.number(state.defeatedBosses)), reveal);
+            GameLocale.text(GameOverStrings.COUNT_OF_TOTAL, GameLocale.number(state.defeatedBosses),
+                GameLocale.number(BossWaveSpawner.bossesInRun(state.runLengthWaves()))), reveal);
         drawRow(batch, icons, 4, "coin", GameLocale.text(GameOverStrings.COINS_EARNED),
             MainMenuRenderer.coinTotalLabel(state.totalKillCoinsEarned), reveal);
         String mythicName = mythicEarnedName(state);

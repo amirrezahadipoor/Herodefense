@@ -15,9 +15,19 @@ public final class BossWaveSpawner {
     }
 
     public boolean isBossWave(int waveNumber) {
-        return waveNumber >= 5
+        return waveNumber >= EnemyWaveSpawner.BOSS_WAVE_INTERVAL
             && waveNumber <= GameState.FINAL_WAVE
-            && waveNumber % 5 == 0;
+            && waveNumber % EnemyWaveSpawner.BOSS_WAVE_INTERVAL == 0;
+    }
+
+    /**
+     * How many boss waves a run of {@code runLengthWaves} holds: one every {@link EnemyWaveSpawner#BOSS_WAVE_INTERVAL}
+     * waves, so forty in the standard run of 200 and six in the thirty-wave vigil. The end-of-run summary and the
+     * reward screen both print the count against this, not against a number of their own -- the summary said
+     * "39 / 20" while it kept one.
+     */
+    public static int bossesInRun(int runLengthWaves) {
+        return Math.max(0, runLengthWaves) / EnemyWaveSpawner.BOSS_WAVE_INTERVAL;
     }
 
     public BossType typeForWave(int waveNumber) {
