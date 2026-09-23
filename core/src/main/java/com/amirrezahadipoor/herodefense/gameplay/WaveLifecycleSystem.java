@@ -52,8 +52,18 @@ public final class WaveLifecycleSystem {
     private boolean spawnCurrentWave(GameState state) {
         state.wavePlannedEnemies = 0;
         state.tricklePulse = 0;
+        state.escortWave = 0;
         if (bossSpawner.isBossWave(state.waveNumber)) {
             bossSpawner.spawn(state, state.waveNumber);
+            // P6 boss escorts: half the escort walks in with the boss; the rest answers the
+            // boss's blood (or its death-cry) from reinforceEscort. The intro prop stays a lone
+            // boss -- see spawnBossIntroProp -- so the trash-talk gets the stage alone.
+            int escortTotal = bossSpawner.escortCountForWave(state.waveNumber);
+            if (escortTotal > 0) {
+                regularSpawner.spawnTrickle(
+                    state, state.waveNumber, escortTotal, 0, (escortTotal + 1) / 2);
+                state.escortWave = 1;
+            }
         } else {
             // The omen is adjusted once on the whole wave, not once per pulse, and the first pulse
             // walks in now; the rest follows from updateAfterCombat as the wave falls.
@@ -139,6 +149,41 @@ public final class WaveLifecycleSystem {
         return true;
     }
 
+    /**
+     * Walks in the rest of a boss wave's escort when the fight has earned it: the second pulse
+     * answers at two-thirds of the boss's health, or as vengeance when the boss falls first.
+     * Like the trickle gates it fires before the living check, so killing the boss into an
+     * unfired second pulse earns the avengers instead of the reward card.
+     */
+    private boolean reinforceEscort(GameState state) {
+        if (state.escortWave != 1) {
+            return false;
+        }
+        int escortTotal = bossSpawner.escortCountForWave(state.waveNumber);
+        int firstPulse = (escortTotal + 1) / 2;
+        if (escortTotal <= firstPulse) {
+            state.escortWave = 2;
+            return false;
+        }
+        Boss fighter = null;
+        for (Boss candidate : state.aliveBosses) {
+            if (candidate != null && candidate.alive) {
+                fighter = candidate;
+                break;
+            }
+        }
+        boolean fallen = fighter == null;
+        boolean bloodied = !fallen && fighter.maxHealth > 0f
+            && fighter.health * 3f <= fighter.maxHealth * 2f;
+        if (!fallen && !bloodied) {
+            return false;
+        }
+        regularSpawner.spawnTrickle(
+            state, state.waveNumber, escortTotal, firstPulse, escortTotal - firstPulse);
+        state.escortWave = 2;
+        return true;
+    }
+
     /** Call after combat resolution. A new wave is spawned in the same update on clear. */
     public WaveCompletion updateAfterCombat(GameState state) {
         if (state == null || !state.waveActive || state.runComplete
@@ -150,6 +195,10 @@ public final class WaveLifecycleSystem {
         // This read happens before the living check on purpose: a pulse that only fired on an empty
         // field would never arrive mid-fight, which is the whole point of the longer waves.
         if (reinforceTrickle(state)) {
+            return WaveCompletion.NO_CHANGE;
+        }
+        // P6 boss escorts: the second pulse answers the boss's blood before the wave may clear.
+        if (reinforceEscort(state)) {
             return WaveCompletion.NO_CHANGE;
         }
         if (state.livingEnemyCount() > 0) {

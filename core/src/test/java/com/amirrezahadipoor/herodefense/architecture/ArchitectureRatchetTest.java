@@ -134,7 +134,11 @@ class ArchitectureRatchetTest {
         // P6a raised this by two fields and six lines: wavePlannedEnemies/tricklePulse are run state
         // like waveActive beside them -- a between-waves save must remember which pulse walks in
         // next -- encoded by the codec like every other field. No behaviour in the model itself.
-        new ArchitectureRatchet.Frozen(662, 88)
+        //
+        // P6b raised this by one field and three lines: escortWave is run state like tricklePulse
+        // beside it -- a between-waves save must remember whether the second escort pulse is
+        // still owed -- encoded by the codec like every other field. No behaviour in the model itself.
+        new ArchitectureRatchet.Frozen(665, 89)
     );
 
     @Test

@@ -74,6 +74,8 @@ public final class GameState {
     public int wavePlannedEnemies;
     /** Trickle pulse already walking in (1-based); 0 on boss waves and before the first spawn. */
     public int tricklePulse;
+    /** Escort pulses of this boss wave already walking in (1-based); 0 before the first. */
+    public int escortWave;
     /** True once the second Heartwood stands; it is a monument, never a second loss condition. @deprecated use plantedTreesCount */
     public boolean secondTreePlanted;
     /** Number of additional Heartwoods planted beyond the original (0..3 for waves 50/100/150). */
@@ -571,6 +573,7 @@ public final class GameState {
         this.bossIntroWave = 0;
         this.wavePlannedEnemies = 0;
         this.tricklePulse = 0;
+        this.escortWave = 0;
         this.secondTreePlanted = false;
         this.plantedTreesCount = 0;
         this.plantedTreeHealth = new ArrayList<>();

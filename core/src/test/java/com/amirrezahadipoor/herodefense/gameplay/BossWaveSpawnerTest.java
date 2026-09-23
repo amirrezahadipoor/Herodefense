@@ -41,4 +41,20 @@ final class BossWaveSpawnerTest {
         assertTrue(spawner.isBossWave(100));
         assertFalse(spawner.isBossWave(101));
     }
+
+    @Test
+    void escortGrowsFromFourToTwelveAndSkipsRegularWaves() {
+        assertEquals(0, spawner.escortCountForWave(1));
+        assertEquals(0, spawner.escortCountForWave(4));
+        assertEquals(0, spawner.escortCountForWave(6));
+        assertEquals(4, spawner.escortCountForWave(5));
+        assertEquals(4, spawner.escortCountForWave(10));
+        assertEquals(5, spawner.escortCountForWave(25));
+        assertEquals(6, spawner.escortCountForWave(50));
+        assertEquals(8, spawner.escortCountForWave(100));
+        assertEquals(10, spawner.escortCountForWave(150));
+        assertEquals(12, spawner.escortCountForWave(200));
+        assertEquals(0, spawner.escortCountForWave(201));
+        assertEquals(0, spawner.escortCountForWave(205));
+    }
 }

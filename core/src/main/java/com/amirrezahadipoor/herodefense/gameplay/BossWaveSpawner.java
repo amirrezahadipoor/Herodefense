@@ -21,6 +21,18 @@ public final class BossWaveSpawner {
     }
 
     /**
+     * The boss's escort on a boss wave (P6 boss escorts): four bodies on the early laps, one
+     * more every twenty-five waves, so the last bosses walk in with twelve. Zero anywhere else --
+     * regular waves have their own pulses and owe the boss nothing.
+     */
+    public int escortCountForWave(int waveNumber) {
+        if (!isBossWave(waveNumber)) {
+            return 0;
+        }
+        return 4 + waveNumber / 25;
+    }
+
+    /**
      * How many boss waves a run of {@code runLengthWaves} holds: one every {@link EnemyWaveSpawner#BOSS_WAVE_INTERVAL}
      * waves, so forty in the standard run of 200 and six in the thirty-wave vigil. The end-of-run summary and the
      * reward screen both print the count against this, not against a number of their own -- the summary said

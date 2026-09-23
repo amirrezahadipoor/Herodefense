@@ -165,6 +165,64 @@ final class WaveLifecycleBossIntroTest {
     }
 
     @Test
+    void halfTheEscortWalksInWithTheBoss() {
+        GameState state = GameState.newRun(34L);
+        state.waveNumber = 5;
+        lifecycle.startCurrentWave(state);
+
+        assertTrue(lifecycle.completeBossIntro(state));
+        assertEquals(1, state.escortWave);
+        assertEquals(1, state.aliveBosses.size());
+        assertEquals(2, state.aliveEnemies.size(), "four escorts, half up front");
+    }
+
+    @Test
+    void theBloodiedBossCallsTheRestMidFight() {
+        GameState state = GameState.newRun(35L);
+        state.waveNumber = 5;
+        lifecycle.startCurrentWave(state);
+        lifecycle.completeBossIntro(state);
+        Boss boss = state.aliveBosses.get(0);
+        boss.health = boss.maxHealth * 0.9f;
+
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(1, state.escortWave, "a scratched boss keeps its escort waiting");
+        assertEquals(2, state.aliveEnemies.size());
+
+        boss.health = boss.maxHealth / 2f;
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(2, state.escortWave);
+        assertEquals(4, state.aliveEnemies.size());
+    }
+
+    @Test
+    void theFallenBossIsAvengedBeforeTheReward() {
+        GameState state = GameState.newRun(36L);
+        state.waveNumber = 10;
+        lifecycle.startCurrentWave(state);
+        lifecycle.completeBossIntro(state);
+        state.aliveBosses.get(0).receiveDamage(Float.MAX_VALUE);
+
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(2, state.escortWave);
+        assertEquals(4, state.aliveEnemies.size());
+
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
+        assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
+    }
+
+    @Test
+    void theIntroPropWalksAlone() {
+        GameState state = GameState.newRun(37L);
+        state.waveNumber = 5;
+        lifecycle.startCurrentWave(state);
+
+        assertNotNull(lifecycle.spawnBossIntroProp(state));
+        assertTrue(state.aliveEnemies.isEmpty(), "the trash-talk gets the stage alone");
+        assertEquals(0, state.escortWave);
+    }
+
+    @Test
     void reloadRepairsWaveActiveWhilePending() {
         GameState state = GameState.newRun(33L);
         state.waveNumber = 5;

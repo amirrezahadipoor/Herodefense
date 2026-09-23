@@ -49,7 +49,15 @@ final class WaveLifecycleSystemTest {
         state.waveNumber = GameState.FINAL_WAVE;
         lifecycle.startCurrentWave(state);
         assertTrue(lifecycle.completeBossIntro(state));
+        assertEquals(6, state.aliveEnemies.size(), "half the twelve-body escort walks in first");
+        assertEquals(1, state.escortWave);
         state.aliveBosses.get(0).receiveDamage(Float.MAX_VALUE);
+
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state),
+            "the boss's death-cry calls the rest of the escort");
+        assertEquals(2, state.escortWave);
+        assertEquals(12, state.aliveEnemies.size());
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
 
         assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
         assertTrue(state.awaitingBossReward);
@@ -73,6 +81,9 @@ final class WaveLifecycleSystemTest {
         assertTrue(lifecycle.completeBossIntro(state));
         assertFalse(state.aliveBosses.isEmpty());
         for (Boss boss : state.aliveBosses) boss.receiveDamage(Float.MAX_VALUE);
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state),
+            "the vengeance pulse arrives before the reward");
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
         assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
         assertTrue(new BossRewardCardSystem().chooseCard(state, 0));
 
@@ -120,6 +131,10 @@ final class WaveLifecycleSystemTest {
         lifecycle.completeBossIntro(state);
         state.waveElapsedSeconds = 25f;
         state.aliveBosses.get(0).receiveDamage(Float.MAX_VALUE);
+
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state),
+            "the vengeance pulse arrives before the reward");
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
 
         assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
         assertEquals(25f, state.fastestWaveClearSeconds);
