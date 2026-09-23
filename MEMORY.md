@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P3c PUSHED` — Granny's lore: 48 codex entries + 8 boss bios + 10 letters rewritten warm. CI polling. Next: `P3d` docs (STORY_CONTENT/STORY_VOICE rewrites). |
-| **Last push** | `P3c` — lore prose in Granny's voice (48 codex titles+bodies, 8 Night Shift bios with hints, 10 letters; M1 keeps "So that was you.", M10 keeps the door beat); structure untouched (48 ids/triggers/params); BossLoreTest migrated. |
+| **Status** | `P3c VERIFIED` — all workflows green on `eefee30` (device/human-review correctly skipped: story-only). Next: `P3d` docs (STORY_CONTENT/STORY_VOICE rewrites). |
+| **Last push** | `P3c` (`eefee30`) — Granny's lore verified green on CI. Test core logic + Android + balance-gate all success. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -74,7 +74,9 @@
   ids, same trigger counts (8/8/12/5/10/4/1) and params. `BossLoreTest` migrated to
   the new words; stale "D3's four new bosses" comment fixed. Verified: python sweep
   (LayoutTest logic: bodies ≤162, sentences/words in cap, ASCII-only) + local
-  `:core:test` + `:core:ciStaticAnalysis` green. Remaining: P3d (docs) → P4–P8.
+  `:core:test` + `:core:ciStaticAnalysis` green. CI: test-core ✓ + Android ✓ +
+  balance-gate ✓ on `eefee30` (first try after the local catch of the verbatim-pin
+  miss). Remaining: P3d (docs) → P4–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -105,7 +107,11 @@
 - **2026-09-23 / session 5** — P3c done + pushed: Granny's lore (48+8+10). Turn-end
   snapshot lesson: `.git` + `~/.cache` + exec bits do NOT survive between turns —
   re-clone shallow to /tmp, re-download JDK (~10s), `chmod +x gradlew`, verify, push.
-  Tree was otherwise pristine (4-file diff confirmed). Next: P3d docs, then P4.
+  Tree was otherwise pristine (4-file diff confirmed). Local gradle caught a missed
+  verbatim test (`LoreCatalogTest` bodies), fixed before CI ever saw it; SpotBugs OOM
+  (exit 137) on the 2GB box beaten with `--no-daemon --max-workers=1`. P3c VERIFIED.
+  NOTE: the owner re-pasted the PAT this turn (auth died with `.git`) — if a future
+  turn cannot push, ask again; never store it. Next: P3d docs, then P4.
 
 ---
 
