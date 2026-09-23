@@ -12,10 +12,10 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P6a UNIT-GREEN` on `a7fa11d` (unit + emulator green; balance-gate red expected — economy + gates re-measured in P6d AFTER all mechanics land). Regular waves of 8+ arrive in 3 kill-gated pulses; skirmishes walk whole; cap climbs 24→28 over 120–180; sim keeps the live wave clock. 5 pins re-measured B1-style (see push log). Next: `P6b` boss escorts, `P6c` breather + horn, `P6d` balance harvest. |
-| **Last push** | `P6a` unit-green on `a7fa11d` — regular trickles + raised cap + sim wave
-clock (`43b6b10` + 4 fixes + 2 temp-debug commits, deleted after). CI: unit + emulator
-green; balance red expected (P6d harvests it after P6b/c). P5 VERIFIED (`a4391ce`). |
+| **Status** | `P6b UNIT-GREEN` on `d2a1986` (unit + emulator green; balance-gate red expected — economy + gates re-measured in P6d AFTER all mechanics land). Regular waves of 8+ arrive in 3 kill-gated pulses; skirmishes walk whole; cap climbs 24→28 over 120–180; sim keeps the live wave clock. P6b: boss escorts (4->12 in 2 pulses, blood/vengeance-gated, affix-free, prop stays lone); optimiser spike 0.65->0.95, elite-average proxy->zeroed comparison. Next: `P6c` breather + horn, `P6d` balance harvest. |
+| **Last push** | `P6b` unit-green on `d2a1986` — boss escorts + 1 fix round (`bb9f909` +
+1 fix). CI: unit + emulator green; balance red expected (P6d harvests it after P6c).
+P6a VERIFIED (`a7fa11d`), P5 VERIFIED (`a4391ce`). |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -151,6 +151,21 @@ green; balance red expected (P6d harvests it after P6b/c). P5 VERIFIED (`a4391ce
   CI: unit + emulator green; balance red expected. Remaining: P6b (boss
   escorts: Boss+(4+wave/25) in 2 trickles, spawn + boss-66%, elite-free),
   P6c (breather beats + FINAL Push horn), P6d (balance harvest), P7–P8.
+- **P6b (2026-09-24)** — longer waves II: boss escorts, pushed as `bb9f909` (+1 fix ->
+  unit-green `d2a1986`). Done: `escortCountForWave` (0 off-lap, else 4+wave/25: 4 at w5,
+  8 at w100, 12 at w200); ceil-half walks in with the boss via `spawnTrickle` slices of
+  one escort plan, the rest answers at boss <=66% HP or as vengeance on boss death,
+  BEFORE the living check (`reinforceEscort`, `GameState.escortWave` 0/1/2, ratchet
+  662,88 -> 665,89); intro prop stays a lone boss (escorts spawn only in the boss branch
+  of `spawnCurrentWave`, never in `spawnBossIntroProp`); affix-free per the P5 audit
+  (`isEliteWave` already excludes fifth waves). NOT done: the spec's boss-HP +0-15% by
+  lap — an unmeasured guess with escorts already moving the pins; P6d decides with
+  numbers. Re-pinned B1-style: optimiser spike 0.65->0.95 (worst 0.7889 + ~20% margin;
+  escort cliffs into/out of every fifth wave), elite-average proxy -> zeroed comparison
+  (composition, not exemption: escorts raised the run mean above the elite mean; elites
+  still threaten — 23 waves, damage > 0, pressured >= 1 all hold). CI: unit + emulator
+  green; balance red expected. Remaining: P6c (breather beats + Final Push horn), P6d
+  (balance harvest), P7–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -216,6 +231,13 @@ green; balance red expected (P6d harvests it after P6b/c). P5 VERIFIED (`a4391ce
   then wave-62 death 0.62), 5 B1-style re-pins. Unit + emulator green on
   `a7fa11d`; balance harvest deferred to P6d (after escorts + breather move
   the numbers again). Next: P6b escorts → P6c breather+horn → P6d harvest.
+- **2026-09-24 / session 10** — P6b done + pushed: escorts per S5.2 -> `bb9f909` -> CI
+  red->green in 1 fix (`d2a1986`, 2 failures: elite-average proxy + optimiser spike).
+  Auth: the stored classic PAT died (401) — the owner pasted a new fine-grained PAT,
+  kept in session per the standing order (never in the repo). Tool lesson re-confirmed:
+  parallel `edit_file` calls to the SAME file clobber — 3 edits silently lost, all
+  reporting success; one edit per file per message, always. Next: P6c breather+horn
+  -> P6d harvest.
 
 ---
 
@@ -413,9 +435,12 @@ spawn ONE boss and nothing else (short!). So "longer" = pacing + escorts, not ju
    (splitting them also inverted the ramp). `planTrickles(total)` + `spawnTrickle` (slices
    one global event-sorted plan; elites from pulse 1 only) + `reinforceTrickle` before the
    living check. The "final push" horn SFX lands in P6c with the breather.
-2. **Boss waves — escorts.** Boss + `(4 + wave/25)` minions in 2 trickles (at spawn + at
-   boss 66% HP — HP-gated, NOT dialogue-gated; VFX ring already exists via evolution system).
-   Boss HP +0–15% by lap (measured, not guessed).
+2. **Boss waves — escorts (P6b AS-BUILT).** Boss + `(4 + wave/25)` minions in 2 trickles
+   (ceil-half at spawn + the rest at boss <=66% HP — HP-gated, NOT dialogue-gated — or as
+   vengeance when the boss falls first, before the living check). The intro prop stays a
+   lone boss; escorts are affix-free (`isEliteWave` excludes fifth waves, per the P5
+   audit). Boss HP +0-15% by lap NOT applied: an unmeasured guess once the escorts moved
+   the pins on their own — P6d decides with numbers.
 3. **Breather beats.** After clearing milestone waves (25/50/…), 1.2s pause with Pip's line
    (§9) before next wave — longer *and* warmer.
 4. **Balance honesty (keep the RULES.md gate ethic).** Retune via `BalanceSimulator`, update
@@ -424,7 +449,7 @@ spawn ONE boss and nothing else (short!). So "longer" = pacing + escorts, not ju
    (owner deleted the roadmap direction); the honest-gates habit is not. P6a precedent: where
    the owner-ordered change itself moves a measurement (NAIVE shamble, middle valley, rank
    floors), move the pin B1-style — measured value + mechanism + margin in the comment — and
-   record it in the push log. Fix code first (P6a cut 3 mechanisms before moving 5 pins).
+   record it in the push log. Fix code first (P6a cut 3 mechanisms before moving 5 pins). P6b corollary: when a proxy assert dies to composition rather than exemption, replace the proxy with the direct property (the elite check now zeroes elite damage instead of excluding elite waves) rather than moving numbers blind.
 5. **Cap safety (P6a AS-BUILT).** Ceiling climbs 24 → 25 → 26 → 27 → 28 (+1 per 20 waves
    from 120, 28 at 180+) instead of jumping +4 at 120 (the cliff ambushed neighbours).
    Emulator journey green; rollback to 24 if `device-evidence` ever complains.
