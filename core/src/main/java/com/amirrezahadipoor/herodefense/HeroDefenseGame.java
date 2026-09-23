@@ -27,6 +27,7 @@ import com.amirrezahadipoor.herodefense.gameplay.EnemyWaveSpawner;
 import com.amirrezahadipoor.herodefense.gameplay.ArenaQueries;
 import com.amirrezahadipoor.herodefense.gameplay.FocusFireSystem;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
+import com.amirrezahadipoor.herodefense.gameplay.HeartbeatSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAnimationController;
 import com.amirrezahadipoor.herodefense.gameplay.CombatEvent;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAttackUpdateResult;
@@ -190,6 +191,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private RewardCardTouchController rewardCardTouchController;
     private TrialDraftSystem trialDraftSystem;
     private TrialDraftTouchController trialDraftTouchController;
+    private HeartbeatSystem heartbeatSystem;
     private ScreenShakeSystem screenShakeSystem;
     private SettingsTouchController settingsTouchController;
     private SimulationSpeedTouchController simulationSpeedTouchController;
@@ -312,6 +314,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             new DirectorHost(), waveLifecycleSystem, audioManager, particleSystem,
             screenShakeSystem, presentationSystem, codexSystem
         );
+        heartbeatSystem = new HeartbeatSystem(audioManager);
         frameDriver = new FrameDriver(
             new FrameHost(), flow, audioManager, audioManager, settings, touchFeedbackSystem, inventoryTouchController,
             statShopSystem, skillShopSystem, rootNetworkSystem, hitStopSystem, screenShakeSystem, particleSystem,
@@ -618,6 +621,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         float simulationDelta = deltaSeconds * gameState.simulationSpeed;
         if (gameState.waveActive) gameState.waveElapsedSeconds += simulationDelta;
         screenShakeSystem.update(simulationDelta);
+        heartbeatSystem.update(gameState, simulationDelta);
         particleSystem.update(simulationDelta);
         floatingCoinTextSystem.update(simulationDelta);
         floatingDamageTextSystem.update(simulationDelta);

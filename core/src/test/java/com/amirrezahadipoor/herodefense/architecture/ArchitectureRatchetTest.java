@@ -80,7 +80,11 @@ class ArchitectureRatchetTest {
         // the touch host, begin on the director and session hosts, expose on the composer). The beat,
         // the line and the handoff live in gameplay/BreatherCinematic and gameplay/CinematicFlow,
         // which the ratchet does not hold; the game class only owns the seam, as it owns every port.
-        new ArchitectureRatchet.Frozen(836, 64),
+        //
+        // P6a (slow-wave heartbeat) raised this by 4 lines and one field: the import, the
+        // HeartbeatSystem field, its construction beside the director, and its tick in
+        // updatePlaying. The beat logic lives in gameplay/HeartbeatSystem, unheld.
+        new ArchitectureRatchet.Frozen(840, 65),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.

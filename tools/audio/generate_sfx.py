@@ -176,6 +176,18 @@ def build(name: str) -> np.ndarray:
         envelope *= decay(length, 2.2)
         breath = highpass(lowpass(noise(length, 47), 1400.0), 500.0) * decay(length, 9.0) * 0.5
         return fifth * envelope + breath
+    if name == "heartbeat":
+        # P6a: the run's drum under long waves -- a soft lub-dub: two low thumps a breath apart,
+        # felt more than heard, so it can tick for a whole grind without grating.
+        length = seconds(0.55)
+        out = np.zeros(length, dtype=np.float32)
+        for start, weight in ((0.0, 1.0), (0.17, 0.7)):
+            start_index = seconds(start)
+            segment = seconds(0.22)
+            thump = sweep(62.0, 38.0, segment, "sine") * decay(segment, 26.0)
+            tap = highpass(noise(segment, 7), 900.0) * decay(segment, 70.0) * 0.25
+            out[start_index: start_index + segment] += (thump + tap) * weight
+        return out
     if name == "wave_clear":
         length = seconds(1.10)
         out = np.zeros(length, dtype=np.float32)
@@ -259,6 +271,8 @@ EFFECTS = {
     "speech_boss": 0.46,
     # P6c longer waves: the final-push horn answers the last pulse of a wave walking in.
     "final_push": 0.72,
+    # P6a longer waves: the drum under combat -- soft, because it ticks for whole waves.
+    "heartbeat": 0.55,
 }
 
 

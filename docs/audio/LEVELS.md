@@ -29,6 +29,7 @@ not a cue.
 | `audio/sfx/death_heavy.ogg` | 0.42 | 44100 | 1 | 0.673 | -3.4 | 0.134 |
 | `audio/sfx/death_light.ogg` | 0.24 | 44100 | 1 | 0.519 | -5.7 | 0.058 |
 | `audio/sfx/final_push.ogg` | 0.90 | 44100 | 1 | 0.712 | -2.9 | 0.197 |
+| `audio/sfx/heartbeat.ogg` | 0.55 | 44100 | 1 | 0.541 | -5.3 | 0.047 |
 | `audio/sfx/hit.ogg` | 0.24 | 48000 | 2 | 0.876 | -1.2 | 0.076 |
 | `audio/sfx/item_drop.ogg` | 0.19 | 44100 | 2 | 0.885 | -1.1 | 0.102 |
 | `audio/sfx/kill.ogg` | 0.46 | 44100 | 2 | 0.894 | -1.0 | 0.148 |

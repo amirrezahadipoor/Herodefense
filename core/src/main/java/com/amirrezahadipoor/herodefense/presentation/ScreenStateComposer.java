@@ -7,6 +7,7 @@ import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.BreatherCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAnimationController;
+import com.amirrezahadipoor.herodefense.gameplay.LastStandCamera;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
 import com.amirrezahadipoor.herodefense.input.CodexTouchController;
@@ -246,7 +247,8 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
     float shakeY = reducedMotion ? 0f : host.screenShakeSystem().offsetY();
     float focus = opening ? host.openingCinematic().cameraFocus() : 0f;
     camera.zoom = opening ? host.openingCinematic().cameraZoom()
-        : bossIntro ? host.bossIntroCinematic().cameraZoom() : 1f;
+        : bossIntro ? host.bossIntroCinematic().cameraZoom()
+        : LastStandCamera.zoomFor(host.gameState());
     camera.position.set(
         baseCameraX + shakeX
             + (GameState.ARENA_CENTER_X - baseCameraX) * focus,
