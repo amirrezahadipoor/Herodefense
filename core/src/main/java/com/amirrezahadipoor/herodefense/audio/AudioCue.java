@@ -30,6 +30,8 @@ public enum AudioCue {
     FINAL_PUSH("audio/sfx/final_push.ogg", 0.46f, 0.60f),
     // P6a longer waves: the soft drum under combat, quickening as the wave thins.
     HEARTBEAT("audio/sfx/heartbeat.ogg", 0.30f, 0.50f),
+    // P6b longer waves: the darker drum while a boss lives or an elite stands.
+    DREAD_DRUM("audio/sfx/dread_drum.ogg", 0.34f, 0.50f),
     TELEGRAPH_WARNING("audio/sfx/telegraph_warning.ogg", 0.52f, 0.60f),
     UI_TAP("audio/sfx/ui_tap.ogg", 0.26f, 0.06f),
     UI_CLOSE("audio/sfx/ui_close.ogg", 0.28f, 0.10f),

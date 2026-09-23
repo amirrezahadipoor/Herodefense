@@ -6,6 +6,7 @@ import com.amirrezahadipoor.herodefense.WorldLayout;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.BreatherCinematic;
+import com.amirrezahadipoor.herodefense.gameplay.DreadWaves;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAnimationController;
 import com.amirrezahadipoor.herodefense.gameplay.LastStandCamera;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
@@ -314,6 +315,7 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
         host.openingCinematicRenderer().draw(camera.combined, host.openingCinematic());
         host.dialogueBoxRenderer().draw(spriteBatch, camera.combined, host.cinematicDialogue());
     }
+    host.postProcessRenderer().setDread(DreadWaves.dreadLevel(host.gameState()));
     host.postProcessRenderer().endSceneAndComposite();
 }
 boolean openingActive = host.flow().state() == GameScreenState.CINEMATIC && host.openingCinematic().isActive();

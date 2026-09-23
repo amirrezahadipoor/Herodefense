@@ -188,6 +188,18 @@ def build(name: str) -> np.ndarray:
             tap = highpass(noise(segment, 7), 900.0) * decay(segment, 70.0) * 0.25
             out[start_index: start_index + segment] += (thump + tap) * weight
         return out
+    if name == "dread_drum":
+        # P6b: the dread drum for elite and boss waves -- lower and more driving than the
+        # heartbeat: a deep skin hit with a cracking rim, answered half a breath later.
+        length = seconds(0.50)
+        out = np.zeros(length, dtype=np.float32)
+        for start, weight in ((0.0, 1.0), (0.22, 0.8)):
+            start_index = seconds(start)
+            segment = seconds(0.24)
+            skin = sweep(52.0, 30.0, segment, "sine") * decay(segment, 22.0)
+            rim = highpass(noise(segment, 13), 1800.0) * decay(segment, 55.0) * 0.35
+            out[start_index: start_index + segment] += (skin + rim) * weight
+        return out
     if name == "wave_clear":
         length = seconds(1.10)
         out = np.zeros(length, dtype=np.float32)
@@ -273,6 +285,8 @@ EFFECTS = {
     "final_push": 0.72,
     # P6a longer waves: the drum under combat -- soft, because it ticks for whole waves.
     "heartbeat": 0.55,
+    # P6b longer waves: the darker drum while a boss lives or an elite stands.
+    "dread_drum": 0.60,
 }
 
 

@@ -65,7 +65,7 @@ final class PostProcessShaderTest {
 
         assertEquals(
             Set.of("u_threshold", "u_texelStep", "u_bloom", "u_bloomIntensity", "u_vignette", "u_pulse",
-                "u_exposure"),
+                "u_exposure", "u_dread"),
             declared);
     }
 

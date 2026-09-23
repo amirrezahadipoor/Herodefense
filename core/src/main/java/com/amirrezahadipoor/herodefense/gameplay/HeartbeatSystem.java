@@ -36,7 +36,8 @@ public final class HeartbeatSystem {
         if (secondsSinceBeat >= period) {
             // One beat per frame at most: a hitch must never pay back a skipped drum as a roll.
             secondsSinceBeat = Math.min(secondsSinceBeat - period, period);
-            audio.play(AudioCue.HEARTBEAT);
+            // Dread waves drum darker: a living boss or a standing elite swaps the heartbeat out.
+            audio.play(DreadWaves.dreadStands(state) ? AudioCue.DREAD_DRUM : AudioCue.HEARTBEAT);
         }
     }
 

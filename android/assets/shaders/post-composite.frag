@@ -10,6 +10,7 @@ uniform sampler2D u_bloom;
 uniform float u_bloomIntensity;
 uniform float u_vignette;
 uniform float u_pulse;
+uniform float u_dread;
 uniform float u_exposure;
 
 // Roadmap E1, pass 3: the frame comes back. The blurred light is added where it was born,
@@ -37,5 +38,10 @@ void main() {
     float pulse = u_pulse * falloff;
     rgb += vec3(0.85, 0.10, 0.08) * pulse * 0.45;
     rgb *= 1.0 - pulse * 0.22;
+    // Dread: while a boss or an elite stands, the vignette edge breathes red -- a slower,
+    // deeper stain than a crit's flash, eased in Java so it never pops.
+    float dread = u_dread * falloff;
+    rgb += vec3(0.45, 0.05, 0.05) * dread * 0.5;
+    rgb *= 1.0 - dread * 0.18;
     gl_FragColor = vec4(rgb, sceneColor.a);
 }

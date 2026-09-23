@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.model.EliteAffix;
 import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import java.util.ArrayList;
@@ -58,6 +59,15 @@ final class HeartbeatSystemTest {
 
         heartbeat.update(null, 10f);
         assertTrue(audio.cues.isEmpty(), "no state, no drum");
+    }
+
+    @Test
+    void dreadWavesDrumDarker() {
+        GameState state = fighting(17L, 10, 10);
+        state.aliveEnemies.get(0).eliteAffix = EliteAffix.BLIGHTBURST.id();
+
+        heartbeat.update(state, HeartbeatSystem.SLOW_PERIOD_SECONDS);
+        assertEquals(List.of(AudioCue.DREAD_DRUM), audio.cues);
     }
 
     @Test

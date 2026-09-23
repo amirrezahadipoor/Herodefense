@@ -50,6 +50,8 @@ public final class PostProcessRenderer implements AutoCloseable {
     static final float EXPOSURE = 1.5f;
     /** How long a critical hit's red edge pulse lasts, and the cap on stacked pulses. */
     static final float CRIT_PULSE_SECONDS = 0.35f;
+    /** How fast the dread edge breathes in and out, in level per second. */
+    static final float DREAD_EASE_PER_SECOND = 1.5f;
 
     private final ShaderProgram brightShader;
     private final ShaderProgram blurShader;
@@ -64,6 +66,8 @@ public final class PostProcessRenderer implements AutoCloseable {
     private int sceneHeight;
     private boolean enabled = true;
     private float critPulseSeconds;
+    private float dreadTarget;
+    private float dreadShown;
 
     public PostProcessRenderer() {
         brightShader = compile("shaders/post-bright.frag", "Post bright-pass");
@@ -148,6 +152,9 @@ public final class PostProcessRenderer implements AutoCloseable {
         compositeShader.setUniformf("u_vignette", VIGNETTE_STRENGTH);
         compositeShader.setUniformf("u_exposure", EXPOSURE);
         compositeShader.setUniformf("u_pulse", critPulse());
+        dreadShown = easeToward(dreadShown, dreadTarget, Gdx.graphics.getDeltaTime(),
+            DREAD_EASE_PER_SECOND);
+        compositeShader.setUniformf("u_dread", dreadShown);
         critPulseSeconds = Math.max(0f, critPulseSeconds - Gdx.graphics.getDeltaTime());
         bloomA.getColorBufferTexture().bind(1);
         // bind(1) leaves GL_TEXTURE1 active, and SpriteBatch flushes by binding the drawn texture to
@@ -177,6 +184,15 @@ public final class PostProcessRenderer implements AutoCloseable {
     }
 
     /**
+     * The frame's dread target for the next composite: 1 while a boss or an elite stands, 0
+     * otherwise. The composite eases the shown edge toward it, so dread breathes in and out
+     * instead of popping.
+     */
+    public void setDread(float dread) {
+        dreadTarget = Math.min(1f, Math.max(0f, dread));
+    }
+
+    /**
      * The composite's lift, as the pure arithmetic the shader runs per channel: {@code value * (exposure -
      * (exposure - 1) * value)}. Its slope at black is the exposure, it is exactly the identity at white, and
      * for any exposure up to two it never falls or crosses one on the way -- so a dark ground gains, light that
@@ -194,6 +210,15 @@ public final class PostProcessRenderer implements AutoCloseable {
     /** The pulse's ratio maths, testable without a GPU: armed at one, clamped at zero. */
     static float pulseRatio(float remainingSeconds) {
         return Math.max(0f, remainingSeconds) / CRIT_PULSE_SECONDS;
+    }
+
+    /**
+     * Eases the shown dread level toward its target without overshooting: the arithmetic the
+     * composite runs every frame, here so a test can hold it without a GPU.
+     */
+    static float easeToward(float shown, float target, float deltaSeconds, float perSecond) {
+        float step = Math.min(Math.abs(target - shown), Math.max(0f, deltaSeconds) * perSecond);
+        return shown + Math.signum(target - shown) * step;
     }
 
     private boolean ensureBuffers() {
