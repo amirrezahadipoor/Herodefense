@@ -81,6 +81,10 @@ public final class WaveFiftyMemoryTest {
             long touchCount = game.handledTouchUpCount();
             tapWorld(surface, WORLD_WIDTH_MENU_X, menuActionY(MainMenuTouchLayout.Action.CONTINUE, true));
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
+            // P4b: wave 50 is a boss wave, so the intro plays first; one tap skips it.
+            await("boss intro", () -> game.screenState() == GameScreenState.CINEMATIC);
+            tapWorld(surface, 360f, 640f);
+            await("boss intro skipped", () -> game.handledTouchUpCount() > touchCount + 1);
             await("wave 50 running", () -> game.screenState() == GameScreenState.PLAYING
                 && game.gameState().waveNumber == 50);
 

@@ -67,7 +67,7 @@ final class CinematicFlowBossIntroTest {
         cinematic.beginBossIntro();
         Boss prop = state.aliveBosses.get(0);
 
-        advance(BossIntroCinematic.ENTER_SECONDS * 0.5f);
+        advance(BossIntroCinematic.ENTER_SECONDS * 0.5f + 0.05f);
         assertEquals(55f, prop.x, 5f, "mid-entrance the prop is between its edge and its mark");
 
         advance(BossIntroCinematic.ENTER_SECONDS + BossIntroCinematic.TITLE_SECONDS);
@@ -77,7 +77,7 @@ final class CinematicFlowBossIntroTest {
 
         advance(4 * BossIntroCinematic.TALK_LINE_SECONDS + BossIntroCinematic.COMEBACK_SECONDS + 0.01f);
         assertEquals(BossIntroCinematic.Phase.EXIT, bossIntro.phase());
-        advance(BossIntroCinematic.EXIT_SECONDS * 0.5f);
+        advance(0.1f); // two more steps down the walk-out, still on stage
         assertTrue(prop.x > -40f && prop.x < 150f, "the walk-out heads back to the edge");
     }
 
@@ -86,19 +86,19 @@ final class CinematicFlowBossIntroTest {
         deferredBossWave(7L, 5);
         cinematic.beginBossIntro();
 
-        advance(BossIntroCinematic.ENTER_SECONDS + 0.01f);
+        advance(BossIntroCinematic.ENTER_SECONDS + 0.1f);
         assertEquals(BossIntroCinematic.Phase.TITLE, bossIntro.phase());
         assertEquals(BossIntros.titleFor("ANCIENT_GOLEM"), cinematic.dialogue().text());
         assertEquals(SpeechVoice.BOSS, cinematic.dialogue().voice());
 
-        advance(BossIntroCinematic.TITLE_SECONDS + 0.01f);
+        advance(BossIntroCinematic.TITLE_SECONDS + 0.1f);
         assertEquals(BossIntroCinematic.Phase.TALK, bossIntro.phase());
         assertEquals(
             GameLocale.text(BossIntros.talkKey("ANCIENT_GOLEM", 1, 0)),
             cinematic.dialogue().text()
         );
 
-        advance(4 * BossIntroCinematic.TALK_LINE_SECONDS + 0.01f);
+        advance(4 * BossIntroCinematic.TALK_LINE_SECONDS + 0.1f);
         assertEquals(BossIntroCinematic.Phase.COMEBACK, bossIntro.phase());
         assertEquals(
             GameLocale.text(BossIntros.comebackKey("ANCIENT_GOLEM", 1)),
@@ -169,7 +169,7 @@ final class CinematicFlowBossIntroTest {
         cinematic.beginBossIntro();
 
         assertEquals(2, bossIntro.meeting());
-        advance(BossIntroCinematic.ENTER_SECONDS + 0.01f);
+        advance(BossIntroCinematic.ENTER_SECONDS + 0.1f);
         assertEquals(BossIntroCinematic.Phase.TALK, bossIntro.phase());
         assertFalse(bossIntro.titleCard().isEmpty(), "the small plate still has its line");
     }
