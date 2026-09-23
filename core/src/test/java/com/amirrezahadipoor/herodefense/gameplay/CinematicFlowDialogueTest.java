@@ -12,6 +12,7 @@ import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
+import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +37,10 @@ final class CinematicFlowDialogueTest {
         @Override
         public GameState gameState() {
             return state;
+        }
+
+        @Override
+        public void showWaveReflection() {
         }
 
         @Override
@@ -128,7 +133,8 @@ final class CinematicFlowDialogueTest {
     ) {
         return new CinematicFlow(
             new Host(state), flow, opening, ceremony, waves, new ParticleSystem(),
-            new HeroAnimationController(), null, played::add
+            new HeroAnimationController(), null, played::add, new BossIntroCinematic(),
+            new ScreenShakeSystem()
         );
     }
 }

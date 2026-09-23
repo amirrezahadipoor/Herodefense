@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import com.amirrezahadipoor.herodefense.model.Boss;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
 import com.amirrezahadipoor.herodefense.trials.TrialEffects;
@@ -34,9 +35,21 @@ public final class WaveLifecycleSystem {
 
     public boolean startCurrentWave(GameState state) {
         if (state == null || state.runComplete || state.waveActive || state.awaitingBossReward
-            || state.ceremonyPending) {
+            || state.ceremonyPending || state.bossIntroPending) {
             return false;
         }
+        if (bossSpawner.isBossWave(state.waveNumber)) {
+            // The fight waits for its watch-only intro: the wave number has already advanced,
+            // and the spawn happens in completeBossIntro once the boss has walked back out.
+            state.bossIntroPending = true;
+            state.bossIntroWave = state.waveNumber;
+            return true;
+        }
+        return spawnCurrentWave(state);
+    }
+
+    /** Spawns the current wave for real: regulars at once, the boss once its intro hands off. */
+    private boolean spawnCurrentWave(GameState state) {
         if (bossSpawner.isBossWave(state.waveNumber)) {
             bossSpawner.spawn(state, state.waveNumber);
         } else {
@@ -55,6 +68,35 @@ public final class WaveLifecycleSystem {
         // that spent everything, and never carries a surplus into the next one either.
         HeroMovementSystem.beginWave(state);
         return true;
+    }
+
+    /**
+     * Called when the boss intro ends (or instantly by the simulator): the pending boss wave
+     * spawns for real and the fight starts.
+     */
+    public boolean completeBossIntro(GameState state) {
+        if (state == null || !state.bossIntroPending) {
+            return false;
+        }
+        state.bossIntroPending = false;
+        return spawnCurrentWave(state);
+    }
+
+    /**
+     * The intro's prop: the pending wave's boss at its lane's edge, cleared of any stale twin
+     * a reload may have persisted, or null when no intro is pending. The cinematic walks it to
+     * its mark and back out; the last frame removes it and {@link #completeBossIntro} spawns
+     * the fight's own boss.
+     */
+    public Boss spawnBossIntroProp(GameState state) {
+        if (state == null || !state.bossIntroPending) {
+            return null;
+        }
+        if (!bossSpawner.isBossWave(state.bossIntroWave)) {
+            return null;
+        }
+        state.aliveBosses.clear();
+        return bossSpawner.spawn(state, state.bossIntroWave);
     }
 
     /** Call after combat resolution. A new wave is spawned in the same update on clear. */
@@ -79,6 +121,9 @@ public final class WaveLifecycleSystem {
         state.waveActive = false;
         if (result == WaveCompletion.NEXT_WAVE) {
             startCurrentWave(state);
+            if (state.bossIntroPending) {
+                return WaveCompletion.BOSS_INTRO;
+            }
         }
         return result;
     }
@@ -109,6 +154,9 @@ public final class WaveLifecycleSystem {
         WaveCompletion result = continuousRun.completeCurrentWave(state);
         if (result == WaveCompletion.NEXT_WAVE) {
             startCurrentWave(state);
+            if (state.bossIntroPending) {
+                return WaveCompletion.BOSS_INTRO;
+            }
         }
         return result;
     }

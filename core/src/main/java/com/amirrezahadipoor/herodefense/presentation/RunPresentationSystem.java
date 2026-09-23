@@ -1,13 +1,10 @@
 package com.amirrezahadipoor.herodefense.presentation;
 
-import com.amirrezahadipoor.herodefense.audio.NarrationRequest;
-import com.amirrezahadipoor.herodefense.audio.NarrationSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossFightScript;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
 import com.amirrezahadipoor.herodefense.story.BossTitleCards;
-import com.amirrezahadipoor.herodefense.story.BossTitleNarration;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
 import com.amirrezahadipoor.herodefense.story.Deeds;
 import com.amirrezahadipoor.herodefense.story.EliteFragments;
@@ -22,7 +19,7 @@ import com.amirrezahadipoor.herodefense.render.CombatEntityRenderer;
 
 /**
  * The presentation side of a run: what a defeat, a boss entrance, an elite kill or a freshly started wave
- * looks and sounds like. F3 adds narration for boss title cards.
+ * looks and sounds like.
  */
 public final class RunPresentationSystem {
 
@@ -36,7 +33,6 @@ public final class RunPresentationSystem {
     private final ScreenShakeSystem screenShakeSystem;
     private final CodexSystem codexSystem;
     private final BeatSink beats;
-    private NarrationSystem narration;
 
     public RunPresentationSystem(ParticleSystem particleSystem, ScreenShakeSystem screenShakeSystem,
         CodexSystem codexSystem, BeatSink beats) {
@@ -44,10 +40,6 @@ public final class RunPresentationSystem {
         this.screenShakeSystem = screenShakeSystem;
         this.codexSystem = codexSystem;
         this.beats = beats;
-    }
-
-    public void setNarrationSystem(NarrationSystem narration) {
-        this.narration = narration;
     }
 
     public void emitDefeatParticles(GameState state) {
@@ -77,29 +69,17 @@ public final class RunPresentationSystem {
     }
 
     public void presentBossEntrance(GameState state) {
-        String claimedBossType = null;
         for (Boss boss : state.aliveBosses) {
             if (boss == null || !boss.alive || boss.entrancePresented) {
                 continue;
             }
             boss.entrancePresented = true;
             particleSystem.emitBossEntrance(boss.x, boss.y + 10f);
-            if (claimedBossType == null) claimedBossType = boss.bossType;
         }
         screenShakeSystem.triggerBossEntrance();
-        String titleCard = BossTitleCards.claimFirstUnencountered(state, state.aliveBosses);
-        if (titleCard != null) {
-            beats.showBeat(titleCard);
-            beats.save();
-            // F3: narrate boss title card if TTS available
-            if (narration != null && claimedBossType != null) {
-                NarrationRequest req = BossTitleNarration.forBoss(claimedBossType);
-                if (req != null) narration.narrate(req);
-            } else if (narration != null) {
-                // fallback: narrate the title card line itself
-                narration.narrate(new NarrationRequest(NarrationRequest.Type.BOSS_TITLE, "boss", titleCard, 0.9f));
-            }
-        }
+        // The title card shows inside the watch-only intro; the entrance only claims the
+        // encounter for the codex ledger, silently.
+        BossTitleCards.claimFirstUnencountered(state, state.aliveBosses);
     }
 
     /** Claims Elite kills for counts, codex, secret 28, and their §4 fragment overlay. */

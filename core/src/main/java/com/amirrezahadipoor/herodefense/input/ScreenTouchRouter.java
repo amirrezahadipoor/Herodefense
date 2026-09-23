@@ -5,6 +5,7 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.BraceSystem;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroMovementSystem;
@@ -75,6 +76,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
     /** What the router needs from the game; implemented by an adapter inside the game class. */
     public interface Host {
         AudioPlayback audioManager();
+
+        BossIntroCinematic bossIntroCinematic();
 
         CodexSystem codexSystem();
 
@@ -160,6 +163,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
         void fireUltimate();
 
         void beginPlantingCeremony();
+
+        void beginBossIntro();
 
         /** Tap-to-focus: marks the enemy under the tap, or clears the mark when the tap hits nothing. */
         void focusFireAt(float worldX, float worldY);
@@ -276,6 +281,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                         host.recordRunEnd();
                     } else if (result == WaveCompletion.PLANTING_CEREMONY) {
                         host.beginPlantingCeremony();
+                    } else if (result == WaveCompletion.BOSS_INTRO) {
+                        host.beginBossIntro();
                     } else {
                         host.flow().transitionTo(GameScreenState.PLAYING);
                     }
@@ -311,11 +318,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 return true;
             }
             if (host.flow().state() == GameScreenState.CINEMATIC) {
-                if (host.openingCinematic().isActive()) {
-                    host.openingCinematic().skip();
-                } else {
-                    host.plantingCeremony().skip();
-                }
+                // A tap advances the playing ceremony exactly the way Back does: one skip,
+                // owned by the port, so the two can never disagree about what is playing.
+                backPort.skipCeremony();
                 return true;
             }
             if (host.flow().state() == GameScreenState.LEVEL_UP) {

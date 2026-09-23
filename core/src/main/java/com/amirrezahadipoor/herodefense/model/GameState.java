@@ -63,6 +63,13 @@ public final class GameState {
     public boolean runComplete;
     /** Set when Wave 100 is cleared; cleared once the ceremony has played (or been skipped). */
     public boolean ceremonyPending;
+    /**
+     * Set when a boss wave's advance defers for its watch-only intro; cleared when the intro
+     * hands the run to the fight. A reload replays the intro from its first frame.
+     */
+    public boolean bossIntroPending;
+    /** The boss wave the pending intro plays for; wave/5 is the encounter, meeting per §3.4. */
+    public int bossIntroWave;
     /** True once the second Heartwood stands; it is a monument, never a second loss condition. @deprecated use plantedTreesCount */
     public boolean secondTreePlanted;
     /** Number of additional Heartwoods planted beyond the original (0..3 for waves 50/100/150). */
@@ -387,6 +394,9 @@ public final class GameState {
         if (aliveEnemies == null) aliveEnemies = new ArrayList<>();
         if (aliveBosses == null) aliveBosses = new ArrayList<>();
         if (livingEnemyCount() > 0) waveActive = true;
+        // The intro's prop is a living body in the save, but the wave has not started: the intro
+        // replays and the prop respawns fresh, so the flag wins over the body count.
+        if (bossIntroPending) waveActive = false;
         if (runComplete) waveActive = false;
         if (projectiles == null) projectiles = new ArrayList<>();
         if (drops == null) drops = new ArrayList<>();
@@ -553,6 +563,8 @@ public final class GameState {
         this.pendingRewardBossNumber = 0;
         this.runComplete = false;
         this.ceremonyPending = false;
+        this.bossIntroPending = false;
+        this.bossIntroWave = 0;
         this.secondTreePlanted = false;
         this.plantedTreesCount = 0;
         this.plantedTreeHealth = new ArrayList<>();

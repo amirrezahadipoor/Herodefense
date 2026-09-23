@@ -4,6 +4,7 @@ import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.WorldLayout;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
+import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.HeroAnimationController;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.PlantingCeremony;
@@ -100,6 +101,8 @@ public final class ScreenStateComposer {
 
         /** The E1 chain the in-run frame renders into; HUD and overlays stay out of it. */
         PostProcessRenderer postProcessRenderer();
+
+        BossIntroCinematic bossIntroCinematic();
 
         boolean continueAvailable();
 
@@ -228,6 +231,8 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
     float baseCameraX = WorldLayout.REFERENCE_WIDTH * 0.5f;
     float baseCameraY = WorldLayout.REFERENCE_HEIGHT * 0.5f;
     boolean opening = host.flow().state() == GameScreenState.CINEMATIC && host.openingCinematic().isActive();
+    boolean bossIntro = host.flow().state() == GameScreenState.CINEMATIC
+        && host.bossIntroCinematic().isActive();
     // Roadmap G3a: the camera impulse and the spore drift are decoration, so a player who asked not to be
     // shaken gets the same frame without them. The shake system itself keeps running -- its state belongs to
     // the simulation and stays deterministic -- and only the camera stops reading it.
@@ -235,7 +240,8 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
     float shakeX = reducedMotion ? 0f : host.screenShakeSystem().offsetX();
     float shakeY = reducedMotion ? 0f : host.screenShakeSystem().offsetY();
     float focus = opening ? host.openingCinematic().cameraFocus() : 0f;
-    camera.zoom = opening ? host.openingCinematic().cameraZoom() : 1f;
+    camera.zoom = opening ? host.openingCinematic().cameraZoom()
+        : bossIntro ? host.bossIntroCinematic().cameraZoom() : 1f;
     camera.position.set(
         baseCameraX + shakeX
             + (GameState.ARENA_CENTER_X - baseCameraX) * focus,
@@ -259,7 +265,7 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
         host.particleRenderer().drawAmbient(camera.combined, host.ambientSeconds());
     }
     spriteBatch.begin();
-    boolean cinematic = host.flow().state() == GameScreenState.CINEMATIC && !opening;
+    boolean cinematic = host.flow().state() == GameScreenState.CINEMATIC && !opening && !bossIntro;
     if (cinematic) {
         if (host.gameState().plantedTreesCount > 0) {
             host.saplingTreeRenderer().drawGroveIdle(spriteBatch, host.gameState(), host.ambientSeconds());
@@ -296,7 +302,7 @@ if (host.flow().state() != GameScreenState.MENU && host.flow().state() != GameSc
     camera.zoom = 1f;
     camera.position.set(baseCameraX, baseCameraY, camera.position.z);
     camera.update();
-    if (opening || host.plantingCeremony().isActive()) {
+    if (opening || host.plantingCeremony().isActive() || bossIntro) {
         // The opening's cloud, then the scene's line typing out in the same box the arena's beats use.
         host.openingCinematicRenderer().draw(camera.combined, host.openingCinematic());
         host.dialogueBoxRenderer().draw(spriteBatch, camera.combined, host.cinematicDialogue());

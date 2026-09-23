@@ -13,6 +13,7 @@ import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioFocusState;
 import com.amirrezahadipoor.herodefense.audio.GameAudioManager;
 import com.amirrezahadipoor.herodefense.gameplay.BossFactory;
+import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.BossSpecialAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossWaveSpawner;
 import com.amirrezahadipoor.herodefense.gameplay.ContinuousWaveRun;
@@ -170,6 +171,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private HeroProgressionSystem heroProgressionSystem;
     private final PlantingCeremony plantingCeremony = new PlantingCeremony();
     private final OpeningCinematic openingCinematic = new OpeningCinematic();
+    private final BossIntroCinematic bossIntroCinematic = new BossIntroCinematic();
     private final CodexSystem codexSystem = new CodexSystem();
     private HapticFeedback hapticFeedback;
     private HitStopSystem hitStopSystem;
@@ -292,12 +294,12 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         screenStateComposer = new ScreenStateComposer(new ComposerHost(), camera, renderers.spriteBatch);
         cinematicFlow = new CinematicFlow(
             new CinematicHost(), flow, openingCinematic, plantingCeremony, waveLifecycleSystem, particleSystem,
-            heroAnimationController, presentationSystem, audioManager
+            heroAnimationController, presentationSystem, audioManager, bossIntroCinematic, screenShakeSystem
         );
         sessionController = new SessionController(
             new SessionHost(), saves, flow, new StarterLoadoutSystem(), rootNetworkSystem, trialDraftSystem,
             hitStopSystem, particleSystem, floatingCoinTextSystem, floatingDamageTextSystem,
-            waveLifecycleSystem, presentationSystem, openingCinematic, audioManager
+            waveLifecycleSystem, openingCinematic
         );
         combatSystem = new CombatSystem(
             heroAutoAttackSystem, bossSpecialAttackSystem, enemyMeleeAttackSystem, autoPotionSystem,
@@ -542,6 +544,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             new UltimatePresentation(particleSystem, screenShakeSystem, audioManager).release(result);
         }
         @Override public void beginPlantingCeremony() { HeroDefenseGame.this.beginPlantingCeremony(); }
+        @Override public void beginBossIntro() { HeroDefenseGame.this.beginBossIntro(); }
 
         @Override public void focusFireAt(float worldX, float worldY) { HeroDefenseGame.this.focusFireAt(worldX, worldY); }
 
@@ -590,6 +593,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         cinematicFlow.beginPlantingCeremony();
     }
 
+    private void beginBossIntro() {
+        cinematicFlow.beginBossIntro();
+    }
+
     /** Presentation-only ceremony tick; the wave-101 hand-off happens once the flow completes it. */
     private void updateCinematic(float deltaSeconds) {
         screenShakeSystem.update(deltaSeconds);
@@ -608,7 +615,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         floatingDamageTextSystem.update(simulationDelta);
         // Roadmap A1: the frame used to re-anchor the Hero to the arena centre here, every tick, which is what
         // made the defender stationary. Stepping now runs in that slot instead -- before the animation
-        // controller and the field's movement, so everything downstream sees this tick's position.
+        //  everything downstream sees this tick's position.
         HeroMovementSystem.update(gameState, simulationDelta);
         heroAnimationController.update(gameState.hero, simulationDelta);
         enemyMovementSystem.update(gameState, simulationDelta);
@@ -660,6 +667,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
 
         @Override
+        public void showWaveReflection() {
+            HeroDefenseGame.this.showWaveReflection();
+        }
+
+        @Override
         public void saveNow() {
             HeroDefenseGame.this.saveNow();
         }
@@ -702,6 +714,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         public void beginPlantingCeremony() {
             HeroDefenseGame.this.beginPlantingCeremony();
         }
+
+        @Override
+        public void beginBossIntro() {
+            HeroDefenseGame.this.beginBossIntro();
+        }
     }
 
     /** What the wave director needs from the game: its state, screens, saving and the two ceremonies. */
@@ -729,6 +746,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override
         public void beginPlantingCeremony() {
             HeroDefenseGame.this.beginPlantingCeremony();
+        }
+
+        @Override
+        public void beginBossIntro() {
+            HeroDefenseGame.this.beginBossIntro();
         }
 
         @Override
@@ -762,6 +784,8 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public InventoryTouchController inventoryTouchController() { return inventoryTouchController; }
         @Override public LevelUpOverlayRenderer levelUpOverlayRenderer() { return renderers.levelUpOverlayRenderer; }
         @Override public MainMenuRenderer mainMenuRenderer() { return renderers.mainMenuRenderer; }
+        @Override public BossIntroCinematic bossIntroCinematic() { return bossIntroCinematic; }
+        @Override public BossIntroCinematic bossIntroCinematic() { return bossIntroCinematic; }
         @Override public OpeningCinematic openingCinematic() { return openingCinematic; }
         @Override public OpeningCinematicRenderer openingCinematicRenderer() { return renderers.openingCinematicRenderer; }
         @Override public ParticleRenderer particleRenderer() { return renderers.particleRenderer; }
@@ -789,6 +813,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
         @Override public UiIconRenderer uiIconRenderer() { return renderers.uiIconRenderer; }
         @Override public DialogueBoxRenderer dialogueBoxRenderer() { return renderers.dialogueBoxRenderer; }
+    }
+
+}
+oxRenderer; }
     }
 
 }

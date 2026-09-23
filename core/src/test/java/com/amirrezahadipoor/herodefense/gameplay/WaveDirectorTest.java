@@ -112,7 +112,7 @@ final class WaveDirectorTest {
     }
 
     @Test
-    void clearingTheWaveBeforeABossWavePlaysTheEntranceCue() {
+    void clearingTheWaveBeforeABossWaveOpensItsWatchOnlyIntro() {
         GameState state = GameState.newRun(11L);
         state.waveNumber = 19;
         state.waveActive = true;
@@ -120,15 +120,17 @@ final class WaveDirectorTest {
 
         director.afterCombat(false, false);
 
-        assertEquals(1, host.reflections);
+        assertEquals(20, state.waveNumber, "the run rolled into the boss wave");
+        assertTrue(state.bossIntroPending, "the fight waits for its intro");
+        assertEquals(1, host.bossIntros, "the intro begins instead of the spawn");
+        assertEquals(0, host.reflections, "the banner waits until the fight starts, after the intro");
         assertEquals(1, host.saves, "a completed wave moves the run forward and persists it");
-        assertTrue(
+        assertFalse(
             audio.cues.contains(AudioCue.BOSS_ENTRANCE)
                 || audio.cues.contains(AudioCue.BOSS_ENTRANCE_DEEP)
                 || audio.cues.contains(AudioCue.BOSS_ENTRANCE_SHRIEK)
                 || audio.cues.contains(AudioCue.BOSS_ENTRANCE_VOID),
-            "wave 20 announces its boss in that body's own entrance voice (roadmap F2)");
-        assertEquals(20, state.waveNumber, "the run rolled into the boss wave");
+            "the entrance voice plays when the intro hands off, not at the advance");
         assertEquals(0, host.ceremonies, "the planting ceremony is reserved for waves 50, 100 and 150");
     }
 
@@ -159,6 +161,7 @@ final class WaveDirectorTest {
         private int saves;
         private int reflections;
         private int ceremonies;
+        private int bossIntros;
         private int records;
 
         @Override
@@ -184,6 +187,11 @@ final class WaveDirectorTest {
         @Override
         public void beginPlantingCeremony() {
             ceremonies++;
+        }
+
+        @Override
+        public void beginBossIntro() {
+            bossIntros++;
         }
 
         @Override

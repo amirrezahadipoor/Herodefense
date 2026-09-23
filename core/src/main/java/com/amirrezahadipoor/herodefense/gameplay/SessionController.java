@@ -3,9 +3,6 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.GameFlowController;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
-import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.IdentityCues;
-import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.items.StarterLoadoutSystem;
 import com.amirrezahadipoor.herodefense.model.GameMode;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -13,7 +10,6 @@ import com.amirrezahadipoor.herodefense.polish.FloatingCoinTextSystem;
 import com.amirrezahadipoor.herodefense.polish.FloatingDamageTextSystem;
 import com.amirrezahadipoor.herodefense.polish.HitStopSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
-import com.amirrezahadipoor.herodefense.presentation.RunPresentationSystem;
 import com.amirrezahadipoor.herodefense.save.RunSaveRepository;
 import com.amirrezahadipoor.herodefense.trials.TrialDraftSystem;
 
@@ -43,6 +39,8 @@ public final class SessionController {
         void showWaveReflection();
 
         void beginPlantingCeremony();
+
+        void beginBossIntro();
     }
 
     private final Host host;
@@ -56,9 +54,7 @@ public final class SessionController {
     private final FloatingCoinTextSystem floatingCoinTextSystem;
     private final FloatingDamageTextSystem floatingDamageTextSystem;
     private final WaveLifecycleSystem waveLifecycleSystem;
-    private final RunPresentationSystem presentationSystem;
     private final OpeningCinematic openingCinematic;
-    private final AudioPlayback audioManager;
 
     public SessionController(
         Host host,
@@ -72,9 +68,7 @@ public final class SessionController {
         FloatingCoinTextSystem floatingCoinTextSystem,
         FloatingDamageTextSystem floatingDamageTextSystem,
         WaveLifecycleSystem waveLifecycleSystem,
-        RunPresentationSystem presentationSystem,
-        OpeningCinematic openingCinematic,
-        AudioPlayback audioManager
+        OpeningCinematic openingCinematic
     ) {
         this.host = host;
         this.saves = saves;
@@ -87,9 +81,7 @@ public final class SessionController {
         this.floatingCoinTextSystem = floatingCoinTextSystem;
         this.floatingDamageTextSystem = floatingDamageTextSystem;
         this.waveLifecycleSystem = waveLifecycleSystem;
-        this.presentationSystem = presentationSystem;
         this.openingCinematic = openingCinematic;
-        this.audioManager = audioManager;
     }
 
     /** A brand-new run: the saved run is discarded, so the tier ladder starts over. */
@@ -153,6 +145,9 @@ public final class SessionController {
         } else if (state.ceremonyPending) {
             // A save closed mid-ceremony replays it from the start; it is deterministic.
             host.beginPlantingCeremony();
+        } else if (state.bossIntroPending) {
+            // A save closed mid-intro replays it from the first frame; the prop respawns fresh.
+            host.beginBossIntro();
         } else if (state.unspentTalentPoints > 0) {
             flow.transitionTo(GameScreenState.LEVEL_UP);
         } else if (!state.waveActive && ArenaQueries.untouchedFirstWave(state)) {
@@ -160,13 +155,12 @@ public final class SessionController {
             flow.transitionTo(GameScreenState.CINEMATIC);
             openingCinematic.begin(openingTierFor(state));
         } else if (!state.waveActive) {
-            int bossesBefore = ArenaQueries.livingBossCount(state);
             waveLifecycleSystem.startCurrentWave(state);
-            if (ArenaQueries.livingBossCount(state) > bossesBefore) {
-                audioManager.play(IdentityCues.bossEntranceFor(state));
-                presentationSystem.presentBossEntrance(state);
+            if (state.bossIntroPending) {
+                host.beginBossIntro();
+            } else {
+                host.showWaveReflection();
             }
-            host.showWaveReflection();
         }
     }
 

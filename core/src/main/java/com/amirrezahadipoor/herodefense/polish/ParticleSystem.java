@@ -127,6 +127,11 @@ public final class ParticleSystem {
         emitBurst(ParticleType.BOSS_DUST, x, y, bossMotes(), 110f, 0.85f, 9f);
     }
 
+    /** Two small dust kicks where the intro prop's feet strike during its walk-in. */
+    public void emitWalkDust(float x, float y) {
+        emitBurst(ParticleType.BOSS_DUST, x, y, 2, 42f, 0.4f, 5f);
+    }
+
     /**
      * Ultimate blast: one large shockwave, an enlarged double critical ring,
      * and a radial gold star, all inside the Ultimate budget multiplier.

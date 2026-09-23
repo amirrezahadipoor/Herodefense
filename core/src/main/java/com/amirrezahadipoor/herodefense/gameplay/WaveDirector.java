@@ -3,7 +3,6 @@ package com.amirrezahadipoor.herodefense.gameplay;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.WorldLayout;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
-import com.amirrezahadipoor.herodefense.audio.IdentityCues;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -35,6 +34,8 @@ public final class WaveDirector {
         void showWaveReflection();
 
         void beginPlantingCeremony();
+
+        void beginBossIntro();
 
         /** Writes down the session that just ended, once per run (roadmap R3.6). */
         void recordRunEnd();
@@ -104,13 +105,11 @@ public final class WaveDirector {
         }
 
         GameState state = host.gameState();
-        int bossesBeforeWaveAdvance = ArenaQueries.livingBossCount(state);
         WaveCompletion waveCompletion = waveLifecycleSystem.updateAfterCombat(state);
-        if (ArenaQueries.livingBossCount(state) > bossesBeforeWaveAdvance) {
-            audioManager.play(IdentityCues.bossEntranceFor(state));
-            presentationSystem.presentBossEntrance(state);
+        if (!state.bossIntroPending) {
+            // A deferred boss wave shows its banner when the fight starts, after the intro.
+            host.showWaveReflection();
         }
-        host.showWaveReflection();
         if (waveCompletion == WaveCompletion.NO_CHANGE) {
             return;
         }
@@ -124,6 +123,8 @@ public final class WaveDirector {
             host.transitionTo(GameScreenState.CARD_CHOICE);
         } else if (waveCompletion == WaveCompletion.PLANTING_CEREMONY) {
             host.beginPlantingCeremony();
+        } else if (waveCompletion == WaveCompletion.BOSS_INTRO) {
+            host.beginBossIntro();
         } else if (waveCompletion == WaveCompletion.RUN_COMPLETED) {
             state.trophies.recordRunEnd(state.peakWaveReached, state.noPotionRun);
             state.runComplete = true;

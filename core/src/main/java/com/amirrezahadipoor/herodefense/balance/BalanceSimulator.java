@@ -291,6 +291,10 @@ public final class BalanceSimulator {
                     // The ceremony is presentation only; the simulator plants instantly.
                     waves.completePlantingCeremony(state);
                 }
+                if (completion == WaveCompletion.BOSS_INTRO) {
+                    // The intro is presentation only; the simulator spawns the wave instantly.
+                    waves.completeBossIntro(state);
+                }
                 elapsed += STEP_SECONDS;
             }
 

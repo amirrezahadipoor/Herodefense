@@ -29,6 +29,11 @@ public final class ScreenShakeSystem {
         trigger(0.24f, 8f);
     }
 
+    /** Sir Falls-a-Lot's scripted stumble on his repeat entrances: a small comic wobble. */
+    public void triggerBossTrip() {
+        trigger(0.18f, 5f);
+    }
+
     /** Slow low-amplitude fall as the World Tree collapses. */
     public void triggerTreeFall() {
         trigger(0.60f, 9f);

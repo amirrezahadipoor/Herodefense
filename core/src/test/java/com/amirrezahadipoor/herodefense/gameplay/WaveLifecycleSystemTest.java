@@ -43,6 +43,7 @@ final class WaveLifecycleSystemTest {
         GameState state = GameState.newRun(3L);
         state.waveNumber = GameState.FINAL_WAVE;
         lifecycle.startCurrentWave(state);
+        assertTrue(lifecycle.completeBossIntro(state));
         state.aliveBosses.get(0).receiveDamage(Float.MAX_VALUE);
 
         assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
@@ -62,6 +63,9 @@ final class WaveLifecycleSystemTest {
         GameState state = GameState.newRun(100L);
         state.waveNumber = GameState.PLANTING_WAVE;
         assertTrue(lifecycle.startCurrentWave(state));
+        assertTrue(state.bossIntroPending);
+        assertTrue(state.aliveBosses.isEmpty());
+        assertTrue(lifecycle.completeBossIntro(state));
         assertFalse(state.aliveBosses.isEmpty());
         for (Boss boss : state.aliveBosses) boss.receiveDamage(Float.MAX_VALUE);
         assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
@@ -108,6 +112,7 @@ final class WaveLifecycleSystemTest {
         GameState state = GameState.newRun(103L);
         state.waveNumber = 5;
         lifecycle.startCurrentWave(state);
+        lifecycle.completeBossIntro(state);
         state.waveElapsedSeconds = 25f;
         state.aliveBosses.get(0).receiveDamage(Float.MAX_VALUE);
 

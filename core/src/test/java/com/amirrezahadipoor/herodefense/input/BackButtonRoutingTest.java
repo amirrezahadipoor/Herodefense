@@ -9,6 +9,7 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
@@ -162,6 +163,24 @@ final class BackButtonRoutingTest {
             "with no opening running, the planting ceremony is the one that skips");
     }
 
+    /** The boss intro sits between the opening and the planting in the skip order. */
+    @Test
+    void aBossIntroSkipsTheWayATapDoes() {
+        FakeHost host = new FakeHost();
+        ScreenTouchRouter router = new ScreenTouchRouter(host);
+        host.flow.transitionTo(GameScreenState.PLAYING);
+        host.flow.transitionTo(GameScreenState.CINEMATIC);
+        host.bossIntro.begin("VOID_KNIGHT", 2);
+
+        assertTrue(router.systemBack());
+        assertEquals(BossIntroCinematic.Phase.DONE, host.bossIntro.phase(),
+            "with no opening running, the boss intro is the one that skips");
+        assertEquals(GameScreenState.CINEMATIC, host.flow.state(),
+            "the hand-off to the wave belongs to the ceremony, not to the key");
+        assertTrue(host.bossIntro.update(0.016f), "and the update after a skip is the one that ends it");
+        assertFalse(host.bossIntro.isActive());
+    }
+
     /** The end screen ignores input during its own presentation, and Back is no exception: the run's record
      *  was written when the run ended, not when the player is allowed to leave the screen. */
     @Test
@@ -232,6 +251,7 @@ final class BackButtonRoutingTest {
             new InventoryTouchController(new InventoryEquipmentSystem());
         private final OpeningCinematic opening = new OpeningCinematic();
         private final PlantingCeremony planting = new PlantingCeremony();
+        private final BossIntroCinematic bossIntro = new BossIntroCinematic();
 
         /**
          * The end screen's presentation clock, held at zero on purpose: with no seconds elapsed the only way
@@ -245,6 +265,10 @@ final class BackButtonRoutingTest {
 
         @Override public AudioPlayback audioManager() {
             return audio;
+        }
+
+        @Override public BossIntroCinematic bossIntroCinematic() {
+            return bossIntro;
         }
 
         @Override public CodexSystem codexSystem() {
@@ -409,6 +433,10 @@ final class BackButtonRoutingTest {
 
         @Override public void beginPlantingCeremony() {
             throw refused("beginPlantingCeremony");
+        }
+
+        @Override public void beginBossIntro() {
+            throw refused("beginBossIntro");
         }
 
         @Override public void focusFireAt(float worldX, float worldY) {

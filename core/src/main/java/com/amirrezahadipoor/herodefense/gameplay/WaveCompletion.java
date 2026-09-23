@@ -6,6 +6,8 @@ public enum WaveCompletion {
     BOSS_REWARD,
     /** Wave 100 is behind us: the planting ceremony plays before wave 101 spawns. */
     PLANTING_CEREMONY,
+    /** A boss wave advanced: the watch-only intro plays before the wave spawns. */
+    BOSS_INTRO,
     RUN_COMPLETED,
     NO_CHANGE
 }

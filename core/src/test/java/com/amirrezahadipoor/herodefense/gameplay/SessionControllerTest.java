@@ -32,15 +32,11 @@ final class SessionControllerTest {
     private final FakeSaves saves = new FakeSaves();
     private final GameFlowController flow = new GameFlowController();
     private final ParticleSystem particles = new ParticleSystem();
-    private final ScreenShakeSystem shake = new ScreenShakeSystem();
-    private final CodexSystem codex = new CodexSystem();
-    private final RunPresentationSystem presentation = new RunPresentationSystem(
-        particles, shake, codex, new SilentBeats());
     private final SessionController controller = new SessionController(
         host, saves, flow, new StarterLoadoutSystem(), null, new TrialDraftSystem(), new HitStopSystem(),
         particles, new FloatingCoinTextSystem(), new FloatingDamageTextSystem(),
         new WaveLifecycleSystem(new EnemyWaveSpawner(new EnemyFactory()), new ContinuousWaveRun()),
-        presentation, new OpeningCinematic(), cue -> { }
+        new OpeningCinematic()
     );
 
     @Test
@@ -192,6 +188,10 @@ final class SessionControllerTest {
         @Override
         public void beginPlantingCeremony() {
         }
+
+        @Override
+        public void beginBossIntro() {
+        }
     }
 
     private static final class FakeSaves implements RunSaveRepository {
@@ -220,13 +220,4 @@ final class SessionControllerTest {
         }
     }
 
-    private static final class SilentBeats implements RunPresentationSystem.BeatSink {
-        @Override
-        public void showBeat(String line) {
-        }
-
-        @Override
-        public void save() {
-        }
-    }
 }
