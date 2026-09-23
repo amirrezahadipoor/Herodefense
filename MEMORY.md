@@ -12,7 +12,7 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P3d VERIFIED` — all workflows green on `244724f`. P3 (story tables + lore + voices + docs) COMPLETE. Next: `P4` boss-intro cutscenes (the heart — read render/cinematic code first). |
+| **Status** | `P4a PUSHED` — NEW `story/BossIntros.java` + NEW `gameplay/BossIntroCinematic.java` + `BossIntrosTest` + `BossIntroCinematicTest` (pure, zero wiring). CI verdict pending. Next: `P4b` wiring (lifecycle gate + flow + presentation + render + input). |
 | **Last push** | `P3d` — docs rebuild: STORY_CONTENT (5 voices, premise, openings, beats, ceremonies, chapter cards, all 136 intro lines M1–M5, bios, 48 codex, 24 field notes, epilogues, mythics, whispers, Hollow, letters); STORY_VOICE (pillars + staging + checks); machine-verified zero drift. CI green on `244724f` — P3 COMPLETE. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
