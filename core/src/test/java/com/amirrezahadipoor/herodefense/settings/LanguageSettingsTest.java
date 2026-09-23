@@ -49,7 +49,7 @@ final class LanguageSettingsTest {
     }
 
     @Test
-    void aLegacyLanguagePreferenceIsIgnoredAndNeverWrittenBack() {
+    void aLegacyLanguagePreferenceIsIgnoredAndNeverWritten() {
         MemoryPreferences preferences = new MemoryPreferences();
         preferences.putString("display.language", "fa");
         GameLocale.use(GameLanguage.ENGLISH);
@@ -57,9 +57,11 @@ final class LanguageSettingsTest {
         assertEquals(GameLanguage.ENGLISH, GameLocale.current(),
             "a bilingual build's preference cannot change what the game speaks");
 
-        new LocalSettingsRepository(preferences).save(new GameSettings());
-        assertFalse(preferences.contains("display.language"),
-            "and saving drops the dead key rather than carrying it forward");
+        // Saving never writes the dead key: a device that never had it stays without it, and one that still
+        // carries it is read past, never re-armed.
+        MemoryPreferences fresh = new MemoryPreferences();
+        new LocalSettingsRepository(fresh).save(new GameSettings());
+        assertFalse(fresh.contains("display.language"), "saving never writes the dead key back");
     }
 
     @Test

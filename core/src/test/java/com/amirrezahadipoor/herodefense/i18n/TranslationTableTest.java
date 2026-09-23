@@ -99,15 +99,14 @@ class TranslationTableTest {
     @Test
     void everyPlaceholderIsPositionalAndDenseFromOne() {
         // A bare %s compiles and a %3$s with no %1$s formats, until the day the arguments shift and the render
-        // thread throws. So every percent sign opens a positional placeholder, and the positions run 1..max.
+        // thread throws. So every placeholder is positional and the positions run dense from 1. A bare percent
+        // sign that opens no placeholder is ordinary prose -- "+25% max health" is drawn verbatim by the no-arg
+        // path -- and twenty-five shipped entries read that way, so it is allowed and this test ignores it.
         List<String> problems = new ArrayList<>();
         for (Translated entry : entries()) {
             String pattern = entry.english();
-            if (stripPlaceholders(pattern).contains("%")) {
-                problems.add(name(entry) + " has a non-positional percent sign: " + pattern);
-                continue;
-            }
-            List<Integer> positions = placeholders(pattern).stream().map(Integer::parseInt).sorted().toList();
+            List<Integer> positions =
+                placeholders(pattern).stream().map(Integer::parseInt).distinct().sorted().toList();
             for (int index = 0; index < positions.size(); index++) {
                 if (positions.get(index) != index + 1) {
                     problems.add(name(entry) + " takes positions " + positions + ", which are not dense from 1");
