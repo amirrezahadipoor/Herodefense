@@ -1,6 +1,5 @@
 package com.amirrezahadipoor.herodefense.settings;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.SettingsStrings;
 import com.amirrezahadipoor.herodefense.model.ItemTier;
@@ -38,13 +37,6 @@ public final class GameSettings {
      * with an Okabe-Ito / Wong accessible palette distinguishable under protanopia, deuteranopia, and tritanopia.
      */
     public boolean colourBlindRarity;
-
-    /**
-     * The language the game speaks (roadmap R7.3). It is a device-local preference like the volumes rather than
-     * part of a run save: a player who switches to Persian halfway through a wave keeps Persian in the next run,
-     * and a save file copied to another device does not carry a language with it.
-     */
-    public GameLanguage language = GameLanguage.ENGLISH;
 
     /**
      * Text size (roadmap G3b): three named steps that scale every typographic role. Device-local like the
@@ -148,12 +140,6 @@ public final class GameSettings {
     public String cycleSoundVolume() {
         soundVolume = LEVELS[(levelIndex(soundVolume) + 1) % LEVELS.length];
         return levelLabel(levelIndex(soundVolume));
-    }
-
-    /** Cycles the language and returns the new one, the way the volume rows return their new label. */
-    public GameLanguage cycleLanguage() {
-        language = language.next();
-        return language;
     }
 
     /** Keeps persisted values inside the named steps after a load. */

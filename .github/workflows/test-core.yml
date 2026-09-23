@@ -107,27 +107,8 @@ jobs:
       - name: Measure every committed sound and gate its level (roadmap R6.2)
         run: python3 tools/audio/check_audio_levels.py --check
 
-      # R7.3: the Persian shaper is held to evidence this repository did not invent. Both halves of that evidence
-      # are re-derived here — the 245 golden vectors from arabic_reshaper and python-bidi, and the three lookup
-      # tables the Java shaper reads out of those same two libraries. Either one drifting means `PersianShaperTest`
-      # would be checking the shaper against stale evidence, which is worse than not checking it. The versions are
-      # pinned here and asserted again inside both scripts, so a wheel that quietly changes the answers fails.
-      # The vectors' header names the interpreter that produced them, so this check has to run on that
-      # interpreter and not on whatever the runner image happens to carry (3.12 on ubuntu-24.04, which is why
-      # four pushes in a row went red on a comment line while every vector matched). It is pinned here, after
-      # every other python gate in this job, so no other step's interpreter changes.
-      - name: Use the interpreter the golden vectors were made with (roadmap R7.3)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-
-      - name: Install the Persian shaping references (roadmap R7.3)
-        run: python3 -m pip install --break-system-packages arabic-reshaper==3.0.1 python-bidi==0.6.11
-
-      - name: Re-derive the shaping vectors and the tables they are read from (roadmap R7.3)
-        run: |
-          python3 tools/i18n/make_shaping_vectors.py --check
-          python3 tools/i18n/make_shaping_tables.py --check
+      # R7.3 retired 2026-09-23 at the owner's direction: the Persian translation, its shaper and its
+      # golden vectors are deleted, so there is nothing left to re-derive here.
 
       - name: Run the unit-test loop (the balance sweeps are the balance-gate job below)
         run: ./scripts/gradle.sh :core:test --stacktrace

@@ -35,7 +35,7 @@ public final class FloatingCoinTextRenderer implements AutoCloseable {
         batch.end();
     }
 
-    /** The label in the language in force: "$ +30", or "+۳۰ سکه" which the shaper lays out as "سکه ۳۰+". */
+    /** The label: "$ +30". */
     static String labelFor(int amount) {
         return GameLocale.text(ItemStrings.FLOATING_COIN, GameLocale.number(Math.max(0, amount)));
     }

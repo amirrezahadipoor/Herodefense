@@ -66,9 +66,7 @@ public final class FloatingDamageTextSystem {
     }
 
     /**
-     * Whole numbers up to 999, then "1.2k" style so late-run damage stays short on screen (roadmap H3). The
-     * digits, the decimal separator and the suffix belong to the current language — a Persian run reads
-     * «۱٫۲ه», not a Latin tail on Persian digits.
+     * Whole numbers up to 999, then "1.2k" style so late-run damage stays short on screen (roadmap H3).
      */
     public static String formatDamage(float amount) {
         return GameLocale.compact(Math.max(1, Math.round(amount)));

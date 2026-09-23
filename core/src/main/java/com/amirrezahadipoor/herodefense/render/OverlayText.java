@@ -1,6 +1,5 @@
 package com.amirrezahadipoor.herodefense.render;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,11 +12,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
  * every label is physically at least 11sp on the device instead of 5sp of blurred bitmap font.
  *
  * <p>Every string that reaches a batch passes through {@link #visual(String)} first, and this is the only place
- * in the render path where that happens. A right-to-left language has to be shaped -- contextual forms chosen and
- * the run reordered -- and it has to be measured shaped, because the advance of a joined Persian word is not the
- * sum of the advances of its unshaped letters. Doing both here is what makes "the caller passes a string and a
- * position" still true in Persian: a renderer that centred an unshaped string would centre the wrong width, and
- * nothing about the code at the call site would look wrong.
+ * in the render path where that happens. Until 2026-09-23 that step shaped and reordered the run for the
+ * right-to-left language the game shipped beside English; the owner deleted that translation outright, so the
+ * step is the identity now and measuring is measuring what is drawn.
  */
 final class OverlayText implements AutoCloseable {
     static final Color GOLD = Color.valueOf("EAC66D");
@@ -66,10 +63,9 @@ final class OverlayText implements AutoCloseable {
     }
 
     /**
-     * Draws {@code text} on the container's leading edge, {@code inset} in from it: the left edge in English, the
-     * right one in Persian. The run is measured shaped, because the advance of a joined Persian word is not the
-     * sum of its letters' advances and mirroring with the unshaped width would leave the last word hanging off
-     * the edge it was measured against.
+     * Draws {@code text} on the container's leading edge, {@code inset} in from it. The run is measured as
+     * drawn, because mirroring with the wrong width would leave the last word hanging off the edge it was
+     * measured against.
      */
     void drawLeading(
         SpriteBatch batch,
@@ -224,22 +220,11 @@ final class OverlayText implements AutoCloseable {
     }
 
     /**
-     * The text as the current language's font draws it: shaped and reordered for a right-to-left language, and
-     * untouched otherwise.
-     *
-     * <p>Shaping is skipped entirely for English rather than relying on {@link PersianShaper}'s own ASCII fast
-     * path, because an English string is allowed to contain a stray non-ASCII character -- an en dash, a bullet --
-     * that must not be reordered by a rule it was never written for.
-     *
-     * <p>Shaping a Persian string allocates: a codepoint array, a list of the letters being joined, and the
-     * builder the result is written into. It is not cached, because nothing here has been measured and this
-     * repository decides that with a profiler rather than by anticipation (R13.1). What is known is that the cost
-     * is only paid in Persian, on a screen's worth of short labels, and that the English path this shipped with
-     * returns its argument untouched.
+     * The text as the font draws it: untouched. The step stays because every draw and every measure goes
+     * through it, and a single funnel is worth more than the call it saves.
      */
     static String visual(String text) {
-        GameLanguage language = GameLocale.current();
-        return language.rightToLeft() ? PersianShaper.shape(text) : text;
+        return text;
     }
 
     /** Cap-to-baseline height of the role, used by callers that stack lines. */

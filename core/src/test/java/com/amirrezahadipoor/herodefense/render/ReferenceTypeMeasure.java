@@ -1,6 +1,5 @@
 package com.amirrezahadipoor.herodefense.render;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.font.FontRenderContext;
@@ -11,11 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Measures a run of text the way the game will draw it on the gate emulator: the committed face for the
- * language and the role, at the world size {@link GameFonts#worldSizeFor} gives that role on
- * {@code api35-1080x2220} at density 2.75, shaped (joined Persian letters, kerned Latin ones) by java.awt's
- * layout of the same TrueType file FreeType rasterises at run time. Hinting differs from FreeType's by a
- * fraction of a glyph, which is why the boxes the layout tests assert against keep a margin.
+ * Measures a run of text the way the game will draw it on the gate emulator: the committed Nunito face for
+ * the role, at the world size {@link GameFonts#worldSizeFor} gives that role on {@code api35-1080x2220} at
+ * density 2.75, by java.awt's layout of the same TrueType file FreeType rasterises at run time. Hinting differs
+ * from FreeType's by a fraction of a glyph, which is why the boxes the layout tests assert against keep a margin.
  */
 final class ReferenceTypeMeasure {
     /** The gate emulator of the Android touch workflow: 1080 by 2220 at density 2.75. */
@@ -27,30 +25,28 @@ final class ReferenceTypeMeasure {
     private ReferenceTypeMeasure() {
     }
 
-    /** Width in world units of {@code text} at the role's reference size, in the language's face. */
-    static float width(String text, GameLanguage language, GameFonts.Role role) {
+    /** Width in world units of {@code text} at the role's reference size. */
+    static float width(String text, GameFonts.Role role) {
         if (text == null || text.isEmpty()) return 0f;
         FontRenderContext context = new FontRenderContext(null, true, true);
-        return new TextLayout(text, face(language, role), context).getAdvance();
+        return new TextLayout(text, face(role), context).getAdvance();
     }
 
     /** The face's line height in world units at the role's reference size: what callers that stack rows step by. */
-    static float lineHeight(GameLanguage language, GameFonts.Role role) {
+    static float lineHeight(GameFonts.Role role) {
         FontRenderContext context = new FontRenderContext(null, true, true);
-        return face(language, role).getLineMetrics("Hg", context).getHeight();
+        return face(role).getLineMetrics("Hg", context).getHeight();
     }
 
     /** Height in world units of a capital H at the role's reference size: how far a caps line reaches below its top. */
-    static float capHeight(GameLanguage language, GameFonts.Role role) {
+    static float capHeight(GameFonts.Role role) {
         FontRenderContext context = new FontRenderContext(null, true, true);
-        return (float) face(language, role).createGlyphVector(context, "H").getVisualBounds().getHeight();
+        return (float) face(role).createGlyphVector(context, "H").getVisualBounds().getHeight();
     }
 
-    /** The face the role draws in the language, at the world size the reference emulator gives the role. */
-    static Font face(GameLanguage language, GameFonts.Role role) {
-        String file = language == GameLanguage.PERSIAN
-            ? (role.heavy ? "Vazirmatn-ExtraBold.ttf" : "Vazirmatn-Bold.ttf")
-            : (role.heavy ? "Nunito-ExtraBold.ttf" : "Nunito-Bold.ttf");
+    /** The face the role draws in, at the world size the reference emulator gives the role. */
+    static Font face(GameFonts.Role role) {
+        String file = role.heavy ? "Nunito-ExtraBold.ttf" : "Nunito-Bold.ttf";
         Font base = FACES.computeIfAbsent(file, name -> {
             try {
                 return Font.createFont(Font.TRUETYPE_FONT, FONTS.resolve(name).toFile());

@@ -95,19 +95,6 @@ final class EpilogueTest {
     }
 
     @Test
-    void everyEpilogueSpeaksPersianWhenPersianIsAsked() {
-        GameLocale.use(GameLanguage.PERSIAN);
-        assertEquals(List.of("دویست شب. بی‌آنکه گامی از دست بدهم.",
-            "شب به نقشهٔ تازه‌ای نیاز دارد.",
-            "تا آن زمان، من و درخت می‌ایستیم."), Epilogue.A.lines());
-        assertEquals(
-            List.of("شب نرفته. ساکت است. دارد دوباره یاد می‌گیرد چگونه بریزد.",
-                "بلند شو. درخت هنوز ایستاده است."),
-            Epilogue.transitionLines()
-        );
-    }
-
-    @Test
     void persistedEpilogueIdWinsOverLiveSelection() {
         GameState state = loss(10);
         state.epilogueId = "E";

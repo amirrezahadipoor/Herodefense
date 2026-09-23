@@ -87,10 +87,10 @@ public final class ItemForgeSystem {
     /**
      * The name a player reads: the base name, with the forge level appended once there is one.
      *
-     * <p>Through the table rather than string concatenation, because the level is a number: appended directly
-     * it would be Latin digits inside an otherwise Persian name. {@link #baseName} strips the same suffix with
+     * <p>Through the table rather than string concatenation, because the level is a number and the table
+     * is where its shape is written down. {@link #baseName} strips the same suffix with
      * a regex, so the two have to agree on the shape " +N" -- {@code ItemStrings.ITEM_UPGRADE_LEVEL} is where
-     * that shape is written down.
+     * that shape lives.
      */
     public static String displayName(String baseName, int upgradeLevel) {
         return upgradeLevel <= 0

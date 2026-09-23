@@ -26,13 +26,12 @@ package com.amirrezahadipoor.herodefense.i18n;
 public enum OnboardingStrings implements Translated {
 
     /** The banner's own chrome: what the vigil is called, and how a player who knows the game leaves it. */
-    TITLE("YOUR FIRST VIGIL", "نخستین پاسداری شما"),
-    SKIP("SKIP", "رد کردن"),
+    TITLE("YOUR FIRST VIGIL"),
+    SKIP("SKIP"),
 
     /** Step 1: choose a target. A tap only ever marks; walking is the drag in step 2. */
-    TARGET_LINE("Tap an enemy and the bow focuses it",
-        "روی دشمن بزنید تا کمان روی او متمرکز شود"),
-    TARGET_HINT("an enemy in the arena", "یک دشمن در میدان"),
+    TARGET_LINE("Tap an enemy and the bow focuses it"),
+    TARGET_HINT("an enemy in the arena"),
 
     /**
      * Step 2: step. Roadmap A1 gave the Hero legs and the drag that had never done anything became the gesture
@@ -40,49 +39,41 @@ public enum OnboardingStrings implements Translated {
      * has to explain a resource is a line the player will not read twice, and the meter only appears once some
      * of the budget has been spent, so the arena looks untouched until stepping is real.
      */
-    MOVE_LINE("Drag on the ground and the Hero steps there",
-        "انگشت را روی زمین بکشید تا قهرمان گام بردارد"),
-    MOVE_HINT("the ground beside the Hero", "زمین کنار قهرمان"),
+    MOVE_LINE("Drag on the ground and the Hero steps there"),
+    MOVE_HINT("the ground beside the Hero"),
 
     /**
      * Step 3: the one verb the player triggers by hand. The bow itself is automatic, so the lesson is the
      * button, and it is worded conditionally because focus may not be full inside this step's budget -- the
      * budget exists for exactly that, and a line promising a full meter would be a second false claim.
      */
-    ULTIMATE_LINE("When the focus meter fills, tap ULTIMATE to spend it",
-        "وقتی نوار تمرکز پر شد، ضربهٔ نهایی را بزنید"),
-    ULTIMATE_HINT("the ULTIMATE button", "دکمهٔ ضربهٔ نهایی"),
+    ULTIMATE_LINE("When the focus meter fills, tap ULTIMATE to spend it"),
+    ULTIMATE_HINT("the ULTIMATE button"),
 
     /**
      * Step 4: brace, and with it the A5 contract -- a boss's special is not dodged. The line says so in the
      * same breath as the gesture, because a player who learned to step in lesson two will otherwise spend the
      * first boss telegraph discovering the exception the hard way.
      */
-    BRACE_LINE("A blow finds you anywhere: tap the Hero as it falls and the raised shield holds all of it",
-        "ضربه هر جای میدان شما را پیدا می‌کند: همان لحظه که فرود می‌آید روی قهرمان بزنید تا سپر تمامش را بگیرد"),
-    BRACE_HINT("the Hero's own body", "تنِ خودِ قهرمان"),
+    BRACE_LINE("A blow finds you anywhere: tap the Hero as it falls and the raised shield holds all of it"),
+    BRACE_HINT("the Hero's own body"),
 
     /** Step 4: collect. {@code DropPickupSystem} homes drops in after a short delay; nobody walks to them. */
-    LOOT_LINE("Coins and drops reach the Hero on their own after a moment",
-        "سکه‌ها و غنیمت‌ها بعد از یک لحظه خودشان به قهرمان می‌رسند"),
-    LOOT_HINT("a drop on the ground", "یک غنیمت روی زمین"),
+    LOOT_LINE("Coins and drops reach the Hero on their own after a moment"),
+    LOOT_HINT("a drop on the ground"),
 
     /** Step 5: choose a card. */
-    CARD_LINE("Every level-up offers cards: tap the one you want",
-        "هر ارتقای سطح کارت می‌دهد: کارتی را که می‌خواهید بزنید"),
-    CARD_HINT("the level-up screen", "صفحهٔ ارتقای سطح"),
+    CARD_LINE("Every level-up offers cards: tap the one you want"),
+    CARD_HINT("the level-up screen"),
 
     /** Step 6: spend. */
-    SHOP_LINE("Between waves, spend coins in the shop",
-        "میان موج‌ها سکه‌ها را در فروشگاه خرج کنید"),
-    SHOP_HINT("the shop button", "دکمهٔ فروشگاه");
+    SHOP_LINE("Between waves, spend coins in the shop"),
+    SHOP_HINT("the shop button");
 
     private final String english;
-    private final String persian;
 
-    OnboardingStrings(String english, String persian) {
+    OnboardingStrings(String english) {
         this.english = english;
-        this.persian = persian;
     }
 
     @Override
@@ -95,8 +86,4 @@ public enum OnboardingStrings implements Translated {
         return english;
     }
 
-    @Override
-    public String persian() {
-        return persian;
-    }
 }

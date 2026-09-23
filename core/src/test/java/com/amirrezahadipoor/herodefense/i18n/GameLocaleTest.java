@@ -5,15 +5,13 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * {@link GameLocale}: what a call site gets when it asks for a string or a number without saying which language
- * it wants.
+ * {@link GameLocale}: what a call site gets when it asks for a string or a number.
  *
  * <p>The value is process-wide and the tests that read it run in the same JVM as the ones that set it, so every
- * test here leaves it as it found it. That is also why the class has no "reset to the device language" method:
- * the one thing that sets it is the settings layer, and a second way to set it would be a second way to be wrong.
+ * test here leaves it as it found it. Until 2026-09-23 this held a choice of two languages; the owner deleted
+ * the Persian translation outright, so the holder stays but the choice is gone.
  */
 class GameLocaleTest {
 
@@ -33,33 +31,16 @@ class GameLocaleTest {
     }
 
     @Test
-    void speaksPersianOnceItIsAskedTo() {
-        GameLocale.use(GameLanguage.PERSIAN);
-        assertTrue(GameLocale.rightToLeft());
-        assertEquals("بازی جدید", GameLocale.text(MenuStrings.NEW_GAME));
-        assertEquals("۱٬۲۳۴", GameLocale.number(1234));
-        assertEquals("۵۰٪", GameLocale.percent(50));
-        assertEquals("+۵", GameLocale.signed(5));
-    }
-
-    @Test
-    void fillsAnEntrysArgumentsInTheLanguageThatIsSpeaking() {
+    void fillsAnEntrysArguments() {
         assertEquals("Tier 3 | Peak 175 | 42 HW",
             GameLocale.text(MenuStrings.PROGRESS_SUMMARY, "3", "175", "42"));
-        GameLocale.use(GameLanguage.PERSIAN);
-        assertEquals("ردهٔ ۳ | اوج ۱۷۵ | ۴۲ چوب دل",
-            GameLocale.text(MenuStrings.PROGRESS_SUMMARY,
-                GameLocale.number(3), GameLocale.number(175), GameLocale.number(42)),
-            "the caller formats the numbers, so the digits in the sentence are the sentence's language");
     }
 
     @Test
     void ignoresAnAbsentLanguageRatherThanDefaultingBehindTheCallersBack() {
-        GameLocale.use(GameLanguage.PERSIAN);
+        GameLocale.use(GameLanguage.ENGLISH);
         GameLocale.use(null);
-        assertEquals(GameLanguage.PERSIAN, GameLocale.current(),
-            "a null is a caller bug, and silently becoming English would hide it behind a screen of the wrong"
-                + " language; the settings layer resolves codes through GameLanguage.fromCode, which is where an"
-                + " unknown value becomes a decided one");
+        assertEquals(GameLanguage.ENGLISH, GameLocale.current(),
+            "a null is a caller bug, and silently re-resolving would hide it behind a screen nobody asked for");
     }
 }

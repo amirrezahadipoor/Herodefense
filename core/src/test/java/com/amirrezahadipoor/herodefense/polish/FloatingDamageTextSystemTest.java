@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.gameplay.CombatEvent;
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
-import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.polish.FloatingDamageText.Style;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -62,21 +60,15 @@ final class FloatingDamageTextSystemTest {
     }
 
     @Test
-    void stunTagCoinPopUpAndDamageDigitsSpeakTheCurrentLanguage() {
-        GameLocale.use(GameLanguage.PERSIAN);
-        try {
-            FloatingDamageTextSystem system = new FloatingDamageTextSystem();
-            system.emit(CombatEvent.stun(3f, 90f, 0.8f));
-            system.emitCoins(12, 3f, 90f);
-            List<FloatingDamageText> labels = system.labels();
-            assertEquals(2, labels.size());
-            assertEquals("\u0645\u0627\u062a", labels.get(0).text, "the STUN tag is the table's Persian word");
-            assertEquals("+\u06f1\u06f2 \u0633\u06a9\u0647", labels.get(1).text,
-                "auto-sell coins read as a Persian sentence, digits included");
-            assertEquals("\u06f1\u066b\u06f2\u0647", FloatingDamageTextSystem.formatDamage(1_240f),
-                "compact damage uses Persian digits, the fa decimal separator and the \u0647 suffix");
-        } finally {
-            GameLocale.use(GameLanguage.ENGLISH);
-        }
+    void stunTagCoinPopUpAndDamageDigitsSpeakEnglish() {
+        FloatingDamageTextSystem system = new FloatingDamageTextSystem();
+        system.emit(CombatEvent.stun(3f, 90f, 0.8f));
+        system.emitCoins(12, 3f, 90f);
+        List<FloatingDamageText> labels = system.labels();
+        assertEquals(2, labels.size());
+        assertEquals("STUN", labels.get(0).text, "the STUN tag is the table's word");
+        assertEquals("+$ 12", labels.get(1).text, "auto-sell coins read "+$ n"");
+        assertEquals("1.2k", FloatingDamageTextSystem.formatDamage(1_240f),
+            "compact damage keeps the shape the combat pop-ups have always drawn");
     }
 }

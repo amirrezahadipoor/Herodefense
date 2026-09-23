@@ -1,6 +1,8 @@
 # Hero Defense — Story Content
 
-> **Voice rules live in `docs/STORY_VOICE.md`:** short lines, common words, one idea per line. Hero = terse-white, Tree = leaf-green. Every line below follows those rules since Phase 31, and every one ships in two languages — the English here is the source voice, and its Persian twin lives in the same line of code, reviewed and recorded in `docs/PERSIAN_PROOFREAD.md`.
+> **Voice rules live in `docs/STORY_VOICE.md`:** short lines, common words, one idea per line. Hero = terse-white, Tree = leaf-green. Every line below follows those rules since Phase 31, and every one ships in English only (P2, 2026-09-23: the Persian translation was deleted by the owner's order — this file's words are the shipped words).
+>
+> **P3 note:** this whole file is deleted and rebuilt with the new story (new cast, new dialogue) — see `MEMORY.md` §9 for the script. Until then it documents the shipped lines.
 
 Full narrative text to drop straight into the systems described in Phases 20, 21, 23, and 25 of
 the roadmap addendum. Two voices only, kept distinct on purpose:
@@ -11,7 +13,7 @@ the roadmap addendum. Two voices only, kept distinct on purpose:
   victory line. Render it in a different tint (leaf-green rather than white) so the player learns
   to tell the two apart without a label.
 - **The Hollow** — the night itself, speaking directly to the player (roadmap ST1). One voice that
-  talks to *you*, not the Warden. Persian name: «حُفره».
+  talks to *you*, not the Warden.
 
 Rewritten 2026-09-22 for a young reader: common words, short sentences, one spine the whole run can
 follow — the waves are the **nights**, the Hollow is the night speaking, and two hundred nights later

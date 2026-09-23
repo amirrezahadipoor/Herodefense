@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout;
 import com.amirrezahadipoor.herodefense.input.StatShopTouchLayout.Tab;
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.model.HeroStat;
 import com.amirrezahadipoor.herodefense.skills.SkillEvolution;
 import com.amirrezahadipoor.herodefense.skills.SkillId;
@@ -95,15 +94,15 @@ final class PremiumShopPresentationTest {
      */
     @Test
     void headerWordsShareTheirLineAndTheHelpPanelLinesFitTheirBox() {
-        float titleEnd = 40f + ReferenceTypeMeasure.width("WORLD TREE ARMORY", GameLanguage.ENGLISH,
+        float titleEnd = 40f + ReferenceTypeMeasure.width("WORLD TREE ARMORY",
             GameFonts.Role.forLegacyScale(1.36f));
         float pausedStart = 720f - StatShopOverlayRenderer.HEADER_TRAILING_INSET
-            - ReferenceTypeMeasure.width("COMBAT PAUSED", GameLanguage.ENGLISH, GameFonts.Role.forLegacyScale(0.68f));
+            - ReferenceTypeMeasure.width("COMBAT PAUSED", GameFonts.Role.forLegacyScale(0.68f));
         assertTrue(titleEnd + 24f <= pausedStart,
             "the title ends at " + titleEnd + " and the state word starts at " + pausedStart);
         // The word sits over the Roots and Close buttons' columns, so it has to end above both of them.
         float wordBottom = StatShopOverlayRenderer.HEADER_STATE_Y
-            - ReferenceTypeMeasure.capHeight(GameLanguage.ENGLISH, GameFonts.Role.forLegacyScale(0.68f));
+            - ReferenceTypeMeasure.capHeight(GameFonts.Role.forLegacyScale(0.68f));
         assertTrue(wordBottom >= StatShopTouchLayout.ROOT_Y + StatShopTouchLayout.ROOT_HEIGHT + 2f,
             "the state word reaches down to " + wordBottom + ", the Roots button's top is "
                 + (StatShopTouchLayout.ROOT_Y + StatShopTouchLayout.ROOT_HEIGHT));
@@ -113,14 +112,14 @@ final class PremiumShopPresentationTest {
         float inner = StatShopOverlayRenderer.HELP_PANEL_WIDTH - 2f * 28f;
         for (Tab tab : Tab.values()) {
             String description = StatShopOverlayRenderer.tabDescription(tab);
-            float width = ReferenceTypeMeasure.width(description, GameLanguage.ENGLISH,
+            float width = ReferenceTypeMeasure.width(description,
                 GameFonts.Role.forLegacyScale(0.66f));
             assertTrue(width <= inner, tab + " description is " + width + " wide in a " + inner + " panel: "
                 + description);
         }
         for (boolean returnsToPause : new boolean[] {true, false}) {
             String hint = StatShopOverlayRenderer.closeHint(returnsToPause);
-            float width = ReferenceTypeMeasure.width(hint, GameLanguage.ENGLISH, GameFonts.Role.forLegacyScale(0.62f));
+            float width = ReferenceTypeMeasure.width(hint, GameFonts.Role.forLegacyScale(0.62f));
             assertTrue(width <= inner, hint + " is " + width + " wide in a " + inner + " panel");
         }
     }

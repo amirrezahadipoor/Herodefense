@@ -1,6 +1,7 @@
 package com.amirrezahadipoor.herodefense.settings;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
@@ -15,12 +16,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 /**
- * The settings screen's own language row (roadmap R7.3): a tap changes the language, the change is
- * written to the device's preferences, and every word the settings screen draws afterwards is the
- * word of that language. The locale is global state, so each test puts it back the way it found it.
+ * The game speaks English, and the settings layer keeps it that way (roadmap R7.3, retired).
+ *
+ * <p>Until 2026-09-23 this was the settings screen's language row: a tap cycled the language, the choice was
+ * written to the device's preferences, and a Persian device opened in Persian. The owner deleted the Persian
+ * translation outright, so the row is gone -- and what these pin is the tombstone: nothing to tap, nothing
+ * persisted, and a preference file from a bilingual build cannot break the game. The locale is global state, so
+ * each test puts it back the way it found it.
  */
 final class LanguageSettingsTest {
-    /** The locale is process-wide, so a test that changes it owes the next test the one it started with. */
+    /** The locale is process-wide, so a test that touches it owes the next test the one it started with. */
     private GameLanguage before;
 
     @BeforeEach
@@ -34,83 +39,39 @@ final class LanguageSettingsTest {
     }
 
     @Test
-    void tappingTheLanguageRowCyclesItAndTheLocaleFollows() {
+    void theSettingWordsSpeakEnglish() {
         GameSettings settings = new GameSettings();
-        SettingsTouchController touch = new SettingsTouchController();
-        float centreX = SettingsTouchLayout.ROW_X + SettingsTouchLayout.ROW_WIDTH * 0.5f;
-
-        assertEquals(
-            SettingsTouchLayout.Action.CYCLE_LANGUAGE,
-            touch.tap(settings, centreX, SettingsTouchLayout.LANGUAGE_ROW_Y + 40f)
-        );
-        assertEquals(GameLanguage.PERSIAN, settings.language, "one tap, one step");
-        assertEquals(GameLanguage.PERSIAN, GameLocale.current(), "and the game speaks it immediately");
-
-        touch.tap(settings, centreX, SettingsTouchLayout.LANGUAGE_ROW_Y + 40f);
-        assertEquals(GameLanguage.ENGLISH, settings.language);
-        assertEquals(GameLanguage.ENGLISH, GameLocale.current());
-    }
-
-    @Test
-    void theChoiceSurvivesTheNextLaunchAndAnUnknownCodeFallsBackToEnglish() {
-        MemoryPreferences preferences = new MemoryPreferences();
-        LocalSettingsRepository repository = new LocalSettingsRepository(preferences);
-        GameSettings settings = new GameSettings();
-        settings.language = GameLanguage.PERSIAN;
-        repository.save(settings);
-        GameLocale.use(GameLanguage.ENGLISH);
-
-        assertEquals(GameLanguage.PERSIAN, repository.load().language, "the code round-trips");
-        assertEquals(GameLanguage.PERSIAN, GameLocale.current(), "and loading is what makes the game speak it");
-
-        preferences.putString("display.language", "klingon");
-        assertEquals(GameLanguage.ENGLISH, repository.load().language, "an unknown code cannot break the game");
-        assertEquals(GameLanguage.ENGLISH, GameLocale.current());
-    }
-
-    @Test
-    void aPersianDeviceOpensInPersianUntilThePlayerChoosesOtherwise() {
-        MemoryPreferences preferences = new MemoryPreferences();
-        // First launch: no language row saved yet, so the device leads.
-        assertEquals(GameLanguage.PERSIAN,
-            new LocalSettingsRepository(preferences, java.util.Locale.forLanguageTag("fa-IR"))
-                .load().language,
-            "a fresh install on a fa device speaks Persian");
-        // The player cycles back to English once; the choice is saved and the device is done voting.
-        GameSettings english = new GameSettings();
-        english.language = GameLanguage.ENGLISH;
-        new LocalSettingsRepository(preferences).save(english);
-        assertEquals(GameLanguage.ENGLISH,
-            new LocalSettingsRepository(preferences, java.util.Locale.forLanguageTag("fa-IR"))
-                .load().language,
-            "the saved choice outranks the device on every launch after");
-        // An English device keeps the shipped default on a fresh install.
-        assertEquals(GameLanguage.ENGLISH,
-            new LocalSettingsRepository(new MemoryPreferences(), java.util.Locale.US).load().language);
-    }
-
-    @Test
-    void theSettingWordsSpeakTheChosenLanguage() {
-        GameSettings settings = new GameSettings();
-        assertEquals(GameLanguage.ENGLISH, settings.language, "a fresh install speaks English");
         assertEquals("FULL", GameSettings.levelLabel(2));
         assertEquals("NORMAL", GameSettings.levelLabel(1));
-
-        GameLocale.use(GameLanguage.PERSIAN);
-        assertEquals("کامل", GameSettings.levelLabel(2));
-        assertEquals("عادی", GameSettings.levelLabel(1));
-        assertEquals("آرام", GameSettings.levelLabel(0));
-        // The row that cycles a level returns the word it landed on, so the screen and the setting agree
-        // in the language the player just chose rather than the one the build was compiled in.
-        assertEquals("آرام", settings.cycleSoundVolume(), "the level row wraps to the quietest step");
+        assertEquals("QUIET", GameSettings.levelLabel(0));
+        // The row that cycles a level returns the word it landed on, so the screen and the setting agree.
+        assertEquals("QUIET", settings.cycleSoundVolume(), "the level row wraps to the quietest step");
     }
 
     @Test
-    void theLanguageRowClearsTheFooterPanelAndDoesNotOverlapTheLevelRows() {
-        assertTrue(SettingsTouchLayout.LANGUAGE_ROW_Y > 260f,
-            "the footer note panel occupies 140f..260f, so a row below it would be unreadable");
-        assertTrue(SettingsTouchLayout.MUSIC_LEVEL_ROW_Y - SettingsTouchLayout.LANGUAGE_ROW_Y
-                >= SettingsTouchLayout.ROW_HEIGHT, "and it must not overlap the row above it");
+    void aLegacyLanguagePreferenceIsIgnoredAndNeverWrittenBack() {
+        MemoryPreferences preferences = new MemoryPreferences();
+        preferences.putString("display.language", "fa");
+        GameLocale.use(GameLanguage.ENGLISH);
+        new LocalSettingsRepository(preferences).load();
+        assertEquals(GameLanguage.ENGLISH, GameLocale.current(),
+            "a bilingual build's preference cannot change what the game speaks");
+
+        new LocalSettingsRepository(preferences).save(new GameSettings());
+        assertFalse(preferences.contains("display.language"),
+            "and saving drops the dead key rather than carrying it forward");
+    }
+
+    @Test
+    void theRowsWhereTheLanguageRowWasBelongToOtherSettingsNow() {
+        SettingsTouchController touch = new SettingsTouchController();
+        GameSettings settings = new GameSettings();
+        float centreX = SettingsTouchLayout.ROW_X + SettingsTouchLayout.ROW_WIDTH * 0.5f;
+        assertEquals(10, SettingsTouchLayout.TOTAL_ROWS);
+        assertEquals(SettingsTouchLayout.Action.TOGGLE_REDUCED_MOTION,
+            touch.tap(settings, centreX, 400f + 40f),
+            "reduced motion moved into the deleted row's slot");
+        assertTrue(settings.reducedMotion, "and the tap flips it, not a language");
     }
 
     private static final class MemoryPreferences implements Preferences {

@@ -9,41 +9,39 @@ package com.amirrezahadipoor.herodefense.i18n;
  */
 public enum PauseStrings implements Translated {
 
-    TITLE("COMBAT PAUSED", "نبرد متوقف شد"),
-    SUBTITLE("The arena holds still until you return", "میدان تا بازگشت شما ساکن می‌ماند"),
+    TITLE("COMBAT PAUSED"),
+    SUBTITLE("The arena holds still until you return"),
 
-    RESUME("RESUME", "ادامهٔ بازی"),
-    RESUME_SUBTITLE("Return to the battle", "بازگشت به نبرد"),
+    RESUME("RESUME"),
+    RESUME_SUBTITLE("Return to the battle"),
 
-    INVENTORY("INVENTORY", "کوله‌پشتی"),
-    INVENTORY_SUBTITLE("Equip, compare, and sell gear", "تجهیز، مقایسه و فروش تجهیزات"),
+    INVENTORY("INVENTORY"),
+    INVENTORY_SUBTITLE("Equip, compare, and sell gear"),
 
-    STAT_SHOP("STAT SHOP", "فروشگاه توانمندی"),
-    STAT_SHOP_SUBTITLE("Spend earned coins on permanent upgrades", "سکه‌های کسب‌شده را صرف ارتقای دائمی کنید"),
+    STAT_SHOP("STAT SHOP"),
+    STAT_SHOP_SUBTITLE("Spend earned coins on permanent upgrades"),
 
-    ROOT_NETWORK("ROOT NETWORK", "شبکه ریشه"),
-    ROOT_NETWORK_SUBTITLE("Spend Heartwood on permanent growth", "چوب دل را صرف رشد دائمی کنید"),
+    ROOT_NETWORK("ROOT NETWORK"),
+    ROOT_NETWORK_SUBTITLE("Spend Heartwood on permanent growth"),
 
-    GROVE_CODEX("GROVE CODEX", "دانشنامهٔ بیشه"),
-    GROVE_CODEX_SUBTITLE("Read what the Tree remembers", "آنچه درخت به یاد دارد را بخوانید"),
+    GROVE_CODEX("GROVE CODEX"),
+    GROVE_CODEX_SUBTITLE("Read what the Tree remembers"),
 
     /**
      * The two readouts under the title. The wave line is one entry with two arguments rather than a wave entry
      * and a separator, because "WAVE 12 / 200" is one sentence the screen draws in one call: splitting it would
      * put the decision about where the slash goes in the renderer instead of in the language.
      */
-    CURRENT_WAVE("CURRENT WAVE", "موج جاری"),
-    WAVE_VALUE("WAVE %1$s / %2$s", "موج %1$s / %2$s"),
-    BOSS_WAVE("BOSS WAVE", "موج غول"),
-    HERO_LEVEL("HERO LEVEL %1$s", "سطح قهرمان %1$s"),
-    COINS("COINS", "سکه‌ها");
+    CURRENT_WAVE("CURRENT WAVE"),
+    WAVE_VALUE("WAVE %1$s / %2$s"),
+    BOSS_WAVE("BOSS WAVE"),
+    HERO_LEVEL("HERO LEVEL %1$s"),
+    COINS("COINS");
 
     private final String english;
-    private final String persian;
 
-    PauseStrings(String english, String persian) {
+    PauseStrings(String english) {
         this.english = english;
-        this.persian = persian;
     }
 
     @Override
@@ -56,8 +54,4 @@ public enum PauseStrings implements Translated {
         return english;
     }
 
-    @Override
-    public String persian() {
-        return persian;
-    }
 }

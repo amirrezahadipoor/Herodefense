@@ -102,9 +102,8 @@ final class EquipmentSetBonusTest {
     @Test
     void theStatusLineHasOneSlotPerSet() {
         int slots = 0;
-        String english = ItemStrings.SETS_STATUS.english();
-        String persian = ItemStrings.SETS_STATUS.persian();
-        while (english.contains("%" + (slots + 1) + "$s") && persian.contains("%" + (slots + 1) + "$s")) {
+        String pattern = ItemStrings.SETS_STATUS.english();
+        while (pattern.contains("%" + (slots + 1) + "$s")) {
             slots++;
         }
         assertEquals(EquipmentSetBonus.all().size(), slots);

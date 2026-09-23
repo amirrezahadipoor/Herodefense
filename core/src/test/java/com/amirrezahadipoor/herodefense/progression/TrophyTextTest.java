@@ -1,7 +1,5 @@
 package com.amirrezahadipoor.herodefense.progression;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
-import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.TrophyStrings;
 import org.junit.jupiter.api.Test;
 
@@ -13,34 +11,23 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The trophy shelf in both languages: every row has a name and a line, none of them is blank, the Persian side is
- * Persian, and the twelve that shipped first still say exactly what they always said.
+ * The trophy shelf: every row has a name and a line, none of them is blank, both halves are English, and the
+ * twelve that shipped first still say exactly what they always said.
  */
 class TrophyTextTest {
 
-    private static final String PERSIAN_SCRIPT = "[\\u0600-\\u06FF]";
-    private static final String LATIN = "[A-Za-z]";
+    private static final String ARABIC_SCRIPT = "[\\u0600-\\u06FF]";
 
     @Test
-    void everyTrophyHasBothHalvesInBothLanguages() {
+    void everyTrophyHasBothHalvesInEnglish() {
         for (Trophy trophy : Trophy.values()) {
             for (String text : new String[] {
                 TrophyText.title(trophy), TrophyText.hint(trophy)
             }) {
                 assertFalse(text.isBlank(), trophy.id() + " has a blank line on the shelf");
+                assertFalse(text.matches(".*" + ARABIC_SCRIPT + ".*"),
+                    trophy.id() + " carries non-English script: " + text);
             }
-            GameLocale.use(GameLanguage.PERSIAN);
-            String persianTitle = TrophyText.title(trophy);
-            String persianHint = TrophyText.hint(trophy);
-            assertTrue(persianTitle.matches(".*" + PERSIAN_SCRIPT + ".*"),
-                trophy.id() + " has no Persian title: " + persianTitle);
-            assertTrue(persianHint.matches(".*" + PERSIAN_SCRIPT + ".*"),
-                trophy.id() + " has no Persian hint: " + persianHint);
-            assertFalse(persianTitle.matches(".*" + LATIN + ".*"),
-                trophy.id() + " shows Latin letters in a Persian title: " + persianTitle);
-            assertFalse(persianHint.matches(".*" + LATIN + ".*"),
-                trophy.id() + " shows Latin letters in a Persian hint: " + persianHint);
-            GameLocale.use(GameLanguage.ENGLISH);
         }
     }
 
@@ -69,15 +56,10 @@ class TrophyTextTest {
     }
 
     @Test
-    void everyTitleIsDistinctInBothLanguages() {
-        Set<String> english = new HashSet<>();
-        Set<String> persianTitles = new HashSet<>();
+    void everyTitleIsDistinct() {
+        Set<String> titles = new HashSet<>();
         for (Trophy trophy : Trophy.values()) {
-            assertTrue(english.add(TrophyText.title(trophy)), "duplicate English title: " + trophy.id());
-            GameLocale.use(GameLanguage.PERSIAN);
-            assertTrue(persianTitles.add(TrophyText.title(trophy)),
-                "duplicate Persian title: " + trophy.id());
-            GameLocale.use(GameLanguage.ENGLISH);
+            assertTrue(titles.add(TrophyText.title(trophy)), "duplicate English title: " + trophy.id());
         }
     }
 }

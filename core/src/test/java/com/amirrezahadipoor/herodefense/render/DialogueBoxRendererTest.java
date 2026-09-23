@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.amirrezahadipoor.herodefense.WorldLayout;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.input.HudTouchLayout;
 import com.amirrezahadipoor.herodefense.presentation.DialogueBox;
@@ -60,12 +59,12 @@ final class DialogueBoxRendererTest {
 
     /** The reference emulator's row heights: the name is a LABEL, the line a BODY. */
     private static float nameLine() {
-        return ReferenceTypeMeasure.lineHeight(GameLanguage.ENGLISH,
+        return ReferenceTypeMeasure.lineHeight(
             GameFonts.Role.forLegacyScale(DialogueBoxRenderer.NAME_SCALE));
     }
 
     private static float textLine() {
-        return ReferenceTypeMeasure.lineHeight(GameLanguage.ENGLISH,
+        return ReferenceTypeMeasure.lineHeight(
             GameFonts.Role.forLegacyScale(DialogueBoxRenderer.TEXT_SCALE));
     }
 
@@ -134,13 +133,11 @@ final class DialogueBoxRendererTest {
     }
 
     @Test
-    void theVictoryLineIsTwoRowsAtTheBodySizeInBothLanguages() {
-        for (GameLanguage language : GameLanguage.values()) {
-            GameFonts.Role role = GameFonts.Role.forLegacyScale(DialogueBoxRenderer.TEXT_SCALE);
-            List<String> rows = CodexOverlayRenderer.wrapLines(StoryStrings.TREE_VICTORY.text(language),
-                line -> ReferenceTypeMeasure.width(line, language, role),
-                DialogueBoxRenderer.BOX_W - 2f * DialogueBoxRenderer.INSET);
-            assertTrue(rows.size() <= 2, language + ": the victory line takes " + rows.size() + " rows: " + rows);
-        }
+    void theVictoryLineIsTwoRowsAtTheBodySize() {
+        GameFonts.Role role = GameFonts.Role.forLegacyScale(DialogueBoxRenderer.TEXT_SCALE);
+        List<String> rows = CodexOverlayRenderer.wrapLines(StoryStrings.TREE_VICTORY.text(),
+            line -> ReferenceTypeMeasure.width(line, role),
+            DialogueBoxRenderer.BOX_W - 2f * DialogueBoxRenderer.INSET);
+        assertTrue(rows.size() <= 2, "the victory line takes " + rows.size() + " rows: " + rows);
     }
 }

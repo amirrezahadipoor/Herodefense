@@ -1,9 +1,6 @@
 package com.amirrezahadipoor.herodefense.render;
 
 import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
-import com.amirrezahadipoor.herodefense.i18n.GameNumbers;
-import com.amirrezahadipoor.herodefense.i18n.GameStrings;
-import com.amirrezahadipoor.herodefense.i18n.Translated;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
@@ -11,22 +8,15 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 /**
- * Rasterises the licensed faces at the panel's real pixel size once per resize -- Nunito for English, Vazirmatn
- * for Persian.
+ * Rasterises the licensed faces at the panel's real pixel size once per resize -- Nunito throughout.
  *
  * <p>Every text site asks for a role (title, heading, body, label) instead of a raw scale, so
  * legibility is decided in one place and stays physically consistent across densities.
  *
- * <p>Two faces, not one, because a bitmap font draws the glyphs it was told to rasterise and nothing else.
- * Vazirmatn is the Persian typeface: its alef, its ye and its kaf are drawn for Persian reading rather than
- * borrowed from an Arabic font, and it carries the whole Presentation Forms range that
- * {@link PersianShaper} produces. Nunito has none of it. Which face a role resolves to is
- * {@link #font(Role, GameLanguage)}, and the glyph set each is rasterised with is derived from the string tables
- * rather than listed by hand -- see {@link #persianCharacters()}.
+ * <p>Until 2026-09-23 this held two faces per role (Nunito for English, Vazirmatn for Persian) with the
+ * Persian glyph set derived from the string tables. The owner deleted the Persian translation outright, so one
+ * face per role remains and the glyph set is the fixed {@link #CHARACTERS}.
  */
 public final class GameFonts implements AutoCloseable {
     public enum Role {
@@ -62,20 +52,8 @@ public final class GameFonts implements AutoCloseable {
     static final float MAX_WORLD_SIZE_FACTOR = 2.6f;
     static final String BOLD_PATH = "fonts/Nunito-Bold.ttf";
     static final String EXTRA_BOLD_PATH = "fonts/Nunito-ExtraBold.ttf";
-    static final String PERSIAN_BOLD_PATH = "fonts/Vazirmatn-Bold.ttf";
-    static final String PERSIAN_EXTRA_BOLD_PATH = "fonts/Vazirmatn-ExtraBold.ttf";
     static final String CHARACTERS =
         FreeTypeFontGenerator.DEFAULT_CHARS + "\u2013\u2014\u2019\u2022\u2026\u00d7\u00b7";
-
-    /**
-     * Everything a Persian screen can put on this font, derived from the string tables at class-load time.
-     *
-     * <p>{@link GameFontsTest} is the other half of this: it loads both committed faces and asserts that every
-     * codepoint here is a glyph they actually have, and that every table entry -- shaped the way
-     * {@link PersianShaper} will shape it at draw time -- is drawable. A character missing from the set draws as
-     * a space; a character missing from the font draws as a box, and neither is visible in a code review.
-     */
-    static final String PERSIAN_CHARACTERS = persianCharacters();
 
     private static GameFonts shared;
     private static float pendingTextScale = 1.0f;
@@ -84,8 +62,6 @@ public final class GameFonts implements AutoCloseable {
     private final Application owner = Gdx.app;
     private final FreeTypeFontGenerator bold;
     private final FreeTypeFontGenerator extraBold;
-    private final FreeTypeFontGenerator persianBold;
-    private final FreeTypeFontGenerator persianExtraBold;
     private final BitmapFont[][] fonts =
         new BitmapFont[GameLanguage.values().length][Role.values().length];
     private DisplayMetrics metrics;
@@ -99,8 +75,6 @@ public final class GameFonts implements AutoCloseable {
         FreeTypeFontGenerator.setMaxTextureSize(2048);
         bold = new FreeTypeFontGenerator(Gdx.files.internal(BOLD_PATH));
         extraBold = new FreeTypeFontGenerator(Gdx.files.internal(EXTRA_BOLD_PATH));
-        persianBold = new FreeTypeFontGenerator(Gdx.files.internal(PERSIAN_BOLD_PATH));
-        persianExtraBold = new FreeTypeFontGenerator(Gdx.files.internal(PERSIAN_EXTRA_BOLD_PATH));
         textScale = effectivePendingScale();
         rebuild(new DisplayMetrics(
             Gdx.graphics.getBackBufferWidth(),
@@ -145,7 +119,7 @@ public final class GameFonts implements AutoCloseable {
             for (Role role : Role.values()) {
                 BitmapFont previous = fonts[language.ordinal()][role.ordinal()];
                 if (previous != null) previous.dispose();
-                fonts[language.ordinal()][role.ordinal()] = generate(role, language);
+                fonts[language.ordinal()][role.ordinal()] = generate(role);
             }
         }
     }
@@ -172,12 +146,12 @@ public final class GameFonts implements AutoCloseable {
         if (shared != null) shared.setTextScale(clamped);
     }
 
-    /** The English face, which is what every call site asked for before the game had two languages. */
+    /** The face for {@code role}. */
     public BitmapFont font(Role role) {
         return font(role, GameLanguage.ENGLISH);
     }
 
-    /** The face for {@code role} in {@code language}: Vazirmatn for Persian, Nunito otherwise. */
+    /** The face for {@code role} in {@code language}. */
     public BitmapFont font(Role role, GameLanguage language) {
         return fonts[language.ordinal()][role.ordinal()];
     }
@@ -198,69 +172,26 @@ public final class GameFonts implements AutoCloseable {
         return Math.max(floor, Math.min(ceiling, natural));
     }
 
-    /**
-     * The glyph set the Persian face is rasterised with: the English set, the symbols
-     * {@link GameNumbers} can emit for a Persian locale, and every codepoint the string tables can produce --
-     * both as written and as {@link PersianShaper} will have shaped them by the time they are drawn.
-     *
-     * <p>Both, because the two are different sets. A table entry holds the Arabic block (به), the shaper emits
-     * Presentation Forms (ﺑﻪ), and a screen that ever drew the unshaped form would need the first set to not be
-     * blank boxes. Deriving this from the tables rather than writing down a range is what keeps it honest when a
-     * string is added: the new glyphs come along by construction, and {@link GameFontsTest} fails if the face
-     * does not have them.
-     */
-    static String persianCharacters() {
-        // Insertion-ordered, so the atlas is built in a stable order and two runs rasterise the same cells.
-        Set<Integer> codepoints = new LinkedHashSet<>();
-        CHARACTERS.codePoints().forEach(codepoints::add);
-        // Persian digits, the thousands separator, the percent sign, the minus sign CLDR puts in front of a
-        // negative number, the left-to-right mark that keeps that sign on the correct side of its digits, and the
-        // plus GameNumbers writes for a gain.
-        "\u06f0\u06f1\u06f2\u06f3\u06f4\u06f5\u06f6\u06f7\u06f8\u06f9\u066c\u066a\u2212\u200e+"
-            .codePoints().forEach(codepoints::add);
-        for (Translated entry : GameStrings.all()) {
-            entry.persian().codePoints().forEach(codepoints::add);
-            PersianShaper.shape(entry.persian()).codePoints().forEach(codepoints::add);
-        }
-        // Story prose that lives outside the string tables (the Grove Codex bodies and the boss bios) still has
-        // to be drawable when a Persian player opens the codex, so its glyphs join the atlas the same way a table
-        // entry's would.
-        storyPersian().codePoints().forEach(codepoints::add);
-        PersianShaper.shape(storyPersian()).codePoints().forEach(codepoints::add);
-        StringBuilder characters = new StringBuilder(codepoints.size());
-        codepoints.forEach(characters::appendCodePoint);
-        return characters.toString();
-    }
-
-    /** Every Persian-script sentence the story classes can put on screen, in one string for shaping and coverage. */
-    static String storyPersian() {
-        return com.amirrezahadipoor.herodefense.story.LoreCatalog.persianText()
-            + com.amirrezahadipoor.herodefense.story.BossLore.persianText();
-    }
-
-    private BitmapFont generate(Role role, GameLanguage language) {
+    private BitmapFont generate(Role role) {
         float worldSize = worldSizeFor(role, metrics, textScale);
         FreeTypeFontGenerator.FreeTypeFontParameter parameter =
             new FreeTypeFontGenerator.FreeTypeFontParameter();
         parameter.size = metrics.glyphPixelsForWorldUnits(worldSize);
-        parameter.characters = language == GameLanguage.PERSIAN ? PERSIAN_CHARACTERS : CHARACTERS;
+        parameter.characters = CHARACTERS;
         parameter.color = Color.WHITE;
         parameter.minFilter = Texture.TextureFilter.Linear;
         parameter.magFilter = Texture.TextureFilter.Linear;
         parameter.hinting = FreeTypeFontGenerator.Hinting.AutoMedium;
         parameter.kerning = true;
         parameter.incremental = false;
-        BitmapFont font = face(language, role.heavy).generateFont(parameter);
+        BitmapFont font = face(role.heavy).generateFont(parameter);
         // Glyphs are rasterised in pixels; scale back so one glyph unit equals one world unit.
         font.getData().setScale(1f / metrics.pixelsPerWorldUnit());
         font.setUseIntegerPositions(false);
         return font;
     }
 
-    private FreeTypeFontGenerator face(GameLanguage language, boolean heavy) {
-        if (language == GameLanguage.PERSIAN) {
-            return heavy ? persianExtraBold : persianBold;
-        }
+    private FreeTypeFontGenerator face(boolean heavy) {
         return heavy ? extraBold : bold;
     }
 
@@ -271,8 +202,6 @@ public final class GameFonts implements AutoCloseable {
         }
         bold.dispose();
         extraBold.dispose();
-        persianBold.dispose();
-        persianExtraBold.dispose();
         if (shared == this) shared = null;
     }
 

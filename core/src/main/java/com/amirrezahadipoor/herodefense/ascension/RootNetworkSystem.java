@@ -63,9 +63,8 @@ public final class RootNetworkSystem {
         RootNodeDefinition def = RootNetworkCatalog.byId(nodeId);
         state.heartwood -= def.cost();
         state.rootNodesPurchased.put(nodeId, true);
-        // Upper-casing is a no-op on Persian and keeps the node name in the caps sentence it sits in for
-                // English, so the call stays: the name is content from the catalog, not an entry that could be
-                // written in caps at the table.
+        // The name is content from the catalog, not an entry that could be written in caps at the
+                // table, so the call stays: it keeps the node name in the caps sentence it sits in.
                 showFeedback(GameLocale.text(
                     RootNetworkStrings.FEEDBACK_AWAKENED, def.name().toUpperCase(Locale.ROOT)));
         return true;

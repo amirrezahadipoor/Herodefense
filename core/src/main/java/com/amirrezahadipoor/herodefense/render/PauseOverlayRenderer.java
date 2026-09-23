@@ -174,9 +174,8 @@ public final class PauseOverlayRenderer implements AutoCloseable {
     }
 
     /**
-     * The caption over the wave readout. The words are the table's, so the upper-casing the English side used to
-     * do at the call site is now a property of the entry: Persian has no case to change, and a renderer that
-     * upper-cased a Persian string would be pretending the two languages share an alphabet.
+     * The caption over the wave readout. The words are the table's, so the upper-casing the call site used to
+     * do is now a property of the entry.
      */
     static String waveLabel(GameState state) {
         if (state == null) return GameLocale.text(PauseStrings.CURRENT_WAVE);

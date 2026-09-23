@@ -26,9 +26,9 @@ import org.junit.jupiter.api.Test;
  * while the bow fired on its own schedule regardless of the finger. Step three said drops come to the player
  * "when you walk near them", and {@code DropPickupSystem} homes every drop in after a short delay. Each step also
  * <em>completed</em> on the gesture it described, so a player was told something false and then marked as having
- * learned it, in both languages, twelve seconds into their first run.
+ * learned it, twelve seconds into their first run.
  *
- * <p>Nothing in the suite caught that, because every existing check verified the table's shape -- both languages
+ * <p>Nothing in the suite caught that, because every existing check verified the table's shape -- entries
  * present, placeholders matching, glyphs drawable -- and a well-formed lie passes all of them. So this class was
  * written to check the claims instead, and it asserted the absence of movement on purpose: the day the Hero could
  * walk, the assertion would fail and whoever built the legs would have to come here and teach them.
@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Test;
  * rather than about wording:
  *
  * <ol>
- *   <li>no coached line, in either language, promises aiming or firing by hand -- the bow is still automatic and
+ *   <li>no coached line promises aiming or firing by hand -- the bow is still automatic and
  *       still decides its own target order, so this half of the old lie stays banned;</li>
  *   <li>the Hero's position is written in exactly two files, its own model and its movement system, so the coach
  *       cannot be describing a walk that some other code path performs differently;</li>
@@ -65,9 +65,6 @@ final class OnboardingClaimsTest {
     private static final List<String> ENGLISH_AIM_CLAIMS =
         List.of("aim", "fires while you hold", "hold to fire", "shoot where", "steer");
 
-    /** The same promises in Persian, including the wording that shipped before it was corrected. */
-    private static final List<String> PERSIAN_AIM_CLAIMS = List.of("نشانه", "هدف گیری", "شلیک با کشیدن");
-
     /** An assignment to the playable Hero's position, plain or compound: {@code hero.x = 1f}, {@code hero.y += v}. */
     private static final Pattern HERO_POSITION_WRITE = Pattern.compile("\\bhero\\.(x|y)\\s*(\\+|-|\\*|/)?=[^=]");
 
@@ -87,11 +84,6 @@ final class OnboardingClaimsTest {
             for (String claim : ENGLISH_AIM_CLAIMS) {
                 if (english.contains(claim)) {
                     problems.add(entry.key() + " promises \"" + claim + "\" in English: " + entry.english());
-                }
-            }
-            for (String claim : PERSIAN_AIM_CLAIMS) {
-                if (entry.persian().contains(claim)) {
-                    problems.add(entry.key() + " promises \"" + claim + "\" in Persian: " + entry.persian());
                 }
             }
         }
@@ -137,13 +129,11 @@ final class OnboardingClaimsTest {
         assertEquals(OnboardingAction.HERO_MOVED, move.action(),
             "the movement lesson completes on a real step order, not on any finger movement");
         String shown = move.line();
-        assertTrue(shown.equals(OnboardingStrings.MOVE_LINE.english())
-                || shown.equals(OnboardingStrings.MOVE_LINE.persian()),
-            "the movement lesson shows the movement line, in one of the two languages: " + shown);
-        assertTrue(OnboardingStrings.MOVE_LINE.english().toLowerCase(Locale.ROOT).contains("drag")
-                && OnboardingStrings.MOVE_LINE.persian().contains("بکشید"),
-            "and it has to name it in both languages, because a Persian player who is told to tap will tap and"
-                + " the Hero will stand still: " + OnboardingStrings.MOVE_LINE.persian());
+        assertEquals(OnboardingStrings.MOVE_LINE.english(), shown,
+            "the movement lesson shows the movement line: " + shown);
+        assertTrue(OnboardingStrings.MOVE_LINE.english().toLowerCase(Locale.ROOT).contains("drag"),
+            "and it has to name the drag, because a player who is told to tap will tap and"
+                + " the Hero will stand still");
 
         String router = read(ROUTER);
         int from = router.indexOf("public boolean onTouchDragged");

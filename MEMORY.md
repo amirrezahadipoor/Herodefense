@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P1 DONE` — this file landed. Next: `P2` English-only strip. |
-| **Last push** | `P1` — MEMORY.md created (story bible + plan + full dialogue draft). |
+| **Status** | `P2 DONE` — game is English-only, pushed. Next: `P3` story rebuild (delete old story, write new). |
+| **Last push** | `P2` — Persian translation, shaper, fonts, language row + settings persistence deleted; 14 tests rewritten, audit migrated. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -24,11 +24,27 @@
   cutscene spec, longer-waves spec, English-only file catalog, full dialogue draft, P1–P8 plan.
   Done: the whole creative + technical plan, reviewed against the real code (574 Java files).
   Remaining: P2–P8 (code). Build: docs-only, CI unaffected.
+- **P2 (2026-09-23)** — English-only strip, pushed. Done: 13 string tables stripped to
+  English (420 entries, byte-identical EN side); `GameLanguage`/`Translated`/`GameNumbers`/
+  `GameLocale` single-language; `LoreCatalog`/`BossLore`/`TreeLetters`/`LoreEntry` prose
+  stripped (48 codex entries kept); settings language row + persistence deleted (10 rows,
+  reduced-motion moved up); `GameFonts` Nunito-only; `OverlayText.visual` identity;
+  **deleted** `PersianShaper`/`Bidi*`/`Arabic*`, `tools/i18n`, golden vectors, Vazirmatn
+  files, `docs/PERSIAN_PROOFREAD.md`, 2 tests; 14 tests rewritten single-language; audit
+  `persian` flag honestly False (was: 12 evidence lines); CI R7.3 shaping steps removed;
+  `docs/STORY_VOICE.md` rewritten English-only. Verified: i18n+story javac compile,
+  runtime smoke (0 Arabic codepoints in shipped text), 14/14 audit tests.
+  Remaining: P3–P8. Watch: `UiMirror`/`GameLocale.rightToLeft` dormant LTR branches kept
+  (audit `rightToLeft` evidence); `DrawnStringProvenanceTest` ratchet untouched.
 
 ### Session log (append-only, one line per work session)
 
 - **2026-09-23 / session 1** — explored repo, mapped i18n/story/wave/cinematic systems, wrote
   MEMORY.md, pushed P1. Next session: P2 (English-only strip per §8).
+- **2026-09-23 / session 2** — P2 done + pushed: full English-only strip per §8 (with one
+  plan change: §12.4 dead-infra is DELETED, not kept — the audit's case-insensitive
+  `persian` flag forced an honest zero). Verified by compile + smoke + audit; CI is the
+  final word. Next: P3 story rebuild (new cast + dialogue per §9).
 
 ---
 
@@ -306,7 +322,7 @@ up; `SettingsTextFitTest` + touch tests updated. Old saves carrying `"fa"` load 
 |---|---|
 | `i18n/PersianProofreadRecordTest` | **DELETE** (ledger deleted). |
 | `i18n/TranslationTableTest` | **Rewrite:** keep table-completeness sweep; English non-blank; placeholders well-formed (single-language); formatting never throws; no duplicates. Drop all Persian asserts. |
-| `i18n/GameLanguageTest` | **Rewrite:** single language; `fromCode("fa")`→ENGLISH (legacy); no RTL; `next()`=self; locale US. |
+| `i18n/GameLanguageTest` | **Rewrite:** single language; `fromCode`/`next`/`forSystemLocale` DELETED (no legacy API at all); no RTL; locale US. Legacy `"fa"` prefs are ignored, never read (pinned by `LanguageSettingsTest`). |
 | `i18n/GameLocaleTest` | **Rewrite:** English only; null-use keeps ENGLISH. |
 | `i18n/GameNumbersTest` | **Rewrite:** English shapes only (`1,234`, `50%`, `+5`, `1.2k`). |
 | `settings/LanguageSettingsTest` | **Rewrite** (keep filename): game always speaks English; legacy `"fa"` pref → ENGLISH; no CYCLE_LANGUAGE action exists. |
@@ -573,8 +589,11 @@ P7 last (styles what exists).
 2. **Tier-0 opening rewritten** (old pin said never). Owner: whole story deleted.
 3. **Old rubric ≥900 / Gate 1 abandoned.** The roadmap's scoring died with its direction;
    honest gates (§10/P6) replace it.
-4. **PersianShaper/Bidi/tools-i18n KEPT as dead-infra** (zero user-visible Persian). Cheapest
-   safe choice; revisit P8.
+4. **PersianShaper/Bidi/Arabic/tools-i18n/golden-vectors DELETED outright** (P2, decided
+   mid-push). The plan said "keep as dead infra", but the audit's `persian` flag is
+   case-insensitive over code, so any `PersianShaper` identifier keeps it True — an honest
+   False needed the files gone. R7.3 CI shaping steps removed with them. `UiMirror` and the
+   `rightToLeft()` holders stay (dormant LTR, audit `rightToLeft` evidence).
 
 ---
 

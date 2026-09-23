@@ -168,8 +168,8 @@ public final class HudRenderer implements AutoCloseable {
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         shapes.setProjectionMatrix(projection);
         shapes.begin(ShapeRenderer.ShapeType.Filled);
-        // Roadmap G4: the tracks mirror with the screen and the fills grow from the leading edge, so a
-        // Persian bar drains toward the screen's right and an English one toward its left.
+        // Roadmap G4: the tracks mirror with the screen and the fills grow from the leading edge, so the
+        // bars drain toward the trailing edge.
         float healthBarX = UiMirror.leadingOnScreen(HEALTH_BAR_X, HEALTH_BAR_WIDTH);
         float expBarX = UiMirror.leadingOnScreen(EXP_BAR_X, EXP_BAR_WIDTH);
         shapes.setColor(0.055f, 0.035f, 0.030f, 0.98f);
@@ -216,7 +216,7 @@ public final class HudRenderer implements AutoCloseable {
         drawShadowed(batch, GameLocale.text(HudStrings.LEVEL, GameLocale.number(state.heroLevel)),
             102f, 1199f + up, 0.52f,
             flash > 0f ? EXP_FLASH : EXP);
-        // The caption hangs off the panel's trailing edge: the right one in English, the left one in Persian.
+        // The caption hangs off the panel's trailing edge.
         text.drawTrailing(batch, experienceLabel(state), 0f, UiMirror.SCREEN_WIDTH,
             UiMirror.SCREEN_WIDTH - 580f, 1199f + up, 0.46f, SUBTLE);
         if (state.ascensionTier > 0) {
@@ -351,9 +351,8 @@ public final class HudRenderer implements AutoCloseable {
 
     /**
      * A left-aligned HUD label at its design-grid x, mirrored with the screen (roadmap G4). The run is
-     * measured shaped, because the advance of joined Persian text is not the sum of its letters' advances
-     * and mirroring with the wrong width would push the label off the edge it was measured against.
-     * In English {@code UiMirror.leadingOnScreen} returns x untouched, pixel for pixel.
+     * measured shaped, because mirroring with the wrong width would push the label off the edge it was
+     * measured against. {@code UiMirror.leadingOnScreen} returns x untouched, pixel for pixel.
      */
     private void drawShadowed(
         SpriteBatch batch, String label, float x, float y, float scale, Color color
@@ -371,7 +370,7 @@ public final class HudRenderer implements AutoCloseable {
         return Math.max(0f, Math.min(1f, state.heroExperience / (float) required));
     }
 
-    /** The bar's caption, in the language in force: a capped hero reads MAX / کامل. */
+    /** The bar's caption: a capped hero reads MAX. */
     static String experienceLabel(GameState state) {
         int required = PROGRESSION.experienceRequiredForNextLevel(state.heroLevel);
         return required <= 0
@@ -384,8 +383,8 @@ public final class HudRenderer implements AutoCloseable {
 
     /**
      * Where a fill {@code fillWidth} wide starts inside a bar: {@code inset} in from the bar's leading edge,
-     * which is its left edge in English and its right one in Persian, so both bars drain toward the trailing
-     * edge (roadmap G4). Pure arithmetic on the already-mirrored bar position, and therefore testable.
+     * so both bars drain toward the trailing edge (roadmap G4). Pure arithmetic on the already-mirrored
+     * bar position, and therefore testable.
      */
     static float barFillX(float barX, float barWidth, float inset, float fillWidth) {
         return GameLocale.rightToLeft()

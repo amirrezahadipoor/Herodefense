@@ -1,6 +1,5 @@
 package com.amirrezahadipoor.herodefense.render;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.SettingsStrings;
 import com.badlogic.gdx.Gdx;
@@ -14,19 +13,12 @@ import com.amirrezahadipoor.herodefense.input.SettingsTouchLayout;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
 /**
- * Premium settings surface: large explicit ON/OFF toggles, level rows, language row and accessibility
+ * Premium settings surface: large explicit ON/OFF toggles, level rows and accessibility
  * rows inside a scrollable viewport over the reviewed arena.
  *
  * <p>Every word on this screen comes from {@link SettingsStrings} through {@link GameLocale}, and
- * {@code DrawnStringProvenanceTest} fails the build if a literal is drawn here instead -- which matters more on
- * this screen than anywhere else, because this is the screen where a Persian player switches to Persian. If the
- * row that changes the language were itself a hard-coded English string, the player who needs it could not read
- * it. It is also the screen that mirrors: every element is placed by {@link UiMirror} rather than by a number,
- * so its rows read from the right in Persian and its close button is where the finger finds it.
- *
- * <p>The row is drawn with each language's own name for itself -- \"English\" and \"فارسی\" -- rather than the
- * current language's word for it. A player reading a screen they do not understand is looking for the word they
- * recognise, and \"Persian\" is not it.
+ * {@code DrawnStringProvenanceTest} fails the build if a literal is drawn here instead. Every element is placed
+ * by {@link UiMirror} rather than by a number, so the layout keeps its leading and trailing edges straight.
  */
 public final class SettingsOverlayRenderer implements AutoCloseable {
     static final float CLOSE_X = 570f;
@@ -36,7 +28,6 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     static final float MUSIC_ROW_Y = SettingsTouchLayout.MUSIC_ROW_Y;
     static final float SOUND_LEVEL_ROW_Y = SettingsTouchLayout.SOUND_LEVEL_ROW_Y;
     static final float MUSIC_LEVEL_ROW_Y = SettingsTouchLayout.MUSIC_LEVEL_ROW_Y;
-    static final float LANGUAGE_ROW_Y = SettingsTouchLayout.LANGUAGE_ROW_Y;
     static final float REDUCED_MOTION_ROW_Y = SettingsTouchLayout.REDUCED_MOTION_ROW_Y;
     /**
      * The insets this screen's elements sit at, named because a mirrored screen has to move each of them by the
@@ -53,9 +44,8 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     static final float NOTE_INSET = 30f;
     static final float NOTE_PANEL_X = 100f;
     /**
-     * Below the fifth row. The note used to sit at 250f, which is where the language row now is; the panel moved
-     * down rather than the rows moving up, because the rows' spacing is what {@code MainMenuAndSettingsTouchTest}
-     * measures against {@code ROW_HEIGHT} and the panel is decoration.
+     * Below the rows. The panel sits apart from the row spacing, because the rows' spacing is what
+     * {@code MainMenuAndSettingsTouchTest} measures against {@code ROW_HEIGHT} and the panel is decoration.
      */
     static final float NOTE_PANEL_Y = 140f;
     static final float NOTE_PANEL_WIDTH = 520f;
@@ -215,16 +205,6 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
             }
             case 4 -> {
                 UiFrameRenderer.State state = frames.resolve(
-                    true, settings.language != GameLanguage.ENGLISH, SettingsTouchLayout.ROW_X, y,
-                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
-                );
-                frames.draw(batch, UiFrameRenderer.Kind.BUTTON, SettingsTouchLayout.ROW_X, y,
-                    SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true,
-                    settings.language != GameLanguage.ENGLISH);
-                drawLanguage(batch, settings.language, y, state);
-            }
-            case 5 -> {
-                UiFrameRenderer.State state = frames.resolve(
                     true, settings.reducedMotion, SettingsTouchLayout.ROW_X, y,
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
                 );
@@ -234,7 +214,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                 drawToggle(batch, SettingsStrings.REDUCED_MOTION, SettingsStrings.REDUCED_MOTION_SUBTITLE,
                     y, settings.reducedMotion, state, SettingsStrings.TAP_TO_RESTORE_MOTION);
             }
-            case 6 -> {
+            case 5 -> {
                 UiFrameRenderer.State state = frames.resolve(
                     true, true, SettingsTouchLayout.ROW_X, y,
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
@@ -243,7 +223,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT, true, true);
                 drawTextSize(batch, settings, y, state);
             }
-            case 7 -> {
+            case 6 -> {
                 UiFrameRenderer.State state = frames.resolve(
                     true, settings.colourBlindRarity, SettingsTouchLayout.ROW_X, y,
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
@@ -254,7 +234,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                 drawToggle(batch, SettingsStrings.COLOUR_BLIND_RARITY, SettingsStrings.COLOUR_BLIND_RARITY_SUBTITLE,
                     y, settings.colourBlindRarity, state, SettingsStrings.TAP_TO_RESTORE_RARITY);
             }
-            case 8 -> {
+            case 7 -> {
                 UiFrameRenderer.State state = frames.resolve(
                     true, settings.narrationEnabled, SettingsTouchLayout.ROW_X, y,
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
@@ -265,7 +245,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                 drawToggle(batch, SettingsStrings.NARRATION, SettingsStrings.NARRATION_SUBTITLE,
                     y, settings.narrationEnabled, state, SettingsStrings.TAP_TO_MUTE);
             }
-            case 9 -> {
+            case 8 -> {
                 UiFrameRenderer.State state = frames.resolve(
                     true, settings.narrationVolume > 0f, SettingsTouchLayout.ROW_X, y,
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
@@ -276,7 +256,7 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
                 drawLevel(batch, SettingsStrings.NARRATION_LEVEL, SettingsStrings.NARRATION_LEVEL_SUBTITLE,
                     y, settings.narrationVolume, state);
             }
-            case 10 -> {
+            case 9 -> {
                 UiFrameRenderer.State state = frames.resolve(
                     true, settings.screenReaderEnabled, SettingsTouchLayout.ROW_X, y,
                     SettingsTouchLayout.ROW_WIDTH, SettingsTouchLayout.ROW_HEIGHT
@@ -361,29 +341,9 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     }
 
     /**
-     * The language row. It is drawn like the level rows -- title and subtitle on the left, current value and the
-     * hint on the right -- because a player who has read four rows already knows what the fifth one does.
-     */
-    private void drawLanguage(
-        SpriteBatch batch,
-        GameLanguage language,
-        float y,
-        UiFrameRenderer.State state
-    ) {
-        float offset = MainMenuRenderer.pressedOffset(state);
-        rowTitle(batch, GameLocale.text(SettingsStrings.LANGUAGE), y + 90f + offset, 1.16f,
-            OverlayText.IVORY);
-        rowTitle(batch, GameLocale.text(SettingsStrings.LANGUAGE_SUBTITLE), y + 46f + offset,
-            0.68f, OverlayText.SUBTLE);
-        rowValue(batch, nativeName(language), y + 84f + offset, 1.06f, OverlayText.GOLD);
-        rowValue(batch, GameLocale.text(SettingsStrings.TAP_TO_SWITCH),
-            y + 46f + offset, 0.62f, OverlayText.SUBTLE);
-    }
-
-    /**
      * A row's two leading lines and its two trailing ones. All six rows call these rather than drawing at a
      * number, because the number is a sum of the row's edge and an inset and only the inset survives mirroring:
-     * 136f means \"36f in from the left\" in English and would mean the same in Persian, which is the wrong side.
+     * 136f means \"36f in from the leading edge\", whichever side that is.
      */
     private void rowTitle(SpriteBatch batch, String value, float y, float scale, Color color) {
         text.drawLeading(batch, value, SettingsTouchLayout.ROW_X, SettingsTouchLayout.ROW_WIDTH,
@@ -393,16 +353,6 @@ public final class SettingsOverlayRenderer implements AutoCloseable {
     private void rowValue(SpriteBatch batch, String value, float y, float scale, Color color) {
         text.drawTrailing(batch, value, SettingsTouchLayout.ROW_X, SettingsTouchLayout.ROW_WIDTH,
             ROW_VALUE_INSET, y, scale, color);
-    }
-
-    /**
-     * The name a language calls itself, which is the name shown on the row: a player who cannot read the screen
-     * is looking for the word they recognise, and the current language's word for it is not that word.
-     */
-    static String nativeName(GameLanguage language) {
-        return language == GameLanguage.PERSIAN
-            ? SettingsStrings.LANGUAGE_PERSIAN.persian()
-            : SettingsStrings.LANGUAGE_ENGLISH.english();
     }
 
     static String toggleLabel(boolean enabled) {

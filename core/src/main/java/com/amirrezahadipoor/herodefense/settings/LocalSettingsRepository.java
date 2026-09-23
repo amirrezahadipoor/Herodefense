@@ -1,7 +1,5 @@
 package com.amirrezahadipoor.herodefense.settings;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
-import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.render.GameFonts;
 import com.badlogic.gdx.Preferences;
 
@@ -18,26 +16,15 @@ public final class LocalSettingsRepository {
     private static final String NARRATION_ENABLED_KEY = "audio.narrationEnabled";
     private static final String NARRATION_VOLUME_KEY = "audio.narrationVolume";
     private static final String SCREEN_READER_KEY = "accessibility.screenReader";
-    private static final String LANGUAGE_KEY = "display.language";
     private static final String REDUCED_MOTION_KEY = "display.reducedMotion";
     private static final String COLOUR_BLIND_RARITY_KEY = "display.colourBlindRarity";
     private static final String TEXT_SIZE_KEY = "display.textSize";
     private static final String LAST_GIFT_DAY_KEY = "tree.lastGiftEpochDay";
     private final Preferences preferences;
-    private final java.util.Locale systemLocale;
 
     public LocalSettingsRepository(Preferences preferences) {
-        this(preferences, null);
-    }
-
-    /**
-     * {@code systemLocale} is what a first run speaks (a Persian device opens in Persian); once the
-     * player has cycled the language row, their choice wins and the device is ignored.
-     */
-    public LocalSettingsRepository(Preferences preferences, java.util.Locale systemLocale) {
         if (preferences == null) throw new IllegalArgumentException("preferences cannot be null");
         this.preferences = preferences;
-        this.systemLocale = systemLocale;
     }
 
     public GameSettings load() {
@@ -58,14 +45,6 @@ public final class LocalSettingsRepository {
         settings.colourBlindRarity = preferences.getBoolean(COLOUR_BLIND_RARITY_KEY, false);
         settings.textSizeIndex = preferences.getInteger(TEXT_SIZE_KEY, settings.textSizeIndex);
         settings.normalizeTextSize();
-        if (preferences.contains(LANGUAGE_KEY)) {
-            settings.language = GameLanguage.fromCode(
-                preferences.getString(LANGUAGE_KEY, settings.language.code())
-            );
-        } else if (systemLocale != null) {
-            settings.language = GameLanguage.forSystemLocale(systemLocale);
-        }
-        GameLocale.use(settings.language);
         GameFonts.applyTextScale(settings.textSizeScale());
         return settings;
     }
@@ -86,7 +65,6 @@ public final class LocalSettingsRepository {
         preferences.putBoolean(REDUCED_MOTION_KEY, settings.reducedMotion);
         preferences.putBoolean(COLOUR_BLIND_RARITY_KEY, settings.colourBlindRarity);
         preferences.putInteger(TEXT_SIZE_KEY, settings.textSizeIndex);
-        preferences.putString(LANGUAGE_KEY, settings.language.code());
         preferences.flush();
     }
 

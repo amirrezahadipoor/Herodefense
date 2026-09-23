@@ -1,6 +1,5 @@
 package com.amirrezahadipoor.herodefense.input;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.render.GameFonts;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 
@@ -58,7 +57,6 @@ public final class SettingsTouchController {
             case TOGGLE_MUSIC -> settings.musicEnabled = !settings.musicEnabled;
             case CYCLE_SOUND_LEVEL -> settings.cycleSoundVolume();
             case CYCLE_MUSIC_LEVEL -> settings.cycleMusicVolume();
-            case CYCLE_LANGUAGE -> GameLocale.use(settings.cycleLanguage());
             case TOGGLE_REDUCED_MOTION -> settings.reducedMotion = !settings.reducedMotion;
             case CYCLE_TEXT_SIZE -> {
                 settings.cycleTextSize();

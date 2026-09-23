@@ -3,7 +3,6 @@ package com.amirrezahadipoor.herodefense.render;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
 import com.amirrezahadipoor.herodefense.i18n.GameNumbers;
 import com.amirrezahadipoor.herodefense.i18n.MenuStrings;
 import com.amirrezahadipoor.herodefense.i18n.Translated;
@@ -22,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * the fit to step down a size. Larger system fonts and 2.0-density phones still get the fitted draw.
  *
  * <p>Widths come from {@link ReferenceTypeMeasure}: java.awt's layout of the same TrueType files FreeType
- * rasterises at run time, shaped for Persian the way the shaper joins its letters.
+ * rasterises at run time.
  */
 final class MainMenuTextFitTest {
     private static final DisplayMetrics REFERENCE = ReferenceTypeMeasure.REFERENCE;
@@ -37,42 +36,38 @@ final class MainMenuTextFitTest {
             "grove codex", MenuStrings.GROVE_CODEX_SUBTITLE,
             "settings", MenuStrings.SETTINGS_SUBTITLE
         );
-        for (GameLanguage language : GameLanguage.values()) {
-            for (Map.Entry<String, Translated> row : subtitles.entrySet()) {
-                assertFits(row.getKey() + " second line", row.getValue().text(language), language,
-                    GameFonts.Role.LABEL, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
-            }
-            assertFits("root network second line",
-                MenuStrings.ROOT_NETWORK_SUBTITLE.text(language, GameNumbers.integer(9_999, language)),
-                language, GameFonts.Role.LABEL, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
-            assertFits("continue progress line",
-                MenuStrings.PROGRESS_SUMMARY.text(language,
-                    GameNumbers.integer(10, language), GameNumbers.integer(200, language),
-                    GameNumbers.integer(9_999, language)),
-                language, GameFonts.Role.LABEL, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
-            for (Translated title : List.of(MenuStrings.NEW_GAME, MenuStrings.BRIEF_VIGIL, MenuStrings.CONTINUE,
-                MenuStrings.ROOT_NETWORK, MenuStrings.GROVE_CODEX, MenuStrings.SETTINGS)) {
-                assertFits(title.key() + " title", title.text(language), language,
-                    GameFonts.Role.HEADING, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
-            }
+        for (Map.Entry<String, Translated> row : subtitles.entrySet()) {
+            assertFits(row.getKey() + " second line", row.getValue().text(),
+                GameFonts.Role.LABEL, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
+        }
+        assertFits("root network second line",
+            MenuStrings.ROOT_NETWORK_SUBTITLE.text(GameNumbers.integer(9_999)),
+            GameFonts.Role.LABEL, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
+        assertFits("continue progress line",
+            MenuStrings.PROGRESS_SUMMARY.text(
+                GameNumbers.integer(10), GameNumbers.integer(200),
+                GameNumbers.integer(9_999)),
+            GameFonts.Role.LABEL, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
+        for (Translated title : List.of(MenuStrings.NEW_GAME, MenuStrings.BRIEF_VIGIL, MenuStrings.CONTINUE,
+            MenuStrings.ROOT_NETWORK, MenuStrings.GROVE_CODEX, MenuStrings.SETTINGS)) {
+            assertFits(title.key() + " title", title.text(),
+                GameFonts.Role.HEADING, MainMenuRenderer.ROW_TEXT_MAX_WIDTH);
         }
     }
 
     @Test
-    void thePitchWrapsInsideTheTitlePanelInBothLanguages() {
-        for (GameLanguage language : GameLanguage.values()) {
-            GameFonts.Role role = GameFonts.Role.forLegacyScale(MainMenuRenderer.PITCH_SCALE);
-            List<String> lines = CodexOverlayRenderer.wrapLines(
-                MenuStrings.PITCH.text(language),
-                row -> ReferenceTypeMeasure.width(row, language, role), MainMenuRenderer.PITCH_MAX_WIDTH);
-            assertTrue(lines.size() >= 2, language + ": the pitch is two lines by design, it was " + lines);
-            assertTrue(lines.size() <= MainMenuRenderer.PITCH_MAX_LINES,
-                language + ": the pitch needs " + lines.size() + " lines, the panel holds "
-                    + MainMenuRenderer.PITCH_MAX_LINES + ": " + lines);
-            for (String line : lines) {
-                assertTrue(ReferenceTypeMeasure.width(line, language, role) <= MainMenuRenderer.PITCH_MAX_WIDTH,
-                    language + ": a single word of the pitch is wider than the panel: " + line);
-            }
+    void thePitchWrapsInsideTheTitlePanel() {
+        GameFonts.Role role = GameFonts.Role.forLegacyScale(MainMenuRenderer.PITCH_SCALE);
+        List<String> lines = CodexOverlayRenderer.wrapLines(
+            MenuStrings.PITCH.text(),
+            row -> ReferenceTypeMeasure.width(row, role), MainMenuRenderer.PITCH_MAX_WIDTH);
+        assertTrue(lines.size() >= 2, "the pitch is two lines by design, it was " + lines);
+        assertTrue(lines.size() <= MainMenuRenderer.PITCH_MAX_LINES,
+            "the pitch needs " + lines.size() + " lines, the panel holds "
+                + MainMenuRenderer.PITCH_MAX_LINES + ": " + lines);
+        for (String line : lines) {
+            assertTrue(ReferenceTypeMeasure.width(line, role) <= MainMenuRenderer.PITCH_MAX_WIDTH,
+                "a single word of the pitch is wider than the panel: " + line);
         }
     }
 
@@ -92,11 +87,11 @@ final class MainMenuTextFitTest {
     }
 
     private static void assertFits(
-        String what, String text, GameLanguage language, GameFonts.Role role, float maxWidth
+        String what, String text, GameFonts.Role role, float maxWidth
     ) {
-        float width = ReferenceTypeMeasure.width(text, language, role);
+        float width = ReferenceTypeMeasure.width(text, role);
         assertTrue(width <= maxWidth,
-            what + " in " + language + " is " + width + " world units wide at " + role + " on the reference"
+            what + " is " + width + " world units wide at " + role + " on the reference"
                 + " emulator; the box is " + maxWidth + ": \"" + text + "\"");
     }
 }

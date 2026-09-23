@@ -4,8 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.amirrezahadipoor.herodefense.i18n.GameLanguage;
-import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.render.UiMirror;
 import com.amirrezahadipoor.herodefense.settings.GameSettings;
 import org.junit.jupiter.api.Test;
@@ -66,13 +64,11 @@ final class MainMenuAndSettingsTouchTest {
             touch.tap(settings, SettingsTouchLayout.CLOSE_X + 40f, SettingsTouchLayout.CLOSE_Y + 40f));
         assertTrue(SettingsTouchLayout.ROW_HEIGHT >= 96f);
 
-        // G3b: text-size row cycles through 3 steps, scrolls into view
+        // G3b: text-size row cycles through 3 steps; it sits at slot 5 with no scrolling.
         touch.open();
-        touch.drag(60f, SettingsTouchLayout.TOTAL_ROWS);
-        // After scrolling 1 step, slot 5 is the new text-size row (index 6)
         float textSizeSlotY = SettingsTouchLayout.slotY(5) + 40f;
         assertEquals(SettingsTouchLayout.Action.CYCLE_TEXT_SIZE,
-            SettingsTouchLayout.actionAt(centreX, textSizeSlotY, 1));
+            SettingsTouchLayout.actionAt(centreX, textSizeSlotY, 0));
         int before = settings.textSizeIndex;
         touch.tap(settings, centreX, textSizeSlotY);
         assertEquals((before + 1) % GameSettings.textSizeCount(), settings.textSizeIndex,
@@ -103,11 +99,11 @@ final class MainMenuAndSettingsTouchTest {
             SettingsTouchLayout.MUSIC_ROW_Y,
             SettingsTouchLayout.SOUND_LEVEL_ROW_Y,
             SettingsTouchLayout.MUSIC_LEVEL_ROW_Y,
-            SettingsTouchLayout.LANGUAGE_ROW_Y,
-            SettingsTouchLayout.REDUCED_MOTION_ROW_Y
+            SettingsTouchLayout.REDUCED_MOTION_ROW_Y,
+            SettingsTouchLayout.TEXT_SIZE_ROW_Y
         };
         // TOTAL_ROWS includes the text-size row (G3b) and accessible rarity row (G3c), scrolling into the viewport
-        assertEquals(11, SettingsTouchLayout.TOTAL_ROWS, "G3b, G3c, F3, and G3d add text size, colour-blind, narration, and screen-reader rows");
+        assertEquals(10, SettingsTouchLayout.TOTAL_ROWS, "G3b, G3c, F3, and G3d add text size, colour-blind, narration, and screen-reader rows");
         for (int index = 0; index < rows.length; index++) {
             assertTrue(rows[index] > 260f, "a row must clear the footer note panel");
             if (index > 0) {
@@ -120,33 +116,18 @@ final class MainMenuAndSettingsTouchTest {
     }
 
     @Test
-    void theCloseButtonMovesWithTheLanguageAndItsTapTargetMovesWithIt() {
-        GameLanguage before = GameLocale.current();
-        try {
-            GameLocale.use(GameLanguage.ENGLISH);
-            assertEquals(SettingsTouchLayout.CLOSE_X, SettingsTouchLayout.closeX());
-            assertEquals(SettingsTouchLayout.Action.CLOSE,
-                SettingsTouchLayout.actionAt(SettingsTouchLayout.CLOSE_X + 40f,
-                    SettingsTouchLayout.CLOSE_Y + 40f));
+    void theCloseButtonSitsAtTheTrailingEdgeAndItsTapTargetSitsWithIt() {
+        assertEquals(SettingsTouchLayout.CLOSE_X, SettingsTouchLayout.closeX(),
+            "the box sits 50f in from the screen's trailing edge");
+        assertEquals(SettingsTouchLayout.Action.CLOSE,
+            SettingsTouchLayout.actionAt(SettingsTouchLayout.CLOSE_X + 40f,
+                SettingsTouchLayout.CLOSE_Y + 40f));
+        assertTrue(UiMirror.trailingOnScreen(68f, 64f) > UiMirror.SCREEN_WIDTH * 0.5f,
+            "and the icon the renderer draws at a 68f inset is on that same side");
 
-            GameLocale.use(GameLanguage.PERSIAN);
-            assertEquals(50f, SettingsTouchLayout.closeX(),
-                "the box sits 50f in from the screen's trailing edge, whichever edge that is");
-            assertEquals(SettingsTouchLayout.Action.CLOSE,
-                SettingsTouchLayout.actionAt(90f, SettingsTouchLayout.CLOSE_Y + 40f));
-            assertEquals(SettingsTouchLayout.Action.NONE,
-                SettingsTouchLayout.actionAt(SettingsTouchLayout.CLOSE_X + 40f,
-                    SettingsTouchLayout.CLOSE_Y + 40f),
-                "the tap target left with the drawing: a button seen on one side and pressed on the other is a bug");
-            assertTrue(UiMirror.trailingOnScreen(68f, 64f) < UiMirror.SCREEN_WIDTH * 0.5f,
-                "and the icon the renderer draws at a 68f inset is on that same side");
-
-            assertEquals(SettingsTouchLayout.Action.CYCLE_LANGUAGE,
-                SettingsTouchLayout.actionAt(SettingsTouchLayout.ROW_X + 260f,
-                    SettingsTouchLayout.LANGUAGE_ROW_Y + 40f),
-                "the five rows span 100f..620f of a 720f screen, so equal margins leave their taps where they were");
-        } finally {
-            GameLocale.use(before);
-        }
+        assertEquals(SettingsTouchLayout.Action.CYCLE_TEXT_SIZE,
+            SettingsTouchLayout.actionAt(SettingsTouchLayout.ROW_X + 260f,
+                SettingsTouchLayout.TEXT_SIZE_ROW_Y + 40f),
+            "the rows span 100f..620f of a 720f screen, so equal margins leave their taps where they were");
     }
 }

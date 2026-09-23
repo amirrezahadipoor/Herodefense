@@ -265,8 +265,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         // Session records live beside the save: readable with `adb exec-out run-as` (roadmap R3.6).
         runRecords = new RunRecordStore(Gdx.files.local("playtests"));
         settingsRepository = new LocalSettingsRepository(
-            Gdx.app.getPreferences(LocalSettingsRepository.PREFERENCES_NAME),
-            java.util.Locale.getDefault()
+            Gdx.app.getPreferences(LocalSettingsRepository.PREFERENCES_NAME)
         );
         settings = settingsRepository.load();
         audioManager = new GameAudioManager(settings);

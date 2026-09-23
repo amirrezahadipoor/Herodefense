@@ -11,26 +11,24 @@ These rules govern every story line. Every new or rewritten line in `docs/STORY_
 - **Hero — terse, white.** Short. Present tense. Few words. Like a battle cry.
 - **Tree — leaf-green, calm.** Slower, kind, but still plain. No hard words, no long asides.
 
-## Two languages, one voice
-The game ships every story line in **two languages**: simple, understandable English and Persian.
-- The English is the source voice above; the Persian is a plain, native rendering of the same line, never a
-  word-for-word calque.
-- The Persian follows `docs/PERSIAN_PROOFREAD.md`: no Latin letters, no ASCII digits, the grove's own
-  vocabulary «حُفره» (the Hollow — the night itself), «دانشنامهٔ بیشه» (the codex), «چوب دل» (heartwood), «معجون» (potion).
-- A player sees one language per run, chosen by the game's language setting. The story does not mix them.
+## One language
+The game ships every story line in **English only**: simple, understandable English in the source voice above.
+A second language is not a second column in a table — it is a second voice to keep, and this game keeps one.
 
 ## Checks
 - Every rewritten line is checked at minimum density (smallest phone width) for overflow.
 - Code and tests store the exact same wording as `STORY_CONTENT.md` — no drift.
 - Numbers, unlock triggers, and Codex ids stay exactly as before. Only the words change.
-- `docs/PERSIAN_PROOFREAD.md` records the Persian twin of every shipped string key, and the build fails if a
-  shipped key is missing from it.
+- No story line carries a non-English script: `TranslationTableTest` fails the build on one.
 
 Revised 2026-09-20: the game is bilingual. Earlier drafts froze the story as English-only; that direction was
 reversed by explicit requirement.
 
 Revised 2026-09-22: the full story (code + `STORY_CONTENT.md` + the proofread ledger) was rewritten for a
 young reader — common words, short sentences, one spine: the waves are the nights, the Hollow is the night
-speaking directly to the player, and two hundred nights later the dawn comes back. The Hollow's Persian name
-changed from «دره" (which reads as "valley" to a young Persian reader) to «حُفره" (the hollow). Tier 0 opening
+speaking directly to the player, and two hundred nights later the dawn comes back. Tier 0 opening
 lines remain the shipped text — do not rewrite them.
+
+Revised 2026-09-23 (P2): the Persian translation is deleted by the owner's order — the game is English-only
+again. The bilingual direction above is kept as history; the rules that remain are the source voice, one
+language, and no drift between this file and the code.

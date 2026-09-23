@@ -156,8 +156,18 @@ class ContentFlagTest(unittest.TestCase):
 
     def test_the_features_that_do_exist_are_still_reported_as_existing(self) -> None:
         content = measure_round.content_flags()
-        for flag in ("backButton", "persian", "rightToLeft", "haptics"):
+        for flag in ("backButton", "rightToLeft", "haptics"):
             self.assertTrue(content[flag], f"{flag} stopped being detected: the pattern or the code moved")
+
+    def test_the_persian_translation_is_gone_and_stays_gone(self) -> None:
+        # Retired 2026-09-23 at the owner's direction: the game ships English only, so the flag that
+        # used to pin the translation now pins its absence -- a Persian locale, table or shaper coming
+        # back anywhere in core or android sources fails here first.
+        content = measure_round.content_flags()
+        self.assertFalse(
+            content["persian"],
+            f"Persian is back in the tree: {content['flagEvidence']['persian']}",
+        )
 
 
 class IntegrityScanTest(unittest.TestCase):

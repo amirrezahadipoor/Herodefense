@@ -45,7 +45,7 @@ final class ReducedMotionSettingsTest {
 
         assertTrue(SettingsTouchLayout.REDUCED_MOTION_ROW_Y > 260f,
             "the footer note panel occupies 140f..260f, so the row has to sit above it");
-        assertTrue(SettingsTouchLayout.LANGUAGE_ROW_Y - SettingsTouchLayout.REDUCED_MOTION_ROW_Y
+        assertTrue(SettingsTouchLayout.MUSIC_LEVEL_ROW_Y - SettingsTouchLayout.REDUCED_MOTION_ROW_Y
                 >= SettingsTouchLayout.ROW_HEIGHT, "and it must not overlap the row above it");
     }
 

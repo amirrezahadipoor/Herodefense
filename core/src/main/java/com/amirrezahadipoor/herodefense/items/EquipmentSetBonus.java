@@ -73,12 +73,11 @@ public final class EquipmentSetBonus {
     }
 
     /**
-     * One-line Inventory status, e.g. "SETS: Verdant Covenant 2/4 | Bastion Oath 0/4", or the same line with
-     * Persian names and Persian digits. Always lists every set so players learn the hunts exist.
+     * One-line Inventory status, e.g. "SETS: Verdant Covenant 2/4 | Bastion Oath 0/4".
+     * Always lists every set so players learn the hunts exist.
      *
      * <p>The counts go through {@code GameLocale.number} rather than being concatenated: a set's progress is a
-     * number a player reads, and appending an {@code int} here would put Latin digits in the middle of a
-     * Persian sentence.
+     * number a player reads, and a formatted number keeps its separators wherever the sentence travels.
      */
     public static String statusLine(GameState state) {
         Map<String, Integer> counts = equippedCounts(state);

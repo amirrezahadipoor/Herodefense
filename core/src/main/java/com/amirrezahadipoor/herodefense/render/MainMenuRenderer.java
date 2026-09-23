@@ -172,8 +172,8 @@ public final class MainMenuRenderer implements AutoCloseable {
             GameLocale.text(MenuStrings.NEW_GAME_SUBTITLE),
             MainMenuTouchLayout.rowBottom(0), newGameState, true
         );
-        // The three numbers are formatted rather than concatenated so the row reads "ردهٔ ۳ | اوج ۴۱ | ۱۲ چوب دل"
-        // in Persian digits and does not mix two numbering systems inside one sentence.
+        // The three numbers are formatted rather than concatenated, so the row keeps one numbering
+        // system inside one sentence.
         String continueSubtitle = continueAvailable
             ? GameLocale.text(
                 MenuStrings.PROGRESS_SUMMARY,

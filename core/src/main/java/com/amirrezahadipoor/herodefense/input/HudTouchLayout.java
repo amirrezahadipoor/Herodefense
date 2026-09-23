@@ -30,7 +30,7 @@ public final class HudTouchLayout {
 
     /**
      * Left edges of the five HUD buttons as the screen currently draws them (roadmap G4). The constants above
-     * are the English design grid and stay frozen; a Persian screen mirrors the whole row, and because the
+     * are the design grid and stay frozen; the row goes through {@link UiMirror}, and because the
      * hit tests below read these same methods, the box a player sees and the box a finger lands in cannot
      * disagree -- which is the one failure mode {@code render/UiMirror} exists to prevent.
      */

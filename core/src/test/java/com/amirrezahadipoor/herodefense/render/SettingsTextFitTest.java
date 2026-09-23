@@ -18,23 +18,22 @@ import org.junit.jupiter.api.Test;
  *
  * <p>What this class can enforce without a font is length, and length is what collided: a subtitle drawn at
  * 0.68f from x=136 and a hint right-aligned at x=590 have about thirty characters of shared line between them,
- * and every subtitle that overflowed was longer than thirty. So the limit is thirty, per language, and the
+ * and every subtitle that overflowed was longer than thirty. So the limit is thirty, and the
  * test names the entries it guards rather than sweeping the table, because FOOTER and the level labels are
  * drawn elsewhere at other scales and a blanket limit would forbid text that fits where it lives.
  *
- * <p>Character count is a proxy for width, not a measurement -- Persian glyphs are wider than Latin ones and a
- * wide-capitals string of twenty can beat a lowercase string of thirty. The honest gate is the CI screenshot,
- * which now survives its own brightness failure; this is the cheap tripwire in front of it.
+ * <p>Character count is a proxy for width, not a measurement -- a wide-capitals string of twenty can beat a
+ * lowercase string of thirty. The honest gate is the CI screenshot, which now survives its own brightness
+ * failure; this is the cheap tripwire in front of it.
  */
 final class SettingsTextFitTest {
 
-    /** The eight row subtitles: left column of a line whose right column holds the tap hint. */
+    /** The seven row subtitles: left column of a line whose right column holds the tap hint. */
     private static final List<SettingsStrings> ROW_SUBTITLES = List.of(
         SettingsStrings.SOUND_EFFECTS_SUBTITLE,
         SettingsStrings.MUSIC_SUBTITLE,
         SettingsStrings.EFFECT_LEVEL_SUBTITLE,
         SettingsStrings.MUSIC_LEVEL_SUBTITLE,
-        SettingsStrings.LANGUAGE_SUBTITLE,
         SettingsStrings.REDUCED_MOTION_SUBTITLE,
         SettingsStrings.TEXT_SIZE_SUBTITLE,
         SettingsStrings.COLOUR_BLIND_RARITY_SUBTITLE
@@ -49,12 +48,9 @@ final class SettingsTextFitTest {
     void noRowSubtitleRunsIntoItsTapHint() {
         for (SettingsStrings subtitle : ROW_SUBTITLES) {
             assertTrue(subtitle.english().length() <= SUBTITLE_LIMIT,
-                subtitle.key() + " is " + subtitle.english().length() + " characters in English: at 0.68f it"
+                subtitle.key() + " is " + subtitle.english().length() + " characters: at 0.68f it"
                     + " ends inside the column the tap hint is right-aligned in, which is how three settings"
                     + " rows shipped reading \"boss entrantaps to step\"");
-            assertTrue(subtitle.persian().length() <= SUBTITLE_LIMIT,
-                subtitle.key() + " is " + subtitle.persian().length() + " characters in Persian, and Persian"
-                    + " glyphs are wider than Latin ones at the same scale");
         }
     }
 

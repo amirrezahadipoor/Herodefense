@@ -149,9 +149,9 @@ final class DrawnStringProvenanceTest {
         }
         assertTrue(problems.isEmpty(), () -> problems.size() + " files bypass the string tables:%n"
             + String.join("%n", problems) + "%n%n"
-            + "Each of these words is drawn in one language only. Move it into the screen's table in "
-            + "core/src/main/java/com/amirrezahadipoor/herodefense/i18n, list that table in GameStrings so the "
-            + "font derives its glyphs and TranslationTableTest checks both languages, and draw it through "
+            + "Each of these words bypasses the string tables. Move it into the screen's table in "
+            + "core/src/main/java/com/amirrezahadipoor/herodefense/i18n, list that table in GameStrings so "
+            + "TranslationTableTest sweeps it, and draw it through "
             + "GameLocale.text. A file that cannot be migrated yet goes in NOT_YET_MIGRATED above, which is a "
             + "ratchet: nothingIsListedThatHasAlreadyMoved fails once its name can come off.");
     }

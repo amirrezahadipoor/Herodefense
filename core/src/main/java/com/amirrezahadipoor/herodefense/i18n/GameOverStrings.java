@@ -9,16 +9,16 @@ package com.amirrezahadipoor.herodefense.i18n;
 public enum GameOverStrings implements Translated {
 
     /** The headline: which of the two endings this was. */
-    DEFEAT("DEFEAT", "شکست خوردید"),
-    RUN_COMPLETE("RUN COMPLETE", "دور کامل شد"),
+    DEFEAT("DEFEAT"),
+    RUN_COMPLETE("RUN COMPLETE"),
 
-    SUMMARY_TITLE("RUN SUMMARY", "خلاصهٔ دور"),
-    WAVE_REACHED("Wave reached", "بالاترین موج"),
-    BOSSES_DEFEATED("Bosses defeated", "غول‌های شکست‌خورده"),
-    ENEMIES_DEFEATED("Enemies defeated", "دشمنان شکست‌خورده"),
-    COINS_EARNED("Kill coins earned", "سکه‌های کسب‌شده"),
-    HERO_LEVEL("Hero level", "سطح قهرمان"),
-    MYTHIC_EARNED("Mythic earned", "اسطوره‌های کسب‌شده"),
+    SUMMARY_TITLE("RUN SUMMARY"),
+    WAVE_REACHED("Wave reached"),
+    BOSSES_DEFEATED("Bosses defeated"),
+    ENEMIES_DEFEATED("Enemies defeated"),
+    COINS_EARNED("Kill coins earned"),
+    HERO_LEVEL("Hero level"),
+    MYTHIC_EARNED("Mythic earned"),
 
     /**
      * A row's value as a count over its total: this run's last wave over the length the run was set to, and the
@@ -27,31 +27,25 @@ public enum GameOverStrings implements Translated {
      * property of the language, not of the renderer. The boss row used to carry its own entry with a literal
      * twenty written into it, which is how a run of forty bosses came to read "39 / 20".
      */
-    COUNT_OF_TOTAL("%1$s / %2$s", "%1$s / %2$s"),
+    COUNT_OF_TOTAL("%1$s / %2$s"),
 
-    DEFEND_AGAIN("DEFEND AGAIN", "دفاع دوباره"),
-    RESTART_AT_WAVE_ONE("RESTART AT WAVE 1", "شروع دوباره از موج ۱"),
-    DEFEND_AGAIN_SUBTITLE("Begin fresh run same tier", "یک دور تازه در همان رده"),
+    DEFEND_AGAIN("DEFEND AGAIN"),
+    RESTART_AT_WAVE_ONE("RESTART AT WAVE 1"),
+    DEFEND_AGAIN_SUBTITLE("Begin fresh run same tier"),
 
     /**
-     * The ascend row: what it pays, and what the tier does next. The two languages disagree about how to draw
-     * "3 becomes 4" and neither can borrow the other's arrow: U+2190 is in neither shipped face, and an ASCII
-     * {@code ->} inside a right-to-left sentence is mirrored by the bidi pass into {@code -<}, which points the
-     * wrong way. So Persian says it in a word -- "ردهٔ ۳ به ۴", tier three to four -- and English keeps its arrow,
-     * which its own left-to-right run leaves alone.
+     * The ascend row: what it pays, and what the tier does next. "3 becomes 4" is drawn with an ASCII
+     * arrow because U+2190 is in neither shipped face.
      */
-    ASCEND("ASCEND  |  +%1$s HEARTWOOD", "صعود  |  +%1$s چوب دل"),
-    TIER_PROGRESS("Tier %1$s -> %2$s  |  Harder foes, permanent roots",
-        "ردهٔ %1$s به %2$s  |  دشمنان سخت‌تر، ریشه‌های دائمی"),
-    ROOT_NETWORK("ROOT NETWORK  |  %1$s HW", "شبکه ریشه  |  %1$s چوب دل"),
-    ROOT_NETWORK_SUBTITLE("Spend Heartwood on permanent growth", "چوب دل را صرف رشد دائمی کنید");
+    ASCEND("ASCEND  |  +%1$s HEARTWOOD"),
+    TIER_PROGRESS("Tier %1$s -> %2$s  |  Harder foes, permanent roots"),
+    ROOT_NETWORK("ROOT NETWORK  |  %1$s HW"),
+    ROOT_NETWORK_SUBTITLE("Spend Heartwood on permanent growth");
 
     private final String english;
-    private final String persian;
 
-    GameOverStrings(String english, String persian) {
+    GameOverStrings(String english) {
         this.english = english;
-        this.persian = persian;
     }
 
     @Override
@@ -64,8 +58,4 @@ public enum GameOverStrings implements Translated {
         return english;
     }
 
-    @Override
-    public String persian() {
-        return persian;
-    }
 }

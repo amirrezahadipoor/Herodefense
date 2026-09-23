@@ -4,102 +4,91 @@ package com.amirrezahadipoor.herodefense.i18n;
  * The Convergence draft: the screen that offers four trials, and the thirteen trials themselves (roadmap R7.3).
  *
  * <p>Both halves are here because they are one sentence to a player. A draft card reads as a name, a green
- * reward line and a red risk line, and translating the chrome while the card's own three lines stayed English
- * would have left the one screen where the choice is made unreadable -- which is worse than leaving it alone,
- * because the Persian frame invites a player to read what is inside it.
+ * reward line and a red risk line, and the screen where the choice is made has to be readable as one piece.
  *
- * <p>Two conventions the rest of {@code i18n} already set, kept deliberately. Percentages are written with the
- * Arabic percent sign U+066A and Persian digits on the Persian side, because that is what
- * {@code GameNumbers.percent} produces for a computed value, and a screen that shows "۲۵٪" in one line and
- * "25%" in the next is a screen in two languages. And no Persian entry carries U+0654, the hamza above that
- * spells the ezafe: {@code arabic_reshaper}'s default configuration deletes it, the golden vectors prove it is
- * gone by the time the shaper is done, and a mark that cannot survive the pipeline is a mark that only misleads
- * a reader of the source.
+ * <p>Percentages are written the way {@code GameNumbers.percent} produces them for a computed value, so a
+ * tabled line and a computed line never disagree on screen.
  *
  * <p>The trials' modifiers stay in {@code trials/TrialId} beside the enum constants. Only the words moved.
  */
 public enum TrialStrings implements Translated {
 
     /** The draft screen's own words. */
-    OFFER_TITLE("THE CONVERGENCE OFFERS", "همگرایی پیشنهاد می‌دهد"),
-    CHOOSE_TWO("CHOOSE TWO TRIALS", "دو آزمون برگزینید"),
-    CARD_TRIAL("TRIAL", "آزمون"),
-    CARD_CHOSEN("CHOSEN", "برگزیده"),
-    BIND_NOTE("Two trials bind for this run only. Both bite and bless.",
-        "دو آزمون تنها برای همین نبرد بسته می‌شوند. هر دو هم می‌گزند و هم برکت می‌دهند."),
-    TAP_HINT("Tap two cards to begin the descent", "برای آغاز فرود روی دو کارت بزنید"),
-    PICK_STATUS("%1$s of %2$s bound  |  rewards green, costs red",
-        "%1$s از %2$s بسته شد  |  پاداش سبز، هزینه سرخ"),
+    OFFER_TITLE("THE CONVERGENCE OFFERS"),
+    CHOOSE_TWO("CHOOSE TWO TRIALS"),
+    CARD_TRIAL("TRIAL"),
+    CARD_CHOSEN("CHOSEN"),
+    BIND_NOTE("Two trials bind for this run only. Both bite and bless."),
+    TAP_HINT("Tap two cards to begin the descent"),
+    PICK_STATUS("%1$s of %2$s bound  |  rewards green, costs red"),
 
     /** What a still-locked card says it is waiting for. The ten open trials have no entry and no line. */
-    LOCK_HEAVY_CROWNS("Unlock 10 Codex entries", "۱۰ مدخل دانشنامه را بگشایید"),
-    LOCK_BOSS_BOUNTY("Ascend for the first time", "نخستین صعود خود را انجام دهید"),
+    LOCK_HEAVY_CROWNS("Unlock 10 Codex entries"),
+    LOCK_BOSS_BOUNTY("Ascend for the first time"),
 
     /**
      * Two trials pay the same thing, so they share one entry rather than holding the same sentence under two
      * names: Swift Hollow and Miser's Pact both raise coin income by thirty percent, and one translation for
      * one effect is what keeps the two cards from drifting apart in a later edit.
      */
-    REWARD_COIN_INCOME_UP("+30% coin income", "درآمد سکه ۳۰٪ بیشتر"),
+    REWARD_COIN_INCOME_UP("+30% coin income"),
 
     /** The thirteen trials: name, then the red line, then the green one -- the card's own reading order. */
-    SWIFT_HOLLOW_TITLE("Swift Hollow", "درهٔ شتاب"),
-    SWIFT_HOLLOW_RISK("Enemies move 25% faster", "دشمنان ۲۵٪ تندتر حرکت می‌کنند"),
+    SWIFT_HOLLOW_TITLE("Swift Hollow"),
+    SWIFT_HOLLOW_RISK("Enemies move 25% faster"),
 
-    DRY_VEINS_TITLE("Dry Veins", "رگ‌های خشک"),
-    DRY_VEINS_RISK("Potions never drop", "هرگز معجون نمی‌افتد"),
-    DRY_VEINS_REWARD("+1 talent point every 4 levels", "هر ۴ سطح یک امتیاز استعداد"),
+    DRY_VEINS_TITLE("Dry Veins"),
+    DRY_VEINS_RISK("Potions never drop"),
+    DRY_VEINS_REWARD("+1 talent point every 4 levels"),
 
-    HEAVY_CROWNS_TITLE("Heavy Crowns", "تاج‌های سنگین"),
-    HEAVY_CROWNS_RISK("Bosses deal 30% more damage", "آسیب غول‌ها ۳۰٪ بیشتر است"),
-    HEAVY_CROWNS_REWARD("Every boss drops a Rare+ item", "هر غول یک آیتم کمیاب یا بهتر می‌اندازد"),
+    HEAVY_CROWNS_TITLE("Heavy Crowns"),
+    HEAVY_CROWNS_RISK("Bosses deal 30% more damage"),
+    HEAVY_CROWNS_REWARD("Every boss drops a Rare+ item"),
 
-    THIN_BLOOD_TITLE("Thin Blood", "خون رقیق"),
-    THIN_BLOOD_RISK("Hero has 20% less max health", "جان بیشینه قهرمان ۲۰٪ کمتر است"),
-    THIN_BLOOD_REWARD("Hero deals 20% more damage", "آسیب قهرمان ۲۰٪ بیشتر است"),
+    THIN_BLOOD_TITLE("Thin Blood"),
+    THIN_BLOOD_RISK("Hero has 20% less max health"),
+    THIN_BLOOD_REWARD("Hero deals 20% more damage"),
 
-    GLASS_ARROWS_TITLE("Glass Arrows", "تیرهای شیشه‌ای"),
-    GLASS_ARROWS_RISK("Hero deals 20% less damage", "آسیب قهرمان ۲۰٪ کمتر است"),
-    GLASS_ARROWS_REWARD("Hero attacks 25% faster", "حملات قهرمان ۲۵٪ تندتر است"),
+    GLASS_ARROWS_TITLE("Glass Arrows"),
+    GLASS_ARROWS_RISK("Hero deals 20% less damage"),
+    GLASS_ARROWS_REWARD("Hero attacks 25% faster"),
 
-    IRON_TIDE_TITLE("Iron Tide", "موج آهنین"),
-    IRON_TIDE_RISK("+3 enemies every wave", "۳ دشمن بیشتر در هر موج"),
-    IRON_TIDE_REWARD("+25% experience", "۲۵٪ تجربه بیشتر"),
+    IRON_TIDE_TITLE("Iron Tide"),
+    IRON_TIDE_RISK("+3 enemies every wave"),
+    IRON_TIDE_REWARD("+25% experience"),
 
-    STONE_SKIN_TITLE("Stone Skin", "پوست سنگی"),
-    STONE_SKIN_RISK("Enemies have 20% more health", "جان دشمنان ۲۰٪ بیشتر است"),
-    STONE_SKIN_REWARD("Double item drops", "غنیمت آیتم دو برابر"),
+    STONE_SKIN_TITLE("Stone Skin"),
+    STONE_SKIN_RISK("Enemies have 20% more health"),
+    STONE_SKIN_REWARD("Double item drops"),
 
-    BOSS_BOUNTY_TITLE("Boss Bounty", "پاداش غول"),
-    BOSS_BOUNTY_RISK("Bosses have 30% more health", "جان غول‌ها ۳۰٪ بیشتر است"),
-    BOSS_BOUNTY_REWARD("+30% Heartwood at Ascension", "۳۰٪ چوب دل بیشتر در صعود"),
+    BOSS_BOUNTY_TITLE("Boss Bounty"),
+    BOSS_BOUNTY_RISK("Bosses have 30% more health"),
+    BOSS_BOUNTY_REWARD("+30% Heartwood at Ascension"),
 
-    MISERS_PACT_TITLE("Miser's Pact", "پیمان خساست"),
-    MISERS_PACT_RISK("Shop prices up 30%", "بهای فروشگاه ۳۰٪ بیشتر است"),
+    MISERS_PACT_TITLE("Miser's Pact"),
+    MISERS_PACT_RISK("Shop prices up 30%"),
 
-    FAMISHED_EARTH_TITLE("Famished Earth", "خاک گرسنه"),
-    FAMISHED_EARTH_RISK("-30% coin income", "درآمد سکه ۳۰٪ کمتر است"),
-    FAMISHED_EARTH_REWARD("+10% dodge chance", "۱۰٪ شانس جاخالی بیشتر"),
+    FAMISHED_EARTH_TITLE("Famished Earth"),
+    FAMISHED_EARTH_RISK("-30% coin income"),
+    FAMISHED_EARTH_REWARD("+10% dodge chance"),
 
-    BLOOD_PRICE_TITLE("Blood Price", "بهای خون"),
-    BLOOD_PRICE_RISK("Hero takes 15% more damage", "آسیب وارده به قهرمان ۱۵٪ بیشتر است"),
-    BLOOD_PRICE_REWARD("+3% lifesteal", "۳٪ خون‌آشامی"),
+    BLOOD_PRICE_TITLE("Blood Price"),
+    BLOOD_PRICE_RISK("Hero takes 15% more damage"),
+    BLOOD_PRICE_REWARD("+3% lifesteal"),
 
-    HOLLOW_CALLING_TITLE("Hollow Calling", "ندای دره"),
-    HOLLOW_CALLING_RISK("Enemies deal 20% more damage", "آسیب دشمنان ۲۰٪ بیشتر است"),
-    HOLLOW_CALLING_REWARD("Hero has 15% more max health", "جان بیشینه قهرمان ۱۵٪ بیشتر است"),
+    HOLLOW_CALLING_TITLE("Hollow Calling"),
+    HOLLOW_CALLING_RISK("Enemies deal 20% more damage"),
+    HOLLOW_CALLING_REWARD("Hero has 15% more max health"),
 
     /** The omen trial (R3.4), whose risk is the wave modifier the rest of the game measures itself without. */
-    HOLLOW_OMENS_TITLE("Hollow Omens", "نشان‌های دره"),
-    HOLLOW_OMENS_RISK("Every sixth wave carries an omen", "هر موج ششم یک نشان دارد"),
-    HOLLOW_OMENS_REWARD("+25% coins on omen waves", "۲۵٪ سکه بیشتر در موج‌های نشان‌دار");
+    HOLLOW_OMENS_TITLE("Hollow Omens"),
+    HOLLOW_OMENS_RISK("Every sixth wave carries an omen"),
+    HOLLOW_OMENS_REWARD("+25% coins on omen waves");
 
     private final String english;
-    private final String persian;
 
-    TrialStrings(String english, String persian) {
+    TrialStrings(String english) {
         this.english = english;
-        this.persian = persian;
     }
 
     @Override
@@ -112,8 +101,4 @@ public enum TrialStrings implements Translated {
         return english;
     }
 
-    @Override
-    public String persian() {
-        return persian;
-    }
 }
