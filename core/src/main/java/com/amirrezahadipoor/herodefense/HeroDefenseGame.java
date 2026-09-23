@@ -499,6 +499,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     /** Adapter the touch router uses; one line per member, so the game keeps ownership of its state. */
     private final class TouchHost implements ScreenTouchRouter.Host {
         @Override public GameAudioManager audioManager() { return audioManager; }
+        @Override public BossIntroCinematic bossIntroCinematic() { return bossIntroCinematic; }
         @Override public CodexSystem codexSystem() { return codexSystem; }
         @Override public CodexTouchController codexTouchController() { return codexTouchController; }
         @Override public boolean continueAvailable() { return continueAvailable; }
@@ -615,7 +616,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         floatingDamageTextSystem.update(simulationDelta);
         // Roadmap A1: the frame used to re-anchor the Hero to the arena centre here, every tick, which is what
         // made the defender stationary. Stepping now runs in that slot instead -- before the animation
-        //  everything downstream sees this tick's position.
+        // controller and the field's movement, so everything downstream sees this tick's position.
         HeroMovementSystem.update(gameState, simulationDelta);
         heroAnimationController.update(gameState.hero, simulationDelta);
         enemyMovementSystem.update(gameState, simulationDelta);
@@ -666,6 +667,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             return gameState;
         }
 
+        @Override
         @Override
         public void showWaveReflection() {
             HeroDefenseGame.this.showWaveReflection();
@@ -749,6 +751,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
 
         @Override
+        @Override
         public void beginBossIntro() {
             HeroDefenseGame.this.beginBossIntro();
         }
@@ -785,7 +788,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public LevelUpOverlayRenderer levelUpOverlayRenderer() { return renderers.levelUpOverlayRenderer; }
         @Override public MainMenuRenderer mainMenuRenderer() { return renderers.mainMenuRenderer; }
         @Override public BossIntroCinematic bossIntroCinematic() { return bossIntroCinematic; }
-        @Override public BossIntroCinematic bossIntroCinematic() { return bossIntroCinematic; }
         @Override public OpeningCinematic openingCinematic() { return openingCinematic; }
         @Override public OpeningCinematicRenderer openingCinematicRenderer() { return renderers.openingCinematicRenderer; }
         @Override public ParticleRenderer particleRenderer() { return renderers.particleRenderer; }
@@ -813,10 +815,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public UiFrameRenderer uiFrameRenderer() { return renderers.uiFrameRenderer; }
         @Override public UiIconRenderer uiIconRenderer() { return renderers.uiIconRenderer; }
         @Override public DialogueBoxRenderer dialogueBoxRenderer() { return renderers.dialogueBoxRenderer; }
-    }
-
-}
-oxRenderer; }
     }
 
 }
