@@ -15,8 +15,8 @@ final class BreatherLinesTest {
         assertEquals("The dark is thick. My butt glows.", BreatherLines.lineFor(75));
         assertEquals("Half the Night Shift owes me coins.", BreatherLines.lineFor(125));
         assertEquals("Almost dawn, Chief. Almost.", BreatherLines.lineFor(175));
-        assertEquals(StoryStrings.BREATHER_25, BreatherLines.entryFor(25));
-        assertEquals(StoryStrings.BREATHER_175, BreatherLines.entryFor(175));
+        assertEquals(StoryStrings.REFLECTION_WAVE_25, BreatherLines.entryFor(25));
+        assertEquals(StoryStrings.REFLECTION_WAVE_175, BreatherLines.entryFor(175));
     }
 
     @Test

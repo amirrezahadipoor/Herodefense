@@ -42,7 +42,7 @@ final class CinematicFlowBreatherTest {
 
     @Test
     void beginOpensTheCinematicWithPipsLineInTheBox() {
-        host.state = breatherState(41L);
+        breatherState(41L);
 
         cinematic.beginBreather();
 
@@ -57,7 +57,6 @@ final class CinematicFlowBreatherTest {
     @Test
     void tickingPastThePauseSpawnsTheNextWave() {
         GameState state = breatherState(42L);
-        host.state = state;
         cinematic.beginBreather();
 
         tickUntilDone();
@@ -74,7 +73,6 @@ final class CinematicFlowBreatherTest {
     @Test
     void skipFinishesTheBeatEarly() {
         GameState state = breatherState(43L);
-        host.state = state;
         cinematic.beginBreather();
         cinematic.breatherCinematic().skip();
 
@@ -89,7 +87,6 @@ final class CinematicFlowBreatherTest {
     void aWaveWithoutABreathBreathesSilently() {
         GameState state = breatherState(44L);
         state.breatherWave = 6;
-        host.state = state;
         cinematic.beginBreather();
 
         cinematic.update(0.05f);
@@ -100,12 +97,14 @@ final class CinematicFlowBreatherTest {
         assertTrue(state.waveActive);
     }
 
-    /** A state that cleared wave 25 and waits on Pip's beat before wave 26 spawns. */
-    private static GameState breatherState(long seed) {
+    /** A run that cleared wave 25 and waits on Pip's beat before wave 26 spawns. */
+    private GameState breatherState(long seed) {
         GameState state = GameState.newRun(seed);
         state.waveNumber = 26;
         state.breatherPending = true;
         state.breatherWave = 25;
+        host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
         return state;
     }
 
