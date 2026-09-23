@@ -34,7 +34,7 @@ public final class RunPresentationSystem {
     private final CodexSystem codexSystem;
     private final BeatSink beats;
     /** Deeds paid while a boss lives wait here; each boss-free frame announces one. */
-    private final java.util.ArrayDeque<Deeds> pendingDeedAnnouncements = new java.util.ArrayDeque<>();
+    private final java.util.Deque<Deeds> pendingDeedAnnouncements = new java.util.ArrayDeque<>();
 
     public RunPresentationSystem(ParticleSystem particleSystem, ScreenShakeSystem screenShakeSystem,
         CodexSystem codexSystem, BeatSink beats) {
