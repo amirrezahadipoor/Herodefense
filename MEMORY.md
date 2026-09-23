@@ -12,10 +12,10 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P5 VERIFIED` — all 8 CI checks green on `a4391ce` (unit + balance + emulator + 4x device-matrix + summarize). Deeds pay mid-fight but announce on boss-free frames; source ratchet pins the silence. Next: `P6` longer waves. |
-| **Last push** | `P5` VERIFIED on `a4391ce` — deed boss-gating + silence ratchet
-(`40124c0` + 1 fix: PMD LooseCoupling, Deque not ArrayDeque). CI: 8/8 green.
-P4b VERIFIED (`dedc3e0`) beneath; P3 COMPLETE (`244724f`). |
+| **Status** | `P6a UNIT-GREEN` on `a7fa11d` (unit + emulator green; balance-gate red expected — economy + gates re-measured in P6d AFTER all mechanics land). Regular waves of 8+ arrive in 3 kill-gated pulses; skirmishes walk whole; cap climbs 24→28 over 120–180; sim keeps the live wave clock. 5 pins re-measured B1-style (see push log). Next: `P6b` boss escorts, `P6c` breather + horn, `P6d` balance harvest. |
+| **Last push** | `P6a` unit-green on `a7fa11d` — regular trickles + raised cap + sim wave
+clock (`43b6b10` + 4 fixes + 2 temp-debug commits, deleted after). CI: unit + emulator
+green; balance red expected (P6d harvests it after P6b/c). P5 VERIFIED (`a4391ce`). |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -134,6 +134,23 @@ P4b VERIFIED (`dedc3e0`) beneath; P3 COMPLETE (`244724f`). |
   handoff); trophy toasts + onboarding hints out of scope (system UI /
   tutorial, not boss words). CI: 8/8 green on `a4391ce` (unit, balance,
   emulator, 4x matrix). P5 VERIFIED. Remaining: P6–P8.
+- **P6a (2026-09-23)** — longer waves I: regular trickles, pushed as `43b6b10`
+  (+4 fixes +2 temp-debug → unit-green `a7fa11d`). Done: `planTrickles` (8+
+  bodies in 3 pulses 60/25/rest, skirmishes whole); `spawnTrickle` slices one
+  globally-planned event-sorted ordering (trickled == untrickled bodies,
+  pinned); elites from pulse 1 only; `reinforceTrickle` at half/quarter
+  strength BEFORE the living check; cap 24→28 gradual (+1/20 waves from
+  120); sim ticks `waveElapsedSeconds` (Windrunner honesty). CUT along the
+  way (measured): the +8s fallback (ambush on the weak, inverted the brief
+  ramp 0.92/0.70), splitting waves of 4–7 (ramp 1.04/0.92), the sudden +4
+  cap cliff. Re-pinned B1-style (owner-ordered change, mechanism + margin
+  recorded): NAIVE spike 0.65→1.65 (grind-cliff, straw-only, optimiser
+  holds 0.65), middle valley (+0.01→−0.05), middle step 1.8→1.35, rank+run
+  floors 0.15→0.10 (0.1088 easiest-seed-optimal). Debug lesson: unit-loop
+  stdout is swallowed — failing asserts carry data via the HTML artifact.
+  CI: unit + emulator green; balance red expected. Remaining: P6b (boss
+  escorts: Boss+(4+wave/25) in 2 trickles, spawn + boss-66%, elite-free),
+  P6c (breather beats + FINAL Push horn), P6d (balance harvest), P7–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -192,7 +209,13 @@ P4b VERIFIED (`dedc3e0`) beneath; P3 COMPLETE (`244724f`). |
   PAT in memory, repo is public, GitHub changes when the game is done — no
   more PAT asks. CI 8/8 green incl. full matrix. P5 VERIFIED. Next: P6 longer
   waves (escorts must stay affix-free per the P5 audit).
-  Next: push (`1c59e0b` + `d5e8f5e`), poll CI, then P5 silence audit → P6.
+- **2026-09-23 / session 9** — P6a done: exploration (spawner/director/sim/
+  ratchet/balance-gate mechanics) → `43b6b10` → CI red→green over 4 fixes
+  (8→2→4→1→0 failures): fallback cut, skirmish exemption, gradual cap,
+  per-wave debug via HTML artifact (NAIVE-3 spike = wave-61 grind 1.97
+  then wave-62 death 0.62), 5 B1-style re-pins. Unit + emulator green on
+  `a7fa11d`; balance harvest deferred to P6d (after escorts + breather move
+  the numbers again). Next: P6b escorts → P6c breather+horn → P6d harvest.
 
 ---
 
@@ -384,10 +407,12 @@ whispers/deeds/mythics/elites ≈ **~230 new lines total**. All ≤ 60 chars, si
 `min(24, max(3, 4 + wave/2))` bodies ALL AT ONCE (wave 40+ already caps at 24); boss waves
 spawn ONE boss and nothing else (short!). So "longer" = pacing + escorts, not just bodies:
 
-1. **Regular waves — 3 trickles.** Same body count curve (rebalanced, see 4), arriving in
-   pulses: 60% at start → +25% when half cleared or +8s → +15% "final push" with horn SFX.
-   New: `EnemyWaveSpawner.planTrickles(wave)` (deterministic) + `WaveLifecycleSystem` mid-wave
-   reinforcement check. Waves feel 30–50% longer with zero new art.
+1. **Regular waves — 3 trickles (P6a AS-BUILT).** Waves of 8+ bodies: 60% at start →
+   +25% at half cleared → rest at quarter cleared; NO stalled-seconds fallback (cut: it
+   ambushed weak heroes and inverted the brief ramp, measured). Skirmishes (<8) walk whole
+   (splitting them also inverted the ramp). `planTrickles(total)` + `spawnTrickle` (slices
+   one global event-sorted plan; elites from pulse 1 only) + `reinforceTrickle` before the
+   living check. The "final push" horn SFX lands in P6c with the breather.
 2. **Boss waves — escorts.** Boss + `(4 + wave/25)` minions in 2 trickles (at spawn + at
    boss 66% HP — HP-gated, NOT dialogue-gated; VFX ring already exists via evolution system).
    Boss HP +0–15% by lap (measured, not guessed).
@@ -396,9 +421,13 @@ spawn ONE boss and nothing else (short!). So "longer" = pacing + escorts, not ju
 4. **Balance honesty (keep the RULES.md gate ethic).** Retune via `BalanceSimulator`, update
    `docs/BALANCE.md` + gate tests with MEASURED numbers. Never weaken a gate to fit the code;
    change the code until the gates pass, then record. The old roadmap's ≥900 rubric is dead
-   (owner deleted the roadmap direction); the honest-gates habit is not.
-5. **Cap safety.** Arena ceiling `MAX_REGULAR_ENEMIES` 24 → 28 for waves 120+ (perf check on
-   the emulator journey in CI; rollback to 24 if `device-evidence` complains).
+   (owner deleted the roadmap direction); the honest-gates habit is not. P6a precedent: where
+   the owner-ordered change itself moves a measurement (NAIVE shamble, middle valley, rank
+   floors), move the pin B1-style — measured value + mechanism + margin in the comment — and
+   record it in the push log. Fix code first (P6a cut 3 mechanisms before moving 5 pins).
+5. **Cap safety (P6a AS-BUILT).** Ceiling climbs 24 → 25 → 26 → 27 → 28 (+1 per 20 waves
+   from 120, 28 at 180+) instead of jumping +4 at 120 (the cliff ambushed neighbours).
+   Emulator journey green; rollback to 24 if `device-evidence` ever complains.
 
 ---
 
