@@ -80,9 +80,11 @@ class GameFontsTest {
         // The atlas set is fixed, so the check that matters is that nothing a table can emit is outside it --
         // a string added without its glyphs in the set is the failure this prevents. Table prose is ASCII plus
         // the seven marks GameFonts appends to DEFAULT_CHARS; the atlas carries all of ASCII and those marks.
+        // The one exception is the space: it has no glyph cell (FreeType advances past it metrically), so the
+        // set never contained it and eighteen hundred shipped spaces are not eighteen hundred failures.
         List<String> outside = new ArrayList<>();
         for (Translated entry : GameStrings.all()) {
-            entry.english().codePoints().forEach(codepoint -> {
+            entry.english().codePoints().filter(codepoint -> codepoint != ' ').forEach(codepoint -> {
                 if (GameFonts.CHARACTERS.codePoints().noneMatch(known -> known == codepoint)) {
                     outside.add(name(entry) + " needs U+" + String.format("%04X", codepoint));
                 }
