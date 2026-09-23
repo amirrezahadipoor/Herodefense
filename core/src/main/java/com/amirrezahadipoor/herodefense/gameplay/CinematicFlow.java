@@ -59,7 +59,7 @@ public final class CinematicFlow {
 
     private float waterDropAccumulator;
     /** The intro's prop boss, walked from its edge to its mark and back out again. */
-    private Boss introProp = null;
+    private Boss introProp;
     private float introEdgeX;
     private float introEdgeY;
     private float introMarkX;
@@ -98,6 +98,8 @@ public final class CinematicFlow {
         this.audioManager = audioManager;
         this.bossIntroCinematic = bossIntroCinematic;
         this.screenShakeSystem = screenShakeSystem;
+        // The prop starts absent: only a boss intro puts one on stage.
+        this.introProp = null;
         this.dialogue = new DialogueBox(audioManager);
         this.dialogue.setSticky(true);
     }
