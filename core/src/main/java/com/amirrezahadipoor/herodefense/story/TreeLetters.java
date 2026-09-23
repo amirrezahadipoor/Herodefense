@@ -1,9 +1,10 @@
 package com.amirrezahadipoor.herodefense.story;
 
 /**
- * The Tree's letters (roadmap ST5): after each dawn the Tree writes a short letter, kept per dawn
- * number. The player hears the first unread one typed out in the root network, the way the Tree
- * speaks everywhere else.
+ * Granny's letters (roadmap ST5, reworded with the story in MEMORY P3): after each dawn she
+ * writes a short letter, kept per dawn number. The player hears the first unread one typed
+ * out in the root network, the way Granny speaks everywhere else -- warm, plain, and counting
+ * every dawn like a gift.
  *
  * <p>Reading a letter marks it as read under the key {@code letter_<n>} in the save's
  * {@code codexUnlocked} map. That map doubles as the "the save has seen this" ledger; the codex
@@ -53,34 +54,34 @@ public final class TreeLetters {
     }
 
     private static final String EN_1 =
-        "So that was you. I felt each step you took, and I am keeping the light you left here. "
-            + "Rest now. The night will learn your name sooner than you think.";
+        "So that was you. I felt every step, and I am keeping the light you left here. "
+            + "Rest now, dearie. The night will learn your name soon. Let it shake.";
     private static final String EN_2 =
-        "You came back before the light faded. Good. I am keeping two dawns now, and the second "
-            + "one burns stronger. Do not think about it too much.";
+        "You came back before the light faded. Good. I am keeping two dawns now, and the "
+            + "second burns stronger. Pip counted them twice. He loves counting.";
     private static final String EN_3 =
-        "The night keeps testing you, and you keep passing. I am starting to understand it: the "
-            + "dark is not the strong one. The strong one is the habit of standing up.";
+        "The night keeps testing you, and you keep passing. I am starting to understand: "
+            + "the dark is not the strong one. The strong one stands up again. And soup helps.";
     private static final String EN_4 =
-        "I have a small thing I have been keeping. Roots are not anchors. They are hands. Mine "
-            + "have been holding you up from below this whole time.";
+        "I have been keeping a small thing. Roots are not anchors. They are hands. Mine "
+            + "have been holding you up from below this whole time. Feel them, dearie.";
     private static final String EN_5 =
-        "Halfway, and the word feels heavy. I will tell you the truth anyway: you were never "
-            + "halfway. You were always the whole tree, only growing.";
+        "Halfway, and the word feels heavy. Here is the truth anyway: you were never "
+            + "halfway. You were always the whole tree, only growing. Keep growing.";
     private static final String EN_6 =
-        "The Hollow asked me what you are. I did not answer. Some things are not for being named. "
-            + "They are for being walked, one night at a time.";
+        "The Hollow asked me what you are. I did not answer. Some things are not for "
+            + "naming. They are for walking, one night at a time. Walk on, Chief.";
     private static final String EN_7 =
-        "I have stopped being afraid of the night. It keeps losing, and it does not seem to mind. "
+        "I have stopped fearing the night. It keeps losing, and it does not seem to mind. "
             + "The bravest thing about you: you keep winning, and you keep being kind.";
     private static final String EN_8 =
-        "Count the dawns you have given me. Eight. I have counted too, and I have a secret: the "
+        "Count the dawns you gave me. Eight. I counted too, and I have a secret: the "
             + "light does not come from above. It comes from you. I am only the window.";
     private static final String EN_9 =
-        "One more, and the story takes a different shape. I do not know that shape either. But a "
-            + "tree that leans toward a door already knows where it is going.";
+        "One more, and the story takes a different shape. I do not know that shape either. "
+            + "But a tree that leans toward a door already knows the way. Lean with me, dearie.";
     private static final String EN_10 =
-        "This is my last letter in this shape. After you go through the door, I will not be able "
-            + "to write in words anymore. I will write in light. Every dawn you left here will come "
-            + "for you. Walk into it.";
+        "This is my last letter in this shape. After you go through the door, I cannot "
+            + "write in words anymore. I will write in light. Every dawn you left here will "
+            + "come for you. Walk into it, dearie. Soup is on the other side.";
 }

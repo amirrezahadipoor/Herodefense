@@ -11,11 +11,11 @@ final class BossLoreTest {
     @Test
     void everyBossIdentityHasAVerbatimBio() {
         assertEquals(
-            "Before it was a weapon of the Hollow, it was the forest's oldest guard. A stone keeper that had not moved from its post in longer than the Tree could remember. The Hollow did not need to turn it. It only needed to make it think the fight had never ended.",
+            "Grum naps through meetings and sits on problems. His blow lands where you were, not where you are. Be somewhere else, dearie.",
             BossLore.bioFor("ANCIENT_GOLEM"));
-        assertTrue(BossLore.bioFor("THORN_MATRIARCH").startsWith("She grew half the arena's Rootlings"));
-        assertTrue(BossLore.bioFor("EMBER_WYRM").contains("never fully went out"));
-        assertTrue(BossLore.bioFor("VOID_KNIGHT").endsWith("fall with it."));
+        assertTrue(BossLore.bioFor("THORN_MATRIARCH").startsWith("Mama scolds first"));
+        assertTrue(BossLore.bioFor("EMBER_WYRM").contains("his bad side"));
+        assertTrue(BossLore.bioFor("VOID_KNIGHT").endsWith("politest heart I know."));
         assertNull(BossLore.bioFor("NOPE"));
         assertNull(BossLore.bioFor(null));
     }
@@ -26,7 +26,7 @@ final class BossLoreTest {
             LoreEntry entry = LoreCatalog.byId(id);
             String bio = BossLore.bioFor(entry.triggerParam());
             assertTrue(bio != null, id);
-            // D3's four new bosses reuse the bio as the codex body, so the two paragraphs can be identical;
+            // All eight bosses shipped with their own bio, so the two paragraphs are never identical;
             // the strict check here is the composition itself: body, blank line, bio.
             assertEquals(entry.body() + "\n\n" + bio, BossLore.detailFor(entry), id);
         }

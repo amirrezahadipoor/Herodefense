@@ -70,16 +70,16 @@ final class LoreCatalogTest {
     @Test
     void bodiesMatchTheStoryDocumentVerbatim() {
         assertEquals(
-            "Others stood here before you. I do not remember most of their names. I remember all of their last nights.",
+            "So. You are the new Chief. Pip picked you, and Pip is never wrong about hearts. Stay close to my light, dearie.",
             LoreCatalog.byId("codex_01").body());
         assertEquals(
-            "No song is ever written about this part. Not the falling, not the standing. Just the holding. Hold anyway.",
+            "No song is ever written about this part. Not the falling, not the standing. Just the holding. Hold anyway, dearie.",
             LoreCatalog.byId("codex_07").body());
         assertEquals(
-            "Fire is supposed to go out. This one said no. A no, given enough years, grows a shape. The Wyrm is that no, wearing scales.",
+            "Fire is supposed to go out. This one said no, learned to pose, and hired no one. The Night's hottest star. His words, not mine.",
             LoreCatalog.byId("codex_11").body());
         assertEquals(
-            "The first time was survival. I suspect you already know what the second time was. Say it to yourself, if not to me.",
+            "The first time was survival. The second time? Say it to yourself, dearie. Then come have soup. You earned it twice.",
             LoreCatalog.byId("codex_34").body());
         for (LoreEntry entry : LoreCatalog.all()) {
             assertTrue(entry.body().length() >= 30, entry.id());

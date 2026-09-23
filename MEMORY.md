@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P3b VERIFIED` — all workflows green on the P3b content (`0d5e976`). Next: `P3c` lore files (LoreCatalog/BossLore/TreeLetters prose). |
-| **Last push** | `P3b fix` (`0d5e976`) — PMD `LiteralsFirstInComparisons` in SpeechBlip (10 hits → 0). Test core logic + Android green; device-evidence + human-review correctly skipped (audio-only, path filters). |
+| **Status** | `P3c PUSHED` — Granny's lore: 48 codex entries + 8 boss bios + 10 letters rewritten warm. CI polling. Next: `P3d` docs (STORY_CONTENT/STORY_VOICE rewrites). |
+| **Last push** | `P3c` — lore prose in Granny's voice (48 codex titles+bodies, 8 Night Shift bios with hints, 10 letters; M1 keeps "So that was you.", M10 keeps the door beat); structure untouched (48 ids/triggers/params); BossLoreTest migrated. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -65,6 +65,16 @@
   `:core:ciStaticAnalysis` both green (JDK lives outside the snapshot; reuse it).
   CI: Test core logic ✓ + Android ✓ on the fix; device-evidence ✓ + human-review ✓
   already green on `ec824a9`; both correctly skip the audio-only fix (path filters).
+- **P3c (2026-09-23)** — lore prose, pushed. Done: all 48 `LoreCatalog` titles+bodies
+  rewritten in Granny's warm voice (common words, short sentences; milestones, bosses,
+  elites, ascensions, secrets, fields, shield secret all re-voiced); 8 `BossLore` bios
+  as Granny's fond-but-firm Night Shift takes, each carrying its boss's hint; 10
+  `TreeLetters` reworded warm (M1 keeps "So that was you.", M10 keeps the door +
+  last-letter beat, now with soup on the other side). Structure byte-identical: 48
+  ids, same trigger counts (8/8/12/5/10/4/1) and params. `BossLoreTest` migrated to
+  the new words; stale "D3's four new bosses" comment fixed. Verified: python sweep
+  (LayoutTest logic: bodies ≤162, sentences/words in cap, ASCII-only) + local
+  `:core:test` + `:core:ciStaticAnalysis` green. Remaining: P3d (docs) → P4–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -92,6 +102,10 @@
   `equals`; fixed, verified with local gradle (new: JDK 17 in `~/.cache`, `:core:test`
   + `:core:ciStaticAnalysis` runnable in ~2 min), pushed `0d5e976`. P3b VERIFIED on all
   workflows. Next session: P3c.
+- **2026-09-23 / session 5** — P3c done + pushed: Granny's lore (48+8+10). Turn-end
+  snapshot lesson: `.git` + `~/.cache` + exec bits do NOT survive between turns —
+  re-clone shallow to /tmp, re-download JDK (~10s), `chmod +x gradlew`, verify, push.
+  Tree was otherwise pristine (4-file diff confirmed). Next: P3d docs, then P4.
 
 ---
 
