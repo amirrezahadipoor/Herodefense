@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P3c VERIFIED` — all workflows green on `eefee30` (device/human-review correctly skipped: story-only). Next: `P3d` docs (STORY_CONTENT/STORY_VOICE rewrites). |
-| **Last push** | `P3c` (`eefee30`) — Granny's lore verified green on CI. Test core logic + Android + balance-gate all success. |
+| **Status** | `P3d PUSHED` — story docs rebuilt: STORY_CONTENT full rewrite (all 371 shipped lines quoted verbatim) + STORY_VOICE on §2 pillars. CI polling. Next: `P4` boss-intro cutscenes (the heart). |
+| **Last push** | `P3d` — docs rebuild: STORY_CONTENT (5 voices, premise, openings, beats, ceremonies, chapter cards, all 136 intro lines M1–M5, bios, 48 codex, 24 field notes, epilogues, mythics, whispers, Hollow, letters); STORY_VOICE (pillars + staging + checks); machine-verified zero drift. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -77,6 +77,16 @@
   `:core:test` + `:core:ciStaticAnalysis` green. CI: test-core ✓ + Android ✓ +
   balance-gate ✓ on `eefee30` (first try after the local catch of the verbatim-pin
   miss). Remaining: P3d (docs) → P4–P8.
+- **P3d (2026-09-23)** — docs rebuild, pushed. Done: `STORY_CONTENT.md` full rewrite
+  for the new story (voice roster + premise + openings + beats + 3 ceremonies +
+  chapter cards + ALL 136 boss-intro lines + 8 bios + all 48 codex + 24 field notes +
+  epilogues + mythics with true passives + whispers + deeds pattern + 8 Hollow lines
+  + gaze/dawn visuals + 10 letters; honest "tabled, built in P4/P7" notes where the
+  code isn't wired yet); `STORY_VOICE.md` rewritten on the §2 pillars (5 voices +
+  staging rules, ≤60-char + simple-words checks kept). Verified: a quote-vs-code
+  sweep over both docs — 371/371 shipped lines verbatim, zero drift (8 apparent
+  misses adjudicated: prose quotes + doc-period name styling). No code touched, so
+  no local gradle run; CI is the check. Remaining: P4–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -112,6 +122,11 @@
   (exit 137) on the 2GB box beaten with `--no-daemon --max-workers=1`. P3c VERIFIED.
   NOTE: the owner re-pasted the PAT this turn (auth died with `.git`) — if a future
   turn cannot push, ask again; never store it. Next: P3d docs, then P4.
+- **2026-09-23 / session 6** — P3d done + pushed: story docs rebuilt with a
+  machine-checked no-drift guarantee (doc quotes swept against the Java sources).
+  Reused the session PAT inline for the push (redacted in logs, stored nowhere);
+  it worked, so no need to ask again this turn. Next: P4 cutscenes — first read
+  the render/cinematic code, then build `BossIntroCinematic` + `story/BossIntros`.
 
 ---
 
