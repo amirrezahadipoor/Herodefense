@@ -101,7 +101,11 @@ class ArchitectureRatchetTest {
         //
         // P4b raised the line count by 4 without adding a field: the boss intro is presentation-only,
         // so the sweep completes it instantly the way it already completes the planting ceremony.
-        new ArchitectureRatchet.Frozen(668, 23),
+        //
+        // P6a raised the line count by 3 without adding a field: the sweep keeps the same wave
+        // clock the live game keeps, or the +8s trickle fallback would publish bands for a game
+        // without it. No new state, no new method.
+        new ArchitectureRatchet.Frozen(671, 23),
         // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (plus
         // `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one). R3.4 added
         // no field: wave omens are switched on by the trial the player drafted, and the trial list already exists.
@@ -126,7 +130,11 @@ class ArchitectureRatchetTest {
         // P4b raised this by two fields and ten lines: bossIntroPending/bossIntroWave are run state like
         // ceremonyPending beside them -- a between-waves save must remember a deferred boss wave -- encoded
         // by the codec like every other field. No behaviour in the model itself.
-        new ArchitectureRatchet.Frozen(656, 86)
+        //
+        // P6a raised this by two fields and six lines: wavePlannedEnemies/tricklePulse are run state
+        // like waveActive beside them -- a between-waves save must remember which pulse walks in
+        // next -- encoded by the codec like every other field. No behaviour in the model itself.
+        new ArchitectureRatchet.Frozen(662, 88)
     );
 
     @Test

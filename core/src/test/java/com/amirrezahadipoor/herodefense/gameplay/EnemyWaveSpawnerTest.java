@@ -1,5 +1,6 @@
 package com.amirrezahadipoor.herodefense.gameplay;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -10,6 +11,8 @@ import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.model.SpawnLane;
+import com.amirrezahadipoor.herodefense.model.WaveModifier;
+import com.amirrezahadipoor.herodefense.trials.TrialId;
 import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -276,6 +279,118 @@ final class EnemyWaveSpawnerTest {
         assertEquals(6, EnemyWaveSpawner.eliteWaveInterval(3));
         assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(6));
         assertEquals(4, EnemyWaveSpawner.eliteWaveInterval(10));
+    }
+
+    @Test
+    void lateWavesFieldDeeperMeleeUpToTwentyEight() {
+        assertEquals(24, EnemyWaveSpawner.maxRegularEnemiesForWave(1));
+        assertEquals(24, EnemyWaveSpawner.maxRegularEnemiesForWave(119));
+        assertEquals(28, EnemyWaveSpawner.maxRegularEnemiesForWave(120));
+        assertEquals(28, EnemyWaveSpawner.maxRegularEnemiesForWave(GameState.FINAL_WAVE));
+        assertEquals(24, spawner.regularCountForWave(119));
+        assertEquals(28, spawner.regularCountForWave(120));
+        assertEquals(28, spawner.regularCountForWave(GameState.FINAL_WAVE));
+    }
+
+    @Test
+    void aLateSwarmOmenFillsTheRaisedCeilingInsteadOfTheShippedOne() {
+        GameState state = null;
+        int wave = -1;
+        for (long seed = 1L; seed <= 20L && wave < 0; seed++) {
+            GameState candidate = GameState.newRun(seed);
+            candidate.activeTrials.add(TrialId.HOLLOW_OMENS.name());
+            for (int w = 120; w <= GameState.FINAL_WAVE; w++) {
+                if (WaveOmens.of(candidate, w) == WaveModifier.SWARM) {
+                    state = candidate;
+                    wave = w;
+                    break;
+                }
+            }
+        }
+        assertTrue(wave >= 120, "no seed rolls a late SWARM");
+        assertEquals(28, EnemyWaveSpawner.omenAdjustedCount(state, wave, 28),
+            "a 28-body SWARM wave fills the raised ceiling, not the shipped 24");
+    }
+
+    @Test
+    void tricklePlanWalksSmallWavesWholeAndSplitsTheRest() {
+        assertArrayEquals(new int[] {1}, EnemyWaveSpawner.planTrickles(1));
+        assertArrayEquals(new int[] {3}, EnemyWaveSpawner.planTrickles(3));
+        assertArrayEquals(new int[] {2, 2}, EnemyWaveSpawner.planTrickles(4));
+        assertArrayEquals(new int[] {4, 3}, EnemyWaveSpawner.planTrickles(7));
+        assertArrayEquals(new int[] {4, 2, 2}, EnemyWaveSpawner.planTrickles(8));
+        assertArrayEquals(new int[] {5, 3, 2}, EnemyWaveSpawner.planTrickles(10));
+        assertArrayEquals(new int[] {14, 6, 4}, EnemyWaveSpawner.planTrickles(24));
+        assertArrayEquals(new int[] {17, 7, 4}, EnemyWaveSpawner.planTrickles(28));
+        for (int total = 1; total <= 40; total++) {
+            int[] pulses = EnemyWaveSpawner.planTrickles(total);
+            int sum = 0;
+            for (int pulse : pulses) {
+                assertTrue(pulse > 0, "total " + total + " plans an empty pulse");
+                sum += pulse;
+            }
+            assertEquals(total, sum, "total " + total + " must walk in whole");
+            if (total >= 8) {
+                assertEquals(3, pulses.length, "total " + total);
+                assertTrue(pulses[2] >= 2, "total " + total + " ends on a lone straggler");
+            } else if (total >= 4) {
+                assertEquals(2, pulses.length, "total " + total);
+            } else {
+                assertEquals(1, pulses.length, "total " + total);
+            }
+        }
+    }
+
+    @Test
+    void trickledPulsesSpawnExactlyTheUntrickledBodies() {
+        for (long seed : new long[] {1L, 77L, 4242L}) {
+            for (int wave : new int[] {9, 40, 129, 199}) {
+                GameState whole = GameState.newRun(seed);
+                int total = spawner.regularCountForWave(wave);
+                spawner.spawnRegularEnemies(whole, wave, total);
+                GameState trickled = GameState.newRun(seed);
+                int[] pulses = EnemyWaveSpawner.planTrickles(total);
+                int offset = 0;
+                for (int pulse : pulses) {
+                    spawner.spawnTrickle(trickled, wave, total, offset, pulse);
+                    offset += pulse;
+                }
+                assertEquals(total, trickled.aliveEnemies.size(), "seed " + seed + " wave " + wave);
+                for (int index = 0; index < total; index++) {
+                    Enemy one = whole.aliveEnemies.get(index);
+                    Enemy other = trickled.aliveEnemies.get(index);
+                    assertEquals(one.x, other.x, "seed " + seed + " wave " + wave + " body " + index);
+                    assertEquals(one.y, other.y, "seed " + seed + " wave " + wave + " body " + index);
+                    assertEquals(one.type(), other.type(), "seed " + seed + " wave " + wave);
+                    assertEquals(one.silentWatcher, other.silentWatcher,
+                        "seed " + seed + " wave " + wave);
+                }
+            }
+        }
+    }
+
+    @Test
+    void trickledEliteWavesStillCarryOneOrTwoEmpoweredInTheFirstPulse() {
+        for (long seed = 1L; seed <= 10L; seed++) {
+            GameState state = GameState.newRun(seed);
+            int wave = 14;
+            int total = spawner.regularCountForWave(wave);
+            int[] pulses = EnemyWaveSpawner.planTrickles(total);
+            int offset = 0;
+            for (int pulse : pulses) {
+                spawner.spawnTrickle(state, wave, total, offset, pulse);
+                offset += pulse;
+            }
+            int elites = 0;
+            for (int index = 0; index < state.aliveEnemies.size(); index++) {
+                Enemy enemy = state.aliveEnemies.get(index);
+                if (enemy.eliteAffix == null) continue;
+                elites++;
+                assertTrue(index < pulses[0], "seed " + seed + ": an elite walks in a later pulse");
+                assertFalse(enemy.silentWatcher, "seed " + seed);
+            }
+            assertTrue(elites >= 1 && elites <= 2, "seed " + seed + " empowered " + elites);
+        }
     }
 
     @Test

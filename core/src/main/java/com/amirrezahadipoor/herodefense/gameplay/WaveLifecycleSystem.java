@@ -7,6 +7,9 @@ import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 
 /** Starts a wave and immediately rolls a cleared wave into the next one. */
 public final class WaveLifecycleSystem {
+    /** Stalled seconds after which the rest of a trickled wave walks in anyway (P6). */
+    private static final float TRICKLE_FALLBACK_SECONDS = 8f;
+
     private final EnemyWaveSpawner regularSpawner;
     private final BossWaveSpawner bossSpawner;
     private final BossRewardCardSystem rewardCards;
@@ -48,20 +51,28 @@ public final class WaveLifecycleSystem {
         return spawnCurrentWave(state);
     }
 
-    /** Spawns the current wave for real: regulars at once, the boss once its intro hands off. */
+    /** Spawns the current wave for real: regulars in trickle pulses, the boss once its intro hands off. */
     private boolean spawnCurrentWave(GameState state) {
+        state.wavePlannedEnemies = 0;
+        state.tricklePulse = 0;
         if (bossSpawner.isBossWave(state.waveNumber)) {
             bossSpawner.spawn(state, state.waveNumber);
         } else {
-            regularSpawner.spawnRegularEnemies(
+            // The omen is adjusted once on the whole wave, not once per pulse, and the first pulse
+            // walks in now; the rest follows from updateAfterCombat as the wave falls.
+            int total = EnemyWaveSpawner.omenAdjustedCount(
                 state,
                 state.waveNumber,
                 Math.min(
-                    EnemyWaveSpawner.MAX_REGULAR_ENEMIES,
+                    EnemyWaveSpawner.maxRegularEnemiesForWave(state.waveNumber),
                     regularSpawner.regularCountForWave(state.waveNumber)
                         + TrialEffects.extraEnemiesPerWave(state.activeTrials)
                 )
             );
+            int[] pulses = EnemyWaveSpawner.planTrickles(total);
+            state.wavePlannedEnemies = total;
+            state.tricklePulse = 1;
+            regularSpawner.spawnTrickle(state, state.waveNumber, total, 0, pulses[0]);
         }
         state.waveActive = true;
         // A1: each wave grants its own stepping budget, so the defender is never rooted for the run by a wave
@@ -99,10 +110,50 @@ public final class WaveLifecycleSystem {
         return bossSpawner.spawn(state, state.bossIntroWave);
     }
 
+    /**
+     * Walks in the next trickle pulse of a regular wave when the wave has earned it: the second
+     * pulse at half strength, the third at quarter strength, or any pending pulse after eight
+     * stalled seconds. A zero living count always earns the next pulse, so a wave whose bodies
+     * are all dead but whose plan is not empty can never get stuck.
+     */
+    private boolean reinforceTrickle(GameState state) {
+        if (state.tricklePulse <= 0) {
+            return false;
+        }
+        int[] pulses = EnemyWaveSpawner.planTrickles(state.wavePlannedEnemies);
+        if (state.tricklePulse >= pulses.length) {
+            return false;
+        }
+        int living = state.livingEnemyCount();
+        int total = state.wavePlannedEnemies;
+        boolean gated = state.tricklePulse == 1 ? living * 2 < total : living * 4 < total;
+        if (!gated && state.waveElapsedSeconds < TRICKLE_FALLBACK_SECONDS) {
+            return false;
+        }
+        int bodyOffset = 0;
+        for (int pulse = 0; pulse < state.tricklePulse; pulse++) {
+            bodyOffset += pulses[pulse];
+        }
+        regularSpawner.spawnTrickle(
+            state, state.waveNumber, total, bodyOffset, pulses[state.tricklePulse]);
+        state.tricklePulse++;
+        return true;
+    }
+
     /** Call after combat resolution. A new wave is spawned in the same update on clear. */
     public WaveCompletion updateAfterCombat(GameState state) {
         if (state == null || !state.waveActive || state.runComplete
-            || state.hero == null || !state.hero.alive || state.livingEnemyCount() > 0) {
+            || state.hero == null || !state.hero.alive) {
+            return WaveCompletion.NO_CHANGE;
+        }
+        // P6 longer waves: a trickled wave reinforces before it may clear -- the rest walks in at
+        // half and quarter strength, or after eight stalled seconds, and only then is the wave over.
+        // This read happens before the living check on purpose: a pulse that only fired on an empty
+        // field would never arrive mid-fight, which is the whole point of the longer waves.
+        if (reinforceTrickle(state)) {
+            return WaveCompletion.NO_CHANGE;
+        }
+        if (state.livingEnemyCount() > 0) {
             return WaveCompletion.NO_CHANGE;
         }
         // B4: the wave is over, so the corpses of it are not carried into the next one. This is what keeps a

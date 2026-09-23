@@ -9,6 +9,7 @@ import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.EnemyType;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.rewards.BossRewardCardSystem;
+import com.amirrezahadipoor.herodefense.trials.TrialId;
 import org.junit.jupiter.api.Test;
 
 final class WaveLifecycleSystemTest {
@@ -20,6 +21,13 @@ final class WaveLifecycleSystemTest {
         GameState state = GameState.newRun(1L);
         assertTrue(lifecycle.startCurrentWave(state));
         assertTrue(state.waveActive);
+        assertTrue(state.livingEnemyCount() > 0);
+        assertEquals(4, state.wavePlannedEnemies);
+        assertEquals(1, state.tricklePulse);
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
+
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(2, state.tricklePulse);
         assertTrue(state.livingEnemyCount() > 0);
         for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
 
@@ -36,6 +44,7 @@ final class WaveLifecycleSystemTest {
         state.aliveEnemies.get(0).receiveDamage(Float.MAX_VALUE);
         assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
         assertEquals(1, state.waveNumber);
+        assertEquals(2, state.tricklePulse, "half the wave fell, so the second pulse walks in");
     }
 
     @Test
@@ -134,8 +143,104 @@ final class WaveLifecycleSystemTest {
             if (!enemy.silentWatcher) enemy.receiveDamage(Float.MAX_VALUE);
         }
 
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        for (Enemy enemy : state.aliveEnemies) {
+            if (!enemy.silentWatcher) enemy.receiveDamage(Float.MAX_VALUE);
+        }
+
         assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
         assertEquals(7, state.waveNumber);
         for (Enemy enemy : state.aliveEnemies) assertFalse(enemy.id == watcherId);
+    }
+
+    @Test
+    void laterPulsesArriveAtHalfAndQuarterStrength() {
+        GameState state = GameState.newRun(105L);
+        state.waveNumber = 12;
+        assertTrue(lifecycle.startCurrentWave(state));
+        assertEquals(10, state.wavePlannedEnemies);
+        assertEquals(5, state.aliveEnemies.size());
+
+        fellToLiving(state, 4);
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(2, state.tricklePulse);
+        assertEquals(8, state.aliveEnemies.size());
+
+        fellToLiving(state, 3);
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(2, state.tricklePulse, "three living of ten planned is above quarter strength");
+
+        fellToLiving(state, 2);
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(3, state.tricklePulse);
+        assertEquals(10, state.aliveEnemies.size());
+
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
+        assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
+        assertEquals(13, state.waveNumber);
+    }
+
+    /** Kills living fighters until exactly {@code living} remain; silent watchers never count. */
+    private static void fellToLiving(GameState state, int living) {
+        while (state.livingEnemyCount() > living) {
+            for (Enemy enemy : state.aliveEnemies) {
+                if (enemy.alive && !enemy.silentWatcher) {
+                    enemy.receiveDamage(Float.MAX_VALUE);
+                    break;
+                }
+            }
+        }
+    }
+
+    @Test
+    void eightStalledSecondsWalkInTheRestOfTheWave() {
+        GameState state = GameState.newRun(106L);
+        state.waveNumber = 12;
+        assertTrue(lifecycle.startCurrentWave(state));
+        assertEquals(5, state.aliveEnemies.size());
+
+        state.waveElapsedSeconds = 8f;
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(2, state.tricklePulse);
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        assertEquals(3, state.tricklePulse);
+        assertEquals(10, state.aliveEnemies.size());
+
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
+        assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
+    }
+
+    @Test
+    void aWaveStartedWholeClearsWholeWithoutPhantomPulses() {
+        GameState state = GameState.newRun(107L);
+        state.waveNumber = 9;
+        state.waveActive = true;
+        spawner.spawnRegularEnemies(state, 9, spawner.regularCountForWave(9));
+        assertEquals(0, state.tricklePulse);
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
+
+        assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
+        assertEquals(10, state.waveNumber);
+    }
+
+    @Test
+    void theRaisedCapBindsPastWaveOneTwenty() {
+        GameState state = GameState.newRun(108L);
+        state.waveNumber = 121;
+        assertTrue(lifecycle.startCurrentWave(state));
+        assertEquals(28, state.wavePlannedEnemies);
+        assertEquals(17, state.aliveEnemies.size());
+
+        GameState capped = GameState.newRun(109L);
+        capped.waveNumber = 121;
+        capped.activeTrials.add(TrialId.IRON_TIDE.name());
+        assertTrue(lifecycle.startCurrentWave(capped));
+        assertEquals(28, capped.wavePlannedEnemies);
+
+        GameState early = GameState.newRun(110L);
+        early.waveNumber = 40;
+        early.activeTrials.add(TrialId.IRON_TIDE.name());
+        assertTrue(lifecycle.startCurrentWave(early));
+        assertEquals(24, early.wavePlannedEnemies);
     }
 }

@@ -70,6 +70,10 @@ public final class GameState {
     public boolean bossIntroPending;
     /** The boss wave the pending intro plays for; wave/5 is the encounter, meeting per §3.4. */
     public int bossIntroWave;
+    /** Planned bodies of the current regular wave; the trickle gates count the living against it. */
+    public int wavePlannedEnemies;
+    /** Trickle pulse already walking in (1-based); 0 on boss waves and before the first spawn. */
+    public int tricklePulse;
     /** True once the second Heartwood stands; it is a monument, never a second loss condition. @deprecated use plantedTreesCount */
     public boolean secondTreePlanted;
     /** Number of additional Heartwoods planted beyond the original (0..3 for waves 50/100/150). */
@@ -565,6 +569,8 @@ public final class GameState {
         this.ceremonyPending = false;
         this.bossIntroPending = false;
         this.bossIntroWave = 0;
+        this.wavePlannedEnemies = 0;
+        this.tricklePulse = 0;
         this.secondTreePlanted = false;
         this.plantedTreesCount = 0;
         this.plantedTreeHealth = new ArrayList<>();

@@ -16,6 +16,10 @@ import java.util.List;
 public final class EnemyWaveSpawner {
     public static final float EDGE_OFFSET = 40f;
     public static final int MAX_REGULAR_ENEMIES = 24;
+    /** First wave admitted past the shipped ceiling (P6 longer waves). */
+    public static final int RAISED_CAP_FIRST_WAVE = 120;
+    /** The body's ceiling from the raised-cap wave on. */
+    public static final int RAISED_CAP_MAX_ENEMIES = 28;
     /**
      * Surge waves (roadmap A4): scheduled payday waves in the run's second half -- every tenth
      * wave, offset to +8 so the schedule never lands on a boss lap, pays 1.25x coins. The bodies
@@ -77,9 +81,41 @@ public final class EnemyWaveSpawner {
 
     public int regularCountForWave(int waveNumber) {
         return Math.min(
-            MAX_REGULAR_ENEMIES,
+            maxRegularEnemiesForWave(waveNumber),
             Math.max(3, 4 + Math.max(1, waveNumber) / 2)
         );
+    }
+
+    /**
+     * The arena's own ceiling for a wave (P6 longer waves). The shipped 24 holds the whole run
+     * until wave 120; past it the arena admits 28, so the last third of a run fields deeper waves
+     * instead of repeating the same melee eighty times.
+     */
+    public static int maxRegularEnemiesForWave(int waveNumber) {
+        return waveNumber >= RAISED_CAP_FIRST_WAVE ? RAISED_CAP_MAX_ENEMIES : MAX_REGULAR_ENEMIES;
+    }
+
+    /**
+     * The night's plan for a wave in pulses (P6 longer waves): small waves walk in whole, waves
+     * of 4-7 come in two pulses, and waves of 8+ come in three -- roughly sixty percent up front,
+     * a quarter behind, the rest last, with the last pulse never a lone straggler.
+     */
+    static int[] planTrickles(int total) {
+        if (total <= 3) {
+            return new int[] {Math.max(1, total)};
+        }
+        if (total <= 7) {
+            int first = Math.round(total * 0.6f);
+            return new int[] {first, total - first};
+        }
+        int first = Math.round(total * 0.6f);
+        int second = Math.round(total * 0.25f);
+        int third = total - first - second;
+        if (third < 2) {
+            first -= 2 - third;
+            third = 2;
+        }
+        return new int[] {first, second, third};
     }
 
     /**
@@ -141,7 +177,8 @@ public final class EnemyWaveSpawner {
     public static int omenAdjustedCount(GameState state, int waveNumber, int count) {
         WaveModifier omen = WaveOmens.of(state, waveNumber);
         if (!omen.isOmen()) return count;
-        return Math.min(MAX_REGULAR_ENEMIES, Math.max(1, Math.round(count * omen.enemyCountMultiplier())));
+        return Math.min(maxRegularEnemiesForWave(waveNumber),
+            Math.max(1, Math.round(count * omen.enemyCountMultiplier())));
     }
 
     public void spawnRegularEnemies(GameState state, int waveNumber, int count) {
@@ -150,14 +187,51 @@ public final class EnemyWaveSpawner {
         }
         int spawnCount = omenAdjustedCount(state, waveNumber, count);
         int firstIndex = state.aliveEnemies.size();
+        spawnBodies(state, waveNumber, planBodies(waveNumber, spawnCount), 0, spawnCount);
+        if (isEliteWave(waveNumber, state.ascensionTier)) {
+            // The omen never reaches this branch (elite waves draw NONE), so the adjusted count is
+            // the requested count here; passing what was actually added keeps the elite marking
+            // inside the bodies this call spawned.
+            markElites(state, waveNumber, firstIndex, spawnCount);
+        }
+    }
+
+    /**
+     * Walks one trickle pulse of a regular wave into the arena: {@code count} bodies of the
+     * wave's whole plan, starting at {@code bodyOffset}. Elites are marked from the first pulse
+     * only, so an elite wave still carries exactly the one or two empowered bodies the shipped
+     * schedule promised.
+     */
+    public void spawnTrickle(
+        GameState state, int waveNumber, int waveTotal, int bodyOffset, int count
+    ) {
+        if (state == null || count <= 0 || waveTotal <= 0 || bodyOffset < 0) {
+            return;
+        }
+        int bodies = Math.min(count, waveTotal - bodyOffset);
+        if (bodies <= 0) {
+            return;
+        }
+        int firstIndex = state.aliveEnemies.size();
+        spawnBodies(state, waveNumber, planBodies(waveNumber, waveTotal), bodyOffset, bodies);
+        if (bodyOffset == 0 && isEliteWave(waveNumber, state.ascensionTier)) {
+            markElites(state, waveNumber, firstIndex, bodies);
+        }
+    }
+
+    /**
+     * The night's plan for this wave: the same bodies in the same numbers, decided before
+     * anything walks in, because a vanguard wave reorders the arrivals and a scatter wave widens
+     * them. Computed whole even for a trickled wave, so every pulse is a slice of one ordering
+     * and the event still means what it meant.
+     */
+    private static EnemyType[] planBodies(int waveNumber, int total) {
         EnemyType[] types = EnemyType.values();
         WaveEvents.Kind event = WaveEvents.eventFor(waveNumber);
-        // The night's plan for this wave: the same bodies in the same numbers, decided before anything walks in,
-        // because a vanguard wave reorders the arrivals and a scatter wave widens them.
-        EnemyType[] planned = new EnemyType[spawnCount];
+        EnemyType[] planned = new EnemyType[Math.max(0, total)];
         int rosterForPlanned = rosterFor(waveNumber);
         int strideForPlanned = rosterForPlanned > FIELD_ROSTER ? DEEP_ROSTER_STRIDE : 1;
-        for (int index = 0; index < spawnCount; index++) {
+        for (int index = 0; index < planned.length; index++) {
             planned[index] = types[Math.floorMod(
                 waveNumber - 1 + index * strideForPlanned, rosterForPlanned)];
         }
@@ -166,9 +240,22 @@ public final class EnemyWaveSpawner {
         } else if (WaveEvents.lightestFirst(event)) {
             WaveEvents.sortLightestFirst(planned);
         }
-        for (int index = 0; index < spawnCount; index++) {
-            SpawnLane lane = WaveEvents.laneFor(event, index);
-            float jitter = signedUnit(state.runSeed, waveNumber, index) * WaveEvents.jitterScale(event);
+        return planned;
+    }
+
+    /**
+     * Walks a slice of the night's plan into the arena. Every hash reads the body's own index in
+     * the whole plan, so a trickled wave spawns exactly the bodies the untrickled wave would have.
+     */
+    private void spawnBodies(
+        GameState state, int waveNumber, EnemyType[] planned, int bodyOffset, int count
+    ) {
+        WaveEvents.Kind event = WaveEvents.eventFor(waveNumber);
+        for (int index = 0; index < count; index++) {
+            int body = bodyOffset + index;
+            SpawnLane lane = WaveEvents.laneFor(event, body);
+            float jitter = signedUnit(state.runSeed, waveNumber, body)
+                * WaveEvents.jitterScale(event);
             float x;
             float y;
             switch (lane) {
@@ -187,21 +274,18 @@ public final class EnemyWaveSpawner {
                 }
                 default -> throw new IllegalStateException("Unhandled spawn lane: " + lane);
             }
-            EnemyType type = planned[index];
+            EnemyType type = planned[body];
             Enemy enemy = factory.createForWave(
                 state, type, x, y, lane.id(), waveNumber
             );
-            if (type == EnemyType.ROOTLING && isSilentWatcher(state.runSeed, waveNumber, index)) {
+            if (type == EnemyType.ROOTLING && isSilentWatcher(state.runSeed, waveNumber, body)) {
                 enemy.silentWatcher = true;
-                enemy.x = TREE_LINE_MIN_X + watcherUnit(state.runSeed, waveNumber, index, 1L)
+                enemy.x = TREE_LINE_MIN_X + watcherUnit(state.runSeed, waveNumber, body, 1L)
                     * (TREE_LINE_MAX_X - TREE_LINE_MIN_X);
-                enemy.y = TREE_LINE_MIN_Y + watcherUnit(state.runSeed, waveNumber, index, 2L)
+                enemy.y = TREE_LINE_MIN_Y + watcherUnit(state.runSeed, waveNumber, body, 2L)
                     * (TREE_LINE_MAX_Y - TREE_LINE_MIN_Y);
             }
             state.aliveEnemies.add(enemy);
-        }
-        if (isEliteWave(waveNumber, state.ascensionTier)) {
-            markElites(state, waveNumber, firstIndex, count);
         }
     }
 

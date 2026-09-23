@@ -43,9 +43,10 @@ public final class ReaperSystem {
     public static final float CORPSE_LINGER_SECONDS = 0.6f;
 
     /**
-     * The hard ceiling on the bodies a run may carry, living and dead together. A wave spawns at most
-     * {@code EnemyWaveSpawner.MAX_REGULAR_ENEMIES} plus a boss, so ninety-six is more than three waves' worth and
-     * is only ever reached by corpses waiting out the linger.
+     * The hard ceiling on the bodies a run may carry, living and dead together. A wave spawns at
+     * most {@code EnemyWaveSpawner.RAISED_CAP_MAX_ENEMIES} plus a boss past wave 120 (24 before
+     * it), so ninety-six is still more than three waves' worth and is only ever reached by corpses
+     * waiting out the linger.
      */
     public static final int MAX_BODIES_IN_STATE = 96;
 
