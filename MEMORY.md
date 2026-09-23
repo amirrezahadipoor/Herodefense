@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P2 DONE` — game is English-only, pushed. Next: `P3` story rebuild (delete old story, write new). |
-| **Last push** | `P2` — Persian translation, shaper, fonts, language row + settings persistence deleted; 14 tests rewritten, audit migrated. |
+| **Status** | `P2 VERIFIED GREEN` — English-only, CI green on all workflows. Next: `P3` story rebuild. |
+| **Last push** | `P2` (+3 fix commits) — Persian deleted; 1160 tests green, PMD/SpotBugs clean, balance gate + Android green. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -45,6 +45,12 @@
   plan change: §12.4 dead-infra is DELETED, not kept — the audit's case-insensitive
   `persian` flag forced an honest zero). Verified by compile + smoke + audit; CI is the
   final word. Next: P3 story rebuild (new cast + dialogue per §9).
+- **2026-09-23 / session 2 cont.** — CI red→green in 3 fix commits: (1) unescaped quotes
+  broke test compile; (2) 5 failures — literal `%` is prose not placeholder, CHARACTERS is
+  a fixed upstream set (dupes + latin-1 the face lacks), save() never *writes* the dead
+  key, colour-blind moved to row 6; (3) space has no atlas glyph (all 1808 misses were
+  U+0020). Final: `Test core logic` + `Build and touch-test Android` green on `9137725`.
+  P2 VERIFIED. Next session: P3.
 
 ---
 
