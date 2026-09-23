@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P3b PUSHED` — 150 new keys (136 boss-intro + planting sets + chapter cards + Warden line), 5 voices wired, Pip/Boss blips shipped. CI polling. Next: `P3c` lore files (LoreCatalog/BossLore/TreeLetters prose). |
-| **Last push** | `P3b` — 150 new StoryStrings keys per §9 (boss intros M1–M5 all 8 bosses, Sprout/Leaf rites, Twig rewrite, 7 chapter keys, VICTORY_WARDEN); SpeechVoice +PIP/BOSS + SpeechBlip 5-voice router; CeremonyLines planting-aware; opening→Pip, whispers→Pip; 2 new blips + ledger. |
+| **Status** | `P3b VERIFIED` — all workflows green on the P3b content (`0d5e976`). Next: `P3c` lore files (LoreCatalog/BossLore/TreeLetters prose). |
+| **Last push** | `P3b fix` (`0d5e976`) — PMD `LiteralsFirstInComparisons` in SpeechBlip (10 hits → 0). Test core logic + Android green; device-evidence + human-review correctly skipped (audio-only, path filters). |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -58,6 +58,13 @@
   Remaining: P3c (lore prose: LoreCatalog/BossLore/TreeLetters) → P3d (docs) → P4–P8.
   Tool lesson: never batch 2+ `edit_file` calls to the SAME file — only one lands
   (CinematicFlow + its test each lost edits, all re-applied sequentially and verified).
+- **P3b fix (2026-09-23)** — `0d5e976`: CI failed on `name.equals("X")` (10× PMD
+  `LiteralsFirstInComparisons` — the old router had no `equals`, so the rule never
+  fired before). Flipped to `"X".equals(name)`. Verified locally first with a real
+  toolchain: Temurin 17 in `~/.cache` + `./scripts/gradle.sh :core:test` and
+  `:core:ciStaticAnalysis` both green (JDK lives outside the snapshot; reuse it).
+  CI: Test core logic ✓ + Android ✓ on the fix; device-evidence ✓ + human-review ✓
+  already green on `ec824a9`; both correctly skip the audio-only fix (path filters).
 
 ### Session log (append-only, one line per work session)
 
@@ -81,6 +88,10 @@
   (the authoritative script — 136 intro keys + 14 ceremony/chapter/warden keys, not the
   misremembered 158-key sketch), transcribed all §9.5–9.9 dialogue verbatim, wired all
   five voices end to end. Next: P3c lore prose, then P3d docs, then P4 cutscenes.
+- **2026-09-23 / session 4 cont.** — CI red→green: PMD wanted literals first in
+  `equals`; fixed, verified with local gradle (new: JDK 17 in `~/.cache`, `:core:test`
+  + `:core:ciStaticAnalysis` runnable in ~2 min), pushed `0d5e976`. P3b VERIFIED on all
+  workflows. Next session: P3c.
 
 ---
 
