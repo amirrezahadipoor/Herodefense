@@ -668,7 +668,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
 
         @Override
-        @Override
         public void showWaveReflection() {
             HeroDefenseGame.this.showWaveReflection();
         }
@@ -750,7 +749,6 @@ public final class HeroDefenseGame extends ApplicationAdapter {
             HeroDefenseGame.this.beginPlantingCeremony();
         }
 
-        @Override
         @Override
         public void beginBossIntro() {
             HeroDefenseGame.this.beginBossIntro();

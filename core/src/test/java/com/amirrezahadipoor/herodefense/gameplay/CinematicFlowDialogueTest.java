@@ -40,7 +40,6 @@ final class CinematicFlowDialogueTest {
         }
 
         @Override
-        @Override
         public void showWaveReflection() {
         }
 
