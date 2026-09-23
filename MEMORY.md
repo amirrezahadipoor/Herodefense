@@ -12,12 +12,10 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P4b VERIFIED` — all 8 CI checks green on `dedc3e0` (unit + balance + emulator + 4x device-matrix + summarize). Boss waves open with the watch-only trash-talk cutscene, then the fight. Next: `P5` silence audit (prove no boss words mid-fight anywhere). |
-| **Last push** | `P4b` VERIFIED on `dedc3e0` — boss-intro cutscene live end to end (defer +
-prop walk + box talk + trip + silent entrance + camera + skips). Stack: `1c59e0b` P4a +
-`d5e8f5e` P4b + `b2f3edf` MEMORY + 6 fix commits (`e2fc3cd`, `473f3de`, `d4a0b02`,
-`a6db78f`, `310bc79`, `dedc3e0`). CI: 8/8 green (unit, balance, emulator, 4x matrix).
-P3 COMPLETE (`244724f`) beneath. |
+| **Status** | `P5 VERIFIED` — all 8 CI checks green on `a4391ce` (unit + balance + emulator + 4x device-matrix + summarize). Deeds pay mid-fight but announce on boss-free frames; source ratchet pins the silence. Next: `P6` longer waves. |
+| **Last push** | `P5` VERIFIED on `a4391ce` — deed boss-gating + silence ratchet
+(`40124c0` + 1 fix: PMD LooseCoupling, Deque not ArrayDeque). CI: 8/8 green.
+P4b VERIFIED (`dedc3e0`) beneath; P3 COMPLETE (`244724f`). |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -121,6 +119,21 @@ P3 COMPLETE (`244724f`) beneath. |
   (5) SpotBugs UWF on introProp; (6) PMD RedundantFieldInitializer vs UWF
   resolved via ctor init. 8/8 green on `dedc3e0` (matrix via dispatch).
   P4b VERIFIED. Remaining: P5–P8.
+- **P5 (2026-09-23)** — silence rule + audit, pushed as `40124c0` (+`a4391ce`
+  fix). Done: deeds pay the frame earned but announce only boss-free (FIFO
+  queue in `RunPresentationSystem`, one per frame; also fixes today's silent
+  drop of 2nd+ same-frame deeds); `CombatSilenceTest` +2 (paid-but-silent
+  under a boss incl. evolution ring still firing; FIFO drain on boss-free
+  frames); NEW `CombatSilenceSourcesTest` ratchet (BossBeat/HOLLOW_BOSS/
+  half-beat symbols stay deleted; `presentBossEntrance` body never reaches
+  for words). Audit verdicts: half-beats/BossBeats/HOLLOW_BOSS gone (P3a);
+  entrance silent (VFX + ledger claim); title card intro-only (composer
+  CINEMATIC-gated); elite fragments unreachable in boss fights (spawner
+  spawns the boss alone — P6 escorts must stay affix-free or gate this);
+  wave reflections deliberately kept (Warden atmosphere, incl. boss
+  handoff); trophy toasts + onboarding hints out of scope (system UI /
+  tutorial, not boss words). CI: 8/8 green on `a4391ce` (unit, balance,
+  emulator, 4x matrix). P5 VERIFIED. Remaining: P6–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -174,6 +187,11 @@ P3 COMPLETE (`244724f`) beneath. |
   field. Test loop is green (1201+ unit), emulator + all 4 matrix profiles
   green (journeys updated to play/skip the intro), balance green (sim
   completes the intro instantly). P4b VERIFIED. Next: P5 silence audit.
+- **2026-09-23 / session 8** — P5 done + pushed: deed boss-gating + silence
+  ratchet (`40124c0`), one fix (`a4391ce`, PMD LooseCoupling). Owner: keep the
+  PAT in memory, repo is public, GitHub changes when the game is done — no
+  more PAT asks. CI 8/8 green incl. full matrix. P5 VERIFIED. Next: P6 longer
+  waves (escorts must stay affix-free per the P5 audit).
   Next: push (`1c59e0b` + `d5e8f5e`), poll CI, then P5 silence audit → P6.
 
 ---
