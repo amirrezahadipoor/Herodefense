@@ -33,6 +33,8 @@ public final class RunPresentationSystem {
     private final ScreenShakeSystem screenShakeSystem;
     private final CodexSystem codexSystem;
     private final BeatSink beats;
+    /** Deeds paid while a boss lives wait here; each boss-free frame announces one. */
+    private final java.util.ArrayDeque<Deeds> pendingDeedAnnouncements = new java.util.ArrayDeque<>();
 
     public RunPresentationSystem(ParticleSystem particleSystem, ScreenShakeSystem screenShakeSystem,
         CodexSystem codexSystem, BeatSink beats) {
@@ -192,16 +194,34 @@ public final class RunPresentationSystem {
     }
 
     /**
-     * The Vigil Deeds (roadmap ST2): pays what the run has just earned and announces it.
-     * Returns null on most frames; a deed line when one completed.
+     * The Vigil Deeds (roadmap ST2): pays what the run has just earned the frame it is earned,
+     * but announces only on a boss-free frame (MEMORY section 6). A deed completed under a living
+     * boss waits in the queue; each frame without one announces the oldest waiter. Returns null
+     * on most frames; a deed line when one is announced.
      */
     private String presentDeeds(GameState state) {
         java.util.List<Deeds> newlyCompleted = Deeds.completeNewlyEarned(state);
-        if (newlyCompleted.isEmpty()) {
+        if (!newlyCompleted.isEmpty()) {
+            beats.save();
+            pendingDeedAnnouncements.addAll(newlyCompleted);
+        }
+        if (pendingDeedAnnouncements.isEmpty() || bossLives(state)) {
             return null;
         }
-        beats.save();
-        return newlyCompleted.get(0).announce();
+        return pendingDeedAnnouncements.removeFirst().announce();
+    }
+
+    /** True while any boss still breathes; deed announcements wait on this. */
+    private static boolean bossLives(GameState state) {
+        if (state == null || state.aliveBosses == null) {
+            return false;
+        }
+        for (Boss boss : state.aliveBosses) {
+            if (boss != null && boss.alive) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** The one bind of the collection sparkle; drops homing in and spared watchers share it. */
