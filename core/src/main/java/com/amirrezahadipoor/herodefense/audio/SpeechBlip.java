@@ -42,18 +42,18 @@ public final class SpeechBlip {
         }
         // Granny's own lines: the codex's voice, the victory thank-you, the daily gift, and the
         // planting ceremonies' Granny beats — Twig's walk-out and growth, the short rites' walk-backs.
-        if (name.startsWith("CODEX_") || name.equals("TREE_VICTORY") || name.equals("DAILY_GIFT")
-            || name.equals("CEREMONY_WALK_OUT") || name.equals("CEREMONY_GROW")
-            || name.equals("CEREMONY_50_WALK_BACK") || name.equals("CEREMONY_150_WALK_BACK")) {
+        if (name.startsWith("CODEX_") || "TREE_VICTORY".equals(name) || "DAILY_GIFT".equals(name)
+            || "CEREMONY_WALK_OUT".equals(name) || "CEREMONY_GROW".equals(name)
+            || "CEREMONY_50_WALK_BACK".equals(name) || "CEREMONY_150_WALK_BACK".equals(name)) {
             return SpeechVoice.TREE;
         }
         // Pip's loud heart: openings, milestone beats, field notes on Elite kills, idle whispers, the
         // third beat of every epilogue, and the ceremonies' Pip beats — Twig's watering and walk-back,
         // the short rites' walk-outs.
         if (name.startsWith("OPENING_") || name.startsWith("REFLECTION_WAVE_") || name.startsWith("ELITE_")
-            || name.startsWith("WHISPER_") || name.endsWith("_THREE") || name.equals("CEREMONY_WATER")
-            || name.equals("CEREMONY_WALK_BACK") || name.equals("CEREMONY_50_WALK_OUT")
-            || name.equals("CEREMONY_150_WALK_OUT")) {
+            || name.startsWith("WHISPER_") || name.endsWith("_THREE") || "CEREMONY_WATER".equals(name)
+            || "CEREMONY_WALK_BACK".equals(name) || "CEREMONY_50_WALK_OUT".equals(name)
+            || "CEREMONY_150_WALK_OUT".equals(name)) {
             return SpeechVoice.PIP;
         }
         // Deeds, epilogue thirds one and two, the transition, the Warden's victory line, mythic flavors,
