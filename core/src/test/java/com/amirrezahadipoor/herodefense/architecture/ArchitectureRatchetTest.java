@@ -103,8 +103,8 @@ class ArchitectureRatchetTest {
         // so the sweep completes it instantly the way it already completes the planting ceremony.
         //
         // P6a raised the line count by 3 without adding a field: the sweep keeps the same wave
-        // clock the live game keeps, or the +8s trickle fallback would publish bands for a game
-        // without it. No new state, no new method.
+        // clock the live game keeps, or the mythic time-effects would publish bands for a game
+        // without them. No new state, no new method.
         new ArchitectureRatchet.Frozen(671, 23),
         // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (plus
         // `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one). R3.4 added

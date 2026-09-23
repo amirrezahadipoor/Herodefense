@@ -101,15 +101,16 @@ final class ProgressionHoursTest {
     }
 
     @Test
-    void fullClearSpawns4440KillableBodies() {
+    void fullClearSpawns4764KillableBodies() {
         EnemyWaveSpawner spawner = new EnemyWaveSpawner(new EnemyFactory());
         int regulars = 0;
         for (int wave = 1; wave <= GameState.FINAL_WAVE; wave++) {
             regulars += spawner.regularCountForWave(wave);
         }
         int bosses = GameState.FINAL_WAVE / 5;
-        assertEquals(4400, regulars);
+        // P6a: the raised cap adds four bodies to each of the 81 waves from 120 to 200.
+        assertEquals(4724, regulars);
         assertEquals(40, bosses);
-        assertTrue(regulars + bosses == 4440);
+        assertTrue(regulars + bosses == 4764);
     }
 }

@@ -7,9 +7,6 @@ import com.amirrezahadipoor.herodefense.trials.TrialEffects;
 
 /** Starts a wave and immediately rolls a cleared wave into the next one. */
 public final class WaveLifecycleSystem {
-    /** Stalled seconds after which the rest of a trickled wave walks in anyway (P6). */
-    private static final float TRICKLE_FALLBACK_SECONDS = 8f;
-
     private final EnemyWaveSpawner regularSpawner;
     private final BossWaveSpawner bossSpawner;
     private final BossRewardCardSystem rewardCards;
@@ -112,9 +109,11 @@ public final class WaveLifecycleSystem {
 
     /**
      * Walks in the next trickle pulse of a regular wave when the wave has earned it: the second
-     * pulse at half strength, the third at quarter strength, or any pending pulse after eight
-     * stalled seconds. A zero living count always earns the next pulse, so a wave whose bodies
-     * are all dead but whose plan is not empty can never get stuck.
+     * pulse at half strength, the third at quarter strength. A zero living count always earns
+     * the next pulse, so a wave whose bodies are all dead but whose plan is not empty can never
+     * get stuck. There is deliberately no stalled-seconds fallback: it fired exactly when the
+     * hero was weakest, dumped the rest of the wave on them, and inverted the brief vigil's
+     * ramp (measured opening 0.92 over closing 0.70). The gates alone keep every wave moving.
      */
     private boolean reinforceTrickle(GameState state) {
         if (state.tricklePulse <= 0) {
@@ -127,7 +126,7 @@ public final class WaveLifecycleSystem {
         int living = state.livingEnemyCount();
         int total = state.wavePlannedEnemies;
         boolean gated = state.tricklePulse == 1 ? living * 2 < total : living * 4 < total;
-        if (!gated && state.waveElapsedSeconds < TRICKLE_FALLBACK_SECONDS) {
+        if (!gated) {
             return false;
         }
         int bodyOffset = 0;
@@ -147,7 +146,7 @@ public final class WaveLifecycleSystem {
             return WaveCompletion.NO_CHANGE;
         }
         // P6 longer waves: a trickled wave reinforces before it may clear -- the rest walks in at
-        // half and quarter strength, or after eight stalled seconds, and only then is the wave over.
+        // half and quarter strength, and only then is the wave over.
         // This read happens before the living check on purpose: a pulse that only fired on an empty
         // field would never arrive mid-fight, which is the whole point of the longer waves.
         if (reinforceTrickle(state)) {

@@ -84,8 +84,10 @@ final class TrialWiringTest {
         GameState tide = runWith(4L, TrialId.IRON_TIDE);
         lifecycle.startCurrentWave(plain);
         lifecycle.startCurrentWave(tide);
-        assertEquals(4, plain.aliveEnemies.size());
-        assertEquals(7, tide.aliveEnemies.size());
+        assertEquals(4, plain.wavePlannedEnemies);
+        assertEquals(7, tide.wavePlannedEnemies);
+        assertEquals(2, plain.aliveEnemies.size());
+        assertEquals(4, tide.aliveEnemies.size());
     }
 
     @Test

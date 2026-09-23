@@ -296,8 +296,8 @@ public final class BalanceSimulator {
                     waves.completeBossIntro(state);
                 }
                 elapsed += STEP_SECONDS;
-                // P6: the sweep keeps the same wave clock the live game keeps, or the +8s trickle
-                // fallback and the mythic time-effects would publish bands for a game without them.
+                // P6: the sweep keeps the same wave clock the live game keeps, or the mythic
+                // time-effects (Windrunner's ramp) would publish bands for a game without them.
                 state.waveElapsedSeconds += STEP_SECONDS;
             }
 

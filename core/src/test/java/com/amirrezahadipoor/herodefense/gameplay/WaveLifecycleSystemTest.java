@@ -193,34 +193,16 @@ final class WaveLifecycleSystemTest {
     }
 
     @Test
-    void eightStalledSecondsWalkInTheRestOfTheWave() {
-        GameState state = GameState.newRun(106L);
-        state.waveNumber = 12;
-        assertTrue(lifecycle.startCurrentWave(state));
-        assertEquals(5, state.aliveEnemies.size());
-
-        state.waveElapsedSeconds = 8f;
-        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
-        assertEquals(2, state.tricklePulse);
-        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
-        assertEquals(3, state.tricklePulse);
-        assertEquals(10, state.aliveEnemies.size());
-
-        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
-        assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
-    }
-
-    @Test
     void aWaveStartedWholeClearsWholeWithoutPhantomPulses() {
         GameState state = GameState.newRun(107L);
-        state.waveNumber = 9;
+        state.waveNumber = 8;
         state.waveActive = true;
-        spawner.spawnRegularEnemies(state, 9, spawner.regularCountForWave(9));
+        spawner.spawnRegularEnemies(state, 8, spawner.regularCountForWave(8));
         assertEquals(0, state.tricklePulse);
         for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
 
         assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
-        assertEquals(10, state.waveNumber);
+        assertEquals(9, state.waveNumber);
     }
 
     @Test
@@ -238,7 +220,7 @@ final class WaveLifecycleSystemTest {
         assertEquals(28, capped.wavePlannedEnemies);
 
         GameState early = GameState.newRun(110L);
-        early.waveNumber = 40;
+        early.waveNumber = 39;
         early.activeTrials.add(TrialId.IRON_TIDE.name());
         assertTrue(lifecycle.startCurrentWave(early));
         assertEquals(24, early.wavePlannedEnemies);
