@@ -533,6 +533,10 @@ public final class AndroidTouchSmokeTest {
             long touchCount = game.handledTouchUpCount();
             tapWorld(surface, MENU_X, menuActionY(MainMenuTouchLayout.Action.CONTINUE, true));
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
+            // P4b: the boss wave opens with its watch-only intro; one tap skips it like the opening.
+            await("boss intro", () -> game.screenState() == GameScreenState.CINEMATIC);
+            tapWorld(surface, 360f, 640f);
+            await("boss intro skipped", () -> game.handledTouchUpCount() > touchCount + 1);
             await("boss wave", () ->
                 game.screenState() == GameScreenState.PLAYING
                     && game.gameState().aliveBosses.stream().anyMatch(boss -> boss.alive)
@@ -608,6 +612,10 @@ public final class AndroidTouchSmokeTest {
             long touchCount = game.handledTouchUpCount();
             tapWorld(surface, MENU_X, menuActionY(MainMenuTouchLayout.Action.CONTINUE, true));
             await("continue touch dispatch", () -> game.handledTouchUpCount() > touchCount);
+            // P4b: waves 20 and 175 are boss waves, so the intro plays first; one tap skips it.
+            await("boss intro", () -> game.screenState() == GameScreenState.CINEMATIC);
+            tapWorld(surface, 360f, 640f);
+            await("boss intro skipped", () -> game.handledTouchUpCount() > touchCount + 1);
             await("the wave is playing", () -> game.screenState() == GameScreenState.PLAYING);
             SystemClock.sleep(1_400L); // let the arena settle before the frame is taken
             Bitmap screenshot = null;

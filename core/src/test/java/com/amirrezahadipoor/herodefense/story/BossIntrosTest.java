@@ -59,13 +59,13 @@ final class BossIntrosTest {
             for (int meeting = 1; meeting <= 5; meeting++) {
                 Set<String> spoken = new HashSet<>();
                 for (int index = 0; index < BossIntros.talkCount(meeting); index++) {
-                    Translated entry = BossIntros.talkLine(boss, meeting, index);
+                    Translated entry = BossIntros.talkKey(boss, meeting, index);
                     assertNotNull(entry, boss + " meeting " + meeting + " line " + index);
                     String line = GameLocale.text(entry);
                     assertTrue(!line.isBlank(), boss + " meeting " + meeting + " line " + index);
                     assertTrue(spoken.add(line), boss + " meeting " + meeting + " repeats a line");
                 }
-                Translated comeback = BossIntros.comebackLine(boss, meeting);
+                Translated comeback = BossIntros.comebackKey(boss, meeting);
                 assertNotNull(comeback, boss + " meeting " + meeting + " comeback");
                 String comebackLine = GameLocale.text(comeback);
                 assertTrue(!comebackLine.isBlank(), boss + " meeting " + meeting + " comeback");
@@ -76,20 +76,20 @@ final class BossIntrosTest {
 
     @Test
     void unknownBossesStaySilent() {
-        assertNull(BossIntros.talkLine("MUD_IMP", 1, 0));
-        assertNull(BossIntros.talkLine(null, 1, 0));
-        assertNull(BossIntros.comebackLine("MUD_IMP", 3));
-        assertNull(BossIntros.comebackLine(null, 3));
+        assertNull(BossIntros.talkKey("MUD_IMP", 1, 0));
+        assertNull(BossIntros.talkKey(null, 1, 0));
+        assertNull(BossIntros.comebackKey("MUD_IMP", 3));
+        assertNull(BossIntros.comebackKey(null, 3));
         assertNull(BossIntros.titleFor("MUD_IMP"));
         assertNull(BossIntros.titleFor(null));
     }
 
     @Test
     void outOfRangeSlotsStaySilent() {
-        assertNull(BossIntros.talkLine("ANCIENT_GOLEM", 1, 4));
-        assertNull(BossIntros.talkLine("ANCIENT_GOLEM", 1, -1));
-        assertNull(BossIntros.talkLine("ANCIENT_GOLEM", 2, 2));
-        assertNull(BossIntros.talkLine("ANCIENT_GOLEM", 9, 2));
+        assertNull(BossIntros.talkKey("ANCIENT_GOLEM", 1, 4));
+        assertNull(BossIntros.talkKey("ANCIENT_GOLEM", 1, -1));
+        assertNull(BossIntros.talkKey("ANCIENT_GOLEM", 2, 2));
+        assertNull(BossIntros.talkKey("ANCIENT_GOLEM", 9, 2));
     }
 
     @Test

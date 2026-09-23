@@ -68,10 +68,10 @@ public final class BossIntroCinematic {
         }
         talkLines.clear();
         for (int index = 0; index < BossIntros.talkCount(this.meeting); index++) {
-            Translated entry = BossIntros.talkLine(this.bossType, this.meeting, index);
+            Translated entry = BossIntros.talkKey(this.bossType, this.meeting, index);
             talkLines.add(entry == null ? "" : GameLocale.text(entry));
         }
-        Translated comeback = BossIntros.comebackLine(this.bossType, this.meeting);
+        Translated comeback = BossIntros.comebackKey(this.bossType, this.meeting);
         comebackLine = comeback == null ? "" : GameLocale.text(comeback);
         elapsedSeconds = 0f;
         active = true;

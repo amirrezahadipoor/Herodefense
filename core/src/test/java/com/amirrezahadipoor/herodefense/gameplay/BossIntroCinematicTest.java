@@ -44,7 +44,7 @@ final class BossIntroCinematicTest {
         for (int index = 0; index < 4; index++) {
             assertEquals(index, cinematic.talkIndex());
             assertEquals(
-                GameLocale.text(BossIntros.talkLine("ANCIENT_GOLEM", 1, index)),
+                GameLocale.text(BossIntros.talkKey("ANCIENT_GOLEM", 1, index)),
                 cinematic.line()
             );
             advance(cinematic, BossIntroCinematic.TALK_LINE_SECONDS);
@@ -52,7 +52,7 @@ final class BossIntroCinematicTest {
         assertEquals(BossIntroCinematic.Phase.COMEBACK, cinematic.phase());
         assertEquals(-1, cinematic.talkIndex());
         assertEquals(
-            GameLocale.text(BossIntros.comebackLine("ANCIENT_GOLEM", 1)),
+            GameLocale.text(BossIntros.comebackKey("ANCIENT_GOLEM", 1)),
             cinematic.line()
         );
 

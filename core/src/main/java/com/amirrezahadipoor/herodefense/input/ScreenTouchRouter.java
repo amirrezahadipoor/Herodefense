@@ -78,7 +78,6 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
         AudioPlayback audioManager();
 
         BossIntroCinematic bossIntroCinematic();
-
         CodexSystem codexSystem();
 
         CodexTouchController codexTouchController();
@@ -165,7 +164,6 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
         void beginPlantingCeremony();
 
         void beginBossIntro();
-
         /** Tap-to-focus: marks the enemy under the tap, or clears the mark when the tap hits nothing. */
         void focusFireAt(float worldX, float worldY);
 
@@ -318,8 +316,7 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                 return true;
             }
             if (host.flow().state() == GameScreenState.CINEMATIC) {
-                // A tap advances the playing ceremony exactly the way Back does: one skip,
-                // owned by the port, so the two can never disagree about what is playing.
+                // A tap skips the playing ceremony exactly the way Back does: one port, one skip.
                 backPort.skipCeremony();
                 return true;
             }

@@ -94,14 +94,14 @@ final class CinematicFlowBossIntroTest {
         advance(BossIntroCinematic.TITLE_SECONDS + 0.01f);
         assertEquals(BossIntroCinematic.Phase.TALK, bossIntro.phase());
         assertEquals(
-            GameLocale.text(BossIntros.talkLine("ANCIENT_GOLEM", 1, 0)),
+            GameLocale.text(BossIntros.talkKey("ANCIENT_GOLEM", 1, 0)),
             cinematic.dialogue().text()
         );
 
         advance(4 * BossIntroCinematic.TALK_LINE_SECONDS + 0.01f);
         assertEquals(BossIntroCinematic.Phase.COMEBACK, bossIntro.phase());
         assertEquals(
-            GameLocale.text(BossIntros.comebackLine("ANCIENT_GOLEM", 1)),
+            GameLocale.text(BossIntros.comebackKey("ANCIENT_GOLEM", 1)),
             cinematic.dialogue().text()
         );
         assertEquals(SpeechVoice.PIP, cinematic.dialogue().voice(), "Pip answers back in his chirp");
@@ -195,6 +195,7 @@ final class CinematicFlowBossIntroTest {
         GameState state = GameState.newRun(seed);
         state.waveNumber = waveNumber;
         host.state = state;
+        flow.transitionTo(GameScreenState.PLAYING);
         assertTrue(waves.startCurrentWave(state));
         assertTrue(state.bossIntroPending);
         return state;

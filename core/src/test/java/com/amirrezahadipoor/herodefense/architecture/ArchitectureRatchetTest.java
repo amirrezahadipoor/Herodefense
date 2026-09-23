@@ -69,7 +69,12 @@ class ArchitectureRatchetTest {
         //
         // F3 (TTS narration) and G3d (accessibility screen-reader) added provider seams and narration accessors
         // to wire platform-specific TTS and TalkBack bridges without coupling core to Android.
-        new ArchitectureRatchet.Frozen(796, 63),
+        //
+        // P4b (boss-intro cutscenes) raised this by 22 lines and one field: the cinematic instance the
+        // router and the composer read through the Host ports, plus the two one-line host seams that begin
+        // and expose it. The walk, the talk and the handoff live in gameplay/BossIntroCinematic and
+        // gameplay/CinematicFlow, which the ratchet does not hold; the game class only owns the seam.
+        new ArchitectureRatchet.Frozen(818, 64),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.
@@ -93,7 +98,10 @@ class ArchitectureRatchetTest {
         // A3 raised the line count by 3 without adding a field: EnemyRoleSystem.update now ticks inside the
         // sweep loop, because bands published for a game without the late-wave roles would be evidence about
         // a build that no longer ships. No new state, no new method.
-        new ArchitectureRatchet.Frozen(664, 23),
+        //
+        // P4b raised the line count by 4 without adding a field: the boss intro is presentation-only,
+        // so the sweep completes it instantly the way it already completes the planting ceremony.
+        new ArchitectureRatchet.Frozen(668, 23),
         // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (plus
         // `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one). R3.4 added
         // no field: wave omens are switched on by the trial the player drafted, and the trial list already exists.
@@ -114,7 +122,11 @@ class ArchitectureRatchetTest {
         // bound path is run state exactly like the trial picks -- encoded by the codec, transplanted by the
         // new-run reset, nulled when the string does not name a path. The bends themselves live in HeroPath and
         // its consumers, not here; the model only remembers the choice.
-        new ArchitectureRatchet.Frozen(646, 84)
+        //
+        // P4b raised this by two fields and ten lines: bossIntroPending/bossIntroWave are run state like
+        // ceremonyPending beside them -- a between-waves save must remember a deferred boss wave -- encoded
+        // by the codec like every other field. No behaviour in the model itself.
+        new ArchitectureRatchet.Frozen(656, 86)
     );
 
     @Test

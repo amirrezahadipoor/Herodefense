@@ -43,7 +43,7 @@ public final class BossIntros {
      * One trash-talk line, 0-based; null for unknown bosses, out-of-range meetings slots, or
      * out-of-range indexes. Meeting numbers above 5 read as the farewell tour.
      */
-    public static Translated talkLine(String bossType, int meeting, int index) {
+    public static Translated talkKey(String bossType, int meeting, int index) {
         int clampedMeeting = clampedMeeting(meeting);
         if (index < 0 || index >= talkCount(clampedMeeting)) {
             return null;
@@ -52,7 +52,7 @@ public final class BossIntros {
     }
 
     /** Pip's comeback closing a boss's intro; null for unknown bosses. */
-    public static Translated comebackLine(String bossType, int meeting) {
+    public static Translated comebackKey(String bossType, int meeting) {
         return entryOrNull("BOSS_INTRO_" + bossType + "_M" + clampedMeeting(meeting) + "_PIP");
     }
 
