@@ -74,7 +74,7 @@ class HollowVoiceTest {
     }
 
     @Test
-    void hollowLinesExistInBothLanguages() {
+    void hollowLinesAreNeverBlank() {
         StoryStrings[] lines = {
             StoryStrings.HOLLOW_DEATH_FIRST,
             StoryStrings.HOLLOW_DEATH_AGAIN,

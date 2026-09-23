@@ -49,7 +49,7 @@ final class InventoryItemDetailsTest {
         assertEquals("PASSIVE: Every 10th hit taken heals 20%", mythic.passiveLine());
         // Updated flavor to match current MythicEffects.java
         assertEquals(
-            "Cut from the World Tree's bark when it could spare wood. It knows how to close a wound.",
+            "Granny's bark. Heals you back.",
             mythic.flavorLine()
         );
 

@@ -3,7 +3,7 @@ package com.amirrezahadipoor.herodefense.render;
 /**
  * The Hollow's gaze: its two lights in the dark of the HOLLOW arena (waves 101-200).
  *
- * <p>The story already says it is watching -- "I felt it happen", "I never get tired of watching" --
+ * <p>The story already says it is watching -- "Get up. The show needs you", "The floor likes you" --
  * and the arena's dark upper field is the one place the reviewed art leaves empty. The gaze lives
  * there. This class is the pure part: how open the eyes are, and how the run's events move them
  * (a boss sharpens them, a defeat closes them, a victory lets them drift away into the dawn). The

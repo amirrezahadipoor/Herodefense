@@ -15,19 +15,19 @@ final class BossTitleCardsTest {
     @Test
     void titlesMatchStoryContentVerbatim() {
         assertEquals(
-            "ANCIENT GOLEM — the oldest guard, still on duty.",
+            "GRUM — Night Shift Security. Do not wake.",
             BossTitleCards.titleFor("ANCIENT_GOLEM")
         );
         assertEquals(
-            "THORN MATRIARCH — she grew half your enemies.",
+            "MAMA BRAMBLE — She grew half the bad guys.",
             BossTitleCards.titleFor("THORN_MATRIARCH")
         );
         assertEquals(
-            "EMBER WYRM — a fire that never went out.",
+            "SIZZLE — The hottest star of the Night.",
             BossTitleCards.titleFor("EMBER_WYRM")
         );
         assertEquals(
-            "VOID KNIGHT — it fell, and forgot the way back.",
+            "SIR FALLS-A-LOT — Very polite. Very clumsy.",
             BossTitleCards.titleFor("VOID_KNIGHT")
         );
         assertNull(BossTitleCards.titleFor("MUD_IMP"));

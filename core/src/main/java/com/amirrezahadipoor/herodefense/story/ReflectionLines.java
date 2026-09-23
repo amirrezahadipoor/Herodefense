@@ -4,8 +4,8 @@ import com.amirrezahadipoor.herodefense.i18n.GameLocale;
 import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 
 /**
- * Between-boss reflection lines, verbatim (§2.2/§2.4): one quiet Hero-voice line at the start
- * of waves 25/50/75/125/150/175, shown as a brief skippable white-text story beat.
+ * Pip's milestone beats: one loud firefly line at the start of waves 25/50/75/125/150/175,
+ * shown as a brief skippable story beat.
  */
 public final class ReflectionLines {
     private ReflectionLines() {

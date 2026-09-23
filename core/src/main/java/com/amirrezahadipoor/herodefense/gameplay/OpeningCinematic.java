@@ -6,7 +6,7 @@ import com.amirrezahadipoor.herodefense.i18n.Translated;
 
 /**
  * Deterministic timeline of the new-run opening: the camera pushes in on the Hero, a dark
- * cloud rolls over the arena, the Hero speaks three lines in white, the cloud clears, and the
+ * cloud rolls over the arena, Pip speaks three lines, the cloud clears, and the
  * camera eases back to the standard framing before Wave 1 starts. Presentation only; a tap
  * skips straight to the end. Never shown on Continue.
  */

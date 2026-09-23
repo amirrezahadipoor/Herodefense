@@ -1,15 +1,15 @@
 package com.amirrezahadipoor.herodefense.i18n;
 
 /**
- * The game's own voice (roadmap R7.3): what a boss's first title card says, what the Tree says while a
- * tree is planted, what the Warden says to themselves at a wave milestone, what the Hollow says to the
- * player, and the line the trophy chime puts on screen.
+ * The game's own voice (roadmap R7.3): what a boss's first title card says, what Pip the firefly shouts
+ * at a wave milestone, what the Hollow says to the player, what Granny says when the dawn comes, and the
+ * line the trophy chime puts on screen.
  *
  * <p>These are the places where the game speaks rather than reports, which is why they are one table
- * rather than four: they share three narrators, and a narrator whose voice differs between screens is a
- * narrator the player notices. The words were rewritten for a young reader (2026-09-22): common words,
- * short sentences, and one idea the whole run can follow -- the waves are the nights, the Hollow is the
- * night itself, and two hundred nights later the dawn comes back.
+ * rather than four: they share one cast, and a character whose voice differs between screens is a
+ * character the player notices. The words were rewritten with the whole story (2026-09-23, MEMORY P3):
+ * Pip the firefly, Granny the World Tree, the nearly-silent Warden, the deadpan Hollow, and the eight
+ * ridiculous bosses of the Night Shift -- common words, short lines, one idea per line.
  *
  * <p>The em dash the title cards use is kept rather than swapped for the "  |  "
  * the button-and-panel tables use: a title card is a sentence rather than a row of readouts.
@@ -20,14 +20,14 @@ package com.amirrezahadipoor.herodefense.i18n;
 public enum StoryStrings implements Translated {
 
     /** First-encounter boss title cards: one line per identity, shown once ever. D3 adds 4 more. */
-    BOSS_ANCIENT_GOLEM("ANCIENT GOLEM — the oldest guard, still on duty."),
-    BOSS_THORN_MATRIARCH("THORN MATRIARCH — she grew half your enemies."),
-    BOSS_EMBER_WYRM("EMBER WYRM — a fire that never went out."),
-    BOSS_VOID_KNIGHT("VOID KNIGHT — it fell, and forgot the way back."),
-    BOSS_FROST_TITAN("FROST TITAN — winter that learned to walk."),
-    BOSS_SHADOW_LICH("SHADOW LICH — keeper of the second fall."),
-    BOSS_STORM_COLOSSUS("STORM COLOSSUS — thunder stored in a stone chest."),
-    BOSS_BLOODROOT_AVATAR("BLOODROOT AVATAR — the forest's own wound, walking."),
+    BOSS_ANCIENT_GOLEM("GRUM — Night Shift Security. Do not wake."),
+    BOSS_THORN_MATRIARCH("MAMA BRAMBLE — She grew half the bad guys."),
+    BOSS_EMBER_WYRM("SIZZLE — The hottest star of the Night."),
+    BOSS_VOID_KNIGHT("SIR FALLS-A-LOT — Very polite. Very clumsy."),
+    BOSS_FROST_TITAN("BIG CHILL — Evil? Or just on holiday?"),
+    BOSS_SHADOW_LICH("OLD PAGE — Librarian. Fines are final."),
+    BOSS_STORM_COLOSSUS("CAPTAIN THUNDER — Scared of puddles."),
+    BOSS_BLOODROOT_AVATAR("BLUSH — Sorry about this. Really sorry."),
 
     /** The planting ceremony's five beats, in the order the ceremony walks through them. */
     CEREMONY_WALK_OUT("A tree should not carry this alone. Not anymore."),
@@ -36,13 +36,13 @@ public enum StoryStrings implements Translated {
     CEREMONY_GROW("Two of us now. I remember what mornings sound like."),
     CEREMONY_WALK_BACK("Now hold the line. Both of us need you."),
 
-    /** The Warden's reflections at wave milestones: 25, 50, 75, 125, 150, 175. */
-    REFLECTION_WAVE_25("The wolves fear something bigger than me. That should scare me more."),
-    REFLECTION_WAVE_50("Half of what I have killed, I once knew. I try not to think about it."),
-    REFLECTION_WAVE_75("Past the treeline, the ground is wrong. Not ground at all."),
-    REFLECTION_WAVE_125("Three trees now. Three times to lose. I would still make the trade."),
-    REFLECTION_WAVE_150("It stopped sending the weak ones first. It is out of patience."),
-    REFLECTION_WAVE_175("What is left may be the last. Or it wants me to believe that."),
+    /** Pip's milestone beats at wave starts: 25, 50, 75, 125, 150, 175. */
+    REFLECTION_WAVE_25("Twenty-five nights! Pip counted!"),
+    REFLECTION_WAVE_50("Fifty nights! A new tree today!"),
+    REFLECTION_WAVE_75("The dark is thick. My butt glows."),
+    REFLECTION_WAVE_125("Half the Night Shift owes me coins."),
+    REFLECTION_WAVE_150("Last seed tonight, Chief! Hold on!"),
+    REFLECTION_WAVE_175("Almost dawn, Chief. Almost."),
 
     /** The trophy line: a count when there are too many to read, otherwise the names joined. */
     TROPHY_COUNT("Trophy - %1$s earned"),
@@ -50,31 +50,21 @@ public enum StoryStrings implements Translated {
     TROPHY_AND(" and "),
 
     /** The Hollow (roadmap ST1): the one voice that talks to the player, not the Warden. */
-    HOLLOW_DEATH_FIRST("You fell. Not the Warden — you. I felt it happen."),
-    HOLLOW_DEATH_AGAIN("Again. You always get up. I never get tired of watching."),
-    HOLLOW_SPARE("You spared it? It was not even fighting. Mercy. I remember that word. No one uses it anymore."),
-    HOLLOW_WAVE100("Halfway there. The Tree thanks you. I do not have to hurry. You do."),
-    HOLLOW_HELLO("I am the night. They called me the Hollow. This is the last tree — and I have come for it."),
-    HOLLOW_MERCY_HABIT("Three spared. You call it kindness. So do I. Mercy grows roots here too — watch what sprouts."),
-    HOLLOW_VERDICT_MERCIFUL("Last time, you let some of them go. The Tree calls that mercy. I call it a debt — and I remember my debts."),
-    HOLLOW_VERDICT_STERN("Last time, nothing on that field lived because you loved it. The Tree calls that victory. I call it an inventory."),
+    HOLLOW_DEATH_FIRST("You fell. Get up. The show needs you."),
+    HOLLOW_DEATH_AGAIN("Again? …The floor likes you."),
+    HOLLOW_SPARE("You let it go? …Bold. I watched."),
+    HOLLOW_WAVE100("Halfway. Cute tree. I am still here."),
+    HOLLOW_HELLO("I am the Night. I was here first."),
+    HOLLOW_MERCY_HABIT("Three spared. Mercy. I remember."),
+    HOLLOW_VERDICT_MERCIFUL("You spared some. Cute. I count the debt."),
+    HOLLOW_VERDICT_STERN("You spared none. Cold. My inventory grows."),
 
-    /** The Hollow's half-health beat, one per boss identity. */
-    HOLLOW_BOSS_GOLEM("It is slipping. It was never guarding you — it just cannot stop."),
-    HOLLOW_BOSS_MATRIARCH("She calls the garden home. You are the frost."),
-    HOLLOW_BOSS_WYRM("Its no grows quiet. Push."),
-    HOLLOW_BOSS_VOID("It falls and wants company. Give it none."),
-    HOLLOW_BOSS_TITAN("Winter keeps what it touches. Touch it back."),
-    HOLLOW_BOSS_LICH("It is writing your name down. Do not give it a long one."),
-    HOLLOW_BOSS_COLOSSUS("Thunder never hurries. You should."),
-    HOLLOW_BOSS_BLOODROOT("The wound fights the cure. It always has."),
-
-    /** The Tree's thank-you, spoken in the box the moment a run is completed: the summary waits for it,
+    /** Granny's thank-you, spoken in the box the moment a run is completed: the summary waits for it,
      *  then rises — the victory's own parting word, in the Tree's own blips. */
-    TREE_VICTORY("You kept the light alive, night after night. The dawn remembers you."),
+    TREE_VICTORY("Dawn, dearie! You did it! Soup for all!"),
 
-    /** The Tree's daily gift (roadmap ST5): the return hook, spoken once a day. */
-    DAILY_GIFT("Two heartwood, saved from yesterday. The Tree keeps count of your days. So do I."),
+    /** Granny's daily gift (roadmap ST5): the return hook, spoken once a day. */
+    DAILY_GIFT("Two heartwood, saved for you. Granny counts."),
 
     /** The Vigil Deeds (roadmap ST2): the run's named goals, paid once each. */
     DEED_WAVE_10("Deed: held to wave 10  |  + %1$s coins"),
@@ -97,91 +87,92 @@ public enum StoryStrings implements Translated {
     CODEX_TAP_TO_SHOW("tap to show"),
     CODEX_WRITTEN("%1$s / %2$s WRITTEN"),
     CODEX_EARNED("%1$s / %2$s EARNED"),
-    CODEX_LOCKED_HINT("The Tree has not written this yet."),
+    CODEX_LOCKED_HINT("Granny has not written this yet."),
     TROPHY_HEADER("WARDEN'S TROPHIES"),
     TROPHY_TAP_HINT("Tap a trophy to read what earns it."),
 
-    /** The new-run opening, one line set per ascension tier (§1). Tier 0 shipped, 1 and 2 their own,
-     *  3+ one shared set. Three lines each, typed in the box over the push-in. */
-    OPENING_0_ONE("Can you protect the World Tree?!"),
-    OPENING_0_TWO("Can you?"),
-    OPENING_0_THREE("Are you sure?!"),
-    OPENING_1_ONE("The dark comes back. It always does."),
-    OPENING_1_TWO("The Tree is tired. So am I."),
+    /** The new-run opening, one line set per ascension tier. Tier 0 is Pip meeting you, 1 and 2 their own,
+     *  3+ one shared set. Three lines each, all Pip's, typed in the box over the push-in. */
+    OPENING_0_ONE("Hey! Hey you! With the bow!"),
+    OPENING_0_TWO("I'm Pip. You're the new Chief."),
+    OPENING_0_THREE("Stay close. The Night is coming."),
+    OPENING_1_ONE("Back again, Chief?"),
+    OPENING_1_TWO("Granny saved you some light."),
     OPENING_1_THREE("Tonight we go further."),
-    OPENING_2_ONE("It knows my name by now."),
-    OPENING_2_TWO("Good. Let it remember."),
-    OPENING_2_THREE("Roots first. Then the dark. Not today."),
-    OPENING_3_ONE("New dawn. Same fight."),
-    OPENING_3_TWO("The Tree asks: one more watch?"),
-    OPENING_3_THREE("Say yes."),
+    OPENING_2_ONE("The Night knows your name now."),
+    OPENING_2_TWO("Good. Let it shake."),
+    OPENING_2_THREE("Pip's got a plan!"),
+    OPENING_3_ONE("New night. Same Chief."),
+    OPENING_3_TWO("Granny says hi."),
+    OPENING_3_THREE("Let's bonk the dark."),
 
-    /** Branching end-of-run epilogues (§6). A = flawless, B = hard-fought, C/D/E = falls. */
-    EPILOGUE_A_ONE("Two hundred nights. Not one step lost."),
-    EPILOGUE_A_TWO("The night needs a new plan."),
-    EPILOGUE_A_THREE("Until then, the Tree and I stand."),
-    EPILOGUE_B_ONE("Two hundred nights. Every one of them close."),
-    EPILOGUE_B_TWO("I do not remember all of it. I remember not letting go."),
-    EPILOGUE_B_THREE("That is enough. It has to be."),
-    EPILOGUE_C_ONE("Not even the middle."),
-    EPILOGUE_C_TWO("The Tree fell quiet so early. It should not have."),
-    EPILOGUE_C_THREE("Next time it is loud."),
-    EPILOGUE_D_ONE("So close to the second root."),
-    EPILOGUE_D_TWO("I went farther than before. Far is not far enough."),
-    EPILOGUE_D_THREE("Again."),
-    EPILOGUE_E_ONE("One tree stood when I fell. That counts."),
-    EPILOGUE_E_TWO("The night paid for this run. It just lasted a little longer than me."),
-    EPILOGUE_E_THREE("Next time it pays for everything."),
-    EPILOGUE_TRANSITION_ONE("The night is not gone. It is quiet, learning how to fall again."),
-    EPILOGUE_TRANSITION_TWO("Stand up. The Tree is still standing."),
+    /** Branching end-of-run epilogues. A = flawless, B = hard-fought, C/D/E = falls. The third beat of
+     *  each is Pip's; the first two are the Warden's, terse and white. */
+    EPILOGUE_A_ONE("Two hundred nights. Zero falls."),
+    EPILOGUE_A_TWO("The Night needs a new plan."),
+    EPILOGUE_A_THREE("Pip's plan worked! …Mostly."),
+    EPILOGUE_B_ONE("Two hundred nights. All heart."),
+    EPILOGUE_B_TWO("I fell. I rose. I held."),
+    EPILOGUE_B_THREE("Best Chief ever. Don't argue."),
+    EPILOGUE_C_ONE("Too soon. Too dark."),
+    EPILOGUE_C_TWO("Granny, keep my seat warm."),
+    EPILOGUE_C_THREE("We go again. Now. Up, Chief!"),
+    EPILOGUE_D_ONE("Past Twig. Not past dawn."),
+    EPILOGUE_D_TWO("Next time, Night. Next time."),
+    EPILOGUE_D_THREE("Pip counted! Further next run!"),
+    EPILOGUE_E_ONE("So close the dawn waved."),
+    EPILOGUE_E_TWO("It can wait one more run."),
+    EPILOGUE_E_THREE("One more run! Pip's got a NEW plan!"),
+    EPILOGUE_TRANSITION_ONE("The Night rests. It never leaves."),
+    EPILOGUE_TRANSITION_TWO("Stand up. Granny stands with you."),
 
-    /** Whispering Wounds, one fragment pair per Elite affix (§4). */
-    ELITE_BLIGHTBURST_ONE("It does not die. It just lets go — everything at once."),
-    ELITE_BLIGHTBURST_TWO("That burst is not anger. It is relief."),
-    ELITE_ROOTWARD_ONE("That shield is not armor. It is a root, remembering its job."),
-    ELITE_ROOTWARD_TWO("Even like this, it still tries to protect. It just forgot what."),
-    ELITE_WEEPING_ONE("Where it walks, the ground never heals."),
-    ELITE_WEEPING_TWO("Follow its trail long enough. It leads to the Tree."),
-    ELITE_HOLLOWMOLT_ONE("It never leaves a place empty. Nothing here does."),
-    ELITE_HOLLOWMOLT_TWO("Two small silences where one loud one stood."),
-    ELITE_GRAVEMOSS_ONE("The moss covers the wound while the wound is still there."),
-    ELITE_GRAVEMOSS_TWO("That is not healing. That is something patient taking it back."),
-    ELITE_CINDERHALO_ONE("Stand too close and it loves you — the way an ember loves wind."),
-    ELITE_CINDERHALO_TWO("That heat is not attack. It is grief, still warm."),
-    ELITE_STONESHELL_ONE("It pulled the hill over itself and called that armour."),
-    ELITE_STONESHELL_TWO("Stone is patient. Stone is not on your side."),
-    ELITE_GRAVEBLOOM_ONE("It died and the ground kept the grudge."),
-    ELITE_GRAVEBLOOM_TWO("Do not stand where something was angry."),
-    ELITE_SWARMCALL_ONE("Kill it and it calls for replacements. It has replacements."),
-    ELITE_SWARMCALL_TWO("The grove keeps sending. The grove always keeps sending."),
-    ELITE_SPITEBARB_ONE("It does not want you in reach. It made its reach a promise."),
-    ELITE_SPITEBARB_TWO("Close work has a price here. It always did."),
-    ELITE_HAMMERFALL_ONE("It raises its arm and the ground tells you where."),
-    ELITE_HAMMERFALL_TWO("Step. That is the whole lesson."),
-    ELITE_BLOODHOWL_ONE("It howls and the line walks faster. It is proud of them."),
-    ELITE_BLOODHOWL_TWO("Follow the sound and you find the one holding the leash."),
+    /** Pip's field notes, one fragment pair per Elite affix. */
+    ELITE_BLIGHTBURST_ONE("It pops! Do not hug it."),
+    ELITE_BLIGHTBURST_TWO("That pop is relief. Weird."),
+    ELITE_ROOTWARD_ONE("A shield! Rude shield!"),
+    ELITE_ROOTWARD_TWO("It guards nothing. Still guards."),
+    ELITE_WEEPING_ONE("Don't step in the yuck."),
+    ELITE_WEEPING_TWO("The yuck leads to Granny?!"),
+    ELITE_HOLLOWMOLT_ONE("One becomes two! Bad magic!"),
+    ELITE_HOLLOWMOLT_TWO("Two small quiets. Still loud."),
+    ELITE_GRAVEMOSS_ONE("Moss on a wound. Still a wound."),
+    ELITE_GRAVEMOSS_TWO("It's healing! …Stop healing!"),
+    ELITE_CINDERHALO_ONE("Hot hug! No hugs!"),
+    ELITE_CINDERHALO_TWO("Warm grief. Stay back."),
+    ELITE_STONESHELL_ONE("It wears a hill. Cheater."),
+    ELITE_STONESHELL_TWO("Stone naps. Stone hates you."),
+    ELITE_GRAVEBLOOM_ONE("Angry ground. Walk around."),
+    ELITE_GRAVEBLOOM_TWO("It remembers. Rude."),
+    ELITE_SWARMCALL_ONE("It called friends! Unfair!"),
+    ELITE_SWARMCALL_TWO("More friends! SO many friends!"),
+    ELITE_SPITEBARB_ONE("Long arms! Longer fouls!"),
+    ELITE_SPITEBARB_TWO("Close work costs. Pay up."),
+    ELITE_HAMMERFALL_ONE("Arm up! Move, Chief!"),
+    ELITE_HAMMERFALL_TWO("Step. That's the lesson."),
+    ELITE_BLOODHOWL_ONE("It howls! They run!"),
+    ELITE_BLOODHOWL_TWO("Find the howler. Bonk it."),
 
-    /** Idle-whisper pool (§8): six Tree-voice lines, one per long pause, each shown once ever. */
-    WHISPER_ONE("The roots kept your seat warm while you were gone."),
-    WHISPER_TWO("The Tree dreams, little guard — and it always wakes up."),
-    WHISPER_THREE("I counted your absence in falling leaves — you were out a while."),
-    WHISPER_FOUR("Rest is a weapon too — you are getting good at it."),
-    WHISPER_FIVE("The roots grow deepest in the quiet between fights."),
-    WHISPER_SIX("You are back — the paths never stopped watching for you."),
+    /** Idle-whisper pool: six Pip lines, one per long pause, each shown once ever. */
+    WHISPER_ONE("Chief? You sleeping? …Pip naps too."),
+    WHISPER_TWO("Granny says hi. Eat your sunlight."),
+    WHISPER_THREE("Pip guarded the grove. All alone. Brave."),
+    WHISPER_FOUR("The dark blinked first. Pip saw it."),
+    WHISPER_FIVE("Rest is training. Pip trains hard."),
+    WHISPER_SIX("You're back! Pip missed you. A little."),
 
     /** Speaker labels over the dialogue box: the box types every message in the speaker's own voice, and
      *  the label tells who is speaking. Same three speakers the blips already tell apart by ear. */
     SPEAKER_WARDEN("WARDEN"),
-    SPEAKER_TREE("TREE"),
+    SPEAKER_TREE("GRANNY"),
     SPEAKER_HOLLOW("HOLLOW"),
 
     /** Mythic item flavor (§7), one per slot's Mythic. */
-    MYTHIC_SUNFALL("Shot once, long ago, at a high fall. The arrow never came back whole."),
-    MYTHIC_CROWN("Wear it and you see weak spots the way the Hollow sees strong ones."),
-    MYTHIC_BARK("Cut from the World Tree's bark when it could spare wood. It knows how to close a wound."),
-    MYTHIC_WINDRUNNER("Made for running. He never ran again after he put them on."),
-    MYTHIC_VERDANT("A promise in sap. What heals you lets you keep healing."),
-    MYTHIC_EMBERLESS("The ember that never went out — cooled, and put to work.");
+    MYTHIC_SUNFALL("One arrow. One dawn. Never missed."),
+    MYTHIC_CROWN("See weak spots. Bonk them."),
+    MYTHIC_BARK("Granny's bark. Heals you back."),
+    MYTHIC_WINDRUNNER("Fast boots. Never run. Stand."),
+    MYTHIC_VERDANT("A pinky promise in sap."),
+    MYTHIC_EMBERLESS("Cold ember. Hot temper.");
 
     private final String english;
 

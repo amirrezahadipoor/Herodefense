@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Idle-whisper pool (§8): one-sentence Tree-voice lines in both languages, each shown at most once ever, when
+ * Idle-whisper pool: short Pip bursts, each shown at most once ever, when
  * a Resume follows a single real-time pause of at least 300 seconds. Order is fixed: the first still-unused line
  * is always next, and an exhausted pool stays silent.
  */

@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P2 VERIFIED GREEN` — English-only, CI green on all workflows. Next: `P3` story rebuild. |
-| **Last push** | `P2` (+3 fix commits) — Persian deleted; 1160 tests green, PMD/SpotBugs clean, balance gate + Android green. |
+| **Status** | `P3a PUSHED` — new words on kept StoryStrings keys + mid-fight beats deleted. CI polling. Next: `P3b` new keys. |
+| **Last push** | `P3a` — 91 new lines (Pip/Granny/Hollow/Night Shift), BossBeats+HOLLOW_BOSS_*+half-beat call deleted, CombatSilenceTest + StoryLineLengthTest new. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -36,6 +36,13 @@
   runtime smoke (0 Arabic codepoints in shipped text), 14/14 audit tests.
   Remaining: P3–P8. Watch: `UiMirror`/`GameLocale.rightToLeft` dormant LTR branches kept
   (audit `rightToLeft` evidence); `DrawnStringProvenanceTest` ratchet untouched.
+- **P3a (2026-09-23)** — new words on all kept `StoryStrings` keys (91 lines per §9: Pip
+  openings/milestones/notes/whispers, Granny victory/gift/codex, Hollow deadpan, Night Shift
+  title cards, warmed epilogues/mythics) + mid-fight beats deleted early (`BossBeats`,
+  `HOLLOW_BOSS_*`, `presentBossHalfBeat`, `Boss.halfBeatSpoken`, `BossBeatsTest`) with a
+  stronger `CombatSilenceTest` (wounded boss = silent, deeds still announce). NEW
+  `StoryLineLengthTest` (every entry ≤60). Verdict words keep their test-pinned
+  debt/inventory/mercy semantics. Remaining: P3b–P3e (new keys, lore, voices, docs), P4–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -51,6 +58,10 @@
   key, colour-blind moved to row 6; (3) space has no atlas glyph (all 1808 misses were
   U+0020). Final: `Test core logic` + `Build and touch-test Android` green on `9137725`.
   P2 VERIFIED. Next session: P3.
+- **2026-09-23 / session 3** — P3a pushed: mapped every story reader/pin (20+ tests),
+  proved the font repertoire (ASCII + — + … only; ' § absent from both faces), new words
+  on 91 kept keys, BossBeats deletion pulled forward from P5 (same files, stronger
+  silence test). Interim: Pip's words still type in old voices until P3d. Next: P3b.
 
 ---
 

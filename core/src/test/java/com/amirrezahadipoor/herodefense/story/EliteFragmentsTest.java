@@ -5,41 +5,41 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.junit.jupiter.api.Test;
 
-/** Locks the verbatim §4 "Whispering Wounds" fragments and their I/II alternation. */
+/** Locks Pip's field-note fragments and their I/II alternation. */
 final class EliteFragmentsTest {
     @Test
     void oddKillsShowFragmentOneAndEvenKillsFragmentTwo() {
         assertEquals(
-            "It does not die. It just lets go — everything at once.",
+            "It pops! Do not hug it.",
             EliteFragments.fragmentFor("blightburst", 1));
-        assertEquals("That burst is not anger. It is relief.",
+        assertEquals("That pop is relief. Weird.",
             EliteFragments.fragmentFor("blightburst", 2));
         assertEquals(
-            "That shield is not armor. It is a root, remembering its job.",
+            "A shield! Rude shield!",
             EliteFragments.fragmentFor("rootward_ward", 3));
         assertEquals(
-            "Even like this, it still tries to protect. It just forgot what.",
+            "It guards nothing. Still guards.",
             EliteFragments.fragmentFor("rootward_ward", 4));
-        assertEquals("Where it walks, the ground never heals.",
+        assertEquals("Don't step in the yuck.",
             EliteFragments.fragmentFor("weeping_rot", 5));
         assertEquals(
-            "Follow its trail long enough. It leads to the Tree.",
+            "The yuck leads to Granny?!",
             EliteFragments.fragmentFor("weeping_rot", 6));
     }
 
     @Test
     void theDeepPoolAffixesCarryTheirOwnTwoPartThreads() {
-        assertEquals("It never leaves a place empty. Nothing here does.",
+        assertEquals("One becomes two! Bad magic!",
             EliteFragments.fragmentFor("hollowmolt", 1));
-        assertEquals("Two small silences where one loud one stood.",
+        assertEquals("Two small quiets. Still loud.",
             EliteFragments.fragmentFor("hollowmolt", 2));
-        assertEquals("The moss covers the wound while the wound is still there.",
+        assertEquals("Moss on a wound. Still a wound.",
             EliteFragments.fragmentFor("gravemoss", 3));
-        assertEquals("That is not healing. That is something patient taking it back.",
+        assertEquals("It's healing! …Stop healing!",
             EliteFragments.fragmentFor("gravemoss", 4));
-        assertEquals("Stand too close and it loves you — the way an ember loves wind.",
+        assertEquals("Hot hug! No hugs!",
             EliteFragments.fragmentFor("cinderhalo", 5));
-        assertEquals("That heat is not attack. It is grief, still warm.",
+        assertEquals("Warm grief. Stay back.",
             EliteFragments.fragmentFor("cinderhalo", 6));
     }
 

@@ -9,27 +9,27 @@ final class ReflectionLinesTest {
     @Test
     void reflectionsMatchStoryContentVerbatim() {
         assertEquals(
-            "The wolves fear something bigger than me. That should scare me more.",
+            "Twenty-five nights! Pip counted!",
             ReflectionLines.lineForWave(25)
         );
         assertEquals(
-            "Half of what I have killed, I once knew. I try not to think about it.",
+            "Fifty nights! A new tree today!",
             ReflectionLines.lineForWave(50)
         );
         assertEquals(
-            "Past the treeline, the ground is wrong. Not ground at all.",
+            "The dark is thick. My butt glows.",
             ReflectionLines.lineForWave(75)
         );
         assertEquals(
-            "Three trees now. Three times to lose. I would still make the trade.",
+            "Half the Night Shift owes me coins.",
             ReflectionLines.lineForWave(125)
         );
         assertEquals(
-            "It stopped sending the weak ones first. It is out of patience.",
+            "Last seed tonight, Chief! Hold on!",
             ReflectionLines.lineForWave(150)
         );
         assertEquals(
-            "What is left may be the last. Or it wants me to believe that.",
+            "Almost dawn, Chief. Almost.",
             ReflectionLines.lineForWave(175)
         );
     }

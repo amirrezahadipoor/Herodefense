@@ -17,8 +17,6 @@ public final class Boss extends Enemy {
     public boolean entrancePresented;
     public int specialUseCount;
     public int bossNumber;
-    /** The Hollow's half-health line has been spoken for this fight (roadmap ST4). */
-    public boolean halfBeatSpoken;
     /** The enrage-crossing evolution burst has fired for this fight (roadmap C2). */
     public boolean evolutionPresented;
     /** The crossing's gameplay half has been applied once for this fight (see {@code BossEvolution}). */

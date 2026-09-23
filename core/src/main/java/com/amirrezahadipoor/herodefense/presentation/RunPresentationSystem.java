@@ -6,7 +6,6 @@ import com.amirrezahadipoor.herodefense.gameplay.BossFightScript;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
-import com.amirrezahadipoor.herodefense.story.BossBeats;
 import com.amirrezahadipoor.herodefense.story.BossTitleCards;
 import com.amirrezahadipoor.herodefense.story.BossTitleNarration;
 import com.amirrezahadipoor.herodefense.story.CodexSystem;
@@ -168,23 +167,6 @@ public final class RunPresentationSystem {
     }
 
     /**
-     * The Hollow speaks: one line per boss fight, when the fight first crosses half
-     * (roadmap ST4). Claimed once by flag, so a resumed save never hears it twice.
-     */
-    public String presentBossHalfBeat(GameState state) {
-        for (Boss boss : state.aliveBosses) {
-            if (boss == null || !boss.alive || boss.halfBeatSpoken) {
-                continue;
-            }
-            if (boss.health <= boss.maxHealth * 0.5f) {
-                boss.halfBeatSpoken = true;
-                return BossBeats.lineFor(boss.bossType);
-            }
-        }
-        return null;
-    }
-
-    /**
      * The Hollow at hero fall (roadmap ST1): the first death is addressed differently from every
      * later one. The line parks in the codex ledger until the game-over panel has shown it.
      */
@@ -198,16 +180,16 @@ public final class RunPresentationSystem {
         return HollowVoice.lineForSpare(state);
     }
 
-    /** Per-play tick: a fresh deed's announcement first, then a boss fight's half-health beat. */
+    /**
+     * Per-play tick: a fresh deed's announcement, then the evolution watch. Combat itself stays
+     * silent -- no boss, Hollow, Pip or Warden line ever speaks while enemies live. Bosses talk
+     * in their watch-only intro before the wave; once the fight starts, only deeds announce.
+     */
     public void presentPlaytime(GameState state) {
         String deedLine = presentDeeds(state);
         if (deedLine != null) {
             beats.showBeat(deedLine);
             return;
-        }
-        String bossHalfBeat = presentBossHalfBeat(state);
-        if (bossHalfBeat != null) {
-            beats.showBeat(bossHalfBeat);
         }
         presentBossEvolutions(state);
     }

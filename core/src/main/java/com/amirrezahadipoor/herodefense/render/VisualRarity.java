@@ -24,7 +24,7 @@ public enum VisualRarity {
     ELITE_CINDERHALO(true, 1.0f, 0.5f, 0.2f, 1.15f),
     /** Quarry-grey for stoneshell Elites: the colour of the hill they pulled over themselves. */
     ELITE_STONESHELL(true, 0.72f, 0.72f, 0.80f, 1.05f),
-    /** Old blood for gravebloom Elites: the ground keeps what they spill. */
+    /** Old blood for gravebloom Elites: the colour of angry ground. */
     ELITE_GRAVEBLOOM(true, 0.72f, 0.20f, 0.24f, 1.05f),
     /** Pale chitin for swarmcall Elites: a door standing open in a body. */
     ELITE_SWARMCALL(true, 0.85f, 0.95f, 0.70f, 1.10f),

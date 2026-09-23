@@ -47,48 +47,48 @@ final class EpilogueTest {
     void textMatchesStoryContentVerbatim() {
         assertEquals(
             List.of(
-                "Two hundred nights. Not one step lost.",
-                "The night needs a new plan.",
-                "Until then, the Tree and I stand."
+                "Two hundred nights. Zero falls.",
+                "The Night needs a new plan.",
+                "Pip's plan worked! …Mostly."
             ),
             Epilogue.A.lines()
         );
         assertEquals(
             List.of(
-                "Two hundred nights. Every one of them close.",
-                "I do not remember all of it. I remember not letting go.",
-                "That is enough. It has to be."
+                "Two hundred nights. All heart.",
+                "I fell. I rose. I held.",
+                "Best Chief ever. Don't argue."
             ),
             Epilogue.B.lines()
         );
         assertEquals(
             List.of(
-                "Not even the middle.",
-                "The Tree fell quiet so early. It should not have.",
-                "Next time it is loud."
+                "Too soon. Too dark.",
+                "Granny, keep my seat warm.",
+                "We go again. Now. Up, Chief!"
             ),
             Epilogue.C.lines()
         );
         assertEquals(
             List.of(
-                "So close to the second root.",
-                "I went farther than before. Far is not far enough.",
-                "Again."
+                "Past Twig. Not past dawn.",
+                "Next time, Night. Next time.",
+                "Pip counted! Further next run!"
             ),
             Epilogue.D.lines()
         );
         assertEquals(
             List.of(
-                "One tree stood when I fell. That counts.",
-                "The night paid for this run. It just lasted a little longer than me.",
-                "Next time it pays for everything."
+                "So close the dawn waved.",
+                "It can wait one more run.",
+                "One more run! Pip's got a NEW plan!"
             ),
             Epilogue.E.lines()
         );
         assertEquals(
             List.of(
-                "The night is not gone. It is quiet, learning how to fall again.",
-                "Stand up. The Tree is still standing."
+                "The Night rests. It never leaves.",
+                "Stand up. Granny stands with you."
             ),
             Epilogue.transitionLines()
         );

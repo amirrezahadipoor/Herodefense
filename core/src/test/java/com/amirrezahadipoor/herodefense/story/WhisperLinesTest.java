@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.story;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -9,11 +10,13 @@ import org.junit.jupiter.api.Test;
 
 final class WhisperLinesTest {
     @Test
-    void poolHoldsSixSingleSentenceTreeLines() {
+    void poolHoldsSixShortPipBursts() {
         assertEquals(6, WhisperLines.lines().size());
         for (String line : WhisperLines.lines()) {
             long terminals = line.chars().filter(c -> c == '.' || c == '!' || c == '?').count();
-            assertEquals(1, terminals, line);
+            assertTrue(terminals >= 1 && terminals <= 3, line);
+            char last = line.charAt(line.length() - 1);
+            assertTrue(last == '.' || last == '!' || last == '?', line);
         }
     }
 

@@ -23,15 +23,15 @@ final class OpeningCinematicTest {
 
         advance(opening, OpeningCinematic.ZOOM_IN_SECONDS * 0.5f + 0.4f);
         assertEquals(OpeningCinematic.Phase.LINE_ONE, opening.phase());
-        assertEquals("Can you protect the World Tree?!", opening.line());
+        assertEquals("Hey! Hey you! With the bow!", opening.line());
         assertEquals(OpeningCinematic.CLOSE_ZOOM, opening.cameraZoom(), 0.0001f);
         assertEquals(1f, opening.cameraFocus(), 0.0001f);
         assertEquals(1f, opening.lineAlpha(), 0.0001f);
 
         advance(opening, OpeningCinematic.LINE_ONE_SECONDS);
-        assertEquals("Can you?", opening.line());
+        assertEquals("I'm Pip. You're the new Chief.", opening.line());
         advance(opening, OpeningCinematic.LINE_TWO_SECONDS);
-        assertEquals("Are you sure?!", opening.line());
+        assertEquals("Stay close. The Night is coming.", opening.line());
         advance(opening, OpeningCinematic.LINE_THREE_SECONDS);
         assertEquals(OpeningCinematic.Phase.ZOOM_OUT, opening.phase());
         assertNull(opening.line());
@@ -71,19 +71,19 @@ final class OpeningCinematicTest {
 
     @Test
     void eachAscensionTierSpeaksItsOwnBeats() {
-        assertTierLines(0, "Can you protect the World Tree?!", "Can you?", "Are you sure?!");
-        assertTierLines(1, "The dark comes back. It always does.", "The Tree is tired. So am I.", "Tonight we go further.");
+        assertTierLines(0, "Hey! Hey you! With the bow!", "I'm Pip. You're the new Chief.", "Stay close. The Night is coming.");
+        assertTierLines(1, "Back again, Chief?", "Granny saved you some light.", "Tonight we go further.");
         assertTierLines(
             2,
-            "It knows my name by now.",
-            "Good. Let it remember.",
-            "Roots first. Then the dark. Not today."
+            "The Night knows your name now.",
+            "Good. Let it shake.",
+            "Pip's got a plan!"
         );
         assertTierLines(
             3,
-            "New dawn. Same fight.",
-            "The Tree asks: one more watch?",
-            "Say yes."
+            "New night. Same Chief.",
+            "Granny says hi.",
+            "Let's bonk the dark."
         );
     }
 
@@ -97,11 +97,11 @@ final class OpeningCinematicTest {
     }
 
     @Test
-    void defaultBeginKeepsTheShippedTierZeroLines() {
+    void defaultBeginKeepsTierZeroLines() {
         OpeningCinematic opening = new OpeningCinematic();
         opening.begin();
         advance(opening, OpeningCinematic.ZOOM_IN_SECONDS + 0.1f);
-        assertEquals("Can you protect the World Tree?!", opening.line());
+        assertEquals("Hey! Hey you! With the bow!", opening.line());
     }
 
     private static void assertTierLines(int tier, String one, String two, String three) {

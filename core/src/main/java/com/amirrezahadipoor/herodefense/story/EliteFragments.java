@@ -5,8 +5,7 @@ import com.amirrezahadipoor.herodefense.i18n.StoryStrings;
 import com.amirrezahadipoor.herodefense.i18n.Translated;
 
 /**
- * Verbatim {@code docs/STORY_CONTENT.md} §4 "Whispering Wounds" fragments in both languages, one per Elite
- * kill.
+ * Pip's field notes: one fragment per Elite kill, alternating I/II per affix.
  */
 public final class EliteFragments {
 
