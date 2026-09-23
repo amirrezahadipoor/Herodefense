@@ -67,7 +67,7 @@ final class FloatingDamageTextSystemTest {
         List<FloatingDamageText> labels = system.labels();
         assertEquals(2, labels.size());
         assertEquals("STUN", labels.get(0).text, "the STUN tag is the table's word");
-        assertEquals("+$ 12", labels.get(1).text, "auto-sell coins read "+$ n"");
+        assertEquals("+$ 12", labels.get(1).text, "auto-sell coins read like a price tag");
         assertEquals("1.2k", FloatingDamageTextSystem.formatDamage(1_240f),
             "compact damage keeps the shape the combat pop-ups have always drawn");
     }
