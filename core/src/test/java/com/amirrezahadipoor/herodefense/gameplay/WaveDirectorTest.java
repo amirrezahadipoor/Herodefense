@@ -215,7 +215,6 @@ final class WaveDirectorTest {
         private int reflections;
         private int ceremonies;
         private int bossIntros;
-        private int breathers;
         private int records;
 
         @Override
@@ -250,7 +249,7 @@ final class WaveDirectorTest {
 
         @Override
         public void beginBreather() {
-            breathers++;
+            // No director test produces a completion the breather branch routes; nothing to record.
         }
 
         @Override
