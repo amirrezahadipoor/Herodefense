@@ -104,6 +104,8 @@ vigil to sound like a place. Measured peaks are in `LEVELS.md`, generated from t
 | `audio/sfx/speech_hero.ogg` | *(none)* | generated in-repo | Hero's typed-line blip (Undertale-style) | `c0d14d8c6d3e43155583a78f545d4f2ee4cb0413ad72e07fcb92c854ce9d80fb` |
 | `audio/sfx/speech_tree.ogg` | *(none)* | generated in-repo | Tree's typed-line blip (Undertale-style) | `7aaea77289108c5f2f3e30d0b16c13eefc55c3d2cd8907ff0c2ffff22423f86e` |
 | `audio/sfx/speech_hollow.ogg` | *(none)* | generated in-repo | Hollow's typed-line blip (Undertale-style) | `573d31e9d59e16cd5f119a9a336fc5e96c68c7baf76ea0e939a647c479dda7fb` |
+| `audio/sfx/speech_pip.ogg` | *(none)* | generated in-repo | Pip's typed-line blip, chirping up (Undertale-style) | `60665c59e4e40a08f4364d267057dd07743ae0fe785e3e06c6217ea6cfa0f974` |
+| `audio/sfx/speech_boss.ogg` | *(none)* | generated in-repo | Night Shift's typed-line blip, low square (Undertale-style) | `3e5858253a59ebbb75e91bd81270118be30d4f088dacf146e1a65f7bf31e0b31` |
 
 ## Per-file ledger
 

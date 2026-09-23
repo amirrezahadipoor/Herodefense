@@ -428,7 +428,7 @@ public final class FrameDriver {
             }
             return;
         }
-        dialogue.speak(line, SpeechVoice.TREE, DialogueBox.Source.WHISPER);
+        dialogue.speak(line, SpeechVoice.PIP, DialogueBox.Source.WHISPER);
     }
 
     public void setStoryBeatLine(String line) {

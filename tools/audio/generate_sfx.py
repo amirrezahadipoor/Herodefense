@@ -203,6 +203,19 @@ def build(name: str) -> np.ndarray:
         tone = sweep(300.0, 210.0, length, "triangle") * decay(length, 4.5)
         body = sweep(150.0, 120.0, length) * decay(length, 6.0) * 0.6
         return tone * 0.75 + body
+    # P3's two new speakers: Pip chirps UP (every older voice falls, so the rise is Pip's
+    # signature), and the Night Shift answers in a low square wave, softened so it thumps
+    # rather than buzzes.
+    if name == "speech_pip":
+        length = seconds(0.05)
+        tone = sweep(1250.0, 1750.0, length, "triangle") * decay(length, 8.0)
+        body = sweep(2500.0, 3100.0, length) * decay(length, 10.0) * 0.5
+        return tone * 0.7 + body
+    if name == "speech_boss":
+        length = seconds(0.09)
+        tone = lowpass(sweep(220.0, 140.0, length, "square") * decay(length, 4.0), 1200.0)
+        body = sweep(110.0, 70.0, length) * decay(length, 5.0) * 0.7
+        return tone * 0.75 + body
     raise KeyError(name)
 
 
@@ -230,6 +243,8 @@ EFFECTS = {
     "speech_hero": 0.42,
     "speech_tree": 0.40,
     "speech_hollow": 0.44,
+    "speech_pip": 0.42,
+    "speech_boss": 0.46,
 }
 
 

@@ -34,8 +34,10 @@ not a cue.
 | `audio/sfx/level_up.ogg` | 0.49 | 44100 | 1 | 0.891 | -1.0 | 0.258 |
 | `audio/sfx/multi_shot.ogg` | 0.16 | 44100 | 2 | 0.849 | -1.4 | 0.073 |
 | `audio/sfx/purchase.ogg` | 0.85 | 48000 | 2 | 0.900 | -0.9 | 0.030 |
+| `audio/sfx/speech_boss.ogg` | 0.09 | 44100 | 1 | 0.468 | -6.6 | 0.094 |
 | `audio/sfx/speech_hero.ogg` | 0.05 | 44100 | 1 | 0.414 | -7.7 | 0.055 |
 | `audio/sfx/speech_hollow.ogg` | 0.08 | 44100 | 1 | 0.446 | -7.0 | 0.076 |
+| `audio/sfx/speech_pip.ogg` | 0.05 | 44100 | 1 | 0.404 | -7.9 | 0.059 |
 | `audio/sfx/speech_tree.ogg` | 0.07 | 44100 | 1 | 0.403 | -7.9 | 0.062 |
 | `audio/sfx/stun.ogg` | 0.30 | 44100 | 2 | 0.877 | -1.1 | 0.077 |
 | `audio/sfx/telegraph_warning.ogg` | 0.70 | 44100 | 1 | 0.716 | -2.9 | 0.143 |

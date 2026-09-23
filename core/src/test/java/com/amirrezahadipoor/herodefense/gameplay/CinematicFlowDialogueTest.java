@@ -18,8 +18,8 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 
 /**
- * The ceremonies speak through the same box the arena's beats do: the opening's lines type out in the
- * Hero's voice, the planting's beats in the speaker's own, and a line the scene has moved off leaves the
+ * The ceremonies speak through the same box the arena's beats do: the opening's lines type out in
+ * Pip's chirp, the planting's beats in the speaker's own, and a line the scene has moved off leaves the
  * box. The blips are the box's own, counted as the line types.
  */
 final class CinematicFlowDialogueTest {
@@ -53,7 +53,7 @@ final class CinematicFlowDialogueTest {
     }
 
     @Test
-    void theOpeningLinesTypeOutInTheBoxInTheHerosVoice() {
+    void theOpeningLinesTypeOutInTheBoxInPipsVoice() {
         GameState state = GameState.newRun(21L);
         GameFlowController flow = new GameFlowController();
         flow.transitionTo(GameScreenState.PLAYING);
@@ -74,7 +74,7 @@ final class CinematicFlowDialogueTest {
         advance(cinematic, OpeningCinematic.ZOOM_IN_SECONDS - 0.5f + 0.1f); // into LINE_ONE
         String firstLine = OpeningCinematic.linesForTier(0)[0];
         assertEquals(firstLine, cinematic.dialogue().text(), "the opening line is in the box");
-        assertEquals(SpeechVoice.HERO, cinematic.dialogue().voice(), "spoken in the Hero's voice");
+        assertEquals(SpeechVoice.PIP, cinematic.dialogue().voice(), "spoken in Pip's chirp");
         assertTrue(cinematic.dialogue().typing(), "and it is still typing, under its blips");
 
         advance(cinematic, OpeningCinematic.LINE_ONE_SECONDS);
@@ -106,7 +106,7 @@ final class CinematicFlowDialogueTest {
         cinematic.beginPlantingCeremony();
         advance(cinematic, 0.3f);
         assertEquals(GameLocale.text(StoryStrings.CEREMONY_WALK_OUT), cinematic.dialogue().text());
-        assertEquals(SpeechVoice.HERO, cinematic.dialogue().voice(), "the walk-out is the Hero's line");
+        assertEquals(SpeechVoice.TREE, cinematic.dialogue().voice(), "the walk-out is Granny's line");
 
         advance(cinematic, PlantingCeremony.WALK_OUT_SECONDS - 0.3f + 0.1f);
         assertEquals(GameLocale.text(StoryStrings.CEREMONY_PLANT), cinematic.dialogue().text(),

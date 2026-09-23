@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P3a PUSHED` — new words on kept StoryStrings keys + mid-fight beats deleted. CI polling. Next: `P3b` new keys. |
-| **Last push** | `P3a` — 91 new lines (Pip/Granny/Hollow/Night Shift), BossBeats+HOLLOW_BOSS_*+half-beat call deleted, CombatSilenceTest + StoryLineLengthTest new. |
+| **Status** | `P3b PUSHED` — 150 new keys (136 boss-intro + planting sets + chapter cards + Warden line), 5 voices wired, Pip/Boss blips shipped. CI polling. Next: `P3c` lore files (LoreCatalog/BossLore/TreeLetters prose). |
+| **Last push** | `P3b` — 150 new StoryStrings keys per §9 (boss intros M1–M5 all 8 bosses, Sprout/Leaf rites, Twig rewrite, 7 chapter keys, VICTORY_WARDEN); SpeechVoice +PIP/BOSS + SpeechBlip 5-voice router; CeremonyLines planting-aware; opening→Pip, whispers→Pip; 2 new blips + ledger. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -43,6 +43,21 @@
   stronger `CombatSilenceTest` (wounded boss = silent, deeds still announce). NEW
   `StoryLineLengthTest` (every entry ≤60). Verdict words keep their test-pinned
   debt/inventory/mercy semantics. Remaining: P3b–P3e (new keys, lore, voices, docs), P4–P8.
+- **P3b (2026-09-23)** — new keys + voices + blips, pushed. Done: 150 new `StoryStrings`
+  keys verbatim from §9 (136 boss-intro M1–M5 × 8 bosses, Sprout/Leaf 3-beat rites, Twig
+  5-beat rewrite, 7 chapter-card keys, `VICTORY_WARDEN` "…We held."); `SpeechVoice`
+  +PIP/BOSS with `SPEECH_PIP` (rising chirp) + `SPEECH_BOSS` (low square) cues, oggs
+  generated + `LEVELS.md`/`AUDIO_LICENSES.md` updated; `SpeechBlip` rewritten as the
+  5-voice router (arena beats auto-voice via `voiceForRunningText`); `CeremonyLines`
+  planting-aware (`entryFor(phase, groveIndex)`, `isTreeVoice` deleted);
+  opening→Pip, whispers→Pip; speaker plates +PIP(gold)/BOSS(ember); stale "D3 adds 4
+  more" notes fixed. Tests rewritten (migration, rule 4): SpeechBlip/CeremonyLines/
+  CinematicFlowDialogue/DialogueBoxRenderer/AudioContract; length/blank/script gates
+  auto-cover all 272 keys. Verified: python sweep (272 keys, ≤60, no dupes, full M1–M5
+  grid), javac i18n+audio clean, `--check` green; CI is the compiler for the rest.
+  Remaining: P3c (lore prose: LoreCatalog/BossLore/TreeLetters) → P3d (docs) → P4–P8.
+  Tool lesson: never batch 2+ `edit_file` calls to the SAME file — only one lands
+  (CinematicFlow + its test each lost edits, all re-applied sequentially and verified).
 
 ### Session log (append-only, one line per work session)
 
@@ -62,6 +77,10 @@
   proved the font repertoire (ASCII + — + … only; ' § absent from both faces), new words
   on 91 kept keys, BossBeats deletion pulled forward from P5 (same files, stronger
   silence test). Interim: Pip's words still type in old voices until P3d. Next: P3b.
+- **2026-09-23 / session 4** — P3b done + pushed: reconciled the plan against MEMORY §9
+  (the authoritative script — 136 intro keys + 14 ceremony/chapter/warden keys, not the
+  misremembered 158-key sketch), transcribed all §9.5–9.9 dialogue verbatim, wired all
+  five voices end to end. Next: P3c lore prose, then P3d docs, then P4 cutscenes.
 
 ---
 

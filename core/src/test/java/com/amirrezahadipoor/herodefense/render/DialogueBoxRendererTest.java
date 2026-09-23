@@ -25,12 +25,18 @@ final class DialogueBoxRendererTest {
         assertEquals(StoryStrings.SPEAKER_WARDEN, DialogueBoxRenderer.speakerName(SpeechVoice.HERO));
         assertEquals(StoryStrings.SPEAKER_TREE, DialogueBoxRenderer.speakerName(SpeechVoice.TREE));
         assertEquals(StoryStrings.SPEAKER_HOLLOW, DialogueBoxRenderer.speakerName(SpeechVoice.HOLLOW));
+        assertEquals(StoryStrings.SPEAKER_PIP, DialogueBoxRenderer.speakerName(SpeechVoice.PIP));
+        assertEquals(StoryStrings.SPEAKER_NIGHT, DialogueBoxRenderer.speakerName(SpeechVoice.BOSS));
 
         assertEquals(1f, DialogueBoxRenderer.speakerColor(SpeechVoice.HERO).r, 1e-4f, "the Warden's name is white");
         assertEquals(OverlayText.POSITIVE.r, DialogueBoxRenderer.speakerColor(SpeechVoice.TREE).r, 1e-4f,
             "the Tree's name is the leaf green the whisper already used");
         assertEquals(OverlayText.NEGATIVE.r, DialogueBoxRenderer.speakerColor(SpeechVoice.HOLLOW).r, 1e-4f,
             "the Hollow's name is the red its taunts already use");
+        assertEquals(OverlayText.GOLD.r, DialogueBoxRenderer.speakerColor(SpeechVoice.PIP).r, 1e-4f,
+            "Pip's name glows the gold his light already uses");
+        assertEquals(OverlayText.EMBER.r, DialogueBoxRenderer.speakerColor(SpeechVoice.BOSS).r, 1e-4f,
+            "the Night Shift's name burns the ember its title cards will use");
     }
 
     @Test

@@ -184,15 +184,20 @@ public final class DialogueBoxRenderer implements AutoCloseable {
         return switch (voice) {
             case TREE -> StoryStrings.SPEAKER_TREE;
             case HOLLOW -> StoryStrings.SPEAKER_HOLLOW;
+            case PIP -> StoryStrings.SPEAKER_PIP;
+            case BOSS -> StoryStrings.SPEAKER_NIGHT;
             default -> StoryStrings.SPEAKER_WARDEN;
         };
     }
 
-    /** The colour a name carries: the Warden's white, the Tree's leaf green, the Hollow's red. */
+    /** The colour a name carries: the Warden's white, Granny's leaf green, the Hollow's red, Pip's gold,
+     * and the Night Shift's ember. */
     static Color speakerColor(SpeechVoice voice) {
         return switch (voice) {
             case TREE -> OverlayText.POSITIVE;
             case HOLLOW -> OverlayText.NEGATIVE;
+            case PIP -> OverlayText.GOLD;
+            case BOSS -> OverlayText.EMBER;
             default -> Color.WHITE;
         };
     }

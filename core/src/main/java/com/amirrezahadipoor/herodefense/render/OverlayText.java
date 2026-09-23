@@ -22,6 +22,7 @@ final class OverlayText implements AutoCloseable {
     static final Color SUBTLE = Color.valueOf("C6D2C4");
     static final Color POSITIVE = Color.valueOf("7ED898");
     static final Color NEGATIVE = Color.valueOf("EA7F79");
+    static final Color EMBER = Color.valueOf("E8964F");
     static final Color MUTED = Color.valueOf("97A096");
 
     private static final float SHADOW_OFFSET_X = 1.5f;

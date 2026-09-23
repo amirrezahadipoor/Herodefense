@@ -5,6 +5,7 @@ import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.audio.IdentityCues;
+import com.amirrezahadipoor.herodefense.audio.SpeechBlip;
 import com.amirrezahadipoor.herodefense.audio.SpeechVoice;
 import com.amirrezahadipoor.herodefense.presentation.DialogueBox;
 import com.amirrezahadipoor.herodefense.model.GameState;
@@ -44,6 +45,8 @@ public final class CinematicFlow {
     private final AudioPlayback audioManager;
 
     private float waterDropAccumulator;
+    /** Which grove tree the running planting ceremony plants: 0 Sprout, 1 Twig, 2 Leaf. */
+    private int ceremonyGroveIndex;
     /**
      * The ceremony's message box: the opening's lines and the planting's beats type out in the same
      * Undertale box the arena's beats use. It is sticky, because the scene -- not a reading timer --
@@ -103,6 +106,7 @@ public final class CinematicFlow {
             else if (pendingWave == 150) groveIndex = 2;
         }
         boolean shortCeremony = groveIndex == 0 || groveIndex == 2;
+        ceremonyGroveIndex = groveIndex;
         plantingCeremony.begin(shortCeremony, groveIndex);
         state.anchorHeroAtArenaCenter();
         dialogue.clear();
@@ -113,7 +117,7 @@ public final class CinematicFlow {
         GameState state = host.gameState();
         dialogue.tick(deltaSeconds, false);
         if (openingCinematic.isActive()) {
-            speakLine(openingCinematic.line(), SpeechVoice.HERO);
+            speakLine(openingCinematic.line(), SpeechVoice.PIP);
             state.anchorHeroAtArenaCenter();
             heroAnimationController.update(state.hero, deltaSeconds);
             if (openingCinematic.update(deltaSeconds)) {
@@ -123,8 +127,8 @@ public final class CinematicFlow {
             }
             return;
         }
-        speakLine(CeremonyLines.lineFor(plantingCeremony.phase()),
-            CeremonyLines.isTreeVoice(plantingCeremony.phase()) ? SpeechVoice.TREE : SpeechVoice.HERO);
+        speakLine(CeremonyLines.lineFor(plantingCeremony.phase(), ceremonyGroveIndex),
+            SpeechBlip.voiceFor(CeremonyLines.entryFor(plantingCeremony.phase(), ceremonyGroveIndex)));
         boolean finished = plantingCeremony.update(deltaSeconds);
         if (plantingCeremony.pouring()) {
             waterDropAccumulator += deltaSeconds;

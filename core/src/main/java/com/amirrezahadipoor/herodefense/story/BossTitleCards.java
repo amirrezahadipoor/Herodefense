@@ -12,7 +12,7 @@ public final class BossTitleCards {
     private BossTitleCards() {
     }
 
-    /** Verbatim title line for an identity, or null for unknown identities. D3 adds 4 more. */
+    /** Verbatim title line for an identity, or null for unknown identities. All eight are in. */
     public static String titleFor(String bossType) {
         if (bossType == null) {
             return null;

@@ -37,10 +37,13 @@ public enum AudioCue {
     BOSS_ENTRANCE_SHRIEK("audio/sfx/boss_entrance_shriek.ogg", 0.42f, 0.50f),
     BOSS_ENTRANCE_VOID("audio/sfx/boss_entrance_void.ogg", 0.42f, 0.50f),
     // The conversation voices (roadmap ST-voice): an Undertale-style blip under a typed line, never a spoken
-    // word. Three short tones so a line's speaker is recognisable by ear -- Hero, Tree, Hollow.
+    // word. Five short tones so a line's speaker is recognisable by ear -- Hero, Tree, Hollow, Pip (chirps up),
+    // and the Night Shift's low square.
     SPEECH_HERO("audio/sfx/speech_hero.ogg", 0.34f, 0.05f),
     SPEECH_TREE("audio/sfx/speech_tree.ogg", 0.32f, 0.06f),
-    SPEECH_HOLLOW("audio/sfx/speech_hollow.ogg", 0.35f, 0.06f);
+    SPEECH_HOLLOW("audio/sfx/speech_hollow.ogg", 0.35f, 0.06f),
+    SPEECH_PIP("audio/sfx/speech_pip.ogg", 0.34f, 0.05f),
+    SPEECH_BOSS("audio/sfx/speech_boss.ogg", 0.36f, 0.06f);
 
     private final String path;
     private final float volume;
