@@ -41,6 +41,8 @@ public final class SessionController {
         void beginPlantingCeremony();
 
         void beginBossIntro();
+
+        void beginBreather();
     }
 
     private final Host host;
@@ -148,6 +150,9 @@ public final class SessionController {
         } else if (state.bossIntroPending) {
             // A save closed mid-intro replays it from the first frame; the prop respawns fresh.
             host.beginBossIntro();
+        } else if (state.breatherPending) {
+            // A save closed mid-breather replays Pip's beat from the start; it is deterministic.
+            host.beginBreather();
         } else if (state.unspentTalentPoints > 0) {
             flow.transitionTo(GameScreenState.LEVEL_UP);
         } else if (!state.waveActive && ArenaQueries.untouchedFirstWave(state)) {

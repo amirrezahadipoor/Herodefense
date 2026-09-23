@@ -200,6 +200,13 @@ public enum StoryStrings implements Translated {
     CEREMONY_150_PLANT("Grow soft, Leaf."),
     CEREMONY_150_WALK_BACK("Shh. She naps already."),
 
+    /** Pip's milestone breaths (MEMORY §9.3): one line after clearing 25/75/125/175, between
+     *  waves, never during combat. */
+    BREATHER_25("Twenty-five nights! Pip counted!"),
+    BREATHER_75("The dark is thick. My butt glows."),
+    BREATHER_125("Half the Night Shift owes me coins."),
+    BREATHER_175("Almost dawn, Chief. Almost."),
+
     /** Boss-intro cutscenes, first meetings (waves 5–40): four trash-talk lines per boss, then Pip's
      *  comeback. The bosses speak ONLY here — never once their wave starts. */
     BOSS_INTRO_ANCIENT_GOLEM_M1_1("Hrrrm? …Who woke Grum?"),

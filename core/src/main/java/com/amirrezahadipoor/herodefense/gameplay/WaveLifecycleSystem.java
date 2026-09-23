@@ -35,7 +35,7 @@ public final class WaveLifecycleSystem {
 
     public boolean startCurrentWave(GameState state) {
         if (state == null || state.runComplete || state.waveActive || state.awaitingBossReward
-            || state.ceremonyPending || state.bossIntroPending) {
+            || state.ceremonyPending || state.bossIntroPending || state.breatherPending) {
             return false;
         }
         if (bossSpawner.isBossWave(state.waveNumber)) {
@@ -97,6 +97,18 @@ public final class WaveLifecycleSystem {
             return false;
         }
         state.bossIntroPending = false;
+        return spawnCurrentWave(state);
+    }
+
+    /**
+     * Called when the breather ends (or instantly by the simulator): the next wave spawns
+     * for real after Pip's beat.
+     */
+    public boolean completeBreather(GameState state) {
+        if (state == null || !state.breatherPending) {
+            return false;
+        }
+        state.breatherPending = false;
         return spawnCurrentWave(state);
     }
 

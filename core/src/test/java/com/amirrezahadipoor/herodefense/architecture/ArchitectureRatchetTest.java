@@ -74,7 +74,13 @@ class ArchitectureRatchetTest {
         // router and the composer read through the Host ports, plus the two one-line host seams that begin
         // and expose it. The walk, the talk and the handoff live in gameplay/BossIntroCinematic and
         // gameplay/CinematicFlow, which the ratchet does not hold; the game class only owns the seam.
-        new ArchitectureRatchet.Frozen(818, 64),
+        //
+        // P6c (milestone breathers + final-push horn) raised this by 18 lines and no fields: one
+        // import, the private beginBreather seam, and five one-line host forwards (begin + expose on
+        // the touch host, begin on the director and session hosts, expose on the composer). The beat,
+        // the line and the handoff live in gameplay/BreatherCinematic and gameplay/CinematicFlow,
+        // which the ratchet does not hold; the game class only owns the seam, as it owns every port.
+        new ArchitectureRatchet.Frozen(836, 64),
         // R3.1 tap-to-focus and R3.2 script-driven telegraphs added 14 lines and two fields to the renderer
         // (the mark drawing itself lives in FocusMarkRenderer; the sprite-box helper, the draw loop and the
         // telegraph scale stayed here). Recorded, not hidden.
@@ -105,7 +111,12 @@ class ArchitectureRatchetTest {
         // P6a raised the line count by 3 without adding a field: the sweep keeps the same wave
         // clock the live game keeps, or the mythic time-effects would publish bands for a game
         // without them. No new state, no new method.
-        new ArchitectureRatchet.Frozen(671, 23),
+        //
+        // P6c raised the line count by 4 without adding a field: the breather is
+        // presentation-only, so the sweep completes it instantly the way it already completes
+        // the boss intro. The fields re-measure at 25 -- the heuristic counts the three static
+        // constants, and the number only ever bound the lines anyway.
+        new ArchitectureRatchet.Frozen(675, 25),
         // R3.3 added the trophy ledger (one field that a run may not reset) and R3.5 the run mode (plus
         // `runLengthWaves()`, which is what lets a thirty-wave run end without touching the long one). R3.4 added
         // no field: wave omens are switched on by the trial the player drafted, and the trial list already exists.
@@ -138,7 +149,18 @@ class ArchitectureRatchetTest {
         // P6b raised this by one field and three lines: escortWave is run state like tricklePulse
         // beside it -- a between-waves save must remember whether the second escort pulse is
         // still owed -- encoded by the codec like every other field. No behaviour in the model itself.
-        new ArchitectureRatchet.Frozen(665, 89)
+        //
+        // P6c raised this by two fields and seven lines: breatherPending/breatherWave are run state
+        // like bossIntroPending/bossIntroWave beside them -- a between-waves save must remember a
+        // deferred milestone beat -- encoded by the codec like every other field. One repair line
+        // keeps waveActive false while the beat is pending. No behaviour in the model itself.
+        new ArchitectureRatchet.Frozen(672, 91),
+        // P6c froze this file at its measured size: the breather routing (the card screen's BREATHER
+        // branch, two Host seams, one import) carried it from exactly 600 lines to 608, and the
+        // ratchet holds whatever crosses the ceiling. The two fields are the router's own input
+        // state; nothing the breather added.
+        "com/amirrezahadipoor/herodefense/input/ScreenTouchRouter.java",
+        new ArchitectureRatchet.Frozen(608, 2)
     );
 
     @Test

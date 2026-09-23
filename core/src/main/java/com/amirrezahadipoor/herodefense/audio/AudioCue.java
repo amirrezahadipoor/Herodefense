@@ -26,6 +26,8 @@ public enum AudioCue {
     ULTIMATE_RELEASE("audio/sfx/bow_release_heavy.ogg", 0.50f, 0.30f),
     COIN_PICKUP("audio/sfx/coin_pickup.ogg", 0.36f, 0.12f),
     WAVE_CLEAR("audio/sfx/wave_clear.ogg", 0.46f, 1.20f),
+    // P6c longer waves: the horn that answers the last pulse of a wave walking in.
+    FINAL_PUSH("audio/sfx/final_push.ogg", 0.46f, 0.60f),
     TELEGRAPH_WARNING("audio/sfx/telegraph_warning.ogg", 0.52f, 0.60f),
     UI_TAP("audio/sfx/ui_tap.ogg", 0.26f, 0.06f),
     UI_CLOSE("audio/sfx/ui_close.ogg", 0.28f, 0.10f),

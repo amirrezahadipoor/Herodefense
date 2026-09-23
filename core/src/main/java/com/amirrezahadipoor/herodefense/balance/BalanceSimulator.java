@@ -295,6 +295,10 @@ public final class BalanceSimulator {
                     // The intro is presentation only; the simulator spawns the wave instantly.
                     waves.completeBossIntro(state);
                 }
+                if (completion == WaveCompletion.BREATHER) {
+                    // The breather is presentation only; the simulator skips Pip's pause.
+                    waves.completeBreather(state);
+                }
                 elapsed += STEP_SECONDS;
                 // P6: the sweep keeps the same wave clock the live game keeps, or the mythic
                 // time-effects (Windrunner's ramp) would publish bands for a game without them.

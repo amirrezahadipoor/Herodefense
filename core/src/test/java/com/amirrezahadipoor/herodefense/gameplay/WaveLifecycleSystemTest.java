@@ -142,6 +142,56 @@ final class WaveLifecycleSystemTest {
     }
 
     @Test
+    void clearingAMilestoneBossWaveEarnsPipsBreather() {
+        GameState state = GameState.newRun(112L);
+        state.waveNumber = 25;
+        lifecycle.startCurrentWave(state);
+        assertTrue(lifecycle.completeBossIntro(state));
+        for (Boss boss : state.aliveBosses) boss.receiveDamage(Float.MAX_VALUE);
+        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
+        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
+        assertEquals(WaveCompletion.BOSS_REWARD, lifecycle.updateAfterCombat(state));
+
+        state.awaitingBossReward = false;
+        state.pendingRewardCards.clear();
+        assertEquals(WaveCompletion.BREATHER, lifecycle.continueAfterBossReward(state));
+        assertEquals(26, state.waveNumber);
+        assertTrue(state.breatherPending);
+        assertEquals(25, state.breatherWave);
+        assertFalse(state.waveActive);
+        assertFalse(lifecycle.startCurrentWave(state), "the next wave waits on Pip's beat");
+
+        assertTrue(lifecycle.completeBreather(state));
+        assertFalse(state.breatherPending);
+        assertTrue(state.waveActive);
+        assertTrue(state.livingEnemyCount() > 0);
+    }
+
+    @Test
+    void completingWithoutAPendingBreatherDoesNothing() {
+        GameState state = GameState.newRun(113L);
+        state.waveNumber = 26;
+
+        assertFalse(lifecycle.completeBreather(state));
+        assertFalse(lifecycle.completeBreather(null));
+        assertFalse(state.waveActive);
+    }
+
+    @Test
+    void reloadRepairsWaveActiveWhileBreathing() {
+        GameState state = GameState.newRun(114L);
+        state.waveNumber = 26;
+        state.breatherPending = true;
+        state.breatherWave = 25;
+        state.waveActive = true;
+
+        state.validateAndRepair();
+
+        assertTrue(state.breatherPending);
+        assertFalse(state.waveActive, "the beat replays; the wave has not started");
+    }
+
+    @Test
     void waveClearsAroundALoneSilentWatcherAndDespawnsIt() {
         GameState state = GameState.newRun(104L);
         state.waveNumber = 6;

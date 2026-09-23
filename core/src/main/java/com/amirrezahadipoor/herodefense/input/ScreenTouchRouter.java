@@ -7,6 +7,7 @@ import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.BraceSystem;
+import com.amirrezahadipoor.herodefense.gameplay.BreatherCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.FocusSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroMovementSystem;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
@@ -78,6 +79,9 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
         AudioPlayback audioManager();
 
         BossIntroCinematic bossIntroCinematic();
+
+        BreatherCinematic breatherCinematic();
+
         CodexSystem codexSystem();
 
         CodexTouchController codexTouchController();
@@ -164,6 +168,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
         void beginPlantingCeremony();
 
         void beginBossIntro();
+
+        void beginBreather();
         /** Tap-to-focus: marks the enemy under the tap, or clears the mark when the tap hits nothing. */
         void focusFireAt(float worldX, float worldY);
 
@@ -281,6 +287,8 @@ public final class ScreenTouchRouter implements TouchInputController.Listener {
                         host.beginPlantingCeremony();
                     } else if (result == WaveCompletion.BOSS_INTRO) {
                         host.beginBossIntro();
+                    } else if (result == WaveCompletion.BREATHER) {
+                        host.beginBreather();
                     } else {
                         host.flow().transitionTo(GameScreenState.PLAYING);
                     }

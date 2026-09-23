@@ -16,6 +16,7 @@ import com.amirrezahadipoor.herodefense.gameplay.BossFactory;
 import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.BossSpecialAttackSystem;
 import com.amirrezahadipoor.herodefense.gameplay.BossWaveSpawner;
+import com.amirrezahadipoor.herodefense.gameplay.BreatherCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.ContinuousWaveRun;
 import com.amirrezahadipoor.herodefense.gameplay.DropPickupSystem;
 import com.amirrezahadipoor.herodefense.gameplay.EliteAffixSystem;
@@ -500,6 +501,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
     private final class TouchHost implements ScreenTouchRouter.Host {
         @Override public GameAudioManager audioManager() { return audioManager; }
         @Override public BossIntroCinematic bossIntroCinematic() { return bossIntroCinematic; }
+        @Override public BreatherCinematic breatherCinematic() { return cinematicFlow.breatherCinematic(); }
         @Override public CodexSystem codexSystem() { return codexSystem; }
         @Override public CodexTouchController codexTouchController() { return codexTouchController; }
         @Override public boolean continueAvailable() { return continueAvailable; }
@@ -546,6 +548,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
         @Override public void beginPlantingCeremony() { HeroDefenseGame.this.beginPlantingCeremony(); }
         @Override public void beginBossIntro() { HeroDefenseGame.this.beginBossIntro(); }
+        @Override public void beginBreather() { HeroDefenseGame.this.beginBreather(); }
 
         @Override public void focusFireAt(float worldX, float worldY) { HeroDefenseGame.this.focusFireAt(worldX, worldY); }
 
@@ -596,6 +599,10 @@ public final class HeroDefenseGame extends ApplicationAdapter {
 
     private void beginBossIntro() {
         cinematicFlow.beginBossIntro();
+    }
+
+    private void beginBreather() {
+        cinematicFlow.beginBreather();
     }
 
     /** Presentation-only ceremony tick; the wave-101 hand-off happens once the flow completes it. */
@@ -720,6 +727,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         public void beginBossIntro() {
             HeroDefenseGame.this.beginBossIntro();
         }
+
+        @Override
+        public void beginBreather() {
+            HeroDefenseGame.this.beginBreather();
+        }
     }
 
     /** What the wave director needs from the game: its state, screens, saving and the two ceremonies. */
@@ -755,6 +767,11 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         }
 
         @Override
+        public void beginBreather() {
+            HeroDefenseGame.this.beginBreather();
+        }
+
+        @Override
         public void recordRunEnd() {
             HeroDefenseGame.this.recordRunEnd();
         }
@@ -786,6 +803,7 @@ public final class HeroDefenseGame extends ApplicationAdapter {
         @Override public LevelUpOverlayRenderer levelUpOverlayRenderer() { return renderers.levelUpOverlayRenderer; }
         @Override public MainMenuRenderer mainMenuRenderer() { return renderers.mainMenuRenderer; }
         @Override public BossIntroCinematic bossIntroCinematic() { return bossIntroCinematic; }
+        @Override public BreatherCinematic breatherCinematic() { return cinematicFlow.breatherCinematic(); }
         @Override public OpeningCinematic openingCinematic() { return openingCinematic; }
         @Override public OpeningCinematicRenderer openingCinematicRenderer() { return renderers.openingCinematicRenderer; }
         @Override public ParticleRenderer particleRenderer() { return renderers.particleRenderer; }

@@ -100,6 +100,20 @@ final class SessionControllerTest {
     }
 
     @Test
+    void continuingASavedBreatherReplaysPipsBeat() {
+        GameState state = GameState.newRun(5L);
+        state.waveNumber = 26;
+        state.breatherPending = true;
+        state.breatherWave = 25;
+        host.state = state;
+        host.continueAvailable = true;
+
+        controller.continueRun();
+
+        assertEquals(1, host.breathers, "a save closed mid-breather resumes at the beat");
+    }
+
+    @Test
     void continuingWithoutAnOfferDoesNothing() {
         host.state = GameState.newRun(5L);
         host.continueAvailable = false;
@@ -152,6 +166,7 @@ final class SessionControllerTest {
         private boolean continueAvailable;
         private int clockResets;
         private int saves;
+        private int breathers;
 
         @Override
         public GameState gameState() {
@@ -188,6 +203,11 @@ final class SessionControllerTest {
 
         @Override
         public void beginBossIntro() {
+        }
+
+        @Override
+        public void beginBreather() {
+            breathers++;
         }
     }
 

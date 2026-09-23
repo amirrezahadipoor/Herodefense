@@ -70,6 +70,10 @@ public final class GameState {
     public boolean bossIntroPending;
     /** The boss wave the pending intro plays for; wave/5 is the encounter, meeting per §3.4. */
     public int bossIntroWave;
+    /** A milestone breather waits to play before the next wave spawns. */
+    public boolean breatherPending;
+    /** The cleared milestone wave the pending breather breathes for (25/75/125/175). */
+    public int breatherWave;
     /** Planned bodies of the current regular wave; the trickle gates count the living against it. */
     public int wavePlannedEnemies;
     /** Trickle pulse already walking in (1-based); 0 on boss waves and before the first spawn. */
@@ -403,6 +407,7 @@ public final class GameState {
         // The intro's prop is a living body in the save, but the wave has not started: the intro
         // replays and the prop respawns fresh, so the flag wins over the body count.
         if (bossIntroPending) waveActive = false;
+        if (breatherPending) waveActive = false;
         if (runComplete) waveActive = false;
         if (projectiles == null) projectiles = new ArrayList<>();
         if (drops == null) drops = new ArrayList<>();
@@ -571,6 +576,8 @@ public final class GameState {
         this.ceremonyPending = false;
         this.bossIntroPending = false;
         this.bossIntroWave = 0;
+        this.breatherPending = false;
+        this.breatherWave = 0;
         this.wavePlannedEnemies = 0;
         this.tricklePulse = 0;
         this.escortWave = 0;

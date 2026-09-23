@@ -30,6 +30,12 @@ final class ContinuousWaveRunTest {
                 state.plantedTreeHealth.add(state.worldTreeMaxHealth);
                 state.plantedTreeMaxHealth.add(state.worldTreeMaxHealth);
                 state.secondTreePlanted = state.plantedTreesCount > 0;
+            } else if (expectedWave == 26 || expectedWave == 76
+                || expectedWave == 126 || expectedWave == 176) {
+                assertEquals(WaveCompletion.BREATHER, completion);
+                assertTrue(state.breatherPending);
+                assertEquals(expectedWave - 1, state.breatherWave);
+                state.breatherPending = false;
             } else {
                 assertEquals(WaveCompletion.NEXT_WAVE, completion);
             }

@@ -37,6 +37,8 @@ public final class WaveDirector {
 
         void beginBossIntro();
 
+        void beginBreather();
+
         /** Writes down the session that just ended, once per run (roadmap R3.6). */
         void recordRunEnd();
     }
@@ -105,12 +107,15 @@ public final class WaveDirector {
         }
 
         GameState state = host.gameState();
+        int trickleBefore = state.tricklePulse;
+        int escortBefore = state.escortWave;
         WaveCompletion waveCompletion = waveLifecycleSystem.updateAfterCombat(state);
         if (!state.bossIntroPending) {
             // A deferred boss wave shows its banner when the fight starts, after the intro.
             host.showWaveReflection();
         }
         if (waveCompletion == WaveCompletion.NO_CHANGE) {
+            playFinalPushHornIfArrived(state, trickleBefore, escortBefore);
             return;
         }
         // The wave is behind the player: the trophy ledger counts it even if the run ends here.
@@ -125,6 +130,10 @@ public final class WaveDirector {
             host.beginPlantingCeremony();
         } else if (waveCompletion == WaveCompletion.BOSS_INTRO) {
             host.beginBossIntro();
+        } else if (waveCompletion == WaveCompletion.BREATHER) {
+            // Unreachable today -- only the card screen's advance clears a milestone boss wave --
+            // but a completion the director drops would soft-lock the run, so it routes anyway.
+            host.beginBreather();
         } else if (waveCompletion == WaveCompletion.RUN_COMPLETED) {
             state.trophies.recordRunEnd(state.peakWaveReached, state.noPotionRun);
             state.runComplete = true;
@@ -137,5 +146,19 @@ public final class WaveDirector {
             host.recordRunEnd();
         }
         host.saveNow();
+    }
+
+    /**
+     * Sounds the final-push horn the frame a wave's last pulse walks in: the third trickle
+     * of a regular wave, or the escort's avenging second pulse on a boss wave. Earlier pulses
+     * stay silent -- the horn means the wave is now at its full strength.
+     */
+    private void playFinalPushHornIfArrived(GameState state, int trickleBefore, int escortBefore) {
+        boolean trickleFinal = state.tricklePulse > trickleBefore
+            && state.tricklePulse >= EnemyWaveSpawner.planTrickles(state.wavePlannedEnemies).length;
+        boolean escortFinal = escortBefore == 1 && state.escortWave == 2;
+        if (trickleFinal || escortFinal) {
+            audioManager.play(AudioCue.FINAL_PUSH);
+        }
     }
 }

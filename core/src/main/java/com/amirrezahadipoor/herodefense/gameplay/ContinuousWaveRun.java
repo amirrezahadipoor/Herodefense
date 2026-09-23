@@ -2,6 +2,7 @@ package com.amirrezahadipoor.herodefense.gameplay;
 
 import com.amirrezahadipoor.herodefense.items.MythicEffects;
 import com.amirrezahadipoor.herodefense.model.GameState;
+import com.amirrezahadipoor.herodefense.story.BreatherLines;
 
 /** Advances the existing GameState through one uninterrupted 200-wave run. */
 public final class ContinuousWaveRun {
@@ -19,6 +20,7 @@ public final class ContinuousWaveRun {
             return WaveCompletion.RUN_COMPLETED;
         }
         boolean ceremony = isPlantingWave(state.waveNumber, state);
+        boolean breather = BreatherLines.isBreatherWave(state.waveNumber);
         state.waveNumber++;
         if (state.waveNumber == GameState.FINAL_WAVE && runLength == GameState.FINAL_WAVE) {
             state.wave200ReachedCount++;
@@ -26,6 +28,11 @@ public final class ContinuousWaveRun {
         if (ceremony) {
             state.ceremonyPending = true;
             return WaveCompletion.PLANTING_CEREMONY;
+        }
+        if (breather) {
+            state.breatherPending = true;
+            state.breatherWave = state.waveNumber - 1;
+            return WaveCompletion.BREATHER;
         }
         return WaveCompletion.NEXT_WAVE;
     }

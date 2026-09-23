@@ -97,6 +97,7 @@ vigil to sound like a place. Measured peaks are in `LEVELS.md`, generated from t
 | `audio/sfx/coin_pickup.ogg` | *(none)* | generated in-repo | Coins from a kill | `15ab667e920c595aaa2f12a65e7e8c11dc6ff023ba6b8d192f2aecb35e8ccbae` |
 | `audio/sfx/death_heavy.ogg` | *(none)* | generated in-repo | Heavy body collapse (roadmap F2) | `ca28bb04500c509628840ff9a191a2234da7edafa2742ada2ae9a2c130f8c47e` |
 | `audio/sfx/death_light.ogg` | *(none)* | generated in-repo | Light body death (roadmap F2) | `44410b0026c337505f1a6393fd9f43639b0538dc98b56acc53fb01d97f6b7497` |
+| `audio/sfx/final_push.ogg` | *(none)* | generated in-repo | Last-pulse horn (P6c longer waves) | `c3fccdbfc9b63436dc7c5627074e06e2defb80058d76b2cf285659ce7a5351ca` |
 | `audio/sfx/telegraph_warning.ogg` | *(none)* | generated in-repo | A boss special is coming | `332ec7dc42f71bc180fabd78fe38b4b987d78ccc679463c028e4b848778fd663` |
 | `audio/sfx/ui_close.ogg` | *(none)* | generated in-repo | Closing an overlay | `756eb67c92e06f9f08b7504e7d395c1f9f1e0450e9f4893f06095aa269da940a` |
 | `audio/sfx/ui_tap.ogg` | *(none)* | generated in-repo | Menu and overlay button | `87637004ecad74dffe8abca58fb4613800caa2b3c230f7ee48704c7dd420d955` |

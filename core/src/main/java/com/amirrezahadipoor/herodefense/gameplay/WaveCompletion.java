@@ -8,6 +8,8 @@ public enum WaveCompletion {
     PLANTING_CEREMONY,
     /** A boss wave advanced: the watch-only intro plays before the wave spawns. */
     BOSS_INTRO,
+    /** A milestone wave cleared: Pip's breather plays before the next wave spawns. */
+    BREATHER,
     RUN_COMPLETED,
     NO_CHANGE
 }

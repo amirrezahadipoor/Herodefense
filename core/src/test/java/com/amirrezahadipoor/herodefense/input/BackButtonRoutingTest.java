@@ -10,6 +10,7 @@ import com.amirrezahadipoor.herodefense.ascension.RootNetworkSystem;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
 import com.amirrezahadipoor.herodefense.gameplay.BossIntroCinematic;
+import com.amirrezahadipoor.herodefense.gameplay.BreatherCinematic;
 import com.amirrezahadipoor.herodefense.gameplay.HeroProgressionSystem;
 import com.amirrezahadipoor.herodefense.gameplay.InventoryEquipmentSystem;
 import com.amirrezahadipoor.herodefense.gameplay.OpeningCinematic;
@@ -252,6 +253,7 @@ final class BackButtonRoutingTest {
         private final OpeningCinematic opening = new OpeningCinematic();
         private final PlantingCeremony planting = new PlantingCeremony();
         private final BossIntroCinematic bossIntro = new BossIntroCinematic();
+        private final BreatherCinematic breather = new BreatherCinematic();
 
         /**
          * The end screen's presentation clock, held at zero on purpose: with no seconds elapsed the only way
@@ -269,6 +271,10 @@ final class BackButtonRoutingTest {
 
         @Override public BossIntroCinematic bossIntroCinematic() {
             return bossIntro;
+        }
+
+        @Override public BreatherCinematic breatherCinematic() {
+            return breather;
         }
 
         @Override public CodexSystem codexSystem() {
@@ -437,6 +443,10 @@ final class BackButtonRoutingTest {
 
         @Override public void beginBossIntro() {
             throw refused("beginBossIntro");
+        }
+
+        @Override public void beginBreather() {
+            throw refused("beginBreather");
         }
 
         @Override public void focusFireAt(float worldX, float worldY) {

@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.amirrezahadipoor.herodefense.GameScreenState;
 import com.amirrezahadipoor.herodefense.audio.AudioCue;
 import com.amirrezahadipoor.herodefense.audio.AudioPlayback;
+import com.amirrezahadipoor.herodefense.model.Enemy;
 import com.amirrezahadipoor.herodefense.model.GameState;
 import com.amirrezahadipoor.herodefense.polish.ParticleSystem;
 import com.amirrezahadipoor.herodefense.polish.ScreenShakeSystem;
@@ -154,6 +155,58 @@ final class WaveDirectorTest {
         assertEquals(1, host.saves);
     }
 
+    @Test
+    void theLastTrickleSoundsTheHornButEarlierPulsesStaySilent() {
+        GameState state = GameState.newRun(201L);
+        state.waveNumber = 12;
+        new WaveLifecycleSystem(new EnemyWaveSpawner(new EnemyFactory()), new ContinuousWaveRun())
+            .startCurrentWave(state);
+        assertEquals(1, state.tricklePulse);
+        host.state = state;
+
+        fellToLiving(state, 4);
+        director.afterCombat(false, false);
+        assertEquals(2, state.tricklePulse);
+        assertTrue(audio.cues.isEmpty(), "the second pulse is not the final push");
+
+        fellToLiving(state, 2);
+        director.afterCombat(false, false);
+        assertEquals(3, state.tricklePulse);
+        assertEquals(List.of(AudioCue.FINAL_PUSH), audio.cues);
+    }
+
+    @Test
+    void theAvengingEscortSoundsTheHornButAHaleBossStaysSilent() {
+        GameState state = GameState.newRun(202L);
+        state.waveNumber = 5;
+        WaveLifecycleSystem waves =
+            new WaveLifecycleSystem(new EnemyWaveSpawner(new EnemyFactory()), new ContinuousWaveRun());
+        waves.startCurrentWave(state);
+        waves.completeBossIntro(state);
+        host.state = state;
+
+        director.afterCombat(false, false);
+        assertEquals(1, state.escortWave);
+        assertTrue(audio.cues.isEmpty(), "a hale boss keeps its escort waiting silently");
+
+        state.aliveBosses.get(0).health = state.aliveBosses.get(0).maxHealth / 2f;
+        director.afterCombat(false, false);
+        assertEquals(2, state.escortWave);
+        assertEquals(List.of(AudioCue.FINAL_PUSH), audio.cues);
+    }
+
+    /** Kills living fighters until exactly {@code living} remain; silent watchers never count. */
+    private static void fellToLiving(GameState state, int living) {
+        while (state.livingEnemyCount() > living) {
+            for (Enemy enemy : state.aliveEnemies) {
+                if (enemy.alive && !enemy.silentWatcher) {
+                    enemy.receiveDamage(Float.MAX_VALUE);
+                    break;
+                }
+            }
+        }
+    }
+
     /** Records what the director decided instead of rendering it. */
     private static final class RecordingHost implements WaveDirector.Host {
         private GameState state;
@@ -162,6 +215,7 @@ final class WaveDirectorTest {
         private int reflections;
         private int ceremonies;
         private int bossIntros;
+        private int breathers;
         private int records;
 
         @Override
@@ -192,6 +246,11 @@ final class WaveDirectorTest {
         @Override
         public void beginBossIntro() {
             bossIntros++;
+        }
+
+        @Override
+        public void beginBreather() {
+            breathers++;
         }
 
         @Override

@@ -164,6 +164,18 @@ def build(name: str) -> np.ndarray:
             tone = sweep(220.0, 240.0, segment, "triangle") * decay(segment, 3.0)
             pulse[start_index: start_index + segment] += tone * 0.6
         return pulse + sweep(110.0, 100.0, length) * decay(length, 1.6) * 0.3
+    if name == "final_push":
+        # P6c: the war-horn that answers a wave's last pulse -- a low fifth swelling under a
+        # breathy attack, held long enough to read as a warning, not a sting.
+        length = seconds(0.90)
+        fifth = sweep(174.0, 174.0, length, "triangle") * 0.6
+        fifth += sweep(261.0, 261.0, length, "triangle") * 0.4
+        attack = seconds(0.18)
+        envelope = np.ones(length, dtype=np.float32)
+        envelope[:attack] = np.linspace(0.0, 1.0, attack, dtype=np.float32)
+        envelope *= decay(length, 2.2)
+        breath = highpass(lowpass(noise(length, 47), 1400.0), 500.0) * decay(length, 9.0) * 0.5
+        return fifth * envelope + breath
     if name == "wave_clear":
         length = seconds(1.10)
         out = np.zeros(length, dtype=np.float32)
@@ -245,6 +257,8 @@ EFFECTS = {
     "speech_hollow": 0.44,
     "speech_pip": 0.42,
     "speech_boss": 0.46,
+    # P6c longer waves: the final-push horn answers the last pulse of a wave walking in.
+    "final_push": 0.72,
 }
 
 

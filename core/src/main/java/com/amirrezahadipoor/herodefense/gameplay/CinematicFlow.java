@@ -55,6 +55,8 @@ public final class CinematicFlow {
     private final RunPresentationSystem presentationSystem;
     private final AudioPlayback audioManager;
     private final BossIntroCinematic bossIntroCinematic;
+    /** Pip's milestone beat, owned here the way the dialogue box is: no host state. */
+    private final BreatherCinematic breatherCinematic;
     private final ScreenShakeSystem screenShakeSystem;
 
     private float waterDropAccumulator;
@@ -97,6 +99,7 @@ public final class CinematicFlow {
         this.presentationSystem = presentationSystem;
         this.audioManager = audioManager;
         this.bossIntroCinematic = bossIntroCinematic;
+        this.breatherCinematic = new BreatherCinematic();
         this.screenShakeSystem = screenShakeSystem;
         // The prop starts absent: only a boss intro puts one on stage.
         this.introProp = null;
@@ -107,6 +110,11 @@ public final class CinematicFlow {
     /** The ceremony's message box, for the frame to draw. */
     public DialogueBox dialogue() {
         return dialogue;
+    }
+
+    /** Pip's milestone beat, for the skip port to fast-forward. */
+    public BreatherCinematic breatherCinematic() {
+        return breatherCinematic;
     }
 
     /** Snapshots the run's opening tier, then plays that tier's lines. */
@@ -159,6 +167,19 @@ public final class CinematicFlow {
                 particleSystem.emitWalkDust(introProp.x, introProp.y);
             }
         }
+        dialogue.clear();
+    }
+
+    /**
+     * Starts the pending milestone breather: the box speaks Pip's line for the cleared wave
+     * while the arena holds its breath. Combat never ticks in CINEMATIC, so the 1.2 seconds
+     * are a pause, not a fight.
+     */
+    public void beginBreather() {
+        GameState state = host.gameState();
+        flow.transitionTo(GameScreenState.CINEMATIC);
+        breatherCinematic.begin(state.breatherWave);
+        state.anchorHeroAtArenaCenter();
         dialogue.clear();
     }
 
@@ -229,6 +250,18 @@ public final class CinematicFlow {
                 flow.transitionTo(GameScreenState.PLAYING);
                 audioManager.play(IdentityCues.bossEntranceFor(state));
                 presentationSystem.presentBossEntrance(state);
+                host.showWaveReflection();
+                host.saveNow();
+            }
+            return;
+        }
+        if (breatherCinematic.isActive()) {
+            speakLine(breatherCinematic.line(), SpeechVoice.PIP);
+            state.anchorHeroAtArenaCenter();
+            heroAnimationController.update(state.hero, deltaSeconds);
+            if (breatherCinematic.update(deltaSeconds)) {
+                waveLifecycleSystem.completeBreather(state);
+                flow.transitionTo(GameScreenState.PLAYING);
                 host.showWaveReflection();
                 host.saveNow();
             }

@@ -57,6 +57,8 @@ final class ScreenBackPort implements BackNavigation.Port {
             host.openingCinematic().skip();
         } else if (host.bossIntroCinematic().isActive()) {
             host.bossIntroCinematic().skip();
+        } else if (host.breatherCinematic().isActive()) {
+            host.breatherCinematic().skip();
         } else {
             host.plantingCeremony().skip();
         }
