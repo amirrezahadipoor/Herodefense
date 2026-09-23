@@ -12,8 +12,8 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P3d PUSHED` — story docs rebuilt: STORY_CONTENT full rewrite (all 371 shipped lines quoted verbatim) + STORY_VOICE on §2 pillars. CI polling. Next: `P4` boss-intro cutscenes (the heart). |
-| **Last push** | `P3d` — docs rebuild: STORY_CONTENT (5 voices, premise, openings, beats, ceremonies, chapter cards, all 136 intro lines M1–M5, bios, 48 codex, 24 field notes, epilogues, mythics, whispers, Hollow, letters); STORY_VOICE (pillars + staging + checks); machine-verified zero drift. |
+| **Status** | `P3d VERIFIED` — all workflows green on `244724f`. P3 (story tables + lore + voices + docs) COMPLETE. Next: `P4` boss-intro cutscenes (the heart — read render/cinematic code first). |
+| **Last push** | `P3d` — docs rebuild: STORY_CONTENT (5 voices, premise, openings, beats, ceremonies, chapter cards, all 136 intro lines M1–M5, bios, 48 codex, 24 field notes, epilogues, mythics, whispers, Hollow, letters); STORY_VOICE (pillars + staging + checks); machine-verified zero drift. CI green on `244724f` — P3 COMPLETE. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -86,7 +86,8 @@
   staging rules, ≤60-char + simple-words checks kept). Verified: a quote-vs-code
   sweep over both docs — 371/371 shipped lines verbatim, zero drift (8 apparent
   misses adjudicated: prose quotes + doc-period name styling). No code touched, so
-  no local gradle run; CI is the check. Remaining: P4–P8.
+  no local gradle run; CI is the check. CI: test-core ✓ + Android ✓ + balance-gate
+  ✓ on `244724f`. P3 COMPLETE. Remaining: P4–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -125,8 +126,9 @@
 - **2026-09-23 / session 6** — P3d done + pushed: story docs rebuilt with a
   machine-checked no-drift guarantee (doc quotes swept against the Java sources).
   Reused the session PAT inline for the push (redacted in logs, stored nowhere);
-  it worked, so no need to ask again this turn. Next: P4 cutscenes — first read
-  the render/cinematic code, then build `BossIntroCinematic` + `story/BossIntros`.
+  it worked, so no need to ask again this turn. CI green first try. P3d VERIFIED,
+  P3 COMPLETE. Next: P4 cutscenes — first read the render/cinematic code, then
+  build `BossIntroCinematic` + `story/BossIntros`.
 
 ---
 
