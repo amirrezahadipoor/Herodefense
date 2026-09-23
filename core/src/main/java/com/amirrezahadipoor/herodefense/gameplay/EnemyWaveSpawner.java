@@ -18,8 +18,12 @@ public final class EnemyWaveSpawner {
     public static final int MAX_REGULAR_ENEMIES = 24;
     /** First wave admitted past the shipped ceiling (P6 longer waves). */
     public static final int RAISED_CAP_FIRST_WAVE = 120;
-    /** The body's ceiling from the raised-cap wave on. */
+    /** The body's ceiling at the very end of a run. */
     public static final int RAISED_CAP_MAX_ENEMIES = 28;
+    /** Waves per step of the climb from the shipped ceiling to the raised one. */
+    public static final int RAISED_CAP_STEP_WAVES = 20;
+    /** Smallest wave that arrives in pulses rather than whole. */
+    static final int FIRST_TRICKLED_WAVE_SIZE = 8;
     /**
      * Surge waves (roadmap A4): scheduled payday waves in the run's second half -- every tenth
      * wave, offset to +8 so the schedule never lands on a boss lap, pays 1.25x coins. The bodies
@@ -87,26 +91,28 @@ public final class EnemyWaveSpawner {
     }
 
     /**
-     * The arena's own ceiling for a wave (P6 longer waves). The shipped 24 holds the whole run
-     * until wave 120; past it the arena admits 28, so the last third of a run fields deeper waves
-     * instead of repeating the same melee eighty times.
+     * The arena's own ceiling for a wave (P6 longer waves). The shipped 24 holds until wave 120,
+     * then the ceiling climbs one body per twenty waves to 28 at wave 180, so the last stretch
+     * of a run fields deeper waves without a sudden four-body ambush at the boundary.
      */
     public static int maxRegularEnemiesForWave(int waveNumber) {
-        return waveNumber >= RAISED_CAP_FIRST_WAVE ? RAISED_CAP_MAX_ENEMIES : MAX_REGULAR_ENEMIES;
+        if (waveNumber < RAISED_CAP_FIRST_WAVE) {
+            return MAX_REGULAR_ENEMIES;
+        }
+        return Math.min(RAISED_CAP_MAX_ENEMIES,
+            MAX_REGULAR_ENEMIES + (waveNumber - RAISED_CAP_FIRST_WAVE) / RAISED_CAP_STEP_WAVES + 1);
     }
 
     /**
-     * The night's plan for a wave in pulses (P6 longer waves): small waves walk in whole, waves
-     * of 4-7 come in two pulses, and waves of 8+ come in three -- roughly sixty percent up front,
-     * a quarter behind, the rest last, with the last pulse never a lone straggler.
+     * The night's plan for a wave in pulses (P6 longer waves). Skirmishes walk in whole -- a
+     * four-body wave split in two would stutter instead of pressing, and splitting the opening
+     * inverted the brief vigil's ramp (measured opening 1.04 over closing 0.92). Waves of 8+
+     * come in three pulses: roughly sixty percent up front, a quarter behind, the rest last,
+     * with the last pulse never a lone straggler.
      */
     static int[] planTrickles(int total) {
-        if (total <= 3) {
+        if (total < FIRST_TRICKLED_WAVE_SIZE) {
             return new int[] {Math.max(1, total)};
-        }
-        if (total <= 7) {
-            int first = Math.round(total * 0.6f);
-            return new int[] {first, total - first};
         }
         int first = Math.round(total * 0.6f);
         int second = Math.round(total * 0.25f);

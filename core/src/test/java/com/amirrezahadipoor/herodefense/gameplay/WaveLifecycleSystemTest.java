@@ -24,11 +24,7 @@ final class WaveLifecycleSystemTest {
         assertTrue(state.livingEnemyCount() > 0);
         assertEquals(4, state.wavePlannedEnemies);
         assertEquals(1, state.tricklePulse);
-        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
-
-        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
-        assertEquals(2, state.tricklePulse);
-        assertTrue(state.livingEnemyCount() > 0);
+        assertEquals(4, state.aliveEnemies.size());
         for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
 
         assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
@@ -44,7 +40,7 @@ final class WaveLifecycleSystemTest {
         state.aliveEnemies.get(0).receiveDamage(Float.MAX_VALUE);
         assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
         assertEquals(1, state.waveNumber);
-        assertEquals(2, state.tricklePulse, "half the wave fell, so the second pulse walks in");
+        assertEquals(1, state.tricklePulse, "a four-body skirmish walks in whole");
     }
 
     @Test
@@ -143,11 +139,6 @@ final class WaveLifecycleSystemTest {
             if (!enemy.silentWatcher) enemy.receiveDamage(Float.MAX_VALUE);
         }
 
-        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
-        for (Enemy enemy : state.aliveEnemies) {
-            if (!enemy.silentWatcher) enemy.receiveDamage(Float.MAX_VALUE);
-        }
-
         assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));
         assertEquals(7, state.waveNumber);
         for (Enemy enemy : state.aliveEnemies) assertFalse(enemy.id == watcherId);
@@ -210,14 +201,20 @@ final class WaveLifecycleSystemTest {
         GameState state = GameState.newRun(108L);
         state.waveNumber = 121;
         assertTrue(lifecycle.startCurrentWave(state));
-        assertEquals(28, state.wavePlannedEnemies);
-        assertEquals(17, state.aliveEnemies.size());
+        assertEquals(25, state.wavePlannedEnemies);
+        assertEquals(15, state.aliveEnemies.size());
 
         GameState capped = GameState.newRun(109L);
         capped.waveNumber = 121;
         capped.activeTrials.add(TrialId.IRON_TIDE.name());
         assertTrue(lifecycle.startCurrentWave(capped));
-        assertEquals(28, capped.wavePlannedEnemies);
+        assertEquals(25, capped.wavePlannedEnemies);
+
+        GameState deep = GameState.newRun(111L);
+        deep.waveNumber = 199;
+        assertTrue(lifecycle.startCurrentWave(deep));
+        assertEquals(28, deep.wavePlannedEnemies);
+        assertEquals(17, deep.aliveEnemies.size());
 
         GameState early = GameState.newRun(110L);
         early.waveNumber = 39;

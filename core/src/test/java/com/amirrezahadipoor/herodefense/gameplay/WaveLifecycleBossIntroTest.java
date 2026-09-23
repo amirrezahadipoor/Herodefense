@@ -83,8 +83,6 @@ final class WaveLifecycleBossIntroTest {
         state.waveNumber = 4;
         lifecycle.startCurrentWave(state);
         for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
-        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
-        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
 
         assertEquals(WaveCompletion.BOSS_INTRO, lifecycle.updateAfterCombat(state));
         assertEquals(5, state.waveNumber);
@@ -97,8 +95,6 @@ final class WaveLifecycleBossIntroTest {
         GameState state = GameState.newRun(27L);
         state.waveNumber = 6;
         lifecycle.startCurrentWave(state);
-        for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
-        assertEquals(WaveCompletion.NO_CHANGE, lifecycle.updateAfterCombat(state));
         for (Enemy enemy : state.aliveEnemies) enemy.receiveDamage(Float.MAX_VALUE);
 
         assertEquals(WaveCompletion.NEXT_WAVE, lifecycle.updateAfterCombat(state));

@@ -285,10 +285,14 @@ final class EnemyWaveSpawnerTest {
     void lateWavesFieldDeeperMeleeUpToTwentyEight() {
         assertEquals(24, EnemyWaveSpawner.maxRegularEnemiesForWave(1));
         assertEquals(24, EnemyWaveSpawner.maxRegularEnemiesForWave(119));
-        assertEquals(28, EnemyWaveSpawner.maxRegularEnemiesForWave(120));
+        assertEquals(25, EnemyWaveSpawner.maxRegularEnemiesForWave(120));
+        assertEquals(25, EnemyWaveSpawner.maxRegularEnemiesForWave(139));
+        assertEquals(26, EnemyWaveSpawner.maxRegularEnemiesForWave(140));
+        assertEquals(27, EnemyWaveSpawner.maxRegularEnemiesForWave(160));
+        assertEquals(28, EnemyWaveSpawner.maxRegularEnemiesForWave(180));
         assertEquals(28, EnemyWaveSpawner.maxRegularEnemiesForWave(GameState.FINAL_WAVE));
         assertEquals(24, spawner.regularCountForWave(119));
-        assertEquals(28, spawner.regularCountForWave(120));
+        assertEquals(25, spawner.regularCountForWave(120));
         assertEquals(28, spawner.regularCountForWave(GameState.FINAL_WAVE));
     }
 
@@ -308,16 +312,15 @@ final class EnemyWaveSpawnerTest {
             }
         }
         assertTrue(wave >= 120, "no seed rolls a late SWARM");
-        assertEquals(28, EnemyWaveSpawner.omenAdjustedCount(state, wave, 28),
-            "a 28-body SWARM wave fills the raised ceiling, not the shipped 24");
+        assertEquals(EnemyWaveSpawner.maxRegularEnemiesForWave(wave),
+            EnemyWaveSpawner.omenAdjustedCount(state, wave, 28),
+            "a late SWARM wave fills its own raised ceiling, not the shipped 24");
     }
 
     @Test
     void tricklePlanWalksSmallWavesWholeAndSplitsTheRest() {
         assertArrayEquals(new int[] {1}, EnemyWaveSpawner.planTrickles(1));
-        assertArrayEquals(new int[] {3}, EnemyWaveSpawner.planTrickles(3));
-        assertArrayEquals(new int[] {2, 2}, EnemyWaveSpawner.planTrickles(4));
-        assertArrayEquals(new int[] {4, 3}, EnemyWaveSpawner.planTrickles(7));
+        assertArrayEquals(new int[] {7}, EnemyWaveSpawner.planTrickles(7));
         assertArrayEquals(new int[] {4, 2, 2}, EnemyWaveSpawner.planTrickles(8));
         assertArrayEquals(new int[] {5, 3, 2}, EnemyWaveSpawner.planTrickles(10));
         assertArrayEquals(new int[] {14, 6, 4}, EnemyWaveSpawner.planTrickles(24));
@@ -333,8 +336,6 @@ final class EnemyWaveSpawnerTest {
             if (total >= 8) {
                 assertEquals(3, pulses.length, "total " + total);
                 assertTrue(pulses[2] >= 2, "total " + total + " ends on a lone straggler");
-            } else if (total >= 4) {
-                assertEquals(2, pulses.length, "total " + total);
             } else {
                 assertEquals(1, pulses.length, "total " + total);
             }
