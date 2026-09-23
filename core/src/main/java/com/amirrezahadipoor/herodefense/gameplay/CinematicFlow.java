@@ -59,7 +59,7 @@ public final class CinematicFlow {
 
     private float waterDropAccumulator;
     /** The intro's prop boss, walked from its edge to its mark and back out again. */
-    private Boss introProp;
+    private Boss introProp = null;
     private float introEdgeX;
     private float introEdgeY;
     private float introMarkX;
