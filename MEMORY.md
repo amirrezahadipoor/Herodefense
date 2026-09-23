@@ -12,8 +12,11 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P4a PUSHED` — NEW `story/BossIntros.java` + NEW `gameplay/BossIntroCinematic.java` + `BossIntrosTest` + `BossIntroCinematicTest` (pure, zero wiring). CI verdict pending. Next: `P4b` wiring (lifecycle gate + flow + presentation + render + input). |
-| **Last push** | `P3d` — docs rebuild: STORY_CONTENT (5 voices, premise, openings, beats, ceremonies, chapter cards, all 136 intro lines M1–M5, bios, 48 codex, 24 field notes, epilogues, mythics, whispers, Hollow, letters); STORY_VOICE (pillars + staging + checks); machine-verified zero drift. CI green on `244724f` — P3 COMPLETE. |
+| **Status** | `P4b READY` — P4a (`1c59e0b`) + P4b (`d5e8f5e`) committed locally, push needs the PAT. — NEW `story/BossIntros.java` + NEW `gameplay/BossIntroCinematic.java` + `BossIntrosTest` + `BossIntroCinematicTest` (pure, zero wiring). CI verdict pending. Next: `P4b` wiring (lifecycle gate + flow + presentation + render + input). |
+| **Last push** | `P4b` (`d5e8f5e`, unpushed) — boss-intro cutscene wired end to end (defer +
+prop walk + box talk + trip + silent entrance + camera + skips; 2 new tests, 5 updated).
+P4a (`1c59e0b`) beneath it: `BossIntros` + `BossIntroCinematic` + 2 tests, pure. CI verdict
+pending the push. LAST PUSHED: `P3d` — docs rebuild: STORY_CONTENT (5 voices, premise, openings, beats, ceremonies, chapter cards, all 136 intro lines M1–M5, bios, 48 codex, 24 field notes, epilogues, mythics, whispers, Hollow, letters); STORY_VOICE (pillars + staging + checks); machine-verified zero drift. CI green on `244724f` — P3 COMPLETE. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -88,6 +91,26 @@
   misses adjudicated: prose quotes + doc-period name styling). No code touched, so
   no local gradle run; CI is the check. CI: test-core ✓ + Android ✓ + balance-gate
   ✓ on `244724f`. P3 COMPLETE. Remaining: P4–P8.
+- **P4a (2026-09-23)** — boss-intro tables reader + timeline (pure, zero wiring),
+  committed as `1c59e0b`. Done: NEW `story/BossIntros.java` (meeting math §3.4,
+  talk/comeback/title lookups over the 136 `BOSS_INTRO_*` keys) + NEW
+  `gameplay/BossIntroCinematic.java` (ENTER→TITLE→TALK→COMEBACK→EXIT→DONE, 13.5s
+  M1 / 7.9s repeats, skip, camera zoom, walk progress, knight-trip flag) +
+  `BossIntrosTest` + `BossIntroCinematicTest`. No behavior change; no local build
+  per owner order (CI verifies). Remaining: P4b wiring → P5–P8.
+- **P4b (2026-09-23)** — boss-intro wiring end to end, committed as `d5e8f5e`
+  (21 files). Done: lifecycle defer (`bossIntroPending`/`bossIntroWave`,
+  `completeBossIntro`, prop spawn, `WaveCompletion.BOSS_INTRO`); `CinematicFlow`
+  branch (prop walk edge→mark→edge, dust, TITLE card + talk + Pip comeback in
+  the sticky box, knight trip shake, hand-off: prop→real boss + entrance +
+  banner); entrance beat + card TTS dropped (silent ledger claim kept);
+  director/session/router/sim route `BOSS_INTRO`; tap+Back share one 3-way
+  skip; camera push + dialogue box in the composer; save/reload replays the
+  intro. Tests: NEW `WaveLifecycleBossIntroTest` + `CinematicFlowBossIntroTest`,
+  5 updated (entrance-cue test rewritten to intro-first). Verified: 86-point
+  static sweep (every edit confirmed present — batched `edit_file` calls to one
+  file apply only ~40%, re-applied the rest via script). No local build per
+  owner order. CI verdict pending the push. Remaining: P5–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -129,6 +152,13 @@
   it worked, so no need to ask again this turn. CI green first try. P3d VERIFIED,
   P3 COMPLETE. Next: P4 cutscenes — first read the render/cinematic code, then
   build `BossIntroCinematic` + `story/BossIntros`.
+- **2026-09-23 / session 7** — P4a+P4b done + committed (push needs the PAT —
+  the owner skipped the paste prompt, so both commits wait in /tmp/hd). Owner
+  order: NO local builds at all; GitHub Actions is the only verifier. New
+  tool lesson: batched `edit_file` invokes to the SAME file silently drop
+  ~60% (all report success) — from here on, one edit per file per message,
+  or scripted python replacements with count asserts + a full marker sweep.
+  Next: push (`1c59e0b` + `d5e8f5e`), poll CI, then P5 silence audit → P6.
 
 ---
 
