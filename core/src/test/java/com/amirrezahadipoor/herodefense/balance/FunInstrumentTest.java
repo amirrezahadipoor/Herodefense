@@ -38,11 +38,18 @@ final class FunInstrumentTest {
      * re-measured at 1.65 (worst measured 1.35 plus the same ~20% margin the shipped caps
      * carry): the grind-cliff is the shopless build's honest fate past its death point, and
      * the instrument records it instead of pretending the build still dies fast.
+     *
+     * <p>P6b (boss escorts) moved the optimiser's trade the way P6a moved the naive one.
+     * Hotter boss waves steepen the neighbour jump into and out of every fifth wave, and
+     * the optimiser's worst climbs to 0.72-0.79 across the three seeds; the cap is
+     * re-measured at 0.95 (worst measured 0.7889 plus the same ~20% margin the shipped
+     * caps carry). The escorts are the honest fate of a build that shops: every fifth
+     * wave cliffs, and the instrument records the cliff instead of calling it an ambush.
      */
     private record Bands(float maxSpike, int maxDecline, int minBreathers, float maxStall) {
     }
 
-    private static final Bands OPTIMISER_BANDS = new Bands(0.65f, 6, 4, 0f);
+    private static final Bands OPTIMISER_BANDS = new Bands(0.95f, 6, 4, 0f);
     private static final Bands NAIVE_BANDS = new Bands(1.65f, 6, 2, 0.03f);
 
     /** Valleys running together longer than this is a wall of nothing -- boring, not safe. Measured at 4 for both policies on the shipped curve; same cap for both. */

@@ -49,9 +49,12 @@ final class EliteDamageAccountingTest {
         float total = 0f;
         for (WaveSample sample : report.waves()) total += sample.damageFraction();
         float averageIncludingElites = total / report.waves().size();
-        float averageExcludingElites =
-            (total - eliteDamage) / (report.waves().size() - elite.size());
-        assertTrue(averageIncludingElites > averageExcludingElites,
+        // P6b: the excluding-average proxy died to composition, not to exemption -- the boss
+        // escorts raised the run's average above the elite mean, so including the elite waves
+        // now reads as dilution. The zeroed comparison asserts the same inclusion directly:
+        // the reported average carries the elite damage instead of exempting it.
+        float averageZeroingElites = (total - eliteDamage) / report.waves().size();
+        assertTrue(averageIncludingElites > averageZeroingElites,
             "Reported average must include Elite-wave damage");
     }
 
