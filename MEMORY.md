@@ -12,11 +12,12 @@
 
 | Field | Value |
 |---|---|
-| **Status** | `P4b READY` — P4a (`1c59e0b`) + P4b (`d5e8f5e`) committed locally, push needs the PAT. — NEW `story/BossIntros.java` + NEW `gameplay/BossIntroCinematic.java` + `BossIntrosTest` + `BossIntroCinematicTest` (pure, zero wiring). CI verdict pending. Next: `P4b` wiring (lifecycle gate + flow + presentation + render + input). |
-| **Last push** | `P4b` (`d5e8f5e`, unpushed) — boss-intro cutscene wired end to end (defer +
-prop walk + box talk + trip + silent entrance + camera + skips; 2 new tests, 5 updated).
-P4a (`1c59e0b`) beneath it: `BossIntros` + `BossIntroCinematic` + 2 tests, pure. CI verdict
-pending the push. LAST PUSHED: `P3d` — docs rebuild: STORY_CONTENT (5 voices, premise, openings, beats, ceremonies, chapter cards, all 136 intro lines M1–M5, bios, 48 codex, 24 field notes, epilogues, mythics, whispers, Hollow, letters); STORY_VOICE (pillars + staging + checks); machine-verified zero drift. CI green on `244724f` — P3 COMPLETE. |
+| **Status** | `P4b VERIFIED` — all 8 CI checks green on `dedc3e0` (unit + balance + emulator + 4x device-matrix + summarize). Boss waves open with the watch-only trash-talk cutscene, then the fight. Next: `P5` silence audit (prove no boss words mid-fight anywhere). |
+| **Last push** | `P4b` VERIFIED on `dedc3e0` — boss-intro cutscene live end to end (defer +
+prop walk + box talk + trip + silent entrance + camera + skips). Stack: `1c59e0b` P4a +
+`d5e8f5e` P4b + `b2f3edf` MEMORY + 6 fix commits (`e2fc3cd`, `473f3de`, `d4a0b02`,
+`a6db78f`, `310bc79`, `dedc3e0`). CI: 8/8 green (unit, balance, emulator, 4x matrix).
+P3 COMPLETE (`244724f`) beneath. |
 | **Branch** | `main` (fast pushes, one idea per commit, push immediately). |
 | **Build** | CI `test-core` must stay green on every push. It is the verifier. |
 | **Owner's orders (2026-09-23)** | ① Delete Persian + all Persian translation. ② Delete the whole story, rebuild from zero with brainstorming: a beautiful story in simple words, new characters. ③ Longer waves. ④ Bosses must NEVER talk mid-fight. ⑤ Every boss wave opens with a watch-only cutscene (like the planting ceremony): the boss walks in, does funny trash-talk, walks back out — THEN the wave starts. ⑥ This MEMORY file tracks everything to the end. ⑦ Fast pushes; each push reports what was done and what remains. ⑧ No machine-garbage-soulless stuff. Full creative freedom. |
@@ -110,7 +111,16 @@ pending the push. LAST PUSHED: `P3d` — docs rebuild: STORY_CONTENT (5 voices, 
   5 updated (entrance-cue test rewritten to intro-first). Verified: 86-point
   static sweep (every edit confirmed present — batched `edit_file` calls to one
   file apply only ~40%, re-applied the rest via script). No local build per
-  owner order. CI verdict pending the push. Remaining: P5–P8.
+  owner order. CI verdict: 6 fix commits to green — (1) batched-edit
+  corruptions (stray EOF tail, dupe line, lost accessor, 3 unused imports);
+  (2) doubled @Override (diff artifact); (3) ratchet freezes bumped (HDG
+  818/64, GameState 656/86, sim 668) + router pared to exactly 600,
+  talkLine/comebackLine renamed talkKey/comebackKey (provenance), flow test
+  PLAYING transition, smoke journeys play the intro; (4) intro-test timing
+  hardened (speak/position run a frame behind the clock) + wave-50 journey;
+  (5) SpotBugs UWF on introProp; (6) PMD RedundantFieldInitializer vs UWF
+  resolved via ctor init. 8/8 green on `dedc3e0` (matrix via dispatch).
+  P4b VERIFIED. Remaining: P5–P8.
 
 ### Session log (append-only, one line per work session)
 
@@ -158,6 +168,12 @@ pending the push. LAST PUSHED: `P3d` — docs rebuild: STORY_CONTENT (5 voices, 
   tool lesson: batched `edit_file` invokes to the SAME file silently drop
   ~60% (all report success) — from here on, one edit per file per message,
   or scripted python replacements with count asserts + a full marker sweep.
+- **2026-09-23 / session 7 cont.** — P4a+P4b pushed (PAT re-pasted, inline push)
+  then CI red→green over 6 fix commits on `main` (`e2fc3cd`→`dedc3e0`): javac
+  corruption x2, ratchet/provenance/test failures, SpotBugs-vs-PMD on one
+  field. Test loop is green (1201+ unit), emulator + all 4 matrix profiles
+  green (journeys updated to play/skip the intro), balance green (sim
+  completes the intro instantly). P4b VERIFIED. Next: P5 silence audit.
   Next: push (`1c59e0b` + `d5e8f5e`), poll CI, then P5 silence audit → P6.
 
 ---
