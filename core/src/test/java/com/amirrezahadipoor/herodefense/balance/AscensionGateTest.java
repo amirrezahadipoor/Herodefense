@@ -63,8 +63,11 @@ final class AscensionGateTest {
         return 1.75f + 0.075f * tier;
     }
 
+    // H1 hard era: 1.00 -> 1.40 at tier 0 (measured medians 1.2241 naked, 1.2424 forced-STRENGTH).
+    // Hotter late shares plus 3.25x boss contact moved the median worst-wave; the per-tier slope is
+    // untouched, so the ladder still prices its own charge the same way.
     private static float nakedMaxDamageCeiling(int tier) {
-        return 1.00f + 0.10f * tier;
+        return 1.40f + 0.10f * tier;
     }
 
     private static float clearCeiling(int tier) {

@@ -52,7 +52,10 @@ final class TrialSimulationTest {
     private static final float MINIMUM_PRESSURED_WAVE_FRACTION = 0.875f;
     // B1: a wave may cost a bar before these gates call it a spike. The old 0.40 was a ceiling on
     // hits worth 0.27% of the bar; hits are priced in bar-percentages now and a wave is a quarter to a third.
-    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 1.30f;
+    // H1 hard era: 1.30 -> 1.90 (worst measured median 1.7216, THIN_BLOOD + BLOOD_PRICE at wave 190).
+    // Risk-stacked trial runs choose their danger; only finished runs are judged, so a 1.72 wave is
+    // proven payable, and the ceiling still catches anything past it with margin.
+    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 1.90f;
     private static final float MAXIMUM_CLEAR_SECONDS = 120f;
     /** Minimum waves that must land above the pressure floor: a fixed share of the run length. */
     private static final long MINIMUM_PRESSURED_WAVES =

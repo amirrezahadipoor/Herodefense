@@ -95,7 +95,10 @@ final class DifficultyCurveTest {
     }
 
     @Test
-    void bossesUseFifteenTimesBaselineHpAndThreeTimesBaselineDamage() {
+    void bossesUseFifteenTimesBaselineHpAndThePinnedDamageMultiple() {
+        // H1 hard era: the multiple is 3.25, pinned here so a later change has to mean it. Boss health
+        // stays 15x: hard mode is hit weight, never hit points.
+        assertEquals(3.25f, DifficultyCurve.BOSS_DAMAGE_MULTIPLIER, 0f);
         int wave = 50;
         assertEquals(
             curve.baselineRegularHealth(wave) * 15f,
@@ -103,7 +106,7 @@ final class DifficultyCurveTest {
             0.001f
         );
         assertEquals(
-            curve.baselineRegularDamage(wave) * 3f,
+            curve.baselineRegularDamage(wave) * DifficultyCurve.BOSS_DAMAGE_MULTIPLIER,
             curve.bossDamage(wave),
             0.001f
         );
@@ -248,11 +251,12 @@ final class DifficultyCurveTest {
             0.0001f
         );
         // The B1 anchor, pinned the same way the health formula is: wave 24's bar is 244.4 and its share of that
-        // bar is 0.00258286, so the hit is 0.63125 points. Recomputed from the tables, never carried over.
+        // bar is 0.00254571, so the hit is 0.62217 points. Recomputed from the tables, never carried over.
+        // H1 re-based the shares (softer opening, hotter tail): wave 1's hit is 0.65 points now.
         assertEquals(244.4f, DifficultyCurve.expectedHeroMaxHealth(24), 0.01f);
-        assertEquals(0.00258286f, DifficultyCurve.damageShareOfExpectedBar(24), 0.00000001f);
-        assertEquals(0.63125f, curve.baselineRegularDamage(24), 0.0001f);
-        assertEquals(0.75f, curve.baselineRegularDamage(1), 0.0001f);
+        assertEquals(0.00254571f, DifficultyCurve.damageShareOfExpectedBar(24), 0.00000001f);
+        assertEquals(0.62217f, curve.baselineRegularDamage(24), 0.0001f);
+        assertEquals(0.65f, curve.baselineRegularDamage(1), 0.0001f);
     }
 
     @Test

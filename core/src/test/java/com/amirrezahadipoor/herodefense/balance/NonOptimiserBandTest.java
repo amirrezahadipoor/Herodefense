@@ -127,7 +127,8 @@ final class NonOptimiserBandTest {
         assertTrue(fell >= SEEDS.length / 2, "the long vigil is meant to catch this policy on most seeds, and it "
             + "caught " + fell + " of " + SEEDS.length + ". readings: " + readings);
         assertTrue(optimiserWaves == SEEDS.length * GameState.FINAL_WAVE,
-            "the optimiser policy still finishes every long run on these seeds: " + optimiserWaves + " waves");
+            "the optimiser policy still finishes every long run on these seeds: " + optimiserWaves
+                + " waves. readings: " + readings);
         assertTrue(naiveWaves < optimiserWaves, "the non-optimiser has to be the weaker player on the same "
             + "seeds: it reached " + naiveWaves + " waves against " + optimiserWaves);
     }
@@ -136,14 +137,21 @@ final class NonOptimiserBandTest {
     void theNonOptimiserIsMeasurablyWeakerThanTheOptimiser() {
         int naiveWaves = 0;
         int optimiserWaves = 0;
+        // H1: per-seed reaches ride in the failure message, so one run names the seeds that fall.
+        List<String> readings = new ArrayList<>();
         for (long seed : SEEDS) {
-            naiveWaves += new BalanceSimulator()
+            int naive = new BalanceSimulator()
                 .runWithPolicy(seed, BalanceSimulator.Policy.NAIVE, 0, GameMode.STANDARD).waves().size();
-            optimiserWaves += new BalanceSimulator()
+            int optimiser = new BalanceSimulator()
                 .runWithPolicy(seed, BalanceSimulator.Policy.OPTIMISER, 0, GameMode.STANDARD).waves().size();
+            naiveWaves += naive;
+            optimiserWaves += optimiser;
+            readings.add(String.format(Locale.ROOT, "%s: non-optimiser wave %d, optimiser wave %d",
+                Long.toHexString(seed), naive, optimiser));
         }
         assertTrue(optimiserWaves == SEEDS.length * GameState.FINAL_WAVE,
-            "the optimiser policy still finishes every long run on these seeds: " + optimiserWaves + " waves");
+            "the optimiser policy still finishes every long run on these seeds: " + optimiserWaves
+                + " waves. readings: " + readings);
         assertTrue(naiveWaves < optimiserWaves, "the non-optimiser has to be the weaker player on the same "
             + "seeds: it reached " + naiveWaves + " waves against " + optimiserWaves);
     }

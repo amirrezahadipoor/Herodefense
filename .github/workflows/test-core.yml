@@ -189,3 +189,14 @@ jobs:
           path: core/build/reports/tests/balanceGate/
           if-no-files-found: ignore
           retention-days: 14
+
+      - name: Upload balance results with standard output
+        # H1: the gates print their data tables to stdout (per-card, per-pair, per-wave CSVs) and the
+        # HTML report does not carry them; the XML results do, so balance diagnosis reads this artifact.
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-balance-results
+          path: core/build/test-results/balanceGate/
+          if-no-files-found: ignore
+          retention-days: 14

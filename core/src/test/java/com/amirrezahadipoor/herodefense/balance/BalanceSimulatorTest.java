@@ -18,7 +18,8 @@ final class BalanceSimulatorTest {
     // band below is drawn around the post-B1 measurement, with the floor kept as the "not a walkover" guard.
     private static final float MINIMUM_AVERAGE_DAMAGE_FRACTION = 0.15f;
     private static final float MAXIMUM_AVERAGE_DAMAGE_FRACTION = 0.55f;
-    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 1.10f;
+    // H1 hard era: 1.10 -> 1.30 (measured 1.1418 at wave 180), matching WavePressureCurveTest.
+    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 1.30f;
     private static final float MAXIMUM_CLEAR_TIME_SECONDS = 120f;
     private static final int GATE_WAVE = GameState.FINAL_WAVE;
 

@@ -36,7 +36,9 @@ final class RewardCardSimulationTest {
     private static final float MINIMUM_PRESSURED_WAVE_FRACTION = 0.875f;
     // B1: a wave may cost a bar before these gates call it a spike. The old 0.40 was a ceiling on
     // hits worth 0.27% of the bar; hits are priced in bar-percentages now and a wave is a quarter to a third.
-    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 1.10f;
+    // H1 hard era: 1.10 -> 1.30, matching the plain-run ceiling -- a forced card does not buy a
+    // stricter spike rule than the run it lands in.
+    private static final float MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION = 1.30f;
     private static final float MAXIMUM_CLEAR_SECONDS = 120f;
     /**
      * B1: a card forced on the player may not end the run inside this many waves. The curve is allowed to kill a
