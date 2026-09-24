@@ -56,11 +56,14 @@ final class RewardCardSimulationTest {
                 + "maximum_damage_fraction,maximum_clear_seconds"
         );
         // Bosses 1..39 have combat after them; boss 40 ends the run.
+        // H1: per-scenario verdicts collect instead of aborting, the way TrialSimulationTest already
+        // does -- one run names every breaking scenario instead of only the first of 312.
         List<Integer> reaches = new ArrayList<>();
+        List<String> breaches = new ArrayList<>();
         int finishes = 0;
         for (int bossNumber = 1; bossNumber < GameState.FINAL_WAVE / 5; bossNumber++) {
             for (RewardCardId card : RewardCardId.values()) {
-                int waves = verifyScenario(card, bossNumber);
+                int waves = verifyScenario(card, bossNumber, breaches);
                 reaches.add(waves);
                 if (waves == GameState.FINAL_WAVE) {
                     finishes++;
@@ -80,10 +83,17 @@ final class RewardCardSimulationTest {
                 + GameState.FINAL_WAVE + ", with " + finishes + " of " + reaches.size() + " scenarios finishing");
         assertTrue(finishes * 2 >= reaches.size(),
             "at least half of the forced-card matrix must finish: " + finishes + " of " + reaches.size());
+        assertTrue(breaches.isEmpty(), "Breaking card scenarios:\n" + String.join("\n", breaches));
+    }
+
+    private static void check(List<String> breaches, boolean condition, String message) {
+        if (!condition) {
+            breaches.add(message);
+        }
     }
 
     /** How far the run got with the card forced on it; the metric bands are checked over the waves after it. */
-    private static int verifyScenario(RewardCardId card, int bossNumber) {
+    private static int verifyScenario(RewardCardId card, int bossNumber, List<String> breaches) {
         BalanceReport report = new BalanceSimulator().runWithForcedCard(
             SEED,
             card,
@@ -94,7 +104,7 @@ final class RewardCardSimulationTest {
         // the promise and what the run has left: the promise is about a card being an ambush, not about the run
         // being longer than it is.
         int floorWaves = Math.min(MINIMUM_WAVES_AFTER_THE_CARD, GameState.FINAL_WAVE - bossNumber * 5);
-        assertTrue(waves >= bossNumber * 5 + floorWaves,
+        check(breaches, waves >= bossNumber * 5 + floorWaves,
             scenario(card, bossNumber) + " ended the run " + (waves - bossNumber * 5)
                 + " waves after the card (wave " + waves + "), under the " + floorWaves
                 + " the curve has to give a player to answer it");
@@ -125,24 +135,24 @@ final class RewardCardSimulationTest {
         // mean clear is 19.8 s and whose pressured waves are 7 of 10 (measured), which is what the opening costs
         // rather than a card trivializing anything. A run that was lost has no remaining run to have trivialized.
         if (waves == GameState.FINAL_WAVE) {
-            assertTrue(
+            check(breaches,
                 averageDamage >= MINIMUM_AVERAGE_DAMAGE_FRACTION,
                 scenario + " trivialized average incoming pressure: " + averageDamage
             );
-            assertTrue(
+            check(breaches,
                 averageClearTime >= MINIMUM_AVERAGE_CLEAR_SECONDS,
                 scenario + " trivialized average clear time: " + averageClearTime
             );
-            assertTrue(
+            check(breaches,
                 pressuredWaves >= Math.ceil(remaining.size() * MINIMUM_PRESSURED_WAVE_FRACTION),
                 scenario + " left too few pressured waves: " + pressuredWaves
             );
         }
-        assertTrue(
+        check(breaches,
             maximumDamage <= MAXIMUM_SINGLE_WAVE_DAMAGE_FRACTION,
             scenario + " caused a damage spike: " + maximumDamage
         );
-        assertTrue(
+        check(breaches,
             maximumClear <= MAXIMUM_CLEAR_SECONDS,
             scenario + " caused a clear-time spike: " + maximumClear
         );
