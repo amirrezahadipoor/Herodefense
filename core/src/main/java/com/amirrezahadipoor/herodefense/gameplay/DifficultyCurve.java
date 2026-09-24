@@ -28,7 +28,11 @@ public final class DifficultyCurve {
     public static final int MIDDLE_SEGMENT_LAST_WAVE = 80;
     public static final float MIDDLE_HEALTH_GROWTH = 1.041f;
     public static final float BOSS_HEALTH_MULTIPLIER = 15f;
-    public static final float BOSS_DAMAGE_MULTIPLIER = 3f;
+    // H1 hard era: boss contact hits at 3.25x the baseline, not 3x. Boss health is untouched --
+    // hard mode is hit weight, never hit points -- and the first bosses stay fair because the
+    // wave-5 damage share falls at the same time (see below): wave 5's boss costs the same bar
+    // it always did, while wave 200's hits a third harder.
+    public static final float BOSS_DAMAGE_MULTIPLIER = 3.25f;
 
     // --- The damage anchor (audit item 1) -------------------------------------------------------------------
     // Enemy damage is no longer a growth chain of its own. It was one -- `0.27 x 1.003^(w-1)` -- and the audit
@@ -76,7 +80,7 @@ public final class DifficultyCurve {
      * hit can be worth about a percent of the bar and still leave the wave under a tenth of it, the first boss
      * wave is the first real spike (about 60% of the bar, up from 1.9% before this change), the middle of the run
      * sits near a quarter of the bar per wave, and the last quarter holds a quarter of it. The raw hit grows
-     * across the run (0.75 damage on a 100 health bar at wave one, 1.55 on an 863 health bar at wave two hundred),
+     * across the run (0.65 damage on a 100 health bar at wave one, 1.90 on an 863 health bar at wave two hundred),
      * so damage still grows with health as the audit demanded -- it just stops outgrowing the wave it arrives in.
      *
      * <p><b>What would have to change for 5% a hit.</b> A 5% contact hit is a 5% hit only in a game that lands
@@ -86,7 +90,12 @@ public final class DifficultyCurve {
      * honest statement of this curve is: a hit is worth between a tenth and a third of a percent of the bar in the
      * late game, and a wave is worth a quarter of it.
      */
-    static final float[] DAMAGE_SHARE_ANCHOR_VALUES = {0.0075f, 0.0028f, 0.0024f, 0.0020f, 0.0018f};
+    // H1 hard era: the opening softens a breath (waves 1-5), the middle heats (+4% at wave 40) and the
+    // late run climbs (+20% at wave 100, +22% at wave 200). The table stays strictly falling -- a late
+    // wave lands far more hits, so the share still falls -- but nearly flat past wave 5, which is what
+    // makes the tail brutal: the same share times twice the hits. Boss health, spawn counts and the
+    // expected bar are untouched: this era's hardness is hit weight, never bloat.
+    static final float[] DAMAGE_SHARE_ANCHOR_VALUES = {0.0065f, 0.0026f, 0.0025f, 0.0024f, 0.0022f};
 
     /**
      * The share of the bar a boss special takes before the encounter's own multiplier (audit item 1 + A5).
@@ -108,7 +117,10 @@ public final class DifficultyCurve {
      * by 0.4 like any other hit.
      */
     static final float[] BOSS_SPECIAL_SHARE_ANCHOR_WAVES = {1f, 5f, 40f, 100f, 200f};
-    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.050f, 0.058f, 0.066f, 0.075f};
+    // H1 hard era: the first bosses' specials are untouched (waves 1-5 stay fair), the late ones climb
+    // (+7% at wave 40, +12% at wave 100, +17% at wave 200). Still under the 10% base / 15% heaviest
+    // ceilings DifficultyCurveTest pins: telegraphed hits stay payable, just worth noticeably more dread.
+    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.050f, 0.062f, 0.074f, 0.088f};
 
     // Ascension schedule (Phase 25.3): relative per-tier bumps on every growth constant,
     // tuned against the simulator at tiers 0/3/6/10 (search in docs/BALANCE.md). Phase 89

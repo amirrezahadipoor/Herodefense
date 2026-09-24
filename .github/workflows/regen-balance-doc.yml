@@ -1,0 +1,35 @@
+name: Regenerate balance doc
+
+# Manual tool for balance passes: runs the generator BalanceDocumentTest points at
+# (`:core:regenerateBalanceDoc`) and uploads the rewritten docs/BALANCE.md, so the
+# generated blocks are never hand-edited. Trigger from the Actions tab or the API,
+# download the `balance-doc` artifact, and commit it.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GRADLE_USER_HOME: /tmp/herodefense-gradle
+      HERO_PROJECT_CACHE_DIR: /tmp/herodefense-project-cache
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Regenerate generated blocks
+        run: ./scripts/gradle.sh :core:regenerateBalanceDoc
+
+      - name: Upload rewritten document
+        uses: actions/upload-artifact@v4
+        with:
+          name: balance-doc
+          path: docs/BALANCE.md
+          retention-days: 14
