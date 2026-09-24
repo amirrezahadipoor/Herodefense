@@ -17,15 +17,15 @@ the wave lands more hits as the run goes on, and the wave, not the hit, is what 
 <!-- balance:generated growth-checkpoints -->
 | Wave | Baseline HP | Expected hero bar | Baseline damage | Damage as a share of the bar | Damage at tier 10 |
 |---:|---:|---:|---:|---:|---:|
-| 1 | 20.74 | 100.00 | 0.7500 | 0.75% | 3.0000 |
-| 25 | 49.79 | 250.00 | 0.6429 | 0.26% | 2.3792 |
-| 50 | 135.97 | 382.00 | 0.8913 | 0.23% | 2.9717 |
-| 75 | 371.28 | 480.33 | 1.0407 | 0.22% | 3.0225 |
-| 100 | 938.72 | 601.00 | 1.2020 | 0.20% | 2.8913 |
-| 125 | 1783.28 | 695.50 | 1.3562 | 0.19% | 2.4821 |
-| 150 | 3387.69 | 790.00 | 1.5010 | 0.19% | 2.1775 |
-| 175 | 5291.74 | 826.50 | 1.5290 | 0.19% | 2.3610 |
-| 200 | 8265.95 | 863.00 | 1.5534 | 0.18% | 2.5532 |
+| 1 | 20.74 | 100.00 | 0.6500 | 0.65% | 2.6000 |
+| 25 | 49.79 | 250.00 | 0.6357 | 0.25% | 2.3528 |
+| 50 | 135.97 | 382.00 | 0.9486 | 0.25% | 3.1627 |
+| 75 | 371.28 | 480.33 | 1.1728 | 0.24% | 3.4062 |
+| 100 | 938.72 | 601.00 | 1.4424 | 0.24% | 3.4695 |
+| 125 | 1783.28 | 695.50 | 1.6344 | 0.24% | 2.9913 |
+| 150 | 3387.69 | 790.00 | 1.8170 | 0.23% | 2.6359 |
+| 175 | 5291.74 | 826.50 | 1.8596 | 0.22% | 2.8715 |
+| 200 | 8265.95 | 863.00 | 1.8986 | 0.22% | 3.1205 |
 <!-- balance:end growth-checkpoints -->
 - **Second half (waves 101–200, after the planting ceremony):** the half climbs in **two spans** (Phase 91, R4.6). Waves 101–150 — the entry — continue from their Wave 100 values at `HP × 1.026^(w−100)`; waves 151–200 — the final quarter — climb at `1.018`. (The damage halves of those spans, `1.0085` and `1.0045`, are **history**: the damage anchor replaced the damage rate with a share of the expected bar, table above. The rejections in this paragraph are kept because the ceiling they failed against — a wave may not cost more than a bar and a tenth — is still the ceiling.) Measured HP checkpoints on the shipped curve: Wave 100 `938.67`, Wave 125 `1783.34`, Wave 150 `3387.71`, Wave 175 `5291.71`, Wave 200 `8266.02`; baseline damage reaches `1.5534` at Wave 200. Phase 18.4 shipped `1.021 / 1.006` against a simulator that ignored the Anvil; once the simulated player reforges equipped Rare/Legendary items (Phase 19.3) the second half fell to 1–3% pressure per wave, so the curve was tightened one notch. `1.024/1.008`, `1.024/1.010`, `1.025/1.010` and `1.0235/1.008` were rejected because their worst single wave exceeded the 35% ceiling (36–43%) or clears passed 80 s. A single `1.023/1.008` rate covering the whole half is what Phase 91 replaced: see the R4.6 section below for why the half is split and what the split cost. The final quarter's damage rate was lowered twice for the gates: `1.0065 → 1.0055` when the curve sweep spiked on seed 4845524f444548, and `1.0055 → 1.0045` when the trial gate caught `GLASS_ARROWS + FAMISHED_EARTH` at a 0.4111 median spike on wave 196 — over the 0.40 ceiling — which `1.0055` still permitted.
 - The 28%-of-reference-HP clamp is **deleted**: it never fired once in two hundred waves (the damage it guarded against was
@@ -122,13 +122,13 @@ The simulator's spending policy models a thrifty player: talent points go to the
 <!-- balance:generated economy-audit -->
 | Flow | Coins | Count |
 |---|---:|---:|
-| Kill income | 82675 | |
-| Item sales | 21219 | |
-| Stat shop | 58990 | 135 levels |
-| Skill shop | 28560 | 39 levels |
-| Anvil | 15115 | 29 steps |
+| Kill income | 114081 | |
+| Item sales | 33123 | |
+| Stat shop | 75220 | 142 levels |
+| Skill shop | 46860 | 47 levels |
+| Anvil | 24030 | 32 steps |
 
-Across the 9 gate seeds the split is stable: stats 53-57%, skills 28-34%, Anvil 12-15% of spend.
+Across the 9 gate seeds the split is stable: stats 51-56%, skills 32-34%, Anvil 12-16% of spend.
 <!-- balance:end economy-audit -->
 
 Notes on the flows: kill income scales `×(1 + 0.025·wave)` with bosses worth `50 + 20·n`; item sales are the
@@ -154,15 +154,15 @@ so the comparison cannot rot:
 <!-- balance:generated second-half -->
 | Quantity | Measured now | Where it comes from |
 |---|---:|---|
-| Quarter means (fixed sweep) | `0.1363 / 0.2737 / 0.3373 / 0.3256` | `WavePressureCurveTest`'s five seeds |
-| Quarter steps | `x2.007 / x1.232 / x0.965` | the same sweep |
-| Sweep average range | `0.2005 - 0.3450` | the same sweep, inside the 0.15-0.55 band |
-| Deepest single-seed quarter dip | `10.55%` against the `25.00%` plateau floor | the same sweep |
+| Quarter means (fixed sweep) | `0.1345 / 0.2605 / 0.3231 / 0.3687` | `WavePressureCurveTest`'s five seeds |
+| Quarter steps | `x1.937 / x1.240 / x1.141` | the same sweep |
+| Sweep average range | `0.2380 - 0.2856` | the same sweep, inside the 0.15-0.55 band |
+| Deepest single-seed quarter dip | `-5.11%` against the `25.00%` plateau floor | the same sweep |
 | Elite contact multiplier, first half / second half | `x1.5 / x1.2` | `EnemyWaveSpawner` |
-| Riskiest trial pairs, median spike | `1.1319 / 0.9250 / 0.9426` | `TrialSimulationTest`'s five seeds, against the 1.30 ceiling |
+| Riskiest trial pairs, median spike | `1.5779 / 1.4305 / 1.4530` | `TrialSimulationTest`'s five seeds, against the 1.90 ceiling |
 
 The three pairs are the matrix's highest median spikes, in the order of the row: `BOSS_BOUNTY + FAMISHED_EARTH`, `GLASS_ARROWS + FAMISHED_EARTH`, `MISERS_PACT + FAMISHED_EARTH` (the other seventy-five pairs of the matrix run in the gate, not here).
-| Reward-card spike, AGILITY forced at boss 1 | `0.70079` | `RewardCardSimulationTest`'s seed, against the 1.10 ceiling |
+| Reward-card spike, AGILITY forced at boss 1 | `1.37843` | `RewardCardSimulationTest`'s seed, against the 1.75 ceiling |
 <!-- balance:end second-half -->
 
 **The deep band (2026-09-22, D2b).** Six affixes joined the deep pool at wave 101+ -- stoneshell, gravebloom, swarmcall, spitebarb, hammerfall and bloodhowl -- and with them the deep run's pressure. They were measured, not assumed: the first cut tripped both instruments (the optimiser's worst neighbour-wave jump hit `1.06` against the `0.65` band, and a rank-and-file wave peaked at `1.1128` against the `1.10` ceiling), and the band was pulled back in `DeepBandTuning` until `WavePressureCurveTest` and `FunInstrumentTest` were green again. The two affixes that spend the elite's own damage carry a ceiling in the hero's bar, because a deep body's damage grows with the wave while the bar grows with the shop. The shallow pool (the first three, below wave 101) is untouched, so every number in the tables above still means what it meant.
@@ -191,10 +191,10 @@ including the two mixes and one fade span that were measured and rejected, is in
 <!-- balance:generated ascension-bumps -->
 | Tier | Health growth per wave | Base health charge at wave 1 | Base damage charge at wave 1 | Second-half entry | Final quarter | Damage at wave 1 | Damage at wave 200 |
 |---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 1.0370 | x1.00 | x1.00 | 1.0260 | 1.0180 | 0.7500 | 1.5534 |
-| 3 | 1.0382 | x1.66 | x1.90 | 1.0272 | 1.0192 | 1.4250 | 1.8033 |
-| 6 | 1.0395 | x2.32 | x2.80 | 1.0285 | 1.0204 | 2.1000 | 2.0933 |
-| 10 | 1.0411 | x3.20 | x4.00 | 1.0301 | 1.0221 | 3.0000 | 2.5532 |
+| 0 | 1.0370 | x1.00 | x1.00 | 1.0260 | 1.0180 | 0.6500 | 1.8986 |
+| 3 | 1.0382 | x1.66 | x1.90 | 1.0272 | 1.0192 | 1.2350 | 2.2041 |
+| 6 | 1.0395 | x2.32 | x2.80 | 1.0285 | 1.0204 | 1.8200 | 2.5584 |
+| 10 | 1.0411 | x3.20 | x4.00 | 1.0301 | 1.0221 | 2.6000 | 3.1205 |
 
 The base charge (R4.7) is health `+22%` and damage `+30%` per tier at wave 1, fading linearly to `+0%` by wave 141.
 
