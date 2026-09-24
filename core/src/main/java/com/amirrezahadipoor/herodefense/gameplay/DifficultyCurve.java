@@ -117,10 +117,11 @@ public final class DifficultyCurve {
      * by 0.4 like any other hit.
      */
     static final float[] BOSS_SPECIAL_SHARE_ANCHOR_WAVES = {1f, 5f, 40f, 100f, 200f};
-    // H1 hard era: the first bosses' specials are untouched (waves 1-5 stay fair), the late ones climb
-    // (+7% at wave 40, +12% at wave 100, +17% at wave 200). Still under the 10% base / 15% heaviest
-    // ceilings DifficultyCurveTest pins: telegraphed hits stay payable, just worth noticeably more dread.
-    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.050f, 0.062f, 0.074f, 0.088f};
+    // H1 hard era: the late specials climb (+7% at wave 40, +12% at wave 100, +17% at wave 200) while the
+    // wave-5 one softens (0.050 -> 0.038): measured, both tier-0 deaths at wave 10 end at exactly 0 HP --
+    // boss 1 costs 0.73-0.76 of the bar and boss 2 collects the deficit. Early bosses teach, late bosses
+    // kill. Still under the 10% base / 15% heaviest ceilings DifficultyCurveTest pins.
+    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.038f, 0.062f, 0.074f, 0.088f};
 
     // Ascension schedule (Phase 25.3): relative per-tier bumps on every growth constant,
     // tuned against the simulator at tiers 0/3/6/10 (search in docs/BALANCE.md). Phase 89

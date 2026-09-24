@@ -26,5 +26,14 @@ final class TempHardDiagnosisTest {
         assertNotNull(naive);
         System.out.println("NAIVE05-BRIEF waves=" + naive.waves().size());
         System.out.print(naive.toCsv());
+        BalanceReport naive07 = new BalanceSimulator()
+            .runWithPolicy(0x4E414956453037L, BalanceSimulator.Policy.OPTIMISER, 0, GameMode.STANDARD);
+        assertNotNull(naive07);
+        System.out.println("NAIVE07-LONG-OPTIMISER waves=" + naive07.waves().size());
+        System.out.print(naive07.toCsv());
+        BalanceReport tiered = new BalanceSimulator().runWithAscensionTier(0x4845524F444546L, 3);
+        assertNotNull(tiered);
+        System.out.println("TIER3-NAKED-BASELINE waves=" + tiered.waves().size());
+        System.out.print(tiered.toCsv());
     }
 }
