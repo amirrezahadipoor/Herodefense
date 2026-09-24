@@ -116,12 +116,16 @@ public final class DifficultyCurve {
      * an inside and an outside (roadmap A5, item 2), which is the next commit. The brace already multiplies this
      * by 0.4 like any other hit.
      */
-    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_WAVES = {1f, 5f, 40f, 100f, 200f};
+    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_WAVES = {1f, 5f, 10f, 40f, 100f, 200f};
     // H1 hard era: the late specials climb (+7% at wave 40, +12% at wave 100, +17% at wave 200) while the
     // wave-5 one softens (0.050 -> 0.038): measured, both tier-0 deaths at wave 10 end at exactly 0 HP --
     // boss 1 costs 0.73-0.76 of the bar and boss 2 collects the deficit. Early bosses teach, late bosses
     // kill. Still under the 10% base / 15% heaviest ceilings DifficultyCurveTest pins.
-    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.038f, 0.062f, 0.074f, 0.088f};
+    // H1 v6: a wave-10 anchor (0.035) extends the same mercy to boss 2: measured, a glassy boss-1 pick
+    // (LUCK/DODGE/COIN) enters wave 10 with 63 HP against 63 gross -- death at exactly 0 -- while the EHP
+    // pick lives with 5. One boss-1 stat point must not be life-or-death at the next boss, so boss 2 gives
+    // back ~5 HP and stays a near-death gear check for every build. Bosses 3-7 feel ~5% of nothing.
+    static final float[] BOSS_SPECIAL_SHARE_ANCHOR_VALUES = {0.045f, 0.038f, 0.035f, 0.062f, 0.074f, 0.088f};
 
     // Ascension schedule (Phase 25.3): relative per-tier bumps on every growth constant,
     // tuned against the simulator at tiers 0/3/6/10 (search in docs/BALANCE.md). Phase 89
