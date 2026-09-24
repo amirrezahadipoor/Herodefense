@@ -237,7 +237,7 @@ public final class BalanceDocument {
             + "`x%.1f / x%.1f` | `EnemyWaveSpawner` |",
             EnemyWaveSpawner.ELITE_DAMAGE_MULT, EnemyWaveSpawner.ELITE_SECOND_HALF_DAMAGE_MULT));
         lines.add(String.format(Locale.ROOT, "| Riskiest trial pairs, median spike | `%.4f / %.4f / %.4f` | "
-            + "`TrialSimulationTest`'s five seeds, against the 1.30 ceiling |",
+            + "`TrialSimulationTest`'s five seeds, against the 1.90 ceiling |",
             pairSpikes.get(0), pairSpikes.get(1), pairSpikes.get(2)));
         List<String> names = new ArrayList<>();
         for (TrialId[] pair : RISKIEST_PAIRS) {
@@ -247,7 +247,7 @@ public final class BalanceDocument {
         lines.add("The three pairs are the matrix's highest median spikes, in the order of the row: "
             + String.join(", ", names) + " (the other seventy-five pairs of the matrix run in the gate, not here).");
         lines.add(String.format(Locale.ROOT, "| Reward-card spike, AGILITY forced at boss 1 | `%.5f` | "
-            + "`RewardCardSimulationTest`'s seed, against the 1.10 ceiling |", cardSpike));
+            + "`RewardCardSimulationTest`'s seed, against the 1.75 ceiling |", cardSpike));
         return join(lines);
     }
 
